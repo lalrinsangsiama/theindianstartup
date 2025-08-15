@@ -119,12 +119,12 @@ export default function SQLCommandsPage() {
           </CardHeader>
           <CardContent>
             <ol className="list-decimal list-inside space-y-2 text-sm">
-              <li>Go to your <a href="https://supabase.com/dashboard/projects" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1 inline-flex">Supabase Dashboard <ExternalLink className="w-3 h-3" /></a></li>
+              <li>Go to your <a href="https://supabase.com/dashboard/projects" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-flex items-center gap-1">Supabase Dashboard <ExternalLink className="w-3 h-3" /></a></li>
               <li>Select your project: <strong>enotnyhykuwnfiyzfoko</strong></li>
-              <li>Click on <strong>"SQL Editor"</strong> in the left sidebar</li>
+              <li>Click on <strong>&quot;SQL Editor&quot;</strong> in the left sidebar</li>
               <li>Create a new query</li>
               <li>Copy and paste the SQL commands below (you can copy all at once)</li>
-              <li>Click <strong>"Run"</strong> to execute the commands</li>
+              <li>Click <strong>&quot;Run&quot;</strong> to execute the commands</li>
               <li>Verify that the tables were created successfully</li>
             </ol>
             

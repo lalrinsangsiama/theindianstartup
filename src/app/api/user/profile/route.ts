@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has completed onboarding
-    const hasCompletedOnboarding = userProfile.name && userProfile.StartupPortfolio && userProfile.StartupPortfolio.length > 0;
+    // User has completed onboarding if they have a name set
+    const hasCompletedOnboarding = !!(userProfile && userProfile.name);
 
     return NextResponse.json({
       user: {

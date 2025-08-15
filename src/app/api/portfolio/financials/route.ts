@@ -24,22 +24,26 @@ export async function PATCH(req: NextRequest) {
     const portfolio = await prisma.startupPortfolio.upsert({
       where: { userId: user.id },
       update: {
-        projections: projections || [],
+        projections: {
+          projections: projections || [],
+          fundingPurpose: fundingPurpose,
+          burnRate: burnRate,
+          runwayMonths: runwayMonths,
+          breakEvenTimeline: breakEvenTimeline,
+        },
         fundingNeeds: fundingNeeds,
-        fundingPurpose: fundingPurpose,
-        burnRate: burnRate,
-        runwayMonths: runwayMonths,
-        breakEvenTimeline: breakEvenTimeline,
         updatedAt: new Date(),
       },
       create: {
         userId: user.id,
-        projections: projections || [],
+        projections: {
+          projections: projections || [],
+          fundingPurpose: fundingPurpose,
+          burnRate: burnRate,
+          runwayMonths: runwayMonths,
+          breakEvenTimeline: breakEvenTimeline,
+        },
         fundingNeeds: fundingNeeds,
-        fundingPurpose: fundingPurpose,
-        burnRate: burnRate,
-        runwayMonths: runwayMonths,
-        breakEvenTimeline: breakEvenTimeline,
       },
     });
 

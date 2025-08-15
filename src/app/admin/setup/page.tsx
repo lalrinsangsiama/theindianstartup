@@ -81,7 +81,7 @@ export default function AdminSetupPage() {
         </Card>
 
         {error && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert variant="error" className="mb-6">
             <AlertCircle className="w-4 h-4" />
             <div>
               <strong>Error:</strong> {error}

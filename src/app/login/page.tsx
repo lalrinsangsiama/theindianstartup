@@ -67,6 +67,11 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
+        options: {
+          // If remember me is checked, persist session for 30 days
+          // Otherwise, session expires when browser closes
+          persistSession: formData.rememberMe,
+        }
       });
       
       if (error) {
@@ -78,8 +83,31 @@ export default function LoginPage() {
         return;
       }
       
-      // Successful login - redirect to dashboard
-      router.push('/dashboard');
+      // Check if user needs onboarding
+      const response = await fetch('/api/user/profile');
+      const profileData = await response.json();
+      
+      if (!profileData.hasCompletedOnboarding) {
+        router.push('/onboarding');
+        return;
+      }
+      
+      // Check if there's a redirect URL
+      const redirectTo = searchParams.get('redirectTo');
+      
+      // Get saved redirect from session storage
+      const savedRedirect = typeof window !== 'undefined' 
+        ? sessionStorage.getItem('redirectAfterLogin')
+        : null;
+      
+      // Clear session storage
+      if (savedRedirect) {
+        sessionStorage.removeItem('redirectAfterLogin');
+      }
+      
+      // Redirect to saved URL, query param, or dashboard
+      const destination = savedRedirect || redirectTo || '/dashboard';
+      router.push(destination);
     } catch (error) {
       setLoginError('An unexpected error occurred. Please try again.');
     } finally {

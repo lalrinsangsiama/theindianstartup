@@ -9,7 +9,7 @@ import { Input, Checkbox } from '@/components/ui/Input';
 import { Text } from '@/components/ui/Typography';
 import { Alert } from '@/components/ui/Alert';
 import { createClient } from '@/lib/supabase/client';
-import { Mail, Lock, User, Phone } from 'lucide-react';
+import { Mail, Lock, User, Phone, Check } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -51,6 +51,12 @@ export default function SignupPage() {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
+    } else if (!/[A-Z]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter';
+    } else if (!/[a-z]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one lowercase letter';
+    } else if (!/\d/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one number';
     }
     
     if (formData.password !== formData.confirmPassword) {
@@ -173,10 +179,35 @@ export default function SignupPage() {
           value={formData.password}
           onChange={handleChange}
           error={errors.password}
-          helper="Minimum 8 characters"
+          helper="At least 8 characters with uppercase, lowercase, and a number"
           icon={<Lock className="w-5 h-5" />}
           required
         />
+        
+        {/* Password Strength Indicators */}
+        {formData.password && (
+          <div className="space-y-2">
+            <Text size="sm" weight="medium">Password strength</Text>
+            <div className="space-y-1">
+              <PasswordCheck 
+                met={formData.password.length >= 8} 
+                text="At least 8 characters" 
+              />
+              <PasswordCheck 
+                met={/[A-Z]/.test(formData.password)} 
+                text="Contains uppercase letter" 
+              />
+              <PasswordCheck 
+                met={/[a-z]/.test(formData.password)} 
+                text="Contains lowercase letter" 
+              />
+              <PasswordCheck 
+                met={/\d/.test(formData.password)} 
+                text="Contains number" 
+              />
+            </div>
+          </div>
+        )}
         
         <Input
           name="confirmPassword"
@@ -241,5 +272,20 @@ export default function SignupPage() {
         </div>
       </form>
     </AuthLayout>
+  );
+}
+
+function PasswordCheck({ met, text }: { met: boolean; text: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+        met ? 'border-green-600 bg-green-600' : 'border-gray-300'
+      }`}>
+        {met && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+      </div>
+      <Text size="sm" className={met ? 'text-green-600' : 'text-gray-500'}>
+        {text}
+      </Text>
+    </div>
   );
 }

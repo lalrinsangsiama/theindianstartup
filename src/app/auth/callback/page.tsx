@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
+import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
 import { Alert } from '@/components/ui/Alert';
 import { Loader2 } from 'lucide-react';
@@ -41,8 +42,8 @@ export default function AuthCallbackPage() {
       // Handle different callback types
       switch (type) {
         case 'signup':
-          // Email verification successful
-          router.push('/login?verified=true');
+          // Email verification successful - redirect to onboarding for new users
+          router.push('/onboarding');
           break;
         
         case 'recovery':
@@ -74,18 +75,30 @@ export default function AuthCallbackPage() {
         {error ? (
           <>
             <Alert variant="error" title="Verification failed">
-              {error}
+              {error === 'Invalid callback URL' 
+                ? 'The verification link is invalid or has expired. Please request a new verification email.'
+                : error}
             </Alert>
-            <div className="text-center">
-              <Text size="sm" color="muted">
-                Please try again or{' '}
-                <a 
-                  href="mailto:support@theindianstartup.in" 
-                  className="text-black font-medium underline hover:no-underline"
-                >
-                  contact support
-                </a>
-              </Text>
+            <div className="space-y-4">
+              <Button 
+                variant="primary" 
+                className="w-full"
+                onClick={() => router.push('/signup/verify-email')}
+              >
+                Request New Verification Email
+              </Button>
+              
+              <div className="text-center">
+                <Text size="sm" color="muted">
+                  Having trouble? {' '}
+                  <a 
+                    href="mailto:support@theindianstartup.in" 
+                    className="text-black font-medium underline hover:no-underline"
+                  >
+                    Contact our support team
+                  </a>
+                </Text>
+              </div>
             </div>
           </>
         ) : (

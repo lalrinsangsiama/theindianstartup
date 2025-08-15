@@ -68,13 +68,23 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
 
     // Update user profile
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('User')
+      .update({
         name: body.name,
         phone: body.phone,
-      },
-    });
+      })
+      .eq('id', user.id)
+      .select('*')
+      .single();
+
+    if (updateError) {
+      console.error('Profile update error:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update profile' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       user: updatedUser,

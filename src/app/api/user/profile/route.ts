@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,14 +18,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user profile with portfolio
-    const userProfile = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        portfolio: true,
-      },
-    });
+    const { data: userProfile, error: profileError } = await supabase
+      .from('User')
+      .select('*, StartupPortfolio(*)')
+      .eq('id', user.id)
+      .single();
 
-    if (!userProfile) {
+    if (profileError || !userProfile) {
       return NextResponse.json(
         { error: 'User profile not found' },
         { status: 404 }
@@ -34,10 +32,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has completed onboarding
-    const hasCompletedOnboarding = userProfile.name && userProfile.portfolio;
+    const hasCompletedOnboarding = userProfile.name && userProfile.StartupPortfolio && userProfile.StartupPortfolio.length > 0;
 
     return NextResponse.json({
-      user: userProfile,
+      user: {
+        ...userProfile,
+        portfolio: userProfile.StartupPortfolio?.[0] || null
+      },
       hasCompletedOnboarding,
     });
   } catch (error) {

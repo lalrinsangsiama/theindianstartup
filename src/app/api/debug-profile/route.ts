@@ -15,21 +15,42 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user profile with portfolio - use maybeSingle to handle no results
-    const { data: userProfile, error: profileError } = await supabase
-      .from('User')
-      .select('*, StartupPortfolio(*)')
+    // Try different table name possibilities
+    let userProfile = null;
+    let profileError = null;
+    
+    // Try lowercase table names first
+    const { data: userProfileLower, error: profileErrorLower } = await supabase
+      .from('user')
+      .select('*, startupportfolio(*)')
       .eq('id', user.id)
       .maybeSingle();
+      
+    if (!profileErrorLower && userProfileLower) {
+      userProfile = userProfileLower;
+    } else {
+      // Try PascalCase table names
+      const { data: userProfilePascal, error: profileErrorPascal } = await supabase
+        .from('User')
+        .select('*, StartupPortfolio(*)')
+        .eq('id', user.id)
+        .maybeSingle();
+        
+      userProfile = userProfilePascal;
+      profileError = profileErrorPascal;
+    }
 
     return NextResponse.json({
       user: userProfile,
       profileError: profileError?.message,
+      profileErrorLower: profileErrorLower?.message,
       hasProfile: !!userProfile,
       hasName: !!userProfile?.name,
       hasPortfolio: userProfile?.StartupPortfolio && userProfile.StartupPortfolio.length > 0,
       portfolioData: userProfile?.StartupPortfolio,
-      raw: userProfile
+      raw: userProfile,
+      userId: user.id,
+      userEmail: user.email
     });
     
   } catch (error: any) {

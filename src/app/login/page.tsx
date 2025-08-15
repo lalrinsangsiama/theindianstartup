@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
@@ -11,7 +11,7 @@ import { Alert } from '@/components/ui/Alert';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -67,11 +67,6 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
-        options: {
-          // If remember me is checked, persist session for 30 days
-          // Otherwise, session expires when browser closes
-          persistSession: formData.rememberMe,
-        }
       });
       
       if (error) {
@@ -199,19 +194,17 @@ export default function LoginPage() {
           <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
         
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 py-6 border-y border-gray-200">
-          <div className="text-center">
-            <Text className="font-heading font-bold text-xl">2,847</Text>
-            <Text size="xs" color="muted">Active Founders</Text>
-          </div>
-          <div className="text-center">
-            <Text className="font-heading font-bold text-xl">₹12.3L</Text>
-            <Text size="xs" color="muted">Raised This Month</Text>
-          </div>
-          <div className="text-center">
-            <Text className="font-heading font-bold text-xl">89%</Text>
-            <Text size="xs" color="muted">Completion Rate</Text>
+        {/* Platform Benefits */}
+        <div className="py-6 border-y border-gray-200">
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <Text className="font-heading font-bold text-lg">30 Days</Text>
+              <Text size="xs" color="muted">Structured Journey</Text>
+            </div>
+            <div>
+              <Text className="font-heading font-bold text-lg">365 Days</Text>
+              <Text size="xs" color="muted">Platform Access</Text>
+            </div>
           </div>
         </div>
         
@@ -236,5 +229,20 @@ export default function LoginPage() {
         </div>
       </form>
     </AuthLayout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+          <Text color="muted">Loading...</Text>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

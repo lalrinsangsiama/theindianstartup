@@ -2,17 +2,17 @@
 
 ## 🌅 Morning Brief (3 min read)
 
-Today is pivotal - you'll validate your assumptions by talking to real potential customers. In India's diverse market, customer discovery requires cultural sensitivity, language awareness, and understanding of local contexts. Remember: You're not selling, you're learning.
+Today is pivotal - you'll validate your assumptions by talking to real potential customers. **Customer discovery** means interviewing people who have the problem you're solving to understand if your solution idea actually makes sense. In India's diverse market, this requires cultural sensitivity, language awareness, and understanding of local contexts. Remember: You're not selling, you're learning.
 
 **Today's Focus:** Listen more, talk less. Your assumptions will be challenged.
 
 **Time Commitment:** 4-5 hours
 
 **Success Metrics:**
-- 5-10 customer interviews completed
-- Pain points validated/invalidated
-- Customer personas refined
-- Solution direction confirmed/pivoted
+- **5-10 customer interviews completed** (actual conversations with potential customers)
+- **Pain points validated/invalidated** (confirm which problems are real vs imagined)
+- **Customer personas refined** (detailed profiles of your ideal customers based on real data)
+- **Solution direction confirmed/pivoted** (decide if your idea is right or needs major changes)
 
 ## 📋 Interactive Checklist
 

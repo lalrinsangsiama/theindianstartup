@@ -2,19 +2,19 @@
 
 ## 🌅 Morning Brief (3 min read)
 
-Welcome to Day 6! Today you'll create your startup's identity - the name that will become a household brand, the domain that will attract millions, and the intellectual property foundation that protects your innovation. In India's competitive market, a strong brand can be your biggest moat.
+Welcome to Day 6! Today you'll create your startup's identity - the name that will become a household brand, the domain that will attract millions, and the **intellectual property** foundation that protects your innovation. **Intellectual property (IP)** includes trademarks (protecting your brand name), copyrights (protecting creative work), and patents (protecting inventions) - legal tools that prevent others from copying your unique assets. In India's competitive market, a strong brand can be your biggest **moat** (competitive advantage that's hard for others to copy).
 
 **Today's Focus:** Build a memorable, protectable, and scalable brand identity.
 
 **Time Commitment:** 4-5 hours
 
 **Success Metrics:**
-- Company name finalized and available
-- Domain secured (.com and .in)
-- Trademark search completed
-- Brand guidelines documented
-- Social handles reserved
-- Logo concept created
+- **Company name finalized and available** (chosen from multiple options, checked for legal availability)
+- **Domain secured (.com and .in)** (website addresses purchased and owned by you)
+- **Trademark search completed** (verified no one else owns similar brand names in your industry)
+- **Brand guidelines documented** (rules for how to use your brand consistently)
+- **Social handles reserved** (Facebook, Instagram, LinkedIn usernames secured)
+- **Logo concept created** (visual symbol representing your brand)
 
 ## 📋 Interactive Checklist
 
@@ -27,7 +27,7 @@ Welcome to Day 6! Today you'll create your startup's identity - the name that wi
 
 ### Core Tasks (3.5 hours)
 - [ ] Brainstorm and filter names
-- [ ] Check MCA name availability
+- [ ] Check **MCA** name availability (Ministry of Corporate Affairs - government body that approves company names)
 - [ ] Search domain availability
 - [ ] Conduct trademark search
 - [ ] Purchase domain(s)
@@ -51,34 +51,34 @@ Welcome to Day 6! Today you'll create your startup's identity - the name that wi
 **Types of Names to Consider:**
 
 **Descriptive Names**
-- What: Directly describes service
-- Examples: BookMyShow, PayTM (Pay Through Mobile)
-- Pros: Instant understanding
-- Cons: Hard to trademark, limiting
+- **What:** Directly describes service (name tells you what the business does)
+- **Examples:** BookMyShow, PayTM (Pay Through Mobile)
+- **Pros:** Instant understanding (customers immediately know what you do)
+- **Cons:** Hard to **trademark** (legal protection), limiting (hard to expand beyond core service)
 
 **Invented Names**
-- What: Made-up words
-- Examples: Ola, Zomato, Swiggy
-- Pros: Unique, trademarkable
-- Cons: Needs marketing to explain
+- **What:** Made-up words (completely new words that didn't exist before)
+- **Examples:** Ola, Zomato, Swiggy
+- **Pros:** Unique, **trademarkable** (easy to legally protect since they're unique)
+- **Cons:** Needs marketing to explain (customers don't immediately understand what you do)
 
 **Metaphorical Names**
-- What: Symbolic meaning
-- Examples: Amazon (vast), Flipkart (flipping cart)
-- Pros: Memorable, story-rich
-- Cons: May need explanation
+- **What:** Symbolic meaning (names that represent an idea or concept related to your business)
+- **Examples:** Amazon (vast like the river), Flipkart (flipping shopping cart)
+- **Pros:** Memorable, story-rich (easy to remember and build brand narrative around)
+- **Cons:** May need explanation (customers might not immediately get the connection)
 
 **Acronym Names**
-- What: Shortened forms
-- Examples: HDFC, ICICI, OYO (On Your Own)
-- Pros: Professional sound
-- Cons: Hard to remember initially
+- **What:** Shortened forms (using first letters of longer phrases)
+- **Examples:** HDFC, ICICI, OYO (On Your Own)
+- **Pros:** Professional sound (often perceived as established, corporate)
+- **Cons:** Hard to remember initially (meaningless letters until customers learn what they stand for)
 
 **Founder Names**
-- What: Personal branding
-- Examples: Bajaj, Tata, Adani
-- Pros: Personal accountability
-- Cons: Succession challenges
+- **What:** Personal branding (using founder's family name as company name)
+- **Examples:** Bajaj, Tata, Adani
+- **Pros:** Personal accountability (founder's reputation tied to business)
+- **Cons:** **Succession challenges** (difficult to transfer ownership or sell business)
 
 #### Brainstorming Techniques
 

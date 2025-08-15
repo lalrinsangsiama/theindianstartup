@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
+import { EmailAutomation } from '@/lib/email-automation';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
     
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -66,6 +68,14 @@ export async function POST(request: NextRequest) {
         totalXP: 50,
       },
     });
+
+    // Send welcome email after successful onboarding
+    try {
+      await EmailAutomation.sendWelcomeEmail(user.id);
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail the onboarding if email fails
+    }
 
     return NextResponse.json({
       success: true,

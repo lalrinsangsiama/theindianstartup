@@ -2,18 +2,18 @@
 
 ## 🌅 Morning Brief (3 min read)
 
-Today, you'll transform customer insights into a powerful value proposition. After three days of research and interviews, you now understand the problem deeply. Time to craft a solution that customers will love and pay for. In India's value-conscious market, your proposition must be compelling, clear, and culturally resonant.
+Today, you'll transform customer insights into a powerful **value proposition** - a clear statement of how your solution solves customer problems better than anything else available. After three days of research and interviews, you now understand the problem deeply. Time to craft a solution that customers will love and pay for. In India's value-conscious market, your proposition must be compelling, clear, and culturally resonant.
 
 **Today's Focus:** Bridge the gap between customer pain and your solution.
 
 **Time Commitment:** 3-4 hours
 
 **Success Metrics:**
-- Crystal-clear value proposition
-- Solution-problem fit validated
-- Feature prioritization complete
-- Pricing hypothesis formed
-- Messaging that resonates
+- **Crystal-clear value proposition** (one sentence that explains why customers should choose you)
+- **Solution-problem fit validated** (proof that your solution actually solves the real problem)
+- **Feature prioritization complete** (list of what to build first, second, third based on customer needs)
+- **Pricing hypothesis formed** (educated guess about what customers will pay, based on research)
+- **Messaging that resonates** (words and phrases that make customers say "yes, that's exactly what I need!")
 
 ## 📋 Interactive Checklist
 
@@ -46,21 +46,22 @@ Today, you'll transform customer insights into a powerful value proposition. Aft
 
 #### Customer Profile Side
 
-**Jobs to be Done**
-Functional Jobs:
+**Jobs to be Done** (What customers are trying to accomplish - their goals and objectives)
+
+**Functional Jobs** (Practical tasks they need to complete):
 - [ ] Primary: _____________________
 - [ ] Secondary: __________________
 - [ ] Tertiary: ___________________
 
-Emotional Jobs:
-- [ ] Feel: ______________________
-- [ ] Avoid feeling: ______________
-- [ ] Appear: ____________________
+**Emotional Jobs** (How they want to feel):
+- [ ] Feel: ______________________ (confidence, safety, pride, etc.)
+- [ ] Avoid feeling: ______________ (stress, embarrassment, confusion, etc.)
+- [ ] Appear: ____________________ (professional, successful, knowledgeable, etc.)
 
-Social Jobs:
-- [ ] Status: ____________________
-- [ ] Belonging: _________________
-- [ ] Influence: _________________
+**Social Jobs** (How they want to be perceived by others):
+- [ ] Status: ____________________ (respected, admired, seen as expert)
+- [ ] Belonging: _________________ (fit in with a group, be accepted)
+- [ ] Influence: _________________ (lead others, make impact, be heard)
 
 **Pains** (Rank by severity 1-10)
 ```

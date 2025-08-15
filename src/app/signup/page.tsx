@@ -222,12 +222,23 @@ export default function SignupPage() {
         />
         
         <div className="space-y-2">
-          <Checkbox
-            name="acceptTerms"
-            checked={formData.acceptTerms}
-            onChange={handleChange}
-            label="I agree to the Terms of Service and Privacy Policy"
-          />
+          <div className="flex items-start gap-2">
+            <Checkbox
+              name="acceptTerms"
+              checked={formData.acceptTerms}
+              onChange={handleChange}
+            />
+            <label htmlFor="acceptTerms" className="text-sm">
+              I agree to the{' '}
+              <Link href="/terms" className="text-accent hover:underline" target="_blank">
+                Terms of Service
+              </Link>
+              {' '}and{' '}
+              <Link href="/privacy" className="text-accent hover:underline" target="_blank">
+                Privacy Policy
+              </Link>
+            </label>
+          </div>
           {errors.acceptTerms && (
             <Text size="sm" className="text-red-600">
               {errors.acceptTerms}

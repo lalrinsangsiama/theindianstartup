@@ -210,7 +210,7 @@ export default function OnboardingPage() {
                     disabled={loading}
                   />
                   <Text size="xs" color="muted" className="mt-1">
-                    We'll use this for important updates about your journey
+                    We&apos;ll use this for important updates about your journey
                   </Text>
                 </div>
               </>
@@ -231,7 +231,7 @@ export default function OnboardingPage() {
                     disabled={loading}
                   />
                   <Text size="xs" color="muted" className="mt-1">
-                    Don't worry, you can change this later
+                    Don&apos;t worry, you can change this later
                   </Text>
                 </div>
 
@@ -279,7 +279,7 @@ export default function OnboardingPage() {
                 </Heading>
                 <Text color="muted" className="mb-6">
                   Your 30-day journey to launch your startup begins now. 
-                  Let's turn your idea into reality!
+                  Let&apos;s turn your idea into reality!
                 </Text>
                 <div className="space-y-2 text-left max-w-md mx-auto">
                   <Text size="sm">✓ Daily lessons unlocked</Text>

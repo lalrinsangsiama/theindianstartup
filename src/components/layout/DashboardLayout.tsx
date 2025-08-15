@@ -39,6 +39,7 @@ const navigation: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: Home },
   { label: 'My Journey', href: '/journey', icon: BookOpen, badge: 'Day 7' },
   { label: 'Startup Portfolio', href: '/portfolio', icon: Target },
+  { label: 'Gamification', href: '/gamification', icon: Zap },
   { label: 'Community', href: '/community', icon: Users, badge: 'New' },
   { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
   { label: 'Resources', href: '/resources', icon: FileText },
@@ -112,7 +113,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {item.badge && (
           <Badge 
             size="sm" 
-            variant={active ? "secondary" : "default"}
+            variant={active ? "outline" : "default"}
           >
             {item.badge}
           </Badge>

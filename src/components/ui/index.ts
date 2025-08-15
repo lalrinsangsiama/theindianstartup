@@ -8,5 +8,6 @@ export * from './Input';
 export * from './Modal';
 export * from './ProgressBar';
 export * from './Skeleton';
+export * from './Switch';
 export * from './Tabs';
 export * from './Typography';

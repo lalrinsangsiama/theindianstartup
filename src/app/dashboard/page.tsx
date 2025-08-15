@@ -9,10 +9,12 @@ import { SessionManager } from '@/components/auth/SessionManager';
 import { Heading, Text } from '@/components/ui/Typography';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { JourneyProgress, XPProgressBar } from '@/components/ui/ProgressBar';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Trophy, Users, Loader2, TrendingUp, Calendar, Zap, Target } from 'lucide-react';
+import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '@/components/progress';
+import { XPProgressBar } from '@/components/ui/ProgressBar';
+import { SubscriptionWidget } from '@/components/subscription/SubscriptionWidget';
 
 function DashboardContent() {
   const router = useRouter();
@@ -61,7 +63,7 @@ function DashboardContent() {
   const totalXP = userProfile.totalXP || 0;
   const currentStreak = userProfile.currentStreak || 0;
   const badges = userProfile.badges || [];
-  const completedDays = []; // This would come from progress data
+  const completedDays: number[] = []; // This would come from progress data
 
   return (
     <DashboardLayout>
@@ -137,7 +139,7 @@ function DashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
                 <Trophy className="w-5 h-5 text-purple-500" />
-                <Badge size="sm" variant="secondary">{badges.length} Total</Badge>
+                <Badge size="sm" variant="outline">{badges.length} Total</Badge>
               </div>
               <Text className="font-heading text-3xl font-bold mb-1">
                 {badges.length}
@@ -145,7 +147,7 @@ function DashboardContent() {
               <Text size="sm" color="muted">Badges Earned</Text>
               <div className="mt-3">
                 <div className="flex -space-x-2">
-                  {badges.slice(0, 3).map((badge, i) => (
+                  {badges.slice(0, 3).map((badge: string, i: number) => (
                     <div key={i} className="w-6 h-6 bg-gray-200 rounded-full border-2 border-white" />
                   ))}
                   {badges.length > 3 && (
@@ -166,8 +168,8 @@ function DashboardContent() {
             <Card className="border-2 border-black shadow-lg">
               <CardHeader className="bg-black text-white">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-white">Today's Mission: Day {currentDay}</CardTitle>
-                  <Badge variant="secondary" size="lg">
+                  <CardTitle className="text-white">Today&apos;s Mission: Day {currentDay}</CardTitle>
+                  <Badge variant="outline" size="lg">
                     {currentStreak > 0 ? `🔥 ${currentStreak} day streak` : '🎯 Start today'}
                   </Badge>
                 </div>
@@ -210,7 +212,7 @@ function DashboardContent() {
                 <div className="flex gap-3">
                   <Link href={`/journey/day/${currentDay}`} className="flex-1">
                     <Button variant="primary" className="w-full group" size="lg">
-                      <span>Start Today's Lesson</span>
+                      <span>Start Today&apos;s Lesson</span>
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
@@ -224,8 +226,9 @@ function DashboardContent() {
             </Card>
           </div>
 
-          {/* XP & Achievements */}
+          {/* Subscription & XP */}
           <div className="space-y-6">
+            <SubscriptionWidget />
             <Card>
               <CardHeader>
                 <CardTitle>XP Progress</CardTitle>

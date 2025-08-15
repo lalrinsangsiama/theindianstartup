@@ -11,6 +11,7 @@ const badges = [
     name: 'Starter Badge',
     description: 'Complete Day 1 of your startup journey',
     icon: '🚀',
+    requirement: 'Complete Day 1',
     dayRequired: 1,
   },
   {
@@ -18,6 +19,7 @@ const badges = [
     name: 'Researcher',
     description: 'Complete market research and customer interviews',
     icon: '🔍',
+    requirement: 'Complete Day 3',
     dayRequired: 3,
   },
   {
@@ -25,6 +27,7 @@ const badges = [
     name: 'Brand Builder',
     description: 'Secure domain and create logo',
     icon: '🎨',
+    requirement: 'Complete Day 8',
     dayRequired: 8,
   },
   {
@@ -32,6 +35,7 @@ const badges = [
     name: 'Legally Ready',
     description: 'Complete compliance planning',
     icon: '📋',
+    requirement: 'Complete Day 10',
     dayRequired: 10,
   },
   {
@@ -39,6 +43,7 @@ const badges = [
     name: 'MVP Master',
     description: 'Launch working prototype',
     icon: '🛠️',
+    requirement: 'Complete Day 19',
     dayRequired: 19,
   },
   {
@@ -46,6 +51,7 @@ const badges = [
     name: 'Testing Champion',
     description: 'Get 10+ user feedback',
     icon: '🧪',
+    requirement: 'Earn 500 XP',
     xpRequired: 500,
   },
   {
@@ -53,6 +59,7 @@ const badges = [
     name: 'Compliance Hero',
     description: 'Complete all regulatory tasks',
     icon: '✅',
+    requirement: 'Complete Day 21',
     dayRequired: 21,
   },
   {
@@ -60,6 +67,7 @@ const badges = [
     name: 'Sales Starter',
     description: 'Get first paying customer',
     icon: '💰',
+    requirement: 'Earn 800 XP',
     xpRequired: 800,
   },
   {
@@ -67,6 +75,7 @@ const badges = [
     name: 'Pitch Perfect',
     description: 'Complete pitch deck',
     icon: '📊',
+    requirement: 'Complete Day 29',
     dayRequired: 29,
   },
   {
@@ -74,23 +83,36 @@ const badges = [
     name: 'Launch Legend',
     description: 'Complete all 30 days',
     icon: '🏆',
+    requirement: 'Complete Day 30',
     dayRequired: 30,
   },
 ];
 
 import { generateDailyLessonsFromContent } from './parse-content';
+import { generateDailyLessonsFromEnhancedContent } from './parse-enhanced-content';
 
-// Generate daily lessons from 30daycontent.md
+// Generate daily lessons from enhanced content first, fallback to base content
 let dailyLessons: any[] = [];
 
 try {
-  // Try to parse content from file
-  dailyLessons = generateDailyLessonsFromContent();
-  console.log(`📖 Parsed ${dailyLessons.length} days from 30daycontent.md`);
+  // Try to parse enhanced content first
+  dailyLessons = generateDailyLessonsFromEnhancedContent();
+  console.log(`📖 Parsed ${dailyLessons.length} days from enhanced content`);
+  
+  if (dailyLessons.length === 0) {
+    // Fallback to base content
+    dailyLessons = generateDailyLessonsFromContent();
+    console.log(`📖 Fallback: Parsed ${dailyLessons.length} days from 30daycontent.md`);
+  }
 } catch (error) {
-  console.log('⚠️ Could not parse 30daycontent.md, using sample data');
-  // Fallback to sample data
-  dailyLessons = [
+  console.log('⚠️ Could not parse enhanced content, trying base content');
+  try {
+    dailyLessons = generateDailyLessonsFromContent();
+    console.log(`📖 Parsed ${dailyLessons.length} days from 30daycontent.md`);
+  } catch (fallbackError) {
+    console.log('⚠️ Could not parse any content, using sample data');
+    // Fallback to sample data
+    dailyLessons = [
     {
       day: 1,
       title: 'Idea Refinement and Goal Setting',
@@ -143,6 +165,7 @@ try {
     },
     // Add sample data for remaining days...
   ];
+  }
 }
 
 // Create test users for development
@@ -176,17 +199,51 @@ async function main() {
   // Seed daily lessons
   console.log('📚 Seeding daily lessons...');
   for (const lesson of dailyLessons) {
+    // Create data object excluding enhanced fields if they don't exist in schema
+    const lessonData = {
+      day: lesson.day,
+      title: lesson.title,
+      briefContent: lesson.briefContent,
+      actionItems: lesson.actionItems,
+      resources: lesson.resources,
+      estimatedTime: lesson.estimatedTime,
+      xpReward: lesson.xpReward,
+    };
+
+    // Add enhanced fields if they exist and the schema supports them
+    if (lesson.focus !== undefined) {
+      try {
+        (lessonData as any).focus = lesson.focus;
+      } catch (e) {
+        // Skip if field doesn't exist in schema
+      }
+    }
+    if (lesson.successMetrics && Array.isArray(lesson.successMetrics)) {
+      try {
+        (lessonData as any).successMetrics = lesson.successMetrics;
+      } catch (e) {
+        // Skip if field doesn't exist in schema
+      }
+    }
+    if (lesson.expertTips && Array.isArray(lesson.expertTips)) {
+      try {
+        (lessonData as any).expertTips = lesson.expertTips;
+      } catch (e) {
+        // Skip if field doesn't exist in schema
+      }
+    }
+    if (lesson.reflectionQuestions && Array.isArray(lesson.reflectionQuestions)) {
+      try {
+        (lessonData as any).reflectionQuestions = lesson.reflectionQuestions;
+      } catch (e) {
+        // Skip if field doesn't exist in schema
+      }
+    }
+
     await prisma.dailyLesson.upsert({
       where: { day: lesson.day },
-      update: {
-        title: lesson.title,
-        briefContent: lesson.briefContent,
-        actionItems: lesson.actionItems,
-        resources: lesson.resources,
-        estimatedTime: lesson.estimatedTime,
-        xpReward: lesson.xpReward,
-      },
-      create: lesson,
+      update: lessonData,
+      create: lessonData,
     });
   }
   console.log(`✅ Seeded ${dailyLessons.length} daily lessons`);
@@ -219,6 +276,7 @@ async function main() {
           await prisma.subscription.create({
             data: {
               userId: newUser.id,
+              planId: 'p1-30day-sprint',
               status: 'active',
               startDate: new Date(),
               expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year

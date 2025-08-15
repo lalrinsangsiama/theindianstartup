@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Logo } from '@/components/icons/Logo';
 import { Button } from '@/components/ui/Button';
@@ -114,7 +116,7 @@ export default function TermsOfServicePage() {
             <ul className="list-disc pl-6 space-y-2 mb-4">
               <li>Retain ownership of your content</li>
               <li>Grant us a license to use, display, and distribute your content within the Service</li>
-              <li>Confirm that your content doesn't violate any laws or third-party rights</li>
+              <li>Confirm that your content doesn&apos;t violate any laws or third-party rights</li>
               <li>Agree that we may moderate or remove content that violates these Terms</li>
             </ul>
           </section>
@@ -137,7 +139,7 @@ export default function TermsOfServicePage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">8. Disclaimer</Heading>
             <Text className="mb-4">
-              The Service is provided "as is" without warranties of any kind. While we strive to provide accurate and helpful information, 
+              The Service is provided &quot;as is&quot; without warranties of any kind. While we strive to provide accurate and helpful information, 
               we do not guarantee:
             </Text>
             <ul className="list-disc pl-6 space-y-2 mb-4">

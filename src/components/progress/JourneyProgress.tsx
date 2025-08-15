@@ -250,7 +250,7 @@ function LinearProgress({ currentDay, completedDays, totalDays, onDayClick }: Jo
       <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200" />
       <div 
         className="absolute top-4 left-0 h-1 bg-black transition-all duration-500"
-        style={{ width: `${(completedDays.length / totalDays) * 100}%` }}
+        style={{ width: `${(completedDays.length / (totalDays || 30)) * 100}%` }}
       />
       
       {/* Day Markers */}
@@ -294,7 +294,7 @@ function LinearProgress({ currentDay, completedDays, totalDays, onDayClick }: Jo
 }
 
 function CompactProgress({ currentDay, completedDays, totalDays }: JourneyProgressProps) {
-  const percentage = Math.round((completedDays.length / totalDays) * 100);
+  const percentage = Math.round((completedDays.length / (totalDays || 30)) * 100);
   
   return (
     <div className="flex items-center gap-4">

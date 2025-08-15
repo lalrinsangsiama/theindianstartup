@@ -5,6 +5,7 @@ export interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   value: number;
   max?: number;
   showLabel?: boolean;
+  showAnimation?: boolean;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'striped';

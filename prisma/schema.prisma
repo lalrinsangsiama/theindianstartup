@@ -29,27 +29,79 @@ model User {
   longestStreak   Int      @default(0)
   badges          String[] // Badge IDs
   
+  // Community profile
+  bio             String?  @db.Text
+  avatar          String?
+  linkedinUrl     String?
+  twitterUrl      String?
+  websiteUrl      String?
+  
   // Relations
   subscription    Subscription?
   portfolio       StartupPortfolio?
   dailyProgress   DailyProgress[]
   xpEvents        XPEvent[]
+  paymentOrders   PaymentOrder[]
+  
+  // Community relations
+  posts           Post[]
+  comments        Comment[]
+  likes           Like[]
+  discussions     DiscussionThread[]
+  successStories  SuccessStory[]
+  
+  // Ecosystem directory relations
+  ecosystemReviews    EcosystemReview[] @relation("EcosystemReviews")
+  reviewHelpfulVotes  ReviewHelpfulVote[] @relation("ReviewHelpfulVotes")
+  
+  // Announcements and opportunities relations
+  announcements       Announcement[] @relation("UserAnnouncements")
+  announcementSaves   AnnouncementSave[] @relation("AnnouncementSaves")
+  announcementClicks  AnnouncementClick[] @relation("AnnouncementClicks")
+  sponsorshipOrders   SponsorshipOrder[] @relation("SponsorshipOrders")
+  
+  // Email relations
+  emailLogs           EmailLog[]
+  emailPreferences    EmailPreference?
 }
 
 model Subscription {
   id              String   @id @default(cuid())
-  userId          String   @unique
+  userId          String   @unique @map("user_id")
   user            User     @relation(fields: [userId], references: [id])
   
+  planId          String   @map("plan_id")
   status          String   // active, expired, cancelled
-  startDate       DateTime
-  expiryDate      DateTime
+  startDate       DateTime @map("start_date")
+  expiryDate      DateTime @map("expiry_date")
   
-  razorpayOrderId String?
-  razorpayPaymentId String?
   amount          Int
+  razorpayOrderId String?  @map("razorpay_order_id")
+  razorpayPaymentId String? @map("razorpay_payment_id")
   
-  createdAt       DateTime @default(now())
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@map("subscriptions")
+}
+
+model PaymentOrder {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id])
+  
+  planId          String   @map("plan_id")
+  amount          Int
+  currency        String   @default("INR")
+  status          String   // created, completed, failed
+  
+  razorpayOrderId String   @map("razorpay_order_id")
+  razorpayPaymentId String? @map("razorpay_payment_id")
+  razorpaySignature String? @map("razorpay_signature")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  completedAt     DateTime? @map("completed_at")
+  
+  @@map("payment_orders")
 }
 
 model DailyProgress {
@@ -110,14 +162,23 @@ model StartupPortfolio {
   // GTM
   salesStrategy   Json?
   customerPersonas Json?
+  salesChannels   Json?
   
   // Financials
   projections     Json?
   fundingNeeds    Int?
+  fundingPurpose  String? @db.Text
+  burnRate        Int?
+  runwayMonths    Int?
+  breakEvenTimeline String?
   
   // Pitch
   pitchDeck       String? // URL
   onePageSummary  String? // Auto-generated HTML
+  investorAsk     String? @db.Text
+  tractionMetrics String? @db.Text
+  useOfFunds      String? @db.Text
+  exitStrategy    String? @db.Text
   
   updatedAt       DateTime @updatedAt
 }
@@ -145,6 +206,12 @@ model DailyLesson {
   estimatedTime   Int      // In minutes
   
   xpReward        Int      @default(20)
+  
+  // Enhanced content fields
+  focus           String?  @db.Text
+  successMetrics  String[] // Array of success metrics
+  expertTips      String[] // Array of expert tips
+  reflectionQuestions String[] // Array of reflection questions
 }
 
 model Badge {
@@ -156,4 +223,495 @@ model Badge {
   requirement     String   // Description of how to earn
   xpRequired      Int?     // Optional XP threshold
   dayRequired     Int?     // Optional day completion
+}
+
+// Community Models
+model Post {
+  id              String   @id @default(cuid())
+  authorId        String   @map("author_id")
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  type            String   // general, question, success_story, resource_share
+  title           String
+  content         String   @db.Text
+  tags            String[]
+  
+  // Thread association
+  threadId        String?  @map("thread_id")
+  thread          DiscussionThread? @relation("ThreadPosts", fields: [threadId], references: [id], onDelete: SetNull)
+  
+  // Engagement
+  likesCount      Int      @default(0) @map("likes_count")
+  commentsCount   Int      @default(0) @map("comments_count")
+  
+  // Moderation
+  isApproved      Boolean  @default(true) @map("is_approved")
+  isPinned        Boolean  @default(false) @map("is_pinned")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  comments        Comment[]
+  likes           Like[]
+  
+  @@map("posts")
+}
+
+model Comment {
+  id              String   @id @default(cuid())
+  postId          String   @map("post_id")
+  post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  authorId        String   @map("author_id")
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content         String   @db.Text
+  parentId        String?  @map("parent_id") // For nested replies
+  parent          Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("CommentReplies")
+  
+  likesCount      Int      @default(0) @map("likes_count")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  @@map("comments")
+}
+
+model Like {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  postId          String?  @map("post_id")
+  post            Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@unique([userId, postId])
+  @@map("likes")
+}
+
+model DiscussionThread {
+  id              String   @id @default(cuid())
+  creatorId       String   @map("creator_id")
+  creator         User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?  @db.Text
+  day             Int?     // Link to specific day lesson
+  category        String   // daily_discussion, peer_support, general
+  
+  isActive        Boolean  @default(true) @map("is_active")
+  isPinned        Boolean  @default(false) @map("is_pinned")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  posts           Post[]   @relation("ThreadPosts")
+  
+  @@map("discussion_threads")
+}
+
+model SuccessStory {
+  id              String   @id @default(cuid())
+  authorId        String   @map("author_id")
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  title           String
+  story           String   @db.Text
+  companyName     String   @map("company_name")
+  industry        String
+  revenue         String?  // e.g., "₹10L ARR"
+  timeline        String   // e.g., "6 months"
+  keyLearnings    String[] @map("key_learnings")
+  
+  // Media
+  images          String[]
+  videoUrl        String?  @map("video_url")
+  
+  // Engagement
+  likesCount      Int      @default(0) @map("likes_count")
+  viewsCount      Int      @default(0) @map("views_count")
+  
+  // Status
+  isFeatured      Boolean  @default(false) @map("is_featured")
+  isApproved      Boolean  @default(false) @map("is_approved")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  @@map("success_stories")
+}
+
+model ExpertSession {
+  id              String   @id @default(cuid())
+  expertName      String   @map("expert_name")
+  expertBio       String   @db.Text @map("expert_bio")
+  expertImage     String?  @map("expert_image")
+  
+  title           String
+  description     String   @db.Text
+  topic           String[] // e.g., ["fundraising", "product", "marketing"]
+  
+  scheduledAt     DateTime @map("scheduled_at")
+  duration        Int      // Minutes
+  maxAttendees    Int      @default(50) @map("max_attendees")
+  registeredCount Int      @default(0) @map("registered_count")
+  
+  meetingUrl      String?  @map("meeting_url")
+  recordingUrl    String?  @map("recording_url")
+  
+  status          String   @default("upcoming") // upcoming, live, completed, cancelled
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  registrations   SessionRegistration[]
+  
+  @@map("expert_sessions")
+}
+
+model SessionRegistration {
+  id              String        @id @default(cuid())
+  sessionId       String        @map("session_id")
+  session         ExpertSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  userId          String        @map("user_id")
+  email           String
+  name            String
+  
+  questions       String[]      // Pre-submitted questions
+  attended        Boolean       @default(false)
+  
+  registeredAt    DateTime      @default(now()) @map("registered_at")
+  
+  @@unique([sessionId, userId])
+  @@map("session_registrations")
+}
+
+// Ecosystem Directory Models
+model EcosystemListing {
+  id              String   @id @default(cuid())
+  
+  // Basic Info
+  name            String
+  description     String   @db.Text
+  category        String   // scheme, incubator, bank, accelerator, coworking, legal, accounting, etc.
+  subCategory     String?  // government_scheme, private_incubator, nationalized_bank, etc.
+  
+  // Contact & Location
+  website         String?
+  email           String?
+  phone           String?
+  address         String?  @db.Text
+  city            String?
+  state           String?
+  country         String   @default("India")
+  
+  // Details
+  logoUrl         String?  @map("logo_url")
+  foundedYear     Int?     @map("founded_year")
+  tags            String[] // fintech, saas, ecommerce, etc.
+  
+  // Criteria & Requirements
+  eligibilityInfo String?  @db.Text @map("eligibility_info")
+  applicationProcess String? @db.Text @map("application_process")
+  documentsRequired String[] @map("documents_required")
+  
+  // Scheme/Program specific
+  fundingAmount   String?  @map("funding_amount") // e.g., "₹10L - ₹1Cr"
+  equityTaken     String?  @map("equity_taken")   // e.g., "5-15%"
+  programDuration String?  @map("program_duration") // e.g., "6 months"
+  batchSize       Int?     @map("batch_size")
+  
+  // Bank specific
+  loanTypes       String[] @map("loan_types")      // startup_loan, working_capital, etc.
+  interestRates   String?  @map("interest_rates")  // e.g., "8.5% - 12%"
+  
+  // Ratings & Stats
+  averageRating   Float    @default(0) @map("average_rating")
+  totalReviews    Int      @default(0) @map("total_reviews")
+  totalViews      Int      @default(0) @map("total_views")
+  
+  // Status
+  isVerified      Boolean  @default(false) @map("is_verified")
+  isActive        Boolean  @default(true) @map("is_active")
+  
+  // Meta
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  reviews         EcosystemReview[]
+  
+  @@map("ecosystem_listings")
+}
+
+model EcosystemReview {
+  id              String   @id @default(cuid())
+  listingId       String   @map("listing_id")
+  listing         EcosystemListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  authorId        String?  @map("author_id") // Nullable for anonymous reviews
+  author          User?    @relation("EcosystemReviews", fields: [authorId], references: [id], onDelete: SetNull)
+  
+  // Review Content
+  rating          Int      // 1-5 stars
+  title           String
+  content         String   @db.Text
+  
+  // Experience Details
+  experienceType  String   // applied, accepted, rejected, ongoing, completed
+  applicationDate DateTime? @map("application_date")
+  responseTime    String?  @map("response_time") // e.g., "2 weeks", "1 month"
+  
+  // Anonymous option
+  isAnonymous     Boolean  @default(false) @map("is_anonymous")
+  anonymousName   String?  @map("anonymous_name") // e.g., "Startup Founder", "Tech Entrepreneur"
+  
+  // Engagement
+  helpfulCount    Int      @default(0) @map("helpful_count")
+  
+  // Verification
+  isVerified      Boolean  @default(false) @map("is_verified") // Verified experience
+  
+  // Status
+  isApproved      Boolean  @default(true) @map("is_approved")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  helpfulVotes    ReviewHelpfulVote[]
+  
+  @@map("ecosystem_reviews")
+}
+
+model ReviewHelpfulVote {
+  id              String   @id @default(cuid())
+  reviewId        String   @map("review_id")
+  review          EcosystemReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  userId          String   @map("user_id")
+  user            User     @relation("ReviewHelpfulVotes", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@unique([reviewId, userId])
+  @@map("review_helpful_votes")
+}
+
+// Announcements and Opportunities Models
+model Announcement {
+  id              String   @id @default(cuid())
+  authorId        String?  @map("author_id") // Nullable for admin posts
+  author          User?    @relation("UserAnnouncements", fields: [authorId], references: [id], onDelete: SetNull)
+  
+  // Content
+  title           String
+  content         String   @db.Text
+  excerpt         String?  @db.Text // Short description for cards
+  
+  // Type and Category
+  type            String   // scheme, opportunity, update, announcement, sponsored
+  category        String   // government, private, funding, event, deadline, general
+  priority        String   @default("normal") // low, normal, high, urgent
+  
+  // Target Audience
+  targetAudience  String[] @map("target_audience") // all, early-stage, growth, specific-industry
+  industries      String[] // fintech, saas, ecommerce, etc.
+  
+  // Media and Links
+  imageUrl        String?  @map("image_url")
+  attachments     String[] // PDF links, documents
+  externalLinks   Json?    @map("external_links") // {website, application_link, more_info}
+  
+  // Timing and Deadlines
+  applicationDeadline DateTime? @map("application_deadline")
+  eventDate       DateTime? @map("event_date")
+  validUntil      DateTime? @map("valid_until")
+  
+  // Sponsored Content
+  isSponsored     Boolean  @default(false) @map("is_sponsored")
+  sponsorName     String?  @map("sponsor_name")
+  sponsorLogo     String?  @map("sponsor_logo")
+  sponsorWebsite  String?  @map("sponsor_website")
+  sponsorshipType String?  @map("sponsorship_type") // featured, banner, promoted
+  sponsorshipEnds DateTime? @map("sponsorship_ends")
+  
+  // Engagement
+  viewsCount      Int      @default(0) @map("views_count")
+  clicksCount     Int      @default(0) @map("clicks_count")
+  savesCount      Int      @default(0) @map("saves_count")
+  
+  // Status and Moderation
+  status          String   @default("pending") // pending, approved, rejected, expired
+  isAdminPost     Boolean  @default(false) @map("is_admin_post")
+  isPinned        Boolean  @default(false) @map("is_pinned")
+  isFeatured      Boolean  @default(false) @map("is_featured")
+  
+  // Meta
+  tags            String[]
+  seoSlug         String?  @unique @map("seo_slug")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  publishedAt     DateTime? @map("published_at")
+  
+  // Relations
+  saves           AnnouncementSave[]
+  clicks          AnnouncementClick[]
+  
+  @@map("announcements")
+}
+
+model AnnouncementSave {
+  id              String       @id @default(cuid())
+  announcementId  String       @map("announcement_id")
+  announcement    Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  
+  userId          String       @map("user_id")
+  user            User         @relation("AnnouncementSaves", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime     @default(now()) @map("created_at")
+  
+  @@unique([announcementId, userId])
+  @@map("announcement_saves")
+}
+
+model AnnouncementClick {
+  id              String       @id @default(cuid())
+  announcementId  String       @map("announcement_id")
+  announcement    Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  
+  userId          String?      @map("user_id") // Nullable for anonymous clicks
+  user            User?        @relation("AnnouncementClicks", fields: [userId], references: [id], onDelete: SetNull)
+  
+  clickType       String       @map("click_type") // website, application, attachment, etc.
+  ipAddress       String?      @map("ip_address")
+  userAgent       String?      @map("user_agent")
+  
+  createdAt       DateTime     @default(now()) @map("created_at")
+  
+  @@map("announcement_clicks")
+}
+
+model SponsorshipOrder {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  user            User     @relation("SponsorshipOrders", fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Sponsorship Details
+  type            String   // featured_post, banner_ad, promoted_listing
+  duration        Int      // Days
+  targetAudience  String[] @map("target_audience")
+  
+  // Content
+  title           String
+  content         String   @db.Text
+  imageUrl        String?  @map("image_url")
+  websiteUrl      String   @map("website_url")
+  
+  // Pricing
+  basePrice       Int      @map("base_price") // In paise
+  multiplier      Float    @default(1.0) // Audience/duration multiplier
+  totalAmount     Int      @map("total_amount") // Final amount in paise
+  
+  // Payment
+  razorpayOrderId String?  @map("razorpay_order_id")
+  razorpayPaymentId String? @map("razorpay_payment_id")
+  paymentStatus   String   @default("pending") @map("payment_status") // pending, completed, failed
+  
+  // Status
+  status          String   @default("draft") // draft, pending_review, approved, active, completed, cancelled
+  approvalNotes   String?  @map("approval_notes")
+  
+  // Scheduling
+  startDate       DateTime? @map("start_date")
+  endDate         DateTime? @map("end_date")
+  
+  // Performance
+  impressions     Int      @default(0)
+  clicks          Int      @default(0)
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  @@map("sponsorship_orders")
+}
+
+// Email Automation Models
+model EmailLog {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  emailType       String   @map("email_type") // welcome, daily_reminder, payment_confirmation, etc.
+  subject         String
+  sentTo          String   @map("sent_to") // Email address
+  
+  status          String   @default("sent") // sent, failed, bounced, opened, clicked
+  sentAt          DateTime @default(now()) @map("sent_at")
+  openedAt        DateTime? @map("opened_at")
+  clickedAt       DateTime? @map("clicked_at")
+  
+  metadata        Json?    // Additional data like badge_id, day number, etc.
+  error           String?  // Error message if failed
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@index([userId, emailType])
+  @@index([sentAt])
+  @@map("email_logs")
+}
+
+model EmailPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Email type preferences (true = enabled, false = disabled)
+  dailyReminders      Boolean @default(true) @map("daily_reminders")
+  weeklyReports       Boolean @default(true) @map("weekly_reports")
+  achievements        Boolean @default(true) @map("achievements")
+  milestones          Boolean @default(true) @map("milestones")
+  communityDigest     Boolean @default(true) @map("community_digest")
+  productUpdates      Boolean @default(true) @map("product_updates")
+  marketingEmails     Boolean @default(true) @map("marketing_emails")
+  
+  // Global settings
+  unsubscribedAll     Boolean @default(false) @map("unsubscribed_all")
+  preferredTime       String  @default("09:00") @map("preferred_time") // 24h format
+  timezone            String  @default("Asia/Kolkata")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  @@map("email_preferences")
+}
+
+model EmailJob {
+  id              String   @id @default(cuid())
+  
+  userId          String   @map("user_id")
+  emailType       String   @map("email_type")
+  scheduledFor    DateTime @map("scheduled_for")
+  
+  status          String   @default("pending") // pending, processing, sent, failed, cancelled
+  attempts        Int      @default(0)
+  maxAttempts     Int      @default(3) @map("max_attempts")
+  
+  data            Json     // Email-specific data
+  error           String?  // Last error if failed
+  
+  processedAt     DateTime? @map("processed_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@index([status, scheduledFor])
+  @@index([userId, emailType])
+  @@map("email_jobs")
 }

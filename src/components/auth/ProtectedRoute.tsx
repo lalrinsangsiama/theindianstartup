@@ -54,9 +54,9 @@ export function ProtectedRoute({
       if (requireSubscription) {
         try {
           const { data: subscription, error } = await supabase
-            .from('Subscription')
+            .from('subscriptions')
             .select('*')
-            .eq('userId', user.id)
+            .eq('user_id', user.id)
             .eq('status', 'active')
             .single();
 
@@ -66,8 +66,8 @@ export function ProtectedRoute({
           }
 
           // Check if subscription is expired
-          if (new Date(subscription.expiryDate) < new Date()) {
-            router.push('/subscription/expired');
+          if (new Date(subscription.expiry_date) < new Date()) {
+            router.push('/pricing?expired=true');
             return;
           }
         } catch (error) {

@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
           {/* Success Message */}
           <div className="text-center space-y-3">
             <Text>
-              We've sent a password reset link to <strong>{email}</strong>
+              We&apos;ve sent a password reset link to <strong>{email}</strong>
             </Text>
             <Text color="muted" size="sm">
               Click the link in the email to create a new password and get back to building your startup.
@@ -111,7 +111,7 @@ export default function ForgotPasswordPage() {
           {/* Help Text */}
           <div className="text-center pt-4">
             <Text size="sm" color="muted">
-              Didn't receive the email? Check your spam folder or{' '}
+              Didn&apos;t receive the email? Check your spam folder or{' '}
               <button 
                 onClick={handleSubmit}
                 className="text-black font-medium underline hover:no-underline"
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
         
         <div className="space-y-4">
           <Text>
-            Enter the email address associated with your account and we'll send you a link to reset your password.
+            Enter the email address associated with your account and we&apos;ll send you a link to reset your password.
           </Text>
           
           <Input
@@ -182,8 +182,8 @@ export default function ForgotPasswordPage() {
         {/* Security Note */}
         <div className="border-t border-gray-200 pt-6">
           <Text size="xs" color="muted" className="text-center">
-            For security reasons, we'll send a reset link even if the email doesn't exist in our system.
-            If you don't receive an email, please check if you're using the correct email address.
+            For security reasons, we&apos;ll send a reset link even if the email doesn&apos;t exist in our system.
+            If you don&apos;t receive an email, please check if you&apos;re using the correct email address.
           </Text>
         </div>
       </form>

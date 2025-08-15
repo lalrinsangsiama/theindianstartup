@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Logo } from '@/components/icons/Logo';
 import { Button } from '@/components/ui/Button';
@@ -219,7 +221,7 @@ export default function PrivacyPolicyPage() {
             <Heading as="h2" variant="h4" className="mb-4">11. Changes to This Policy</Heading>
             <Text className="mb-4">
               We may update this Privacy Policy from time to time. We will notify you of any material changes by email 
-              and by posting the new policy on this page. The "Last updated" date will be revised.
+              and by posting the new policy on this page. The &quot;Last updated&quot; date will be revised.
             </Text>
           </section>
 

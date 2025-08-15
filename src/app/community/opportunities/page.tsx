@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Heading, Text } from '@/components/ui/Typography';
@@ -446,7 +447,7 @@ export default function OpportunitiesPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute requireSubscription={true}>
+      <ProtectedRoute >
         <DashboardLayout>
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -460,7 +461,7 @@ export default function OpportunitiesPage() {
   }
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="max-w-7xl mx-auto p-8">
           {/* Header */}
@@ -627,9 +628,11 @@ export default function OpportunitiesPage() {
                       {/* Icon/Image */}
                       <div className="flex-shrink-0">
                         {announcement.imageUrl || announcement.sponsorLogo ? (
-                          <img 
+                          <Image 
                             src={announcement.imageUrl || announcement.sponsorLogo} 
                             alt={announcement.title}
+                            width={64}
+                            height={64}
                             className="w-16 h-16 rounded-lg object-cover"
                           />
                         ) : (

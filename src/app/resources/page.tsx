@@ -253,7 +253,7 @@ export default function ResourcesPage() {
   };
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="p-8 max-w-7xl mx-auto">
           {/* Header */}

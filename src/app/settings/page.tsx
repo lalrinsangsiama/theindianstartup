@@ -138,7 +138,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="p-8 max-w-4xl mx-auto">
           {/* Header */}

@@ -8,14 +8,12 @@ import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireSubscription?: boolean;
   redirectTo?: string;
   allowedRoles?: string[];
 }
 
 export function ProtectedRoute({ 
   children, 
-  requireSubscription = false,
   redirectTo = '/login',
   allowedRoles = []
 }: ProtectedRouteProps) {
@@ -50,32 +48,7 @@ export function ProtectedRoute({
         }
       }
 
-      // Check subscription if required
-      if (requireSubscription) {
-        try {
-          const { data: subscription, error } = await supabase
-            .from('subscriptions')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .single();
-
-          if (error || !subscription) {
-            router.push('/pricing');
-            return;
-          }
-
-          // Check if subscription is expired
-          if (new Date(subscription.expiry_date) < new Date()) {
-            router.push('/pricing?expired=true');
-            return;
-          }
-        } catch (error) {
-          console.error('Error checking subscription:', error);
-          router.push('/pricing');
-          return;
-        }
-      }
+      // No subscription check needed for pay-per-product model
 
       // All checks passed
       setHasAccess(true);
@@ -83,7 +56,7 @@ export function ProtectedRoute({
     };
 
     checkAccess();
-  }, [user, session, authLoading, pathname, router, redirectTo, requireSubscription, allowedRoles, supabase]);
+  }, [user, session, authLoading, pathname, router, redirectTo, allowedRoles, supabase]);
 
   // Show loading state while checking authentication
   if (authLoading || checkingAccess) {
@@ -110,7 +83,6 @@ export function ProtectedRoute({
 export function withAuth<P extends object>(
   Component: React.ComponentType<P>,
   options?: {
-    requireSubscription?: boolean;
     redirectTo?: string;
     allowedRoles?: string[];
   }

@@ -113,15 +113,3 @@ model Badge {
   dayRequired Int?
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model Subscription {
-  id                String   @id
-  userId            String   @unique
-  status            String
-  startDate         DateTime
-  expiryDate        DateTime
-  razorpayOrderId   String?
-  razorpayPaymentId String?
-  amount            Int
-  createdAt         DateTime @default(now())
-}

@@ -71,7 +71,7 @@ export default function GamificationPage() {
 
   if (!xpHistory && loading) {
     return (
-      <ProtectedRoute requireSubscription={true}>
+      <ProtectedRoute >
         <DashboardLayout>
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -96,7 +96,7 @@ export default function GamificationPage() {
   };
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="max-w-7xl mx-auto p-8">
           {/* Header */}

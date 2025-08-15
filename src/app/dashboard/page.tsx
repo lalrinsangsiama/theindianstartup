@@ -335,7 +335,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardContent />
     </ProtectedRoute>
   );

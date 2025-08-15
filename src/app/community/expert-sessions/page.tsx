@@ -191,7 +191,7 @@ export default function ExpertSessionsPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute requireSubscription={true}>
+      <ProtectedRoute >
         <DashboardLayout>
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -205,7 +205,7 @@ export default function ExpertSessionsPage() {
   }
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="max-w-6xl mx-auto p-8">
           {/* Header */}

@@ -85,7 +85,7 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="p-8 max-w-6xl mx-auto">
           {/* Header */}

@@ -232,7 +232,7 @@ export default function BusinessModelPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute requireSubscription={true}>
+      <ProtectedRoute >
         <DashboardLayout>
           <div className="min-h-screen flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
@@ -243,7 +243,7 @@ export default function BusinessModelPage() {
   }
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="max-w-7xl mx-auto p-8">
           {/* Header */}

@@ -133,7 +133,7 @@ export default function NewPostPage() {
 
   if (success) {
     return (
-      <ProtectedRoute requireSubscription={true}>
+      <ProtectedRoute >
         <DashboardLayout>
           <div className="min-h-screen flex items-center justify-center">
             <Card className="max-w-md w-full mx-4">
@@ -157,7 +157,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <ProtectedRoute requireSubscription={true}>
+    <ProtectedRoute >
       <DashboardLayout>
         <div className="max-w-4xl mx-auto p-8">
           {/* Header */}

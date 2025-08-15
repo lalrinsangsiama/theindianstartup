@@ -18,12 +18,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user profile with portfolio and subscription
+    // Get user profile with portfolio
     const userProfile = await prisma.user.findUnique({
       where: { id: user.id },
       include: {
         portfolio: true,
-        subscription: true,
       },
     });
 

@@ -293,7 +293,7 @@ export default function OpportunitiesPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, selectedPriority, showExpired]);
+  }, [selectedCategory, selectedPriority, showExpired, searchQuery]);
 
   const applyFilters = useCallback(() => {
     let filtered = [...announcements];

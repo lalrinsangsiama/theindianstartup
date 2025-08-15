@@ -49,7 +49,7 @@ function UnsubscribeContent() {
       const data = await response.json();
       
       if (response.ok) {
-        setPreferences(data.preferences || preferences);
+        setPreferences(prev => data.preferences || prev);
         setUserInfo({ name: data.userName, email: data.userEmail });
       } else {
         setError(data.error || 'Failed to load preferences');

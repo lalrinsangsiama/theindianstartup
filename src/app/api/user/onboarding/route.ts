@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
-import { EmailAutomation } from '@/lib/email-automation';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +12,7 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
+      console.error('Auth error in onboarding:', authError);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -31,25 +31,64 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update user profile with onboarding data
-    const updatedUser = await prisma.user.update({
+    console.log('Updating user with data:', { founderName, phone, startupName, startupIdea, targetMarket });
+
+    // Check if user already exists in our database
+    const existingUser = await prisma.user.findUnique({
       where: { id: user.id },
-      data: {
-        name: founderName,
-        phone: phone.replace(/\D/g, ''), // Remove non-digits
-        startedAt: new Date(), // Mark journey as started
-        portfolio: {
-          create: {
-            startupName,
-            problemStatement: startupIdea,
-            targetMarket: targetMarket ? { description: targetMarket } : undefined,
+      include: { portfolio: true }
+    });
+
+    let updatedUser;
+
+    if (existingUser) {
+      // User exists, update their data
+      updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          name: founderName,
+          phone: phone.replace(/\D/g, ''), // Remove non-digits
+          startedAt: new Date(), // Mark journey as started
+          portfolio: existingUser.portfolio ? {
+            update: {
+              startupName,
+              problemStatement: startupIdea,
+              targetMarket: targetMarket ? { description: targetMarket } : undefined,
+            }
+          } : {
+            create: {
+              startupName,
+              problemStatement: startupIdea,
+              targetMarket: targetMarket ? { description: targetMarket } : undefined,
+            }
+          }
+        },
+        include: {
+          portfolio: true,
+        },
+      });
+    } else {
+      // User doesn't exist, create new user
+      updatedUser = await prisma.user.create({
+        data: {
+          id: user.id,
+          email: user.email!,
+          name: founderName,
+          phone: phone.replace(/\D/g, ''), // Remove non-digits
+          startedAt: new Date(), // Mark journey as started
+          portfolio: {
+            create: {
+              startupName,
+              problemStatement: startupIdea,
+              targetMarket: targetMarket ? { description: targetMarket } : undefined,
+            },
           },
         },
-      },
-      include: {
-        portfolio: true,
-      },
-    });
+        include: {
+          portfolio: true,
+        },
+      });
+    }
 
     // Create initial XP event for completing onboarding
     await prisma.xPEvent.create({
@@ -69,13 +108,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send welcome email after successful onboarding
-    try {
-      await EmailAutomation.sendWelcomeEmail(user.id);
-    } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError);
-      // Don't fail the onboarding if email fails
-    }
+    console.log('Onboarding completed successfully for user:', user.id);
 
     return NextResponse.json({
       success: true,
@@ -83,8 +116,15 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Onboarding error:', error);
+    
+    // Provide more detailed error information
+    let errorMessage = 'Failed to save onboarding data';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to save onboarding data' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

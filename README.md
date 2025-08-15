@@ -120,4 +120,4 @@ prisma/
 
 ## License
 
-All rights reserved.
+All rights reserved.# Force rebuild

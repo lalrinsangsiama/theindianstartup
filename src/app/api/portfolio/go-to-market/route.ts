@@ -17,16 +17,20 @@ export async function PATCH(req: NextRequest) {
     const portfolio = await prisma.startupPortfolio.upsert({
       where: { userId: user.id },
       update: {
-        salesStrategy: salesStrategy,
+        salesStrategy: {
+          salesStrategy: salesStrategy,
+          salesChannels: salesChannels || [],
+        },
         customerPersonas: customerPersonas || [],
-        salesChannels: salesChannels || [],
         updatedAt: new Date(),
       },
       create: {
         userId: user.id,
-        salesStrategy: salesStrategy,
+        salesStrategy: {
+          salesStrategy: salesStrategy,
+          salesChannels: salesChannels || [],
+        },
         customerPersonas: customerPersonas || [],
-        salesChannels: salesChannels || [],
       },
     });
 

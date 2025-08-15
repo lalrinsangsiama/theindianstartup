@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 6.7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 6.7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 6.7%;
+    --primary: 0 0% 6.7%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 6.7%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 6.7%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom styles for typewriter effect */
+.font-mono {
+  font-family: var(--font-ibm-plex-mono), monospace;
+}
+
+/* Custom focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-none border-2 border-primary bg-white px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white focus-ring;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-none border-2 border-gray-300 bg-white px-8 py-3 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-ring;
+}
+
+/* Custom link styles */
+.link {
+  @apply underline underline-offset-2 transition-colors hover:text-accent;
+}

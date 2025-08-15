@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  name            String
+  phone           String?
+  createdAt       DateTime @default(now())
+  
+  // Progress tracking
+  currentDay      Int      @default(1)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  
+  // Gamification
+  totalXP         Int      @default(0)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  badges          String[] // Badge IDs
+  
+  // Relations
+  subscription    Subscription?
+  portfolio       StartupPortfolio?
+  dailyProgress   DailyProgress[]
+  xpEvents        XPEvent[]
+}
+
+model Subscription {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  
+  status          String   // active, expired, cancelled
+  startDate       DateTime
+  expiryDate      DateTime
+  
+  razorpayOrderId String?
+  razorpayPaymentId String?
+  amount          Int
+  
+  createdAt       DateTime @default(now())
+}
+
+model DailyProgress {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  day             Int
+  startedAt       DateTime
+  completedAt     DateTime?
+  
+  tasksCompleted  Json     // Array of task IDs
+  proofUploads    String[] // File URLs
+  reflection      String?
+  
+  xpEarned        Int      @default(0)
+  
+  @@unique([userId, day])
+}
+
+model StartupPortfolio {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  
+  // Basic Info
+  startupName     String?
+  tagline         String?
+  logo            String?
+  
+  // Idea & Vision
+  problemStatement String?
+  solution        String?
+  valueProposition String?
+  
+  // Market Research
+  targetMarket    Json?
+  competitors     Json?
+  marketSize      Json?
+  
+  // Business Model
+  revenueStreams  Json?
+  pricingStrategy Json?
+  
+  // Brand Assets
+  domain          String?
+  socialHandles   Json?
+  
+  // Legal
+  entityType      String?
+  complianceStatus Json?
+  
+  // Product
+  mvpDescription  String?
+  features        Json?
+  userFeedback    Json?
+  
+  // GTM
+  salesStrategy   Json?
+  customerPersonas Json?
+  
+  // Financials
+  projections     Json?
+  fundingNeeds    Int?
+  
+  // Pitch
+  pitchDeck       String? // URL
+  onePageSummary  String? // Auto-generated HTML
+  
+  updatedAt       DateTime @updatedAt
+}
+
+model XPEvent {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  type            String   // daily_complete, upload_proof, help_peer, streak_bonus
+  points          Int
+  description     String
+  
+  createdAt       DateTime @default(now())
+}
+
+model DailyLesson {
+  id              String   @id @default(cuid())
+  day             Int      @unique
+  
+  title           String
+  briefContent    String   @db.Text
+  actionItems     Json     // Array of tasks
+  resources       Json     // Links and downloads
+  estimatedTime   Int      // In minutes
+  
+  xpReward        Int      @default(20)
+}
+
+model Badge {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  name            String
+  description     String
+  icon            String   // Icon name or URL
+  requirement     String   // Description of how to earn
+  xpRequired      Int?     // Optional XP threshold
+  dayRequired     Int?     // Optional day completion
+}

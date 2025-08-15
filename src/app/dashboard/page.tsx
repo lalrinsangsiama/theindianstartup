@@ -14,7 +14,6 @@ import Link from 'next/link';
 import { ArrowRight, BookOpen, Trophy, Users, Loader2, TrendingUp, Calendar, Zap, Target } from 'lucide-react';
 import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '@/components/progress';
 import { XPProgressBar } from '@/components/ui/ProgressBar';
-import { SubscriptionWidget } from '@/components/subscription/SubscriptionWidget';
 
 function DashboardContent() {
   const router = useRouter();
@@ -226,9 +225,8 @@ function DashboardContent() {
             </Card>
           </div>
 
-          {/* Subscription & XP */}
-          <div className="space-y-6">
-            <SubscriptionWidget />
+          {/* XP Progress */}
+          <div className="space-y-6">{/* Removed subscription widget for pay-per-product model */}
             <Card>
               <CardHeader>
                 <CardTitle>XP Progress</CardTitle>

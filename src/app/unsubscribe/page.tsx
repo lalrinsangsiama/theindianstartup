@@ -194,7 +194,7 @@ function UnsubscribeContent() {
                       Unsubscribe from all emails
                     </Text>
                     <Text size="sm" className="text-red-700">
-                      You'll stop receiving all email communications
+                      You&apos;ll stop receiving all email communications
                     </Text>
                   </div>
                   <Button

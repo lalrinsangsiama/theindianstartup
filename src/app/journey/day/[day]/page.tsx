@@ -335,7 +335,7 @@ export default function DailyLessonPage() {
                 {day < 30 && (
                   <Card className="border-2 border-gray-200">
                     <CardHeader>
-                      <CardTitle>What's Next?</CardTitle>
+                      <CardTitle>What&apos;s Next?</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">

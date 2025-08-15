@@ -180,7 +180,7 @@ export default function IdeaVisionPage() {
                   Idea & Vision
                 </Heading>
                 <Text className="text-gray-600">
-                  Define your startup's core problem, solution, and value proposition
+                  Define your startup&apos;s core problem, solution, and value proposition
                 </Text>
               </div>
             </div>
@@ -376,7 +376,7 @@ export default function IdeaVisionPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Great! You've completed the Idea & Vision section. Ready to move on to Market Research?
+                  Great! You&apos;ve completed the Idea & Vision section. Ready to move on to Market Research?
                 </Text>
               </CardContent>
             </Card>

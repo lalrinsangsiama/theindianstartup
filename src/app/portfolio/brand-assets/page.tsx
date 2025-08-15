@@ -301,7 +301,7 @@ export default function BrandAssetsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Image className="w-5 h-5 text-blue-600" />
+                    <Image className="w-5 h-5 text-blue-600" alt="Logo icon" />
                     Logo & Domain
                   </CardTitle>
                 </CardHeader>

@@ -175,7 +175,7 @@ export default function EmailSettingsPage() {
           <div>
             <Heading as="h1" variant="h2">Email Preferences</Heading>
             <Text color="muted" className="mt-2">
-              Choose which emails you'd like to receive from The Indian Startup
+              Choose which emails you&apos;d like to receive from The Indian Startup
             </Text>
           </div>
 
@@ -196,7 +196,7 @@ export default function EmailSettingsPage() {
               <div>
                 <Text weight="medium">All emails are disabled</Text>
                 <Text size="sm" color="muted">
-                  You've unsubscribed from all emails. Enable specific types below or contact support if this was a mistake.
+                  You&apos;ve unsubscribed from all emails. Enable specific types below or contact support if this was a mistake.
                 </Text>
               </div>
               <Button 

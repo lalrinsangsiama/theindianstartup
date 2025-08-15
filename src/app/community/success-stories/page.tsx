@@ -205,7 +205,7 @@ export default function SuccessStoriesPage() {
                   Success Stories
                 </Heading>
                 <Text className="text-gray-600">
-                  Get inspired by fellow founders who've built successful startups
+                  Get inspired by fellow founders who&apos;ve built successful startups
                 </Text>
               </div>
             </div>

@@ -61,7 +61,7 @@ export function DocumentChecklist({
       case 'presentation':
         return <div className="w-4 h-4 bg-orange-600 rounded text-white text-xs flex items-center justify-center font-bold">📊</div>;
       case 'image':
-        return <Image className="w-4 h-4 text-purple-600" />;
+        return <Image className="w-4 h-4 text-purple-600" alt="Image icon" />;
       case 'pdf':
         return <FileText className="w-4 h-4 text-red-600" />;
       default:

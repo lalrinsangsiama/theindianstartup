@@ -285,7 +285,7 @@ export default function PitchPage() {
                     rows={3}
                   />
                   <Text size="sm" color="muted" className="mt-1">
-                    Be specific about the amount, equity offered, and type of investors you're targeting
+                    Be specific about the amount, equity offered, and type of investors you&apos;re targeting
                   </Text>
                 </div>
 
@@ -475,7 +475,7 @@ export default function PitchPage() {
                       Congratulations! Your startup portfolio is complete!
                     </Text>
                     <Text className="text-green-600">
-                      You can now generate your pitch deck and one-page summary. Share these materials with potential investors, partners, and stakeholders to showcase your startup's potential.
+                      You can now generate your pitch deck and one-page summary. Share these materials with potential investors, partners, and stakeholders to showcase your startup&apos;s potential.
                     </Text>
                   </div>
                 </div>

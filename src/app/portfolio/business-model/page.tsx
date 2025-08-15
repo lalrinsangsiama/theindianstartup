@@ -616,7 +616,7 @@ export default function BusinessModelPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Perfect! You've defined your Business Model. Ready to work on Brand Assets?
+                  Perfect! You&apos;ve defined your Business Model. Ready to work on Brand Assets?
                 </Text>
               </CardContent>
             </Card>

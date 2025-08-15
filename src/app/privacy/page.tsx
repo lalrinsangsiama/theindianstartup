@@ -194,7 +194,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <Heading as="h2" variant="h4" className="mb-4">8. Children's Privacy</Heading>
+            <Heading as="h2" variant="h4" className="mb-4">8. Children&apos;s Privacy</Heading>
             <Text className="mb-4">
               Our Service is not intended for children under 18. We do not knowingly collect information from children. 
               If you believe we have collected information from a child, please contact us immediately.

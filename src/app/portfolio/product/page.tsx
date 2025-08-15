@@ -396,7 +396,7 @@ export default function ProductPage() {
                     <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <Text color="muted">No features added yet</Text>
                     <Text size="sm" color="muted" className="mt-1">
-                      Click "Add Feature" to start listing your product features
+                      Click &quot;Add Feature&quot; to start listing your product features
                     </Text>
                   </div>
                 )}
@@ -466,7 +466,7 @@ export default function ProductPage() {
                     <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <Text color="muted">No feedback collected yet</Text>
                     <Text size="sm" color="muted" className="mt-1">
-                      Click "Add Feedback" to start documenting user insights
+                      Click &quot;Add Feedback&quot; to start documenting user insights
                     </Text>
                   </div>
                 )}
@@ -515,7 +515,7 @@ export default function ProductPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Excellent! You've completed the Product Development section. Ready to plan your Go-to-Market strategy?
+                  Excellent! You&apos;ve completed the Product Development section. Ready to plan your Go-to-Market strategy?
                 </Text>
               </CardContent>
             </Card>

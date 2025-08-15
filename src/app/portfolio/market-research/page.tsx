@@ -622,7 +622,7 @@ export default function MarketResearchPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Excellent! You've completed the Market Research section. Ready to define your Business Model?
+                  Excellent! You&apos;ve completed the Market Research section. Ready to define your Business Model?
                 </Text>
               </CardContent>
             </Card>

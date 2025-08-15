@@ -219,11 +219,11 @@ export default function DesignSystemPage() {
               </div>
               
               <Quote author="Anonymous Founder" cite="The Indian Startup Community">
-                Building a startup in India isn't just about hustle — it's about knowing the system.
+                Building a startup in India isn&apos;t just about hustle — it&apos;s about knowing the system.
               </Quote>
               
               <div className="space-y-2">
-                <Code>const startup = 'The Indian Startup';</Code>
+                <Code>const startup = &apos;The Indian Startup&apos;;</Code>
                 <Code variant="block">
 {`function launchStartup() {
   const idea = validate();

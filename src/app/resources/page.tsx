@@ -368,10 +368,10 @@ export default function ResourcesPage() {
             <CardContent className="p-6 text-center">
               <Lightbulb className="w-12 h-12 text-blue-500 mx-auto mb-4" />
               <Heading as="h3" variant="h4" className="mb-2">
-                Can't find what you're looking for?
+                Can&apos;t find what you&apos;re looking for?
               </Heading>
               <Text color="muted" className="mb-4">
-                Request a specific template, tool, or guide and we'll add it to our resource library.
+                Request a specific template, tool, or guide and we&apos;ll add it to our resource library.
               </Text>
               <Button variant="primary">
                 Request Resource

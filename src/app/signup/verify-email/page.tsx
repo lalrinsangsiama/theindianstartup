@@ -66,7 +66,7 @@ export default function VerifyEmailPage() {
         {/* Instructions */}
         <div className="text-center space-y-3">
           <Text>
-            We've sent a verification email to your registered email address.
+            We&apos;ve sent a verification email to your registered email address.
           </Text>
           <Text color="muted" size="sm">
             Click the link in the email to verify your account and start your 30-day journey.
@@ -76,7 +76,7 @@ export default function VerifyEmailPage() {
         {/* Success Alert */}
         {resendSuccess && (
           <Alert variant="success" title="Email sent!" icon={<CheckCircle className="w-5 h-5" />}>
-            We've resent the verification email. Please check your inbox.
+            We&apos;ve resent the verification email. Please check your inbox.
           </Alert>
         )}
 
@@ -113,7 +113,7 @@ export default function VerifyEmailPage() {
         {/* Help Text */}
         <div className="border-t border-gray-200 pt-6">
           <Heading as="h3" variant="h6" className="mb-3">
-            Didn't receive the email?
+            Didn&apos;t receive the email?
           </Heading>
           <ul className="space-y-2">
             <li className="flex items-start gap-2">

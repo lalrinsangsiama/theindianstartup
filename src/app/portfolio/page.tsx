@@ -279,7 +279,7 @@ export default function PortfolioOverviewPage() {
                       Portfolio Completion
                     </Heading>
                     <Text color="muted">
-                      Track your startup's development across all key areas
+                      Track your startup&apos;s development across all key areas
                     </Text>
                   </div>
                   <div className="text-right">

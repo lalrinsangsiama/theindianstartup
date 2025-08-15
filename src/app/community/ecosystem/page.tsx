@@ -630,7 +630,7 @@ export default function EcosystemDirectoryPage() {
                   No listings found
                 </Heading>
                 <Text color="muted" className="mb-6">
-                  Try adjusting your filters or search terms to find what you're looking for.
+                  Try adjusting your filters or search terms to find what you&apos;re looking for.
                 </Text>
                 <div className="flex gap-3 justify-center">
                   <Button variant="outline" onClick={() => {

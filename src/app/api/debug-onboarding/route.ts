@@ -15,10 +15,15 @@ export async function GET(request: NextRequest) {
       }, { status: 401 });
     }
 
-    const debug = {
+    const debug: {
+      userId: string;
+      userEmail: string | undefined;
+      tests: any;
+      onboardingStatus?: any;
+    } = {
       userId: user.id,
       userEmail: user.email,
-      tests: {} as any
+      tests: {}
     };
 
     // Test 1: Check User table exists and query user

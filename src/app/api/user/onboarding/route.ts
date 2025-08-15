@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       .from('User')
       .select('*, StartupPortfolio(*)')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     let updatedUser;
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', user.id)
         .select('*, StartupPortfolio(*)')
-        .single();
+        .maybeSingle();
 
       // Update or create portfolio
       if (existingUser.StartupPortfolio && existingUser.StartupPortfolio.length > 0) {
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
           startedAt: new Date().toISOString(), // Mark journey as started
         })
         .select('*')
-        .single();
+        .maybeSingle();
 
       // Create portfolio
       await supabase

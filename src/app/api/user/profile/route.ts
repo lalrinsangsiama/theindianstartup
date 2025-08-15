@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       .from('User')
       .select('*, StartupPortfolio(*)')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !userProfile) {
       return NextResponse.json(
@@ -76,7 +76,7 @@ export async function PATCH(request: NextRequest) {
       })
       .eq('id', user.id)
       .select('*')
-      .single();
+      .maybeSingle();
 
     if (updateError) {
       console.error('Profile update error:', updateError);

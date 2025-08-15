@@ -15,12 +15,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user profile with portfolio
+    // Get user profile with portfolio - use maybeSingle to handle no results
     const { data: userProfile, error: profileError } = await supabase
       .from('User')
       .select('*, StartupPortfolio(*)')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     return NextResponse.json({
       user: userProfile,

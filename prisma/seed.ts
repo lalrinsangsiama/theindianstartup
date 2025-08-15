@@ -275,8 +275,8 @@ async function main() {
         if (user.email === 'test@theindianstartup.in') {
           await prisma.subscription.create({
             data: {
+              id: 'test_subscription_123',
               userId: newUser.id,
-              planId: 'p1-30day-sprint',
               status: 'active',
               startDate: new Date(),
               expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year

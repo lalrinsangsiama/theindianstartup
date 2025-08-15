@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Heading, Text } from '@/components/ui/Typography';
@@ -465,7 +466,13 @@ export default function EcosystemDirectoryPage() {
                       <div className="flex-shrink-0">
                         <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center text-white">
                           {listing.logoUrl ? (
-                            <img src={listing.logoUrl} alt={listing.name} className="w-12 h-12 rounded" />
+                            <Image 
+                              src={listing.logoUrl} 
+                              alt={listing.name} 
+                              width={48} 
+                              height={48} 
+                              className="w-12 h-12 rounded object-cover" 
+                            />
                           ) : (
                             <CategoryIcon className="w-8 h-8" />
                           )}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Heading, Text } from '@/components/ui/Typography';
@@ -302,7 +303,13 @@ export default function ListingDetailsPage() {
                     <div className="flex-shrink-0">
                       <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white">
                         {listing.logoUrl ? (
-                          <img src={listing.logoUrl} alt={listing.name} className="w-16 h-16 rounded-lg" />
+                          <Image 
+                            src={listing.logoUrl} 
+                            alt={listing.name} 
+                            width={64} 
+                            height={64} 
+                            className="w-16 h-16 rounded-lg object-cover" 
+                          />
                         ) : (
                           <Building className="w-10 h-10" />
                         )}

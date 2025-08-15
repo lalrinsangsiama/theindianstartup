@@ -629,7 +629,7 @@ export default function OpportunitiesPage() {
                       <div className="flex-shrink-0">
                         {announcement.imageUrl || announcement.sponsorLogo ? (
                           <Image 
-                            src={announcement.imageUrl || announcement.sponsorLogo} 
+                            src={(announcement.imageUrl || announcement.sponsorLogo) || '/placeholder.jpg'} 
                             alt={announcement.title}
                             width={64}
                             height={64}

@@ -25,7 +25,16 @@ export async function POST(request: NextRequest) {
     };
 
     // Try to insert into different possible table names
-    const results = {
+    const results: {
+      userId: string;
+      userEmail: string | undefined;
+      attempts: Array<{
+        table: string;
+        success: boolean;
+        error?: string;
+        data: any;
+      }>;
+    } = {
       userId: user.id,
       userEmail: user.email,
       attempts: []

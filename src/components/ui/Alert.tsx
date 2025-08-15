@@ -1,6 +1,8 @@
+'use client';
+
 import * as React from 'react';
 import { cn } from '@/lib/cn';
-import { AlertCircle, CheckCircle, Info, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Info, XCircle, X as XIcon } from 'lucide-react';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
@@ -180,7 +182,7 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
                   onClick={onClose}
                 >
                   <span className="sr-only">Close</span>
-                  <X className="h-5 w-5" />
+                  <XIcon className="h-5 w-5" />
                 </button>
               </div>
             )}

@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 export async function GET() {
+  // Log environment info
+  const dbUrl = process.env.DATABASE_URL;
+  const directUrl = process.env.DIRECT_URL;
+  
+  console.log('DATABASE_URL exists:', !!dbUrl);
+  console.log('DIRECT_URL exists:', !!directUrl);
+  
   const prisma = new PrismaClient({
     log: ['query', 'error', 'warn'],
   });
@@ -19,7 +26,10 @@ export async function GET() {
       success: true, 
       message: 'Database connection successful',
       userCount,
-      databaseUrl: process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@') // Hide password
+      databaseUrl: dbUrl?.replace(/:[^:@]*@/, ':****@'), // Hide password
+      directUrl: directUrl?.replace(/:[^:@]*@/, ':****@'), // Hide password
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      nodeEnv: process.env.NODE_ENV
     });
   } catch (error: any) {
     await prisma.$disconnect();
@@ -28,7 +38,11 @@ export async function GET() {
       success: false, 
       error: error.message,
       code: error.code,
-      databaseUrl: process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@') // Hide password
+      stack: error.stack,
+      databaseUrl: dbUrl?.replace(/:[^:@]*@/, ':****@'), // Hide password
+      directUrl: directUrl?.replace(/:[^:@]*@/, ':****@'), // Hide password
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      nodeEnv: process.env.NODE_ENV
     }, { status: 500 });
   }
 }

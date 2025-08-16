@@ -24,11 +24,14 @@ export async function GET(request: NextRequest) {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profileError || !userProfile) {
-      return NextResponse.json(
-        { error: 'User profile not found' },
-        { status: 404 }
-      );
+    // If user doesn't exist in our database yet, they haven't completed onboarding
+    if (!userProfile) {
+      console.log('User profile not found in database for user:', user.id);
+      return NextResponse.json({
+        user: null,
+        hasCompletedOnboarding: false,
+        needsOnboarding: true,
+      });
     }
 
     // Check if user has completed onboarding

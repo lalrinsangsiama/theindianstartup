@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       // User exists, update their data
-      const { data: userUpdate } = await supabase
+      const { data: userUpdate, error: updateError } = await supabase
         .from('User')
         .update({
           name: founderName,
@@ -54,9 +54,14 @@ export async function POST(request: NextRequest) {
         .select('*, StartupPortfolio(*)')
         .maybeSingle();
 
+      if (updateError) {
+        console.error('User update error:', updateError);
+        throw new Error(`Failed to update user: ${updateError.message}`);
+      }
+
       // Update or create portfolio
       if (existingUser.StartupPortfolio && existingUser.StartupPortfolio.length > 0) {
-        await supabase
+        const { error: portfolioUpdateError } = await supabase
           .from('StartupPortfolio')
           .update({
             startupName,
@@ -64,8 +69,13 @@ export async function POST(request: NextRequest) {
             targetMarket: targetMarket ? { description: targetMarket } : null,
           })
           .eq('userId', user.id);
+
+        if (portfolioUpdateError) {
+          console.error('Portfolio update error:', portfolioUpdateError);
+          throw new Error(`Failed to update portfolio: ${portfolioUpdateError.message}`);
+        }
       } else {
-        await supabase
+        const { error: portfolioInsertError } = await supabase
           .from('StartupPortfolio')
           .insert({
             userId: user.id,
@@ -73,12 +83,17 @@ export async function POST(request: NextRequest) {
             problemStatement: startupIdea,
             targetMarket: targetMarket ? { description: targetMarket } : null,
           });
+
+        if (portfolioInsertError) {
+          console.error('Portfolio insert error:', portfolioInsertError);
+          throw new Error(`Failed to create portfolio: ${portfolioInsertError.message}`);
+        }
       }
 
       updatedUser = userUpdate;
     } else {
       // User doesn't exist, create new user
-      const { data: newUser } = await supabase
+      const { data: newUser, error: insertError } = await supabase
         .from('User')
         .insert({
           id: user.id,
@@ -90,8 +105,13 @@ export async function POST(request: NextRequest) {
         .select('*')
         .maybeSingle();
 
+      if (insertError) {
+        console.error('User insert error:', insertError);
+        throw new Error(`Failed to create user: ${insertError.message}`);
+      }
+
       // Create portfolio
-      await supabase
+      const { error: portfolioInsertError } = await supabase
         .from('StartupPortfolio')
         .insert({
           userId: user.id,
@@ -100,11 +120,16 @@ export async function POST(request: NextRequest) {
           targetMarket: targetMarket ? { description: targetMarket } : null,
         });
 
+      if (portfolioInsertError) {
+        console.error('Portfolio insert error:', portfolioInsertError);
+        throw new Error(`Failed to create portfolio: ${portfolioInsertError.message}`);
+      }
+
       updatedUser = newUser;
     }
 
     // Create initial XP event for completing onboarding
-    await supabase
+    const { error: xpEventError } = await supabase
       .from('XPEvent')
       .insert({
         userId: user.id,
@@ -113,13 +138,23 @@ export async function POST(request: NextRequest) {
         description: 'Completed onboarding and started the journey',
       });
 
+    if (xpEventError) {
+      console.error('XP event error:', xpEventError);
+      // Don't throw error here, as the main onboarding is successful
+    }
+
     // Update user's total XP
-    await supabase
+    const { error: xpUpdateError } = await supabase
       .from('User')
       .update({
         totalXP: 50,
       })
       .eq('id', user.id);
+
+    if (xpUpdateError) {
+      console.error('XP update error:', xpUpdateError);
+      // Don't throw error here, as the main onboarding is successful
+    }
 
     console.log('Onboarding completed successfully for user:', user.id);
 

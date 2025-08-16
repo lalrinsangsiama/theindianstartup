@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/icons/Logo';
@@ -39,6 +39,7 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   
   // Form data
   const [formData, setFormData] = useState({
@@ -49,8 +50,49 @@ export default function OnboardingPage() {
     targetMarket: '',
   });
 
+  // Check if user has already completed onboarding
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) return;
+      
+      try {
+        const response = await fetch('/api/user/profile');
+        
+        // If response is ok, check the data
+        if (response.ok) {
+          const data = await response.json();
+          
+          console.log('Onboarding check response:', {
+            hasCompletedOnboarding: data.hasCompletedOnboarding,
+            needsOnboarding: data.needsOnboarding,
+            userName: data.user?.name
+          });
+          
+          if (data.hasCompletedOnboarding && !data.needsOnboarding) {
+            // User has already completed onboarding, redirect to dashboard
+            console.log('User has completed onboarding, redirecting to dashboard');
+            router.push('/dashboard');
+            return;
+          }
+        } else {
+          // If response is not ok, user likely doesn't exist in DB yet
+          console.log('Profile API response not ok - user needs onboarding');
+        }
+      } catch (error) {
+        console.error('Failed to check onboarding status:', error);
+        // Don't redirect on error, let user proceed with onboarding
+      } finally {
+        setCheckingOnboarding(false);
+      }
+    };
+
+    if (user && !authLoading) {
+      checkOnboardingStatus();
+    }
+  }, [user, authLoading, router]);
+
   // Redirect if not authenticated
-  React.useEffect(() => {
+  useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
@@ -107,6 +149,9 @@ export default function OnboardingPage() {
           throw new Error(data.error || 'Failed to save onboarding data');
         }
 
+        const result = await response.json();
+        console.log('Onboarding data saved successfully:', result);
+
         // Move to complete step
         setCurrentStep(currentStep + 1);
       } catch (err) {
@@ -116,7 +161,17 @@ export default function OnboardingPage() {
       }
     } else if (currentStep === 2) {
       // Final step - redirect to dashboard
-      router.push('/dashboard');
+      setLoading(true);
+      try {
+        // Add a small delay to ensure database updates are propagated
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('Error during final redirect:', error);
+        router.push('/dashboard');
+      } finally {
+        setLoading(false);
+      }
     } else {
       // Move to next step
       setCurrentStep(currentStep + 1);
@@ -129,7 +184,7 @@ export default function OnboardingPage() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || checkingOnboarding) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-gray-600" />

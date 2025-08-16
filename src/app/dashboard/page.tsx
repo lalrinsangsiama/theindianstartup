@@ -24,10 +24,31 @@ function DashboardContent() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/user/profile');
+        const response = await fetch('/api/user/profile', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (!response.ok) {
+          // If API returns error, redirect to onboarding
+          console.log('Profile API error, redirecting to onboarding');
+          router.push('/onboarding');
+          return;
+        }
+        
         const data = await response.json();
         
-        if (!data.hasCompletedOnboarding) {
+        console.log('Dashboard profile check:', {
+          hasCompletedOnboarding: data.hasCompletedOnboarding,
+          userName: data.user?.name,
+          userEmail: data.user?.email,
+          needsOnboarding: data.needsOnboarding
+        });
+        
+        if (!data.hasCompletedOnboarding || data.needsOnboarding) {
+          console.log('Redirecting to onboarding - user has not completed onboarding');
           router.push('/onboarding');
           return;
         }
@@ -35,6 +56,8 @@ function DashboardContent() {
         setUserProfile(data.user);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
+        // On any error, redirect to onboarding to be safe
+        router.push('/onboarding');
       } finally {
         setLoading(false);
       }

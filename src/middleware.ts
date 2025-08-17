@@ -1,10 +1,54 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { createServerClient } from '@supabase/ssr'
+import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
+import { apiRateLimit, authRateLimit } from '@/lib/rate-limit'
 
 export async function middleware(request: NextRequest) {
-  // First, update the session
+  // Apply security headers
   const response = await updateSession(request)
+  
+  // Add security headers
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value)
+  })
+  
+  const pathname = request.nextUrl.pathname
+  const clientIP = request.ip || 'unknown'
+  
+  // Rate limiting for API routes
+  if (pathname.startsWith('/api/')) {
+    const isAuthAPI = pathname.includes('/auth/') || pathname.includes('/login') || pathname.includes('/signup')
+    const rateLimit = isAuthAPI ? authRateLimit : apiRateLimit
+    
+    const rateLimitResult = rateLimit(request)
+    
+    // Add rate limit headers
+    response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString())
+    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
+    response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString())
+    
+    if (!rateLimitResult.success) {
+      logSecurityEvent({
+        type: 'rate_limit',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || undefined,
+        details: `Rate limit exceeded for ${pathname}`,
+      })
+      
+      return new NextResponse(
+        JSON.stringify({ error: 'Rate limit exceeded', retryAfter: rateLimitResult.resetTime }),
+        { 
+          status: 429, 
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
+            ...Object.fromEntries(response.headers.entries()),
+          }
+        }
+      )
+    }
+  }
   
   // Create a Supabase client to check auth status
   const supabase = createServerClient(
@@ -27,7 +71,6 @@ export async function middleware(request: NextRequest) {
   // Define protected routes
   const protectedRoutes = ['/dashboard', '/journey', '/portfolio', '/community', '/leaderboard', '/resources', '/settings', '/admin', '/onboarding']
   const authRoutes = ['/login', '/signup', '/forgot-password', '/reset-password']
-  const pathname = request.nextUrl.pathname
 
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))

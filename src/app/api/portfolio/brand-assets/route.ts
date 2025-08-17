@@ -18,16 +18,14 @@ export async function PATCH(request: NextRequest) {
 
     // Update portfolio with brand assets data
     const { data, error } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .update({
         logo: logo,
         domain: domain,
-        social_handles: socialHandles,
-        brand_colors: brandColors,
-        fonts: fonts,
-        updated_at: new Date().toISOString(),
+        socialHandles: socialHandles,
+        updatedAt: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .select()
       .single();
 

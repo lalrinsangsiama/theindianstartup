@@ -1,8 +1,8 @@
--- THE INDIAN STARTUP - COMPLETE RLS SETUP
--- Run this entire file in Supabase SQL Editor
+-- THE INDIAN STARTUP - SAFE RLS SETUP (Checks for existing policies)
+-- Run this in Supabase SQL Editor if you get "policy already exists" errors
 
 -- ================================================
--- STEP 1: ENABLE RLS ON ALL TABLES
+-- STEP 1: ENABLE RLS ON ALL TABLES (Safe - won't error if already enabled)
 -- ================================================
 ALTER TABLE "User" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Subscription" ENABLE ROW LEVEL SECURITY;
@@ -13,7 +13,25 @@ ALTER TABLE "DailyLesson" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Badge" ENABLE ROW LEVEL SECURITY;
 
 -- ================================================
--- STEP 2: USER TABLE POLICIES
+-- STEP 2: DROP EXISTING POLICIES (if they exist)
+-- ================================================
+DROP POLICY IF EXISTS "Users read own profile" ON "User";
+DROP POLICY IF EXISTS "Users update own profile" ON "User";
+DROP POLICY IF EXISTS "Users create own record" ON "User";
+DROP POLICY IF EXISTS "Users read own subscription" ON "Subscription";
+DROP POLICY IF EXISTS "Users read own progress" ON "DailyProgress";
+DROP POLICY IF EXISTS "Users create own progress" ON "DailyProgress";
+DROP POLICY IF EXISTS "Users update own progress" ON "DailyProgress";
+DROP POLICY IF EXISTS "Users read own portfolio" ON "StartupPortfolio";
+DROP POLICY IF EXISTS "Users create own portfolio" ON "StartupPortfolio";
+DROP POLICY IF EXISTS "Users update own portfolio" ON "StartupPortfolio";
+DROP POLICY IF EXISTS "Users read own XP" ON "XPEvent";
+DROP POLICY IF EXISTS "Users create own XP" ON "XPEvent";
+DROP POLICY IF EXISTS "Active users read lessons" ON "DailyLesson";
+DROP POLICY IF EXISTS "Users read badges" ON "Badge";
+
+-- ================================================
+-- STEP 3: CREATE USER TABLE POLICIES
 -- ================================================
 -- Users can read their own profile
 CREATE POLICY "Users read own profile" ON "User"
@@ -28,14 +46,14 @@ CREATE POLICY "Users create own record" ON "User"
 FOR INSERT WITH CHECK (auth.uid()::text = id);
 
 -- ================================================
--- STEP 3: SUBSCRIPTION TABLE POLICIES
+-- STEP 4: SUBSCRIPTION TABLE POLICIES
 -- ================================================
 -- Users can view their own subscription
 CREATE POLICY "Users read own subscription" ON "Subscription"
 FOR SELECT USING (auth.uid()::text = "userId");
 
 -- ================================================
--- STEP 4: DAILYPROGRESS TABLE POLICIES
+-- STEP 5: DAILYPROGRESS TABLE POLICIES
 -- ================================================
 -- Users can read their own progress
 CREATE POLICY "Users read own progress" ON "DailyProgress"
@@ -50,7 +68,7 @@ CREATE POLICY "Users update own progress" ON "DailyProgress"
 FOR UPDATE USING (auth.uid()::text = "userId");
 
 -- ================================================
--- STEP 5: STARTUPPORTFOLIO TABLE POLICIES
+-- STEP 6: STARTUPPORTFOLIO TABLE POLICIES
 -- ================================================
 -- Users can read their own portfolio
 CREATE POLICY "Users read own portfolio" ON "StartupPortfolio"
@@ -65,7 +83,7 @@ CREATE POLICY "Users update own portfolio" ON "StartupPortfolio"
 FOR UPDATE USING (auth.uid()::text = "userId");
 
 -- ================================================
--- STEP 6: XPEVENT TABLE POLICIES
+-- STEP 7: XPEVENT TABLE POLICIES
 -- ================================================
 -- Users can read their own XP events
 CREATE POLICY "Users read own XP" ON "XPEvent"
@@ -76,7 +94,7 @@ CREATE POLICY "Users create own XP" ON "XPEvent"
 FOR INSERT WITH CHECK (auth.uid()::text = "userId");
 
 -- ================================================
--- STEP 7: DAILYLESSON TABLE POLICIES
+-- STEP 8: DAILYLESSON TABLE POLICIES
 -- ================================================
 -- Users with active subscription can view lessons
 CREATE POLICY "Active users read lessons" ON "DailyLesson"
@@ -90,14 +108,14 @@ FOR SELECT USING (
 );
 
 -- ================================================
--- STEP 8: BADGE TABLE POLICIES
+-- STEP 9: BADGE TABLE POLICIES
 -- ================================================
 -- All authenticated users can view badges
 CREATE POLICY "Users read badges" ON "Badge"
 FOR SELECT USING (auth.uid() IS NOT NULL);
 
 -- ================================================
--- STEP 9: CREATE USER TRIGGER FUNCTION
+-- STEP 10: CREATE USER TRIGGER FUNCTION (Safe - uses CREATE OR REPLACE)
 -- ================================================
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
@@ -114,14 +132,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Create trigger
+-- Create trigger (drops existing first)
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- ================================================
--- STEP 10: VERIFY SETUP
+-- STEP 11: VERIFY SETUP
 -- ================================================
 -- Check RLS is enabled
 SELECT 

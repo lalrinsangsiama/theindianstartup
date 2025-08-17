@@ -18,14 +18,14 @@ export async function PATCH(request: NextRequest) {
 
     // Update portfolio with market research data
     const { data, error } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .update({
-        target_market: targetMarket,
+        targetMarket: targetMarket,
         competitors: competitors,
-        market_size: marketSize,
-        updated_at: new Date().toISOString(),
+        marketSize: marketSize,
+        updatedAt: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .select()
       .single();
 

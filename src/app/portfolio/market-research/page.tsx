@@ -27,9 +27,9 @@ import {
 } from 'lucide-react';
 
 interface MarketResearch {
-  target_market?: any;
+  targetMarket?: any;
   competitors?: any;
-  market_size?: any;
+  marketSize?: any;
 }
 
 interface TargetSegment {
@@ -94,26 +94,26 @@ export default function MarketResearchPage() {
 
       const data = await response.json();
       setPortfolio({
-        target_market: data.target_market,
+        targetMarket: data.targetMarket,
         competitors: data.competitors,
-        market_size: data.market_size,
+        marketSize: data.marketSize,
       });
 
       // Parse existing data
-      if (data.target_market) {
-        setTargetSegments(data.target_market.segments || []);
+      if (data.targetMarket) {
+        setTargetSegments(data.targetMarket.segments || []);
       }
       if (data.competitors) {
         setCompetitors(data.competitors.list || []);
       }
-      if (data.market_size) {
+      if (data.marketSize) {
         setMarketSize({
-          tam: data.market_size.tam || '',
-          sam: data.market_size.sam || '',
-          som: data.market_size.som || '',
-          tamDescription: data.market_size.tamDescription || '',
-          samDescription: data.market_size.samDescription || '',
-          somDescription: data.market_size.somDescription || '',
+          tam: data.marketSize.tam || '',
+          sam: data.marketSize.sam || '',
+          som: data.marketSize.som || '',
+          tamDescription: data.marketSize.tamDescription || '',
+          samDescription: data.marketSize.samDescription || '',
+          somDescription: data.marketSize.somDescription || '',
         });
       }
     } catch (err) {

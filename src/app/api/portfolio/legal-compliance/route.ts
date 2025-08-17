@@ -18,14 +18,13 @@ export async function PATCH(request: NextRequest) {
 
     // Update portfolio with legal compliance data
     const { data, error } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .update({
-        entity_type: entityType,
-        compliance_status: complianceStatus,
-        registrations: registrations,
-        updated_at: new Date().toISOString(),
+        entityType: entityType,
+        complianceStatus: complianceStatus,
+        updatedAt: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .select()
       .single();
 

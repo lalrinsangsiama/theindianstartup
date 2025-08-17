@@ -32,11 +32,11 @@ interface MonthlyProjection {
 
 interface Portfolio {
   projections?: MonthlyProjection[];
-  funding_needs?: number;
-  funding_purpose?: string;
-  burn_rate?: number;
-  runway_months?: number;
-  break_even_timeline?: string;
+  fundingNeeds?: number;
+  fundingPurpose?: string;
+  burnRate?: number;
+  runwayMonths?: number;
+  breakEvenTimeline?: string;
 }
 
 export default function FinancialsPage() {
@@ -77,11 +77,11 @@ export default function FinancialsPage() {
           { month: 'Month 6', revenue: 0, expenses: 0, profit: 0 },
           { month: 'Month 12', revenue: 0, expenses: 0, profit: 0 },
         ],
-        funding_needs: data.funding_needs || 0,
-        funding_purpose: data.funding_purpose || '',
-        burn_rate: data.burn_rate || 0,
-        runway_months: data.runway_months || 0,
-        break_even_timeline: data.break_even_timeline || '',
+        fundingNeeds: data.fundingNeeds || 0,
+        fundingPurpose: data.fundingPurpose || '',
+        burnRate: data.burnRate || 0,
+        runwayMonths: data.runwayMonths || 0,
+        breakEvenTimeline: data.breakEvenTimeline || '',
       });
     } catch (err) {
       console.error('Error fetching portfolio:', err);
@@ -127,11 +127,11 @@ export default function FinancialsPage() {
         },
         body: JSON.stringify({
           projections: portfolio.projections,
-          fundingNeeds: portfolio.funding_needs,
-          fundingPurpose: portfolio.funding_purpose,
-          burnRate: portfolio.burn_rate,
-          runwayMonths: portfolio.runway_months,
-          breakEvenTimeline: portfolio.break_even_timeline,
+          fundingNeeds: portfolio.fundingNeeds,
+          fundingPurpose: portfolio.fundingPurpose,
+          burnRate: portfolio.burnRate,
+          runwayMonths: portfolio.runwayMonths,
+          breakEvenTimeline: portfolio.breakEvenTimeline,
         }),
       });
 
@@ -158,12 +158,12 @@ export default function FinancialsPage() {
     }
     
     // Check funding needs
-    if (portfolio.funding_needs && portfolio.funding_needs > 0 && portfolio.funding_purpose) {
+    if (portfolio.fundingNeeds && portfolio.fundingNeeds > 0 && portfolio.fundingPurpose) {
       completedFields++;
     }
     
     // Check financial metrics
-    if (portfolio.burn_rate && portfolio.runway_months && portfolio.break_even_timeline) {
+    if (portfolio.burnRate && portfolio.runwayMonths && portfolio.breakEvenTimeline) {
       completedFields++;
     }
     
@@ -349,8 +349,8 @@ export default function FinancialsPage() {
                     <IndianRupee className="w-5 h-5 text-gray-500" />
                     <Input
                       type="number"
-                      value={portfolio.funding_needs || ''}
-                      onChange={(e) => handleInputChange('funding_needs', parseInt(e.target.value) || 0)}
+                      value={portfolio.fundingNeeds || ''}
+                      onChange={(e) => handleInputChange('fundingNeeds', parseInt(e.target.value) || 0)}
                       placeholder="Enter amount needed"
                       className="max-w-[300px]"
                     />
@@ -365,8 +365,8 @@ export default function FinancialsPage() {
                     Use of Funds *
                   </label>
                   <textarea
-                    value={portfolio.funding_purpose || ''}
-                    onChange={(e) => handleInputChange('funding_purpose', e.target.value)}
+                    value={portfolio.fundingPurpose || ''}
+                    onChange={(e) => handleInputChange('fundingPurpose', e.target.value)}
                     placeholder="Explain how you'll use the funding (e.g., product development, marketing, hiring)"
                     className="w-full min-h-[120px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={5}
@@ -393,8 +393,8 @@ export default function FinancialsPage() {
                       <IndianRupee className="w-5 h-5 text-gray-500" />
                       <Input
                         type="number"
-                        value={portfolio.burn_rate || ''}
-                        onChange={(e) => handleInputChange('burn_rate', parseInt(e.target.value) || 0)}
+                        value={portfolio.burnRate || ''}
+                        onChange={(e) => handleInputChange('burnRate', parseInt(e.target.value) || 0)}
                         placeholder="Monthly expenses"
                       />
                     </div>
@@ -409,8 +409,8 @@ export default function FinancialsPage() {
                     </label>
                     <Input
                       type="number"
-                      value={portfolio.runway_months || ''}
-                      onChange={(e) => handleInputChange('runway_months', parseInt(e.target.value) || 0)}
+                      value={portfolio.runwayMonths || ''}
+                      onChange={(e) => handleInputChange('runwayMonths', parseInt(e.target.value) || 0)}
                       placeholder="Months of runway"
                     />
                     <Text size="sm" color="muted" className="mt-1">
@@ -424,8 +424,8 @@ export default function FinancialsPage() {
                     Break-Even Timeline *
                   </label>
                   <Input
-                    value={portfolio.break_even_timeline || ''}
-                    onChange={(e) => handleInputChange('break_even_timeline', e.target.value)}
+                    value={portfolio.breakEvenTimeline || ''}
+                    onChange={(e) => handleInputChange('breakEvenTimeline', e.target.value)}
                     placeholder="e.g., Month 12, Q4 2024"
                   />
                   <Text size="sm" color="muted" className="mt-1">

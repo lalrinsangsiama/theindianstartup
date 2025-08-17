@@ -24,12 +24,12 @@ import {
 } from 'lucide-react';
 
 interface Portfolio {
-  pitch_deck?: string;
-  one_page_summary?: string;
-  investor_ask?: string;
-  traction_metrics?: string;
-  use_of_funds?: string;
-  exit_strategy?: string;
+  pitchDeck?: string;
+  onePageSummary?: string;
+  investorAsk?: string;
+  tractionMetrics?: string;
+  useOfFunds?: string;
+  exitStrategy?: string;
 }
 
 export default function PitchPage() {
@@ -56,12 +56,12 @@ export default function PitchPage() {
 
       const data = await response.json();
       setPortfolio({
-        pitch_deck: data.pitch_deck || '',
-        one_page_summary: data.one_page_summary || '',
-        investor_ask: data.investor_ask || '',
-        traction_metrics: data.traction_metrics || '',
-        use_of_funds: data.use_of_funds || data.funding_purpose || '',
-        exit_strategy: data.exit_strategy || '',
+        pitchDeck: data.pitchDeck || '',
+        onePageSummary: data.onePageSummary || '',
+        investorAsk: data.investorAsk || '',
+        tractionMetrics: data.tractionMetrics || '',
+        useOfFunds: data.useOfFunds || data.fundingPurpose || '',
+        exitStrategy: data.exitStrategy || '',
       });
     } catch (err) {
       console.error('Error fetching portfolio:', err);
@@ -89,12 +89,12 @@ export default function PitchPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pitchDeck: portfolio.pitch_deck,
-          onePageSummary: portfolio.one_page_summary,
-          investorAsk: portfolio.investor_ask,
-          tractionMetrics: portfolio.traction_metrics,
-          useOfFunds: portfolio.use_of_funds,
-          exitStrategy: portfolio.exit_strategy,
+          pitchDeck: portfolio.pitchDeck,
+          onePageSummary: portfolio.onePageSummary,
+          investorAsk: portfolio.investorAsk,
+          tractionMetrics: portfolio.tractionMetrics,
+          useOfFunds: portfolio.useOfFunds,
+          exitStrategy: portfolio.exitStrategy,
         }),
       });
 
@@ -127,7 +127,7 @@ export default function PitchPage() {
       const data = await response.json();
       setPortfolio(prev => ({
         ...prev,
-        one_page_summary: data.summary
+        onePageSummary: data.summary
       }));
     } catch (err) {
       console.error('Error generating one-pager:', err);
@@ -162,10 +162,10 @@ export default function PitchPage() {
 
   const getCompletionPercentage = () => {
     const fields = [
-      portfolio.investor_ask,
-      portfolio.traction_metrics,
-      portfolio.use_of_funds,
-      portfolio.exit_strategy,
+      portfolio.investorAsk,
+      portfolio.tractionMetrics,
+      portfolio.useOfFunds,
+      portfolio.exitStrategy,
     ];
     const completed = fields.filter(field => field && field.trim() !== '').length;
     return (completed / fields.length) * 100;
@@ -278,8 +278,8 @@ export default function PitchPage() {
                     The Ask *
                   </label>
                   <textarea
-                    value={portfolio.investor_ask || ''}
-                    onChange={(e) => handleInputChange('investor_ask', e.target.value)}
+                    value={portfolio.investorAsk || ''}
+                    onChange={(e) => handleInputChange('investorAsk', e.target.value)}
                     placeholder="What are you asking from investors? (e.g., ₹50 lakhs for 10% equity)"
                     className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={3}
@@ -294,8 +294,8 @@ export default function PitchPage() {
                     Traction & Metrics *
                   </label>
                   <textarea
-                    value={portfolio.traction_metrics || ''}
-                    onChange={(e) => handleInputChange('traction_metrics', e.target.value)}
+                    value={portfolio.tractionMetrics || ''}
+                    onChange={(e) => handleInputChange('tractionMetrics', e.target.value)}
                     placeholder="Key achievements and metrics (users, revenue, partnerships, etc.)"
                     className="w-full min-h-[120px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={4}
@@ -310,8 +310,8 @@ export default function PitchPage() {
                     Use of Funds *
                   </label>
                   <textarea
-                    value={portfolio.use_of_funds || ''}
-                    onChange={(e) => handleInputChange('use_of_funds', e.target.value)}
+                    value={portfolio.useOfFunds || ''}
+                    onChange={(e) => handleInputChange('useOfFunds', e.target.value)}
                     placeholder="How will you use the investment? (e.g., 40% product development, 30% marketing...)"
                     className="w-full min-h-[120px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={4}
@@ -326,8 +326,8 @@ export default function PitchPage() {
                     Exit Strategy *
                   </label>
                   <textarea
-                    value={portfolio.exit_strategy || ''}
-                    onChange={(e) => handleInputChange('exit_strategy', e.target.value)}
+                    value={portfolio.exitStrategy || ''}
+                    onChange={(e) => handleInputChange('exitStrategy', e.target.value)}
                     placeholder="Potential exit opportunities (acquisition, IPO, strategic sale...)"
                     className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={3}
@@ -373,7 +373,7 @@ export default function PitchPage() {
                       </Button>
                     </div>
                   </div>
-                  {portfolio.pitch_deck ? (
+                  {portfolio.pitchDeck ? (
                     <Badge variant="success">Generated</Badge>
                   ) : (
                     <Badge variant="default">Will auto-generate when portfolio is complete</Badge>
@@ -414,10 +414,10 @@ export default function PitchPage() {
                       </Button>
                     </div>
                   </div>
-                  {portfolio.one_page_summary ? (
+                  {portfolio.onePageSummary ? (
                     <div className="mt-3 p-3 bg-gray-50 rounded-md">
                       <Text size="sm" className="whitespace-pre-wrap">
-                        {portfolio.one_page_summary}
+                        {portfolio.onePageSummary}
                       </Text>
                     </div>
                   ) : (

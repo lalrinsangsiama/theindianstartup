@@ -18,13 +18,13 @@ export async function PATCH(request: NextRequest) {
 
     // Update portfolio with business model data
     const { data, error } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .update({
-        revenue_streams: revenueStreams,
-        pricing_strategy: pricingStrategy,
-        updated_at: new Date().toISOString(),
+        revenueStreams: revenueStreams,
+        pricingStrategy: pricingStrategy,
+        updatedAt: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .select()
       .single();
 

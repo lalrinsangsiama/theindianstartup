@@ -29,32 +29,32 @@ import {
 
 interface Portfolio {
   id: string;
-  user_id: string;
-  startup_name?: string;
+  userId: string;
+  startupName?: string;
   tagline?: string;
   logo?: string;
-  problem_statement?: string;
+  problemStatement?: string;
   solution?: string;
-  value_proposition?: string;
-  target_market?: any;
+  valueProposition?: string;
+  targetMarket?: any;
   competitors?: any;
-  market_size?: any;
-  revenue_streams?: any;
-  pricing_strategy?: any;
+  marketSize?: any;
+  revenueStreams?: any;
+  pricingStrategy?: any;
   domain?: string;
-  social_handles?: any;
-  entity_type?: string;
-  compliance_status?: any;
-  mvp_description?: string;
+  socialHandles?: any;
+  entityType?: string;
+  complianceStatus?: any;
+  mvpDescription?: string;
   features?: any;
-  user_feedback?: any;
-  sales_strategy?: any;
-  customer_personas?: any;
+  userFeedback?: any;
+  salesStrategy?: any;
+  customerPersonas?: any;
   projections?: any;
-  funding_needs?: number;
-  pitch_deck?: string;
-  one_page_summary?: string;
-  updated_at: string;
+  fundingNeeds?: number;
+  pitchDeck?: string;
+  onePageSummary?: string;
+  updatedAt: string;
 }
 
 interface PortfolioSection {
@@ -74,7 +74,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Define your startup\'s core problem, solution, and value proposition',
     icon: Lightbulb,
     route: '/portfolio/idea-vision',
-    fields: ['startup_name', 'tagline', 'problem_statement', 'solution', 'value_proposition'],
+    fields: ['startupName', 'tagline', 'problemStatement', 'solution', 'valueProposition'],
     category: 'foundation',
   },
   {
@@ -83,7 +83,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Understand your target market, competitors, and market opportunity',
     icon: TrendingUp,
     route: '/portfolio/market-research',
-    fields: ['target_market', 'competitors', 'market_size'],
+    fields: ['targetMarket', 'competitors', 'marketSize'],
     category: 'foundation',
   },
   {
@@ -92,7 +92,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Design your revenue model and pricing strategy',
     icon: DollarSign,
     route: '/portfolio/business-model',
-    fields: ['revenue_streams', 'pricing_strategy'],
+    fields: ['revenueStreams', 'pricingStrategy'],
     category: 'strategy',
   },
   {
@@ -101,7 +101,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Create your brand identity, domain, and social presence',
     icon: Palette,
     route: '/portfolio/brand-assets',
-    fields: ['startup_name', 'logo', 'domain', 'social_handles'],
+    fields: ['startupName', 'logo', 'domain', 'socialHandles'],
     category: 'execution',
   },
   {
@@ -110,7 +110,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Set up legal structure and compliance requirements',
     icon: Shield,
     route: '/portfolio/legal-compliance',
-    fields: ['entity_type', 'compliance_status'],
+    fields: ['entityType', 'complianceStatus'],
     category: 'execution',
   },
   {
@@ -119,7 +119,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Define your MVP, features, and gather user feedback',
     icon: Rocket,
     route: '/portfolio/product',
-    fields: ['mvp_description', 'features', 'user_feedback'],
+    fields: ['mvpDescription', 'features', 'userFeedback'],
     category: 'execution',
   },
   {
@@ -128,7 +128,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Plan your sales strategy and customer acquisition',
     icon: Users,
     route: '/portfolio/go-to-market',
-    fields: ['sales_strategy', 'customer_personas'],
+    fields: ['salesStrategy', 'customerPersonas'],
     category: 'strategy',
   },
   {
@@ -137,7 +137,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Create financial projections and funding requirements',
     icon: PieChart,
     route: '/portfolio/financials',
-    fields: ['projections', 'funding_needs'],
+    fields: ['projections', 'fundingNeeds'],
     category: 'strategy',
   },
   {
@@ -146,7 +146,7 @@ const PORTFOLIO_SECTIONS: PortfolioSection[] = [
     description: 'Generate pitch deck and one-page summary',
     icon: FileText,
     route: '/portfolio/pitch',
-    fields: ['pitch_deck', 'one_page_summary'],
+    fields: ['pitchDeck', 'onePageSummary'],
     category: 'execution',
   },
 ];
@@ -300,9 +300,9 @@ export default function PortfolioOverviewPage() {
                   <Text color="muted">
                     {PORTFOLIO_SECTIONS.filter(s => calculateSectionCompletion(s) === 100).length} of {PORTFOLIO_SECTIONS.length} sections complete
                   </Text>
-                  {portfolio?.startup_name && (
+                  {portfolio?.startupName && (
                     <Badge variant="success">
-                      {portfolio.startup_name}
+                      {portfolio.startupName}
                     </Badge>
                   )}
                 </div>

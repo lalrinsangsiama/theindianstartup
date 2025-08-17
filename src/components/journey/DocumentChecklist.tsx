@@ -61,6 +61,7 @@ export function DocumentChecklist({
       case 'presentation':
         return <div className="w-4 h-4 bg-orange-600 rounded text-white text-xs flex items-center justify-center font-bold">📊</div>;
       case 'image':
+        // eslint-disable-next-line jsx-a11y/alt-text
         return <Image className="w-4 h-4 text-purple-600" />;
       case 'pdf':
         return <FileText className="w-4 h-4 text-red-600" />;

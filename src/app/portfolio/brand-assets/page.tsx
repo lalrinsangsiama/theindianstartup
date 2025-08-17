@@ -27,9 +27,7 @@ import {
 interface BrandAssets {
   logo?: string;
   domain?: string;
-  social_handles?: any;
-  brand_colors?: any;
-  fonts?: any;
+  socialHandles?: any;
 }
 
 interface SocialHandle {
@@ -77,26 +75,15 @@ export default function BrandAssetsPage() {
       setPortfolio({
         logo: data.logo,
         domain: data.domain,
-        social_handles: data.social_handles,
-        brand_colors: data.brand_colors,
-        fonts: data.fonts,
+        socialHandles: data.socialHandles,
       });
 
       // Parse existing data
       setLogoUrl(data.logo || '');
       setDomain(data.domain || '');
       
-      if (data.social_handles) {
-        setSocialHandles(data.social_handles.handles || []);
-      }
-      
-      if (data.brand_colors) {
-        setBrandColors(data.brand_colors.palette || []);
-      }
-      
-      if (data.fonts) {
-        setPrimaryFont(data.fonts.primary || '');
-        setSecondaryFont(data.fonts.secondary || '');
+      if (data.socialHandles) {
+        setSocialHandles(data.socialHandles.handles || []);
       }
     } catch (err) {
       console.error('Error fetching portfolio:', err);
@@ -121,15 +108,6 @@ export default function BrandAssetsPage() {
           domain: domain,
           socialHandles: {
             handles: socialHandles,
-            lastUpdated: new Date().toISOString(),
-          },
-          brandColors: {
-            palette: brandColors,
-            lastUpdated: new Date().toISOString(),
-          },
-          fonts: {
-            primary: primaryFont,
-            secondary: secondaryFont,
             lastUpdated: new Date().toISOString(),
           },
         }),
@@ -301,6 +279,7 @@ export default function BrandAssetsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
+                    {/* eslint-disable-next-line jsx-a11y/alt-text */}
                     <Image className="w-5 h-5 text-blue-600" />
                     Logo & Domain
                   </CardTitle>

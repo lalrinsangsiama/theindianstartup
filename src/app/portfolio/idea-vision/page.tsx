@@ -24,11 +24,11 @@ import {
 } from 'lucide-react';
 
 interface Portfolio {
-  startup_name?: string;
+  startupName?: string;
   tagline?: string;
-  problem_statement?: string;
+  problemStatement?: string;
   solution?: string;
-  value_proposition?: string;
+  valueProposition?: string;
 }
 
 export default function IdeaVisionPage() {
@@ -54,11 +54,11 @@ export default function IdeaVisionPage() {
 
       const data = await response.json();
       setPortfolio({
-        startup_name: data.startup_name || '',
+        startupName: data.startupName || '',
         tagline: data.tagline || '',
-        problem_statement: data.problem_statement || '',
+        problemStatement: data.problemStatement || '',
         solution: data.solution || '',
-        value_proposition: data.value_proposition || '',
+        valueProposition: data.valueProposition || '',
       });
     } catch (err) {
       console.error('Error fetching portfolio:', err);
@@ -86,11 +86,11 @@ export default function IdeaVisionPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          startupName: portfolio.startup_name,
+          startupName: portfolio.startupName,
           tagline: portfolio.tagline,
-          problemStatement: portfolio.problem_statement,
+          problemStatement: portfolio.problemStatement,
           solution: portfolio.solution,
-          valueProposition: portfolio.value_proposition,
+          valueProposition: portfolio.valueProposition,
         }),
       });
 
@@ -109,11 +109,11 @@ export default function IdeaVisionPage() {
 
   const getCompletionPercentage = () => {
     const fields = [
-      portfolio.startup_name,
+      portfolio.startupName,
       portfolio.tagline,
-      portfolio.problem_statement,
+      portfolio.problemStatement,
       portfolio.solution,
-      portfolio.value_proposition,
+      portfolio.valueProposition,
     ];
     const completed = fields.filter(field => field && field.trim() !== '').length;
     return (completed / fields.length) * 100;
@@ -226,8 +226,8 @@ export default function IdeaVisionPage() {
                     Startup Name *
                   </label>
                   <Input
-                    value={portfolio.startup_name || ''}
-                    onChange={(e) => handleInputChange('startup_name', e.target.value)}
+                    value={portfolio.startupName || ''}
+                    onChange={(e) => handleInputChange('startupName', e.target.value)}
                     placeholder="Enter your startup name..."
                     className="text-lg"
                   />
@@ -267,8 +267,8 @@ export default function IdeaVisionPage() {
                     What problem are you solving? *
                   </label>
                   <textarea
-                    value={portfolio.problem_statement || ''}
-                    onChange={(e) => handleInputChange('problem_statement', e.target.value)}
+                    value={portfolio.problemStatement || ''}
+                    onChange={(e) => handleInputChange('problemStatement', e.target.value)}
                     placeholder="Describe the pain point your target customers face..."
                     className="w-full min-h-[120px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={5}
@@ -321,8 +321,8 @@ export default function IdeaVisionPage() {
                     Why should customers choose you? *
                   </label>
                   <textarea
-                    value={portfolio.value_proposition || ''}
-                    onChange={(e) => handleInputChange('value_proposition', e.target.value)}
+                    value={portfolio.valueProposition || ''}
+                    onChange={(e) => handleInputChange('valueProposition', e.target.value)}
                     placeholder="What unique value do you provide to customers..."
                     className="w-full min-h-[120px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={5}

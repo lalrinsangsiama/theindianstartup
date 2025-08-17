@@ -39,16 +39,16 @@ interface Feedback {
 }
 
 interface Portfolio {
-  mvp_description?: string;
+  mvpDescription?: string;
   features?: Feature[];
-  user_feedback?: Feedback[];
+  userFeedback?: Feedback[];
 }
 
 export default function ProductPage() {
   const router = useRouter();
   const [portfolio, setPortfolio] = useState<Portfolio>({
     features: [],
-    user_feedback: []
+    userFeedback: []
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,9 +70,9 @@ export default function ProductPage() {
 
       const data = await response.json();
       setPortfolio({
-        mvp_description: data.mvp_description || '',
+        mvpDescription: data.mvpDescription || '',
         features: data.features || [],
-        user_feedback: data.user_feedback || [],
+        userFeedback: data.userFeedback || [],
       });
     } catch (err) {
       console.error('Error fetching portfolio:', err);
@@ -127,14 +127,14 @@ export default function ProductPage() {
     };
     setPortfolio(prev => ({
       ...prev,
-      user_feedback: [...(prev.user_feedback || []), newFeedback]
+      userFeedback: [...(prev.userFeedback || []), newFeedback]
     }));
   };
 
   const updateFeedback = (id: string, field: keyof Feedback, value: string) => {
     setPortfolio(prev => ({
       ...prev,
-      user_feedback: prev.user_feedback?.map(f => 
+      userFeedback: prev.userFeedback?.map(f => 
         f.id === id ? { ...f, [field]: value } : f
       ) || []
     }));
@@ -143,7 +143,7 @@ export default function ProductPage() {
   const removeFeedback = (id: string) => {
     setPortfolio(prev => ({
       ...prev,
-      user_feedback: prev.user_feedback?.filter(f => f.id !== id) || []
+      userFeedback: prev.userFeedback?.filter(f => f.id !== id) || []
     }));
   };
 
@@ -158,9 +158,9 @@ export default function ProductPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mvpDescription: portfolio.mvp_description,
+          mvpDescription: portfolio.mvpDescription,
           features: portfolio.features,
-          userFeedback: portfolio.user_feedback,
+          userFeedback: portfolio.userFeedback,
         }),
       });
 
@@ -181,7 +181,7 @@ export default function ProductPage() {
     let totalFields = 1; // MVP description
     let completedFields = 0;
     
-    if (portfolio.mvp_description && portfolio.mvp_description.trim() !== '') {
+    if (portfolio.mvpDescription && portfolio.mvpDescription.trim() !== '') {
       completedFields++;
     }
     
@@ -197,9 +197,9 @@ export default function ProductPage() {
     }
     
     // Count feedback as a single field
-    if (portfolio.user_feedback && portfolio.user_feedback.length > 0) {
+    if (portfolio.userFeedback && portfolio.userFeedback.length > 0) {
       totalFields++;
-      const validFeedback = portfolio.user_feedback.filter(f => f.source && f.feedback);
+      const validFeedback = portfolio.userFeedback.filter(f => f.source && f.feedback);
       if (validFeedback.length > 0) {
         completedFields++;
       }
@@ -317,8 +317,8 @@ export default function ProductPage() {
                     MVP Description *
                   </label>
                   <textarea
-                    value={portfolio.mvp_description || ''}
-                    onChange={(e) => handleInputChange('mvp_description', e.target.value)}
+                    value={portfolio.mvpDescription || ''}
+                    onChange={(e) => handleInputChange('mvpDescription', e.target.value)}
                     placeholder="Describe your MVP - what is the simplest version of your product that solves the core problem?"
                     className="w-full min-h-[150px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={6}
@@ -423,9 +423,9 @@ export default function ProductPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                {portfolio.user_feedback && portfolio.user_feedback.length > 0 ? (
+                {portfolio.userFeedback && portfolio.userFeedback.length > 0 ? (
                   <div className="space-y-4">
-                    {portfolio.user_feedback.map((feedback) => (
+                    {portfolio.userFeedback.map((feedback) => (
                       <div key={feedback.id} className="p-4 border border-gray-200 rounded-lg">
                         <div className="flex items-start gap-4">
                           <div className="flex-1 space-y-3">

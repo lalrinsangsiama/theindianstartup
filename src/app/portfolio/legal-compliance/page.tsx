@@ -26,17 +26,17 @@ import {
 } from 'lucide-react';
 
 interface LegalCompliance {
-  entity_type?: string;
-  compliance_status?: any;
+  entityType?: string;
+  complianceStatus?: any;
   registrations?: any;
-  legal_documents?: any;
+  legalDocuments?: any;
 }
 
 interface ComplianceItem {
   id: string;
   name: string;
   description: string;
-  status: 'pending' | 'in_progress' | 'completed';
+  status: 'pending' | 'inProgress' | 'completed';
   dueDate?: string;
   documents?: string[];
 }
@@ -44,7 +44,7 @@ interface ComplianceItem {
 interface Registration {
   type: 'company' | 'gst' | 'trademark' | 'dpiit' | 'epf' | 'esic';
   name: string;
-  status: 'not_started' | 'in_progress' | 'completed';
+  status: 'notStarted' | 'inProgress' | 'completed';
   registrationNumber?: string;
   dateCompleted?: string;
   cost?: string;
@@ -105,25 +105,25 @@ export default function LegalCompliancePage() {
       {
         type: 'company',
         name: 'Company Registration',
-        status: 'not_started',
+        status: 'notStarted',
         cost: '₹15,000 - ₹25,000'
       },
       {
         type: 'gst',
         name: 'GST Registration',
-        status: 'not_started',
+        status: 'notStarted',
         cost: 'Free'
       },
       {
         type: 'trademark',
         name: 'Trademark Registration',
-        status: 'not_started',
+        status: 'notStarted',
         cost: '₹4,500 - ₹10,000'
       },
       {
         type: 'dpiit',
         name: 'DPIIT Startup Recognition',
-        status: 'not_started',
+        status: 'notStarted',
         cost: 'Free'
       }
     ];
@@ -143,17 +143,17 @@ export default function LegalCompliancePage() {
 
       const data = await response.json();
       setPortfolio({
-        entity_type: data.entity_type,
-        compliance_status: data.compliance_status,
+        entityType: data.entityType,
+        complianceStatus: data.complianceStatus,
         registrations: data.registrations,
-        legal_documents: data.legal_documents,
+        legalDocuments: data.legalDocuments,
       });
 
       // Parse existing data
-      setEntityType(data.entity_type || '');
+      setEntityType(data.entityType || '');
       
-      if (data.compliance_status?.items) {
-        setComplianceItems(data.compliance_status.items);
+      if (data.complianceStatus?.items) {
+        setComplianceItems(data.complianceStatus.items);
       }
       
       if (data.registrations?.list) {
@@ -358,14 +358,14 @@ export default function LegalCompliancePage() {
                       className="w-full p-3 border border-gray-300 rounded-lg"
                     >
                       <option value="">Select entity type</option>
-                      <option value="private_limited">Private Limited Company</option>
+                      <option value="privateLimited">Private Limited Company</option>
                       <option value="llp">Limited Liability Partnership (LLP)</option>
                       <option value="opc">One Person Company (OPC)</option>
                       <option value="proprietorship">Sole Proprietorship</option>
                       <option value="partnership">Partnership Firm</option>
                     </select>
                     
-                    {entityType === 'private_limited' && (
+                    {entityType === 'privateLimited' && (
                       <div className="mt-3 p-3 bg-blue-50 rounded-lg">
                         <Text size="sm" className="text-blue-700">
                           <strong>Recommended for startups:</strong> Limited liability, easier to raise funds, 
@@ -396,7 +396,7 @@ export default function LegalCompliancePage() {
                               <Badge 
                                 variant={
                                   item.status === 'completed' ? 'success' :
-                                  item.status === 'in_progress' ? 'warning' : 'default'
+                                  item.status === 'inProgress' ? 'warning' : 'default'
                                 }
                                 size="sm"
                               >
@@ -424,8 +424,8 @@ export default function LegalCompliancePage() {
                           </Button>
                           <Button
                             size="sm"
-                            variant={item.status === 'in_progress' ? 'primary' : 'outline'}
-                            onClick={() => updateComplianceStatus(item.id, 'in_progress')}
+                            variant={item.status === 'inProgress' ? 'primary' : 'outline'}
+                            onClick={() => updateComplianceStatus(item.id, 'inProgress')}
                           >
                             In Progress
                           </Button>
@@ -466,7 +466,7 @@ export default function LegalCompliancePage() {
                           <Badge 
                             variant={
                               reg.status === 'completed' ? 'success' :
-                              reg.status === 'in_progress' ? 'warning' : 'default'
+                              reg.status === 'inProgress' ? 'warning' : 'default'
                             }
                           >
                             {reg.status.replace('_', ' ')}
@@ -486,15 +486,15 @@ export default function LegalCompliancePage() {
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            variant={reg.status === 'not_started' ? 'primary' : 'outline'}
-                            onClick={() => updateRegistrationStatus(index, 'not_started')}
+                            variant={reg.status === 'notStarted' ? 'primary' : 'outline'}
+                            onClick={() => updateRegistrationStatus(index, 'notStarted')}
                           >
                             Not Started
                           </Button>
                           <Button
                             size="sm"
-                            variant={reg.status === 'in_progress' ? 'primary' : 'outline'}
-                            onClick={() => updateRegistrationStatus(index, 'in_progress')}
+                            variant={reg.status === 'inProgress' ? 'primary' : 'outline'}
+                            onClick={() => updateRegistrationStatus(index, 'inProgress')}
                           >
                             In Progress
                           </Button>

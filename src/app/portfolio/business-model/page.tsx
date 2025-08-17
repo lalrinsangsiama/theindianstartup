@@ -27,8 +27,8 @@ import {
 } from 'lucide-react';
 
 interface BusinessModel {
-  revenue_streams?: any;
-  pricing_strategy?: any;
+  revenueStreams?: any;
+  pricingStrategy?: any;
 }
 
 interface RevenueStream {
@@ -77,15 +77,15 @@ export default function BusinessModelPage() {
 
       const data = await response.json();
       setPortfolio({
-        revenue_streams: data.revenue_streams,
-        pricing_strategy: data.pricing_strategy,
+        revenueStreams: data.revenueStreams,
+        pricingStrategy: data.pricingStrategy,
       });
 
-      if (data.revenue_streams) {
-        setRevenueStreams(data.revenue_streams.streams || []);
+      if (data.revenueStreams) {
+        setRevenueStreams(data.revenueStreams.streams || []);
       }
-      if (data.pricing_strategy) {
-        setPricingTiers(data.pricing_strategy.tiers || []);
+      if (data.pricingStrategy) {
+        setPricingTiers(data.pricingStrategy.tiers || []);
       }
     } catch (err) {
       console.error('Error fetching portfolio:', err);

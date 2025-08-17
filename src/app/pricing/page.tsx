@@ -1,7 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+
+// Extend Window interface for Razorpay
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
+}
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Heading, Text } from '@/components/ui/Typography';
@@ -10,9 +17,102 @@ import { Logo } from '@/components/icons/Logo';
 import { Check, IndianRupee, Shield, Users, Calendar, Zap, Target, Award } from 'lucide-react';
 
 export default function PricingPage() {
-  const handlePurchase = () => {
-    // Simple redirect to login for now
-    window.location.href = '/login?redirect=/pricing';
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handlePurchase = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Check if user is logged in
+      const response = await fetch('/api/user/profile');
+      if (!response.ok) {
+        // User not logged in, redirect to login
+        window.location.href = '/login?redirect=/pricing';
+        return;
+      }
+
+      // Create payment order
+      const orderResponse = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 4999, currency: 'INR' }),
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create payment order');
+      }
+
+      const orderData = await orderResponse.json();
+
+      // In development, simulate successful payment
+      if (process.env.NODE_ENV === 'development') {
+        const verifyResponse = await fetch('/api/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id: orderData.orderId,
+            razorpay_payment_id: 'pay_dev_' + Date.now(),
+            razorpay_signature: 'sig_dev_' + Date.now(),
+          }),
+        });
+
+        if (verifyResponse.ok) {
+          window.location.href = '/dashboard?welcome=true';
+        } else {
+          throw new Error('Payment verification failed');
+        }
+        return;
+      }
+
+      // In production, use actual Razorpay
+      if (typeof window !== 'undefined' && window.Razorpay) {
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'The Indian Startup',
+          description: '30-Day India Launch Sprint',
+          order_id: orderData.orderId,
+          handler: async function (response: any) {
+            try {
+              const verifyResponse = await fetch('/api/payment/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(response),
+              });
+
+              if (verifyResponse.ok) {
+                window.location.href = '/dashboard?welcome=true';
+              } else {
+                throw new Error('Payment verification failed');
+              }
+            } catch (error) {
+              setError('Payment verification failed. Please contact support.');
+            }
+          },
+          prefill: {
+            name: 'Founder',
+            email: '',
+          },
+          theme: {
+            color: '#000000',
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        // Fallback: redirect to login if Razorpay is not loaded
+        window.location.href = '/login?redirect=/pricing';
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError('Payment failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const features = [
@@ -126,12 +226,22 @@ export default function PricingPage() {
                   ))}
                 </div>
 
+                {/* Error Message */}
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                    {error}
+                  </div>
+                )}
+
                 {/* CTA Button */}
                 <Button 
                   variant="primary" 
                   size="lg" 
                   className="w-full mb-4"
                   onClick={handlePurchase}
+                  disabled={isLoading}
+                  isLoading={isLoading}
+                  loadingText="Processing..."
                 >
                   Start Your 30-Day Journey
                 </Button>
@@ -199,6 +309,9 @@ export default function PricingPage() {
             variant="secondary" 
             size="lg"
             onClick={handlePurchase}
+            disabled={isLoading}
+            isLoading={isLoading}
+            loadingText="Processing..."
             className="bg-white text-black hover:bg-gray-100"
           >
             Get Instant Access for ₹4,999

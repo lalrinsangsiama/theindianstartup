@@ -43,47 +43,47 @@ export async function PATCH(
     // Map section to database fields
     const sectionFieldMap: Record<string, Record<string, any>> = {
       'idea-vision': {
-        startup_name: updates.startupName,
+        startupName: updates.startupName,
         tagline: updates.tagline,
-        problem_statement: updates.problemStatement,
+        problemStatement: updates.problemStatement,
         solution: updates.solution,
-        value_proposition: updates.valueProposition,
+        valueProposition: updates.valueProposition,
       },
       'market-research': {
-        target_market: updates.targetMarket,
+        targetMarket: updates.targetMarket,
         competitors: updates.competitors,
-        market_size: updates.marketSize,
+        marketSize: updates.marketSize,
       },
       'business-model': {
-        revenue_streams: updates.revenueStreams,
-        pricing_strategy: updates.pricingStrategy,
+        revenueStreams: updates.revenueStreams,
+        pricingStrategy: updates.pricingStrategy,
       },
       'brand-assets': {
-        startup_name: updates.startupName,
+        startupName: updates.startupName,
         logo: updates.logo,
         domain: updates.domain,
-        social_handles: updates.socialHandles,
+        socialHandles: updates.socialHandles,
       },
       'legal-compliance': {
-        entity_type: updates.entityType,
-        compliance_status: updates.complianceStatus,
+        entityType: updates.entityType,
+        complianceStatus: updates.complianceStatus,
       },
       'product': {
-        mvp_description: updates.mvpDescription,
+        mvpDescription: updates.mvpDescription,
         features: updates.features,
-        user_feedback: updates.userFeedback,
+        userFeedback: updates.userFeedback,
       },
       'go-to-market': {
-        sales_strategy: updates.salesStrategy,
-        customer_personas: updates.customerPersonas,
+        salesStrategy: updates.salesStrategy,
+        customerPersonas: updates.customerPersonas,
       },
       'financials': {
         projections: updates.projections,
-        funding_needs: updates.fundingNeeds,
+        fundingNeeds: updates.fundingNeeds,
       },
       'pitch': {
-        pitch_deck: updates.pitchDeck,
-        one_page_summary: updates.onePageSummary,
+        pitchDeck: updates.pitchDeck,
+        onePageSummary: updates.onePageSummary,
       },
     };
 
@@ -97,12 +97,12 @@ export async function PATCH(
 
     // Update portfolio
     const { data: portfolio, error: updateError } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .update({
         ...fieldsToUpdate,
-        updated_at: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .select()
       .single();
 

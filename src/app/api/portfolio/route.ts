@@ -18,9 +18,9 @@ export async function GET(request: NextRequest) {
 
     // Get user's portfolio
     const { data: portfolio, error: portfolioError } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .single();
 
     if (portfolioError && portfolioError.code !== 'PGRST116') {
@@ -34,11 +34,9 @@ export async function GET(request: NextRequest) {
     // If no portfolio exists, create one
     if (!portfolio) {
       const { data: newPortfolio, error: createError } = await supabase
-        .from('startup_portfolios')
+        .from('StartupPortfolio')
         .insert({
-          user_id: user.id,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          userId: user.id,
         })
         .select()
         .single();
@@ -82,12 +80,12 @@ export async function PATCH(request: NextRequest) {
 
     // Update portfolio
     const { data: portfolio, error: updateError } = await supabase
-      .from('startup_portfolios')
+      .from('StartupPortfolio')
       .update({
         ...updates,
-        updated_at: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       })
-      .eq('user_id', user.id)
+      .eq('userId', user.id)
       .select()
       .single();
 

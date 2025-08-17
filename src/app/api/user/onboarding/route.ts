@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
+
+const onboardingSchema = z.object({
+  founderName: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long'),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number'),
+  startupName: z.string().min(2, 'Startup name must be at least 2 characters').max(100, 'Startup name too long'),
+  startupIdea: z.string().min(10, 'Please provide a detailed startup idea').max(500, 'Startup idea too long'),
+  targetMarket: z.string().max(200, 'Target market description too long').optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,17 +27,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
+    // Parse and validate request body
     const body = await request.json();
-    const { founderName, phone, startupName, startupIdea, targetMarket } = body;
-
-    // Validate required fields
-    if (!founderName || !phone || !startupName || !startupIdea) {
+    
+    const validation = onboardingSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { 
+          error: 'Validation failed', 
+          details: validation.error.errors.map(err => ({ 
+            field: err.path.join('.'), 
+            message: err.message 
+          }))
+        },
         { status: 400 }
       );
     }
+
+    const { founderName, phone, startupName, startupIdea, targetMarket } = validation.data;
 
     console.log('Updating user with data:', { founderName, phone, startupName, startupIdea, targetMarket });
 

@@ -41,16 +41,16 @@ interface SalesChannel {
 }
 
 interface Portfolio {
-  sales_strategy?: string;
-  customer_personas?: CustomerPersona[];
-  sales_channels?: SalesChannel[];
+  salesStrategy?: string;
+  customerPersonas?: CustomerPersona[];
+  salesChannels?: SalesChannel[];
 }
 
 export default function GoToMarketPage() {
   const router = useRouter();
   const [portfolio, setPortfolio] = useState<Portfolio>({
-    customer_personas: [],
-    sales_channels: []
+    customerPersonas: [],
+    salesChannels: []
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -72,9 +72,9 @@ export default function GoToMarketPage() {
 
       const data = await response.json();
       setPortfolio({
-        sales_strategy: data.sales_strategy || '',
-        customer_personas: data.customer_personas || [],
-        sales_channels: data.sales_channels || [],
+        salesStrategy: data.salesStrategy || '',
+        customerPersonas: data.customerPersonas || [],
+        salesChannels: data.salesChannels || [],
       });
     } catch (err) {
       console.error('Error fetching portfolio:', err);
@@ -102,14 +102,14 @@ export default function GoToMarketPage() {
     };
     setPortfolio(prev => ({
       ...prev,
-      customer_personas: [...(prev.customer_personas || []), newPersona]
+      customerPersonas: [...(prev.customerPersonas || []), newPersona]
     }));
   };
 
   const updatePersona = (id: string, field: keyof CustomerPersona, value: string) => {
     setPortfolio(prev => ({
       ...prev,
-      customer_personas: prev.customer_personas?.map(p => 
+      customerPersonas: prev.customerPersonas?.map(p => 
         p.id === id ? { ...p, [field]: value } : p
       ) || []
     }));
@@ -118,7 +118,7 @@ export default function GoToMarketPage() {
   const removePersona = (id: string) => {
     setPortfolio(prev => ({
       ...prev,
-      customer_personas: prev.customer_personas?.filter(p => p.id !== id) || []
+      customerPersonas: prev.customerPersonas?.filter(p => p.id !== id) || []
     }));
   };
 
@@ -131,14 +131,14 @@ export default function GoToMarketPage() {
     };
     setPortfolio(prev => ({
       ...prev,
-      sales_channels: [...(prev.sales_channels || []), newChannel]
+      salesChannels: [...(prev.salesChannels || []), newChannel]
     }));
   };
 
   const updateChannel = (id: string, field: keyof SalesChannel, value: string) => {
     setPortfolio(prev => ({
       ...prev,
-      sales_channels: prev.sales_channels?.map(c => 
+      salesChannels: prev.salesChannels?.map(c => 
         c.id === id ? { ...c, [field]: value } : c
       ) || []
     }));
@@ -147,7 +147,7 @@ export default function GoToMarketPage() {
   const removeChannel = (id: string) => {
     setPortfolio(prev => ({
       ...prev,
-      sales_channels: prev.sales_channels?.filter(c => c.id !== id) || []
+      salesChannels: prev.salesChannels?.filter(c => c.id !== id) || []
     }));
   };
 
@@ -162,9 +162,9 @@ export default function GoToMarketPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          salesStrategy: portfolio.sales_strategy,
-          customerPersonas: portfolio.customer_personas,
-          salesChannels: portfolio.sales_channels,
+          salesStrategy: portfolio.salesStrategy,
+          customerPersonas: portfolio.customerPersonas,
+          salesChannels: portfolio.salesChannels,
         }),
       });
 
@@ -185,12 +185,12 @@ export default function GoToMarketPage() {
     let totalFields = 3;
     let completedFields = 0;
     
-    if (portfolio.sales_strategy && portfolio.sales_strategy.trim() !== '') {
+    if (portfolio.salesStrategy && portfolio.salesStrategy.trim() !== '') {
       completedFields++;
     }
     
-    if (portfolio.customer_personas && portfolio.customer_personas.length > 0) {
-      const validPersonas = portfolio.customer_personas.filter(p => 
+    if (portfolio.customerPersonas && portfolio.customerPersonas.length > 0) {
+      const validPersonas = portfolio.customerPersonas.filter(p => 
         p.name && p.demographics && p.painPoints
       );
       if (validPersonas.length > 0) {
@@ -198,8 +198,8 @@ export default function GoToMarketPage() {
       }
     }
     
-    if (portfolio.sales_channels && portfolio.sales_channels.length > 0) {
-      const validChannels = portfolio.sales_channels.filter(c => 
+    if (portfolio.salesChannels && portfolio.salesChannels.length > 0) {
+      const validChannels = portfolio.salesChannels.filter(c => 
         c.channel && c.strategy
       );
       if (validChannels.length > 0) {
@@ -317,8 +317,8 @@ export default function GoToMarketPage() {
                     Overall Go-to-Market Strategy *
                   </label>
                   <textarea
-                    value={portfolio.sales_strategy || ''}
-                    onChange={(e) => handleInputChange('sales_strategy', e.target.value)}
+                    value={portfolio.salesStrategy || ''}
+                    onChange={(e) => handleInputChange('salesStrategy', e.target.value)}
                     placeholder="Describe your approach to acquiring and retaining customers..."
                     className="w-full min-h-[150px] p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-black focus:border-transparent"
                     rows={6}
@@ -350,9 +350,9 @@ export default function GoToMarketPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                {portfolio.customer_personas && portfolio.customer_personas.length > 0 ? (
+                {portfolio.customerPersonas && portfolio.customerPersonas.length > 0 ? (
                   <div className="space-y-4">
-                    {portfolio.customer_personas.map((persona) => (
+                    {portfolio.customerPersonas.map((persona) => (
                       <div key={persona.id} className="p-4 border border-gray-200 rounded-lg">
                         <div className="flex items-start gap-4">
                           <div className="flex-1 space-y-3">
@@ -439,9 +439,9 @@ export default function GoToMarketPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                {portfolio.sales_channels && portfolio.sales_channels.length > 0 ? (
+                {portfolio.salesChannels && portfolio.salesChannels.length > 0 ? (
                   <div className="space-y-4">
-                    {portfolio.sales_channels.map((channel) => (
+                    {portfolio.salesChannels.map((channel) => (
                       <div key={channel.id} className="p-4 border border-gray-200 rounded-lg">
                         <div className="flex items-start gap-4">
                           <div className="flex-1 space-y-3">

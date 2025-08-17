@@ -2,10 +2,14 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Text, Heading } from '@/components/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import { Badge } from '@/components/ui';
-import { ProgressBar } from '@/components/ui';
+import { Text } from '@/components/ui/Text';
+import { Heading } from '@/components/ui/Heading';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/CardContent';
+import { CardHeader } from '@/components/ui/CardHeader';
+import { CardTitle } from '@/components/ui/CardTitle';
+import { Badge } from '@/components/ui/Badge';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import { 
   Zap, 
   TrendingUp, 

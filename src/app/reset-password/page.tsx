@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
-import { Button } from '@/components/ui';
-import { Input } from '@/components/ui';
-import { Text } from '@/components/ui';
-import { Alert } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Text } from '@/components/ui/Text';
+import { Alert } from '@/components/ui/Alert';
 import { createClient } from '@/lib/supabase/client';
 import { Lock, CheckCircle } from 'lucide-react';
 

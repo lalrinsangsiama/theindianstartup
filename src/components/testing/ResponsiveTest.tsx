@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui';
-import { Card } from '@/components/ui';
-import { Heading, Text } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
 
 interface BreakpointInfo {
   name: string;

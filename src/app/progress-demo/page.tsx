@@ -2,8 +2,12 @@
 
 import React from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Heading, Text } from '@/components/ui';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { Card } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/CardHeader';
+import { CardTitle } from '@/components/ui/CardTitle';
+import { CardContent } from '@/components/ui/CardContent';
 import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '@/components/progress';
 
 export default function ProgressDemoPage() {

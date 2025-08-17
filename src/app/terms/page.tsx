@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { Logo } from '@/components/icons/Logo';
-import { Button } from '@/components/ui';
-import { Heading, Text } from '@/components/ui';
-import { ContactSupport } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { ContactSupport } from '@/components/ui/ContactSupport';
 import { ArrowLeft } from 'lucide-react';
 
 export default function TermsOfServicePage() {

@@ -1,10 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui';
-import { Input, Textarea } from '@/components/ui';
-import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ui';
-import { Alert } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Modal } from '@/components/ui/Modal';
+import { ModalHeader } from '@/components/ui/ModalHeader';
+import { ModalTitle } from '@/components/ui/ModalTitle';
+import { ModalBody } from '@/components/ui/ModalBody';
+import { ModalFooter } from '@/components/ui/ModalFooter';
+import { Alert } from '@/components/ui/Alert';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { MessageCircle, Send, Bug, Lightbulb, Heart, Frown } from 'lucide-react';
 

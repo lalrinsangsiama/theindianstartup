@@ -2,9 +2,13 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { trackError, TrackableError } from '@/lib/error-tracking';
-import { Button } from '@/components/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import { Heading, Text } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/CardContent';
+import { CardHeader } from '@/components/ui/CardHeader';
+import { CardTitle } from '@/components/ui/CardTitle';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
 import { AlertTriangle, RefreshCw, Home, MessageCircle } from 'lucide-react';
 
 interface Props {

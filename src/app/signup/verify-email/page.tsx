@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
-import { Button } from '@/components/ui';
-import { Text, Heading } from '@/components/ui';
-import { Alert } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Text } from '@/components/ui/Text';
+import { Heading } from '@/components/ui/Heading';
+import { Alert } from '@/components/ui/Alert';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, CheckCircle } from 'lucide-react';
 

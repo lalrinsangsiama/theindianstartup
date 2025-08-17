@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Card } from '@/components/ui';
-import { Button } from '@/components/ui';
-import { Heading, Text } from '@/components/ui';
-import { Alert } from '@/components/ui';
-import { Badge } from '@/components/ui';
-import { Switch } from '@/components/ui';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { Alert } from '@/components/ui/Alert';
+import { Badge } from '@/components/ui/Badge';
+import { Switch } from '@/components/ui/Switch';
 import { 
   Mail, 
   Bell, 

@@ -3,10 +3,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Heading, Text } from '@/components/ui';
-import { Card, CardContent } from '@/components/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
-import { Button } from '@/components/ui';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/CardContent';
+import { Tabs } from '@/components/ui/Tabs';
+import { TabsContent } from '@/components/ui/TabsContent';
+import { TabsList } from '@/components/ui/TabsList';
+import { TabsTrigger } from '@/components/ui/TabsTrigger';
+import { Button } from '@/components/ui/Button';
 import { XPHistoryView } from '@/components/gamification/XPHistoryView';
 import { BadgeGrid } from '@/components/gamification/BadgeGrid';
 import { XPAnimation } from '@/components/gamification/XPAnimation';
@@ -23,7 +28,7 @@ import {
   Users
 } from 'lucide-react';
 import { calculateLevel, getLevelTitle } from '@/lib/xp';
-import { Badge } from '@/components/ui';
+import { Badge } from '@/components/ui/Badge';
 
 export default function GamificationPage() {
   const [activeTab, setActiveTab] = useState('overview');

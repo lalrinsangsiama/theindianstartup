@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/icons/Logo';
-import { Button } from '@/components/ui';
-import { Input } from '@/components/ui';
-import { Heading, Text } from '@/components/ui';
-import { ProgressBar } from '@/components/ui';
-import { Alert } from '@/components/ui';
-import { Card } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui/Card';
 import { Loader2, ArrowRight, Sparkles, Target, Rocket } from 'lucide-react';
 
 const ONBOARDING_STEPS = [

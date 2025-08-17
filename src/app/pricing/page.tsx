@@ -9,10 +9,13 @@ declare global {
     Razorpay?: any;
   }
 }
-import { Button } from '@/components/ui';
-import { Card, CardHeader, CardContent } from '@/components/ui';
-import { Heading, Text } from '@/components/ui';
-import { Badge } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/CardHeader';
+import { CardContent } from '@/components/ui/CardContent';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { Badge } from '@/components/ui/Badge';
 import { Logo } from '@/components/icons/Logo';
 import { Check, IndianRupee, Shield, Users, Calendar, Zap, Target, Award } from 'lucide-react';
 

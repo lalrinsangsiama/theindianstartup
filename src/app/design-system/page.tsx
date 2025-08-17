@@ -1,18 +1,39 @@
 'use client';
 
 import React from 'react';
-import { 
-  Button,
-  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
-  Badge, AchievementBadge,
-  Input, Textarea, Select, Checkbox,
-  Heading, Text, Code, Quote,
-  ProgressBar, JourneyProgress, XPProgressBar,
-  Alert, Toast,
-  Tabs, TabsList, TabsTrigger, TabsContent,
-  Avatar, AvatarGroup,
-  Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter
-} from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/CardHeader';
+import { CardTitle } from '@/components/ui/CardTitle';
+import { CardDescription } from '@/components/ui/CardDescription';
+import { CardContent } from '@/components/ui/CardContent';
+import { CardFooter } from '@/components/ui/CardFooter';
+import { Badge } from '@/components/ui/Badge';
+import { AchievementBadge } from '@/components/ui/AchievementBadge';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Select } from '@/components/ui/Select';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { Heading } from '@/components/ui/Heading';
+import { Text } from '@/components/ui/Text';
+import { Code } from '@/components/ui/Code';
+import { Quote } from '@/components/ui/Quote';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { JourneyProgress } from '@/components/ui/JourneyProgress';
+import { XPProgressBar } from '@/components/ui/XPProgressBar';
+import { Alert } from '@/components/ui/Alert';
+import { Toast } from '@/components/ui/Toast';
+import { Tabs } from '@/components/ui/Tabs';
+import { TabsList } from '@/components/ui/TabsList';
+import { TabsTrigger } from '@/components/ui/TabsTrigger';
+import { TabsContent } from '@/components/ui/TabsContent';
+import { Avatar } from '@/components/ui/Avatar';
+import { AvatarGroup } from '@/components/ui/AvatarGroup';
+import { Modal } from '@/components/ui/Modal';
+import { ModalHeader } from '@/components/ui/ModalHeader';
+import { ModalTitle } from '@/components/ui/ModalTitle';
+import { ModalBody } from '@/components/ui/ModalBody';
+import { ModalFooter } from '@/components/ui/ModalFooter';
 import { Logo, LogoMinimal } from '@/components/icons/Logo';
 import { Trophy, Target, Rocket, BookOpen } from 'lucide-react';
 

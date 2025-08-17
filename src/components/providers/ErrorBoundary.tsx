@@ -4,11 +4,11 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { trackError, TrackableError } from '@/lib/error-tracking';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/CardContent';
-import { CardHeader } from '@/components/ui/CardHeader';
-import { CardTitle } from '@/components/ui/CardTitle';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from "@/components/ui/Card";
+import { CardTitle } from '@/components/ui/Card';
 import { Heading } from '@/components/ui/Heading';
-import { Text } from '@/components/ui/Text';
+import { Text } from '@/components/ui/Typography';
 import { AlertTriangle, RefreshCw, Home, MessageCircle } from 'lucide-react';
 
 interface Props {

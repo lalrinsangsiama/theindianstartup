@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Heading } from '@/components/ui/Heading';
-import { Text } from '@/components/ui/Text';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
 
 interface BreakpointInfo {
   name: string;

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { Text } from '@/components/ui/Text';
+import { Text } from '@/components/ui/Typography';
 import { Badge } from '@/components/ui/Badge';
 import { 
   User, 

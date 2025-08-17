@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
+import { Textarea } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ModalHeader } from '@/components/ui/ModalHeader';
 import { ModalTitle } from '@/components/ui/ModalTitle';

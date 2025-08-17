@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/CardContent';
-import { CardHeader } from '@/components/ui/CardHeader';
-import { CardTitle } from '@/components/ui/CardTitle';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from "@/components/ui/Card";
+import { CardTitle } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Text';
 import { Badge } from '@/components/ui/Badge';
 import { 

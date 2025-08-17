@@ -1,11 +1,11 @@
 'use client';
 
-import { Heading } from '@/components/ui/Heading';
-import { Text } from '@/components/ui/Text';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
 import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/CardContent';
-import { CardHeader } from '@/components/ui/CardHeader';
-import { CardTitle } from '@/components/ui/CardTitle';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from "@/components/ui/Card";
+import { CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Database, Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';

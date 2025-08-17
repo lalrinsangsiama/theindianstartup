@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { Heading } from '@/components/ui/Heading';
-import { Text } from '@/components/ui/Text';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
 import { Logo } from '@/components/icons/Logo';
 import { Home, ArrowLeft, Search } from 'lucide-react';
 

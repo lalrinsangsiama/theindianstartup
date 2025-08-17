@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  webpack: (config, { isServer }) => {
+    // Ensure proper path resolution for @/ alias
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve('./src'),
+    };
+    return config;
+  },
   images: {
     domains: ['localhost', 'theindianstartup.in'],
     formats: ['image/webp', 'image/avif'],

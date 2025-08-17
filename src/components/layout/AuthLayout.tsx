@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/icons/Logo';
-import { Heading } from '@/components/ui/Heading';
-import { Text } from '@/components/ui/Text';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
 import { ArrowLeft } from 'lucide-react';
 
 interface AuthLayoutProps {

@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Text } from '@/components/ui/Typography';
-import { Heading } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
+import { Text } from '../../components/ui/Typography';
+import { Heading } from '../../components/ui/Typography';
+import { Card } from '../../components/ui/Card';
+import { CardContent } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
 import { 
   Flame, 
   Calendar, 

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Logo } from '@/components/icons/Logo';
+import { Button } from '../components/ui/Button';
+import { Heading } from '../components/ui/Typography';
+import { Text } from '../components/ui/Typography';
+import { Logo } from '../components/icons/Logo';
 import { Home, ArrowLeft, Search } from 'lucide-react';
 
 export default function NotFound() {

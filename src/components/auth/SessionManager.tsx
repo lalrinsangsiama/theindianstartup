@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { Alert } from '@/components/ui/Alert';
-import { Button } from '@/components/ui/Button';
+import { Alert } from '../../components/ui/Alert';
+import { Button } from '../../components/ui/Button';
 import { AlertCircle } from 'lucide-react';
 
 const SESSION_WARNING_TIME = 5 * 60 * 1000; // 5 minutes before expiry

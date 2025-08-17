@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { CardHeader } from "@/components/ui/Card";
-import { CardTitle } from '@/components/ui/Card';
-import { Text } from '@/components/ui/Text';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
+import { Card } from '../../components/ui/Card';
+import { CardContent } from '../../components/ui/Card';
+import { CardHeader } from "../../components/ui/Card";
+import { CardTitle } from '../../components/ui/Card';
+import { Text } from '../../components/ui/Text';
+import { Button } from '../../components/ui/Button';
+import { Badge } from '../../components/ui/Badge';
 import { 
   ExternalLink,
   FileText,

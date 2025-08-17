@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { AuthLayout } from '@/components/layout/AuthLayout';
-import { Button } from '@/components/ui/Button';
-import { Text } from '@/components/ui/Typography';
+import { AuthLayout } from '../../components/layout/AuthLayout';
+import { Button } from '../../components/ui/Button';
+import { Text } from '../../components/ui/Typography';
 import { ShieldX } from 'lucide-react';
 
 export default function UnauthorizedPage() {

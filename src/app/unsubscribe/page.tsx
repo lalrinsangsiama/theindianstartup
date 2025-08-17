@@ -3,16 +3,16 @@
 import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Logo } from '@/components/icons/Logo';
-import { Button } from '@/components/ui/Button';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { CardHeader } from "@/components/ui/Card";
-import { CardTitle } from '@/components/ui/Card';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { Alert } from '@/components/ui/Alert';
+import { Logo } from '../../components/icons/Logo';
+import { Button } from '../../components/ui/Button';
+import { Heading } from '../../components/ui/Typography';
+import { Text } from '../../components/ui/Typography';
+import { Card } from '../../components/ui/Card';
+import { CardContent } from '../../components/ui/Card';
+import { CardHeader } from "../../components/ui/Card";
+import { CardTitle } from '../../components/ui/Card';
+import { Checkbox } from '../../components/ui/Checkbox';
+import { Alert } from '../../components/ui/Alert';
 import { CheckCircle, X, Settings, Mail } from 'lucide-react';
 
 interface EmailPreferences {

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { PostHogProvider } from "@/components/providers/PostHogProvider";
-import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
-import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
+import { AuthProvider } from "../contexts/AuthContext";
+import { PostHogProvider } from "../components/providers/PostHogProvider";
+import { ErrorBoundary } from "../components/providers/ErrorBoundary";
+import { FeedbackWidget } from '../components/ui/FeedbackWidget';
 import "./globals.css";
 
 const inter = Inter({ 

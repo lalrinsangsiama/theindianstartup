@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { CardHeader } from "@/components/ui/Card";
-import { CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { Alert } from '@/components/ui/Alert';
+import { DashboardLayout } from '../../../../components/layout/DashboardLayout';
+import { ProtectedRoute } from '../../../../components/auth/ProtectedRoute';
+import { Heading } from '../../../../components/ui/Typography';
+import { Text } from '../../../../components/ui/Typography';
+import { Card } from '../../../../components/ui/Card';
+import { CardContent } from '../../../../components/ui/Card';
+import { CardHeader } from "../../../../components/ui/Card";
+import { CardTitle } from '../../../../components/ui/Card';
+import { Badge } from '../../../../components/ui/Badge';
+import { Button } from '../../../../components/ui/Button';
+import { Alert } from '../../../../components/ui/Alert';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -24,12 +24,12 @@ import {
 } from 'lucide-react';
 
 // Import the new enhanced components
-import { MorningBrief } from '@/components/journey/MorningBrief';
-import { TaskChecklist, type Task } from '@/components/journey/TaskChecklist';
-import { ResourcesSection, type Resource } from '@/components/journey/ResourcesSection';
-import { DocumentChecklist } from '@/components/journey/DocumentChecklist';
-import { StartupFolderStructure } from '@/components/journey/StartupFolderStructure';
-import { EveningReflection } from '@/components/journey/EveningReflection';
+import { MorningBrief } from '../../../../components/journey/MorningBrief';
+import { TaskChecklist, type Task } from '../../../../components/journey/TaskChecklist';
+import { ResourcesSection, type Resource } from '../../../../components/journey/ResourcesSection';
+import { DocumentChecklist } from '../../../../components/journey/DocumentChecklist';
+import { StartupFolderStructure } from '../../../../components/journey/StartupFolderStructure';
+import { EveningReflection } from '../../../../components/journey/EveningReflection';
 
 interface LessonData {
   day: number;

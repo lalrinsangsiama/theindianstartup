@@ -2,17 +2,17 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { CardHeader } from "@/components/ui/Card";
-import { CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { JourneyProgress, StreakCounter } from '@/components/progress';
+import { DashboardLayout } from '../../components/layout/DashboardLayout';
+import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
+import { Heading } from '../../components/ui/Typography';
+import { Text } from '../../components/ui/Typography';
+import { Card } from '../../components/ui/Card';
+import { CardContent } from '../../components/ui/Card';
+import { CardHeader } from "../../components/ui/Card";
+import { CardTitle } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { JourneyProgress, StreakCounter } from '../../components/progress';
 import { 
   Calendar,
   ChevronRight,

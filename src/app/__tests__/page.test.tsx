@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import HomePage from '../page';
 
 // Mock the StructuredData component
-jest.mock('@/components/seo/StructuredData', () => ({
+jest.mock('../../components/seo/StructuredData', () => ({
   StructuredData: ({ type }: { type: string }) => <div data-testid={`structured-data-${type}`} />,
 }));
 

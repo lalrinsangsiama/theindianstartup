@@ -1,23 +1,23 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { CardHeader } from "@/components/ui/Card";
-import { CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Checkbox } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
-import { Alert } from '@/components/ui/Alert';
-import { Tabs } from '@/components/ui/Tabs';
-import { TabsContent } from '@/components/ui/Tabs';
-import { TabsList } from '@/components/ui/TabsList';
-import { TabsTrigger } from '@/components/ui/Tabs';
+import { DashboardLayout } from '../../components/layout/DashboardLayout';
+import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
+import { Heading } from '../../components/ui/Typography';
+import { Text } from '../../components/ui/Typography';
+import { Card } from '../../components/ui/Card';
+import { CardContent } from '../../components/ui/Card';
+import { CardHeader } from "../../components/ui/Card";
+import { CardTitle } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { Checkbox } from '../../components/ui/Input';
+import { Badge } from '../../components/ui/Badge';
+import { Alert } from '../../components/ui/Alert';
+import { Tabs } from '../../components/ui/Tabs';
+import { TabsContent } from '../../components/ui/Tabs';
+import { TabsList } from '../../components/ui/TabsList';
+import { TabsTrigger } from '../../components/ui/Tabs';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { 
   User, 

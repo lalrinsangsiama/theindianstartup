@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Logo } from '@/components/icons/Logo';
-import { UserMenu } from '@/components/auth/UserMenu';
-import { Button } from '@/components/ui/Button';
-import { Text } from '@/components/ui/Typography';
-import { Badge } from '@/components/ui/Badge';
+import { Logo } from '../../components/icons/Logo';
+import { UserMenu } from '../../components/auth/UserMenu';
+import { Button } from '../../components/ui/Button';
+import { Text } from '../../components/ui/Typography';
+import { Badge } from '../../components/ui/Badge';
 import { cn } from '@/lib/utils';
 import {
   Home,

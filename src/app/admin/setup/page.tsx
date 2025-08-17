@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
-import { Heading, Text } from '@/components/ui/Typography';
+import { Button } from '../../../components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/Card';
+import { Alert } from '../../../components/ui/Alert';
+import { Heading, Text } from '../../../components/ui/Typography';
 import { Loader2, Database, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function AdminSetupPage() {

@@ -3,21 +3,21 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { SessionManager } from '@/components/auth/SessionManager';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardHeader } from '@/components/ui/Card';
-import { CardTitle } from '@/components/ui/CardTitle';
-import { CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
+import { DashboardLayout } from '../../components/layout/DashboardLayout';
+import { SessionManager } from '../../components/auth/SessionManager';
+import { Heading } from '../../components/ui/Typography';
+import { Text } from '../../components/ui/Typography';
+import { Card } from '../../components/ui/Card';
+import { CardHeader } from '../../components/ui/Card';
+import { CardTitle } from '../../components/ui/CardTitle';
+import { CardContent } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Trophy, Users, Loader2, TrendingUp, Calendar, Zap, Target } from 'lucide-react';
-import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '@/components/progress';
-import { XPProgressBar } from '@/components/ui/XPProgressBar';
+import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '../../components/progress';
+import { XPProgressBar } from '../../components/ui/XPProgressBar';
 
 function DashboardContent() {
   const router = useRouter();

@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Heading } from '@/components/ui/Typography';
-import { Text } from '@/components/ui/Typography';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card';
-import { CardHeader } from "@/components/ui/Card";
-import { CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Avatar } from '@/components/ui/Avatar';
-import { Tabs } from '@/components/ui/Tabs';
-import { TabsContent } from '@/components/ui/Tabs';
-import { TabsList } from '@/components/ui/TabsList';
-import { TabsTrigger } from '@/components/ui/Tabs';
+import { DashboardLayout } from '../../components/layout/DashboardLayout';
+import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
+import { Heading } from '../../components/ui/Typography';
+import { Text } from '../../components/ui/Typography';
+import { Card } from '../../components/ui/Card';
+import { CardContent } from '../../components/ui/Card';
+import { CardHeader } from "../../components/ui/Card";
+import { CardTitle } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { Avatar } from '../../components/ui/Avatar';
+import { Tabs } from '../../components/ui/Tabs';
+import { TabsContent } from '../../components/ui/Tabs';
+import { TabsList } from '../../components/ui/TabsList';
+import { TabsTrigger } from '../../components/ui/Tabs';
 import { 
   Trophy, 
   Medal, 

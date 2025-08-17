@@ -4,6 +4,8 @@ export * from './Avatar';
 export * from './Badge';
 export * from './Button';
 export * from './Card';
+export * from './ContactSupport';
+export * from './FeedbackWidget';
 export * from './Input';
 export * from './Modal';
 export * from './ProgressBar';

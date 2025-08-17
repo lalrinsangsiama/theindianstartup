@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, CheckCircle, Rocket, Users, TrendingUp, Clock, Target, BookOpen, IndianRupee, Award, Calendar, Shield, Zap } from "lucide-react";
-import { StructuredData } from "../components/seo/StructuredData";
+import { StructuredData } from 'components/seo/StructuredData";
 
 export default function HomePage() {
   return (

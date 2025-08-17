@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendEmail } from '../lib/email';
-import { createClient } from '../lib/supabase/server';
+import { sendEmail } from '../../../lib/email';
+import { createClient } from '../../../lib/supabase/server';
 import { z } from 'zod';
 
 const welcomeEmailSchema = z.object({

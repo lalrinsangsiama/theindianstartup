@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
-import { Card } from '../../../components/ui/Card';
-import { Button } from '../../../components/ui/Button';
-import { Heading } from '../../../components/ui/Typography';
-import { Text } from '../../../components/ui/Typography';
-import { Alert } from '../../../components/ui/Alert';
-import { Badge } from '../../../components/ui/Badge';
-import { Switch } from '../../../components/ui/Switch';
+import { DashboardLayout } from '../../components/layout/DashboardLayout';
+import { Card } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Heading } from '../../components/ui/Typography';
+import { Text } from '../../components/ui/Typography';
+import { Alert } from '../../components/ui/Alert';
+import { Badge } from '../../components/ui/Badge';
+import { Switch } from '../../components/ui/Switch';
 import { 
   Mail, 
   Bell, 

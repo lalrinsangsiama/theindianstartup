@@ -3,12 +3,12 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AuthLayout } from '../../components/layout/AuthLayout';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Checkbox } from '../../components/ui/Input';
-import { Text } from '../../components/ui/Text';
-import { Alert } from '../../components/ui/Alert';
+import { AuthLayout } from '../components/layout/AuthLayout';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Checkbox } from '../components/ui/Input';
+import { Text } from '../components/ui/Text';
+import { Alert } from '../components/ui/Alert';
 import { createClient } from '../lib/supabase/client';
 import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 

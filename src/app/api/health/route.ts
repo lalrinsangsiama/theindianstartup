@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { healthCheck } from '../lib/monitoring';
-import { createClient } from '../lib/supabase/server';
+import { healthCheck } from '../../lib/monitoring';
+import { createClient } from '../../lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 

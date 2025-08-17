@@ -2,15 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { DashboardLayout } from '../../../../../components/layout/DashboardLayout';
-import { ProtectedRoute } from '../../../../../components/auth/ProtectedRoute';
-import { Heading } from '../../../../../components/ui/Typography';
-import { Text } from '../../../../../components/ui/Typography';
-import { Card } from '../../../../../components/ui/Card';
-import { CardContent } from '../../../../../components/ui/Card';
-import { Badge } from '../../../../../components/ui/Badge';
-import { Button } from '../../../../../components/ui/Button';
-import { BadgesShowcase } from '../../../../../components/progress';
+import { DashboardLayout } from '../../../../components/layout/DashboardLayout';
+import { ProtectedRoute } from '../../../../components/auth/ProtectedRoute';
+import { Heading } from '../../../../components/ui/Typography';
+import { Text } from '../../../../components/ui/Typography';
+import { Card } from '../../../../components/ui/Card';
+import { CardContent } from '../../../../components/ui/Card';
+import { Badge } from '../../../../components/ui/Badge';
+import { Button } from '../../../../components/ui/Button';
+import { BadgesShowcase } from '../../../../components/progress';
 import confetti from 'canvas-confetti';
 import { 
   Trophy,
@@ -241,4 +241,4 @@ export default function LessonCompletePage() {
 }
 
 // Import cn utility
-import { cn } from '../lib/utils';
+import { cn } from '../../../../lib/utils';

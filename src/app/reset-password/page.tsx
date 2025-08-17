@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthLayout } from '../../components/layout/AuthLayout';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Text } from '../../components/ui/Typography';
-import { Alert } from '../../components/ui/Alert';
+import { AuthLayout } from '../components/layout/AuthLayout';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Text } from '../components/ui/Typography';
+import { Alert } from '../components/ui/Alert';
 import { createClient } from '../lib/supabase/client';
 import { Lock, CheckCircle } from 'lucide-react';
 

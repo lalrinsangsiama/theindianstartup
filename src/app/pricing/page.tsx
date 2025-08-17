@@ -9,14 +9,14 @@ declare global {
     Razorpay?: any;
   }
 }
-import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
-import { CardHeader } from '../../components/ui/Card';
-import { CardContent } from '../../components/ui/CardContent';
-import { Heading } from '../../components/ui/Typography';
-import { Text } from '../../components/ui/Typography';
-import { Badge } from '../../components/ui/Badge';
-import { Logo } from '../../components/icons/Logo';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { CardHeader } from '../components/ui/Card';
+import { CardContent } from '../components/ui/CardContent';
+import { Heading } from '../components/ui/Typography';
+import { Text } from '../components/ui/Typography';
+import { Badge } from '../components/ui/Badge';
+import { Logo } from '../components/icons/Logo';
 import { Check, IndianRupee, Shield, Users, Calendar, Zap, Target, Award } from 'lucide-react';
 
 export default function PricingPage() {

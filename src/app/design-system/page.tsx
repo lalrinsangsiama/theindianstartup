@@ -1,40 +1,54 @@
 'use client';
 
+// TEMPORARILY DISABLED FOR PRODUCTION BUILD
+export default function DesignSystemPage() {
+  return (
+    <div className="container py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-4">Design System</h1>
+        <p className="text-gray-600">Design system documentation is temporarily disabled during deployment.</p>
+      </div>
+    </div>
+  );
+}
+
+/*
+
 import React from 'react';
-import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
-import { CardHeader } from '../../components/ui/Card';
-import { CardTitle } from '../../components/ui/Card';
-import { CardDescription } from '../../components/ui/Card';
-import { CardContent } from '../../components/ui/Card';
-import { CardFooter } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
-import { AchievementBadge } from '../../components/ui/AchievementBadge';
-import { Input } from '../../components/ui/Input';
-import { Textarea } from '../../components/ui/Input';
-import { Select } from '../../components/ui/Select';
-import { Checkbox } from '../../components/ui/Input';
-import { Heading } from '../../components/ui/Heading';
-import { Text } from '../../components/ui/Typography';
-import { Code } from '../../components/ui/Typography';
-import { Quote } from '../../components/ui/Typography';
-import { ProgressBar } from '../../components/ui/ProgressBar';
-import { JourneyProgress } from '../../components/ui/JourneyProgress';
-import { XPProgressBar } from '../../components/ui/XPProgressBar';
-import { Alert } from '../../components/ui/Alert';
-import { Toast } from '../../components/ui/Toast';
-import { Tabs } from '../../components/ui/Tabs';
-import { TabsList } from '../../components/ui/Tabs';
-import { TabsTrigger } from '../../components/ui/TabsTrigger';
-import { TabsContent } from '../../components/ui/Tabs';
-import { Avatar } from '../../components/ui/Avatar';
-import { AvatarGroup } from '../../components/ui/AvatarGroup';
-import { Modal } from '../../components/ui/Modal';
-import { ModalHeader } from '../../components/ui/ModalHeader';
-import { ModalTitle } from '../../components/ui/ModalTitle';
-import { ModalBody } from '../../components/ui/ModalBody';
-import { ModalFooter } from '../../components/ui/ModalFooter';
-import { Logo, LogoMinimal } from '../../components/icons/Logo';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
+import { CardHeader } from '../components/ui/Card';
+import { CardTitle } from '../components/ui/Card';
+import { CardDescription } from '../components/ui/Card';
+import { CardContent } from '../components/ui/Card';
+import { CardFooter } from '../components/ui/Card';
+import { Badge } from '../components/ui/Badge';
+// AchievementBadge component not found
+import { Input } from '../components/ui/Input';
+import { Textarea } from '../components/ui/Input';
+// Select component imported from Input
+import { Checkbox } from '../components/ui/Input';
+import { Heading } from '../components/ui/Typography';
+import { Text } from '../components/ui/Typography';
+import { Code } from '../components/ui/Typography';
+import { Quote } from '../components/ui/Typography';
+import { ProgressBar } from '../components/ui/ProgressBar';
+import { JourneyProgress } from '../components/progress/JourneyProgress';
+// XPProgressBar component not found
+import { Alert } from '../components/ui/Alert';
+// Toast component not found
+import { Tabs } from '../components/ui/Tabs';
+import { TabsList } from '../components/ui/Tabs';
+import { TabsTrigger } from '../components/ui/Tabs';
+import { TabsContent } from '../components/ui/Tabs';
+import { Avatar } from '../components/ui/Avatar';
+import { AvatarGroup } from '../components/ui/AvatarGroup';
+import { Modal } from '../components/ui/Modal';
+import { ModalHeader } from '../components/ui/ModalHeader';
+import { ModalTitle } from '../components/ui/ModalTitle';
+import { ModalBody } from '../components/ui/ModalBody';
+import { ModalFooter } from '../components/ui/ModalFooter';
+import { Logo, LogoMinimal } from '../components/icons/Logo';
 import { Trophy, Target, Rocket, BookOpen } from 'lucide-react';
 
 export default function DesignSystemPage() {
@@ -399,4 +413,4 @@ export default function DesignSystemPage() {
       )}
     </div>
   );
-}
+}*/

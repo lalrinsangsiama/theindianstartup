@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthLayout } from '../../../components/layout/AuthLayout';
-import { Button } from '../../../components/ui/Button';
-import { Text } from '../../../components/ui/Typography';
-import { Alert } from '../../../components/ui/Alert';
+import { AuthLayout } from '../../components/layout/AuthLayout';
+import { Button } from '../../components/ui/Button';
+import { Text } from '../../components/ui/Typography';
+import { Alert } from '../../components/ui/Alert';
 import { Loader2 } from 'lucide-react';
 
 export default function AuthCallbackPage() {

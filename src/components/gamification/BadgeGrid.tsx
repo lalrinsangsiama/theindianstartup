@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Text, Heading } from '@/components/ui/Typography';
-import { Badge as UIBadge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Card } from '@/components/ui';
+import { Text, Heading } from '@/components/ui';
+import { Badge as UIBadge } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Modal } from '@/components/ui';
+import { ProgressBar } from '@/components/ui';
 import { BADGES, BadgeId, getBadgeProgress, sortBadges } from '@/lib/badges';
 import { cn } from '@/lib/cn';
 import { Lock, Star, Info } from 'lucide-react';

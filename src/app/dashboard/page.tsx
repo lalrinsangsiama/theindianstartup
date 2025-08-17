@@ -6,14 +6,14 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { SessionManager } from '@/components/auth/SessionManager';
-import { Heading, Text } from '@/components/ui/Typography';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Heading, Text } from '@/components/ui';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
+import { Badge } from '@/components/ui';
+import { Button } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Trophy, Users, Loader2, TrendingUp, Calendar, Zap, Target } from 'lucide-react';
 import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '@/components/progress';
-import { XPProgressBar } from '@/components/ui/ProgressBar';
+import { XPProgressBar } from '@/components/ui';
 
 function DashboardContent() {
   const router = useRouter();

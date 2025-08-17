@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
-import { Button } from '@/components/ui/Button';
-import { Text, Heading } from '@/components/ui/Typography';
-import { Alert } from '@/components/ui/Alert';
+import { Button } from '@/components/ui';
+import { Text, Heading } from '@/components/ui';
+import { Alert } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, CheckCircle } from 'lucide-react';
 

@@ -4,11 +4,11 @@ import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Logo } from '@/components/icons/Logo';
-import { Button } from '@/components/ui/Button';
-import { Heading, Text } from '@/components/ui/Typography';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Checkbox } from '@/components/ui/Input';
-import { Alert } from '@/components/ui/Alert';
+import { Button } from '@/components/ui';
+import { Heading, Text } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Checkbox } from '@/components/ui';
+import { Alert } from '@/components/ui';
 import { CheckCircle, X, Settings, Mail } from 'lucide-react';
 
 interface EmailPreferences {

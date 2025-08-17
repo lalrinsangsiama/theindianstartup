@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Heading, Text } from '@/components/ui/Typography';
-import { Card, CardContent } from '@/components/ui/Card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { Button } from '@/components/ui/Button';
+import { Heading, Text } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { XPHistoryView } from '@/components/gamification/XPHistoryView';
 import { BadgeGrid } from '@/components/gamification/BadgeGrid';
 import { XPAnimation } from '@/components/gamification/XPAnimation';
@@ -23,7 +23,7 @@ import {
   Users
 } from 'lucide-react';
 import { calculateLevel, getLevelTitle } from '@/lib/xp';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui';
 
 export default function GamificationPage() {
   const [activeTab, setActiveTab] = useState('overview');

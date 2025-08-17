@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Text, Heading } from '@/components/ui/Typography';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge as UIBadge } from '@/components/ui/Badge';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Text, Heading } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Badge as UIBadge } from '@/components/ui';
+import { Modal } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { 
   Trophy, 
   Star,

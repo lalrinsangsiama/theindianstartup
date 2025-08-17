@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Heading, Text } from '@/components/ui/Typography';
+import { Button } from '@/components/ui';
+import { Heading, Text } from '@/components/ui';
 import { Logo } from '@/components/icons/Logo';
 import { Home, ArrowLeft, Search } from 'lucide-react';
 

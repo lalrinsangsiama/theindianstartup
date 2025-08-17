@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Text } from '@/components/ui/Typography';
-import { Badge } from '@/components/ui/Badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Text } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   Sunrise, 
   Clock, 

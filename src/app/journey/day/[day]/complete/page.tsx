@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Heading, Text } from '@/components/ui/Typography';
-import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Heading, Text } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui';
+import { Badge } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { BadgesShowcase } from '@/components/progress';
 import confetti from 'canvas-confetti';
 import { 

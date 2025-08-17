@@ -1,8 +1,8 @@
 'use client';
 
-import { Heading, Text } from '@/components/ui/Typography';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Heading, Text } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Database, Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 

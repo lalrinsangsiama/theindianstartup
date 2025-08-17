@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Text, Heading } from '@/components/ui/Typography';
-import { Badge } from '@/components/ui/Badge';
+import { Text, Heading } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   CheckCircle2, 
   Circle, 

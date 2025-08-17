@@ -4,10 +4,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { Avatar } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
-import { Text } from '@/components/ui/Typography';
-import { Badge } from '@/components/ui/Badge';
+import { Avatar } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Text } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   User, 
   Settings, 

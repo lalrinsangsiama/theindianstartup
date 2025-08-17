@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Text, Heading } from '@/components/ui/Typography';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Text, Heading } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
+import { ProgressBar } from '@/components/ui';
 import { 
   CheckCircle2, 
   Circle, 

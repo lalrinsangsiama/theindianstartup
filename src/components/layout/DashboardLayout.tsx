@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
 import { UserMenu } from '@/components/auth/UserMenu';
-import { Button } from '@/components/ui/Button';
-import { Text } from '@/components/ui/Typography';
-import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui';
+import { Text } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import {
   Home,

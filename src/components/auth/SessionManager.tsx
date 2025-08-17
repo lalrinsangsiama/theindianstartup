@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthContext } from '../contexts/AuthContext';
 import { Alert } from '../../components/ui/Alert';
 import { Button } from '../../components/ui/Button';
 import { AlertCircle } from 'lucide-react';

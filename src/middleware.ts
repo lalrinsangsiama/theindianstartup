@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { updateSession } from '../lib/supabase/middleware'
 import { createServerClient } from '@supabase/ssr'
-import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
-import { apiRateLimit, authRateLimit } from '@/lib/rate-limit'
+import { SECURITY_HEADERS, logSecurityEvent } from '../lib/security'
+import { apiRateLimit, authRateLimit } from '../lib/rate-limit'
 
 export async function middleware(request: NextRequest) {
   // Apply security headers

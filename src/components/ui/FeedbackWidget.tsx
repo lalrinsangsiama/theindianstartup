@@ -10,7 +10,7 @@ import { ModalTitle } from '../../components/ui/ModalTitle';
 import { ModalBody } from '../../components/ui/ModalBody';
 import { ModalFooter } from '../../components/ui/ModalFooter';
 import { Alert } from '../../components/ui/Alert';
-import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAnalytics } from '../hooks/useAnalytics';
 import { MessageCircle, Send, Bug, Lightbulb, Heart, Frown } from 'lucide-react';
 
 type FeedbackType = 'bug' | 'feature' | 'improvement' | 'compliment' | 'complaint';

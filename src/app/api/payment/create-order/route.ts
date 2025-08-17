@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUser } from '@/lib/auth';
-import { apiRateLimit } from '@/lib/rate-limit';
+import { getUser } from '../lib/auth';
+import { apiRateLimit } from '../lib/rate-limit';
 import { z } from 'zod';
 
 // Mock Razorpay for development - replace with actual Razorpay in production

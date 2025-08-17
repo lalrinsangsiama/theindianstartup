@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth';
+import { requireAdmin } from '../lib/auth';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 

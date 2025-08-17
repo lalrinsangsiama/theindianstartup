@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { initPostHog, identifyUser, setUserProperties, resetUser } from '@/lib/posthog';
-import { setupGlobalErrorTracking, trackPerformanceMetrics } from '@/lib/error-tracking';
+import { useAuth } from '../hooks/useAuth';
+import { initPostHog, identifyUser, setUserProperties, resetUser } from '../lib/posthog';
+import { setupGlobalErrorTracking, trackPerformanceMetrics } from '../lib/error-tracking';
 
 interface PostHogProviderProps {
   children: React.ReactNode;

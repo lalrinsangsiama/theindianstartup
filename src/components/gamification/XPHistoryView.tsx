@@ -15,7 +15,7 @@ import {
   Users,
   FileText
 } from 'lucide-react';
-import { cn } from '@/lib/cn';
+import { cn } from '../lib/cn';
 
 interface XPEvent {
   id: string;

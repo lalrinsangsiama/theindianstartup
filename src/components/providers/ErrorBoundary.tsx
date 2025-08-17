@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { trackError, TrackableError } from '@/lib/error-tracking';
+import { trackError, TrackableError } from '../lib/error-tracking';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { CardContent } from '../../components/ui/Card';

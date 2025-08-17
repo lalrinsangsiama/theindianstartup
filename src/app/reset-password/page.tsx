@@ -7,7 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Text } from '../../components/ui/Typography';
 import { Alert } from '../../components/ui/Alert';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '../lib/supabase/client';
 import { Lock, CheckCircle } from 'lucide-react';
 
 export default function ResetPasswordPage() {

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import {
   trackEvent,
   trackUserRegistration,
@@ -13,7 +13,7 @@ import {
   trackPageView,
   isFeatureEnabled,
   getFeatureFlag,
-} from '@/lib/posthog';
+} from '../lib/posthog';
 import { 
   trackError,
   trackAuthError,
@@ -28,7 +28,7 @@ import {
   TrackableError,
   type ErrorCategory,
   type ErrorSeverity,
-} from '@/lib/error-tracking';
+} from '../lib/error-tracking';
 
 export function useAnalytics() {
   const { user } = useAuth();

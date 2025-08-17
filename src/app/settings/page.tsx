@@ -18,7 +18,7 @@ import { Tabs } from '../../components/ui/Tabs';
 import { TabsContent } from '../../components/ui/Tabs';
 import { TabsList } from '../../components/ui/TabsList';
 import { TabsTrigger } from '../../components/ui/Tabs';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthContext } from '../contexts/AuthContext';
 import { 
   User, 
   Bell, 

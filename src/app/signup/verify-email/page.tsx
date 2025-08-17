@@ -7,7 +7,7 @@ import { Button } from '../../../components/ui/Button';
 import { Text } from '../../../components/ui/Typography';
 import { Heading } from '../../../components/ui/Typography';
 import { Alert } from '../../../components/ui/Alert';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '../lib/supabase/client';
 import { Mail, CheckCircle } from 'lucide-react';
 
 export default function VerifyEmailPage() {

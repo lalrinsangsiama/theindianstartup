@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { checkStreakBonus, checkMilestoneBonus } from '@/lib/xp';
+import { createClient } from '../lib/supabase/server';
+import { checkStreakBonus, checkMilestoneBonus } from '../lib/xp';
 
 export const dynamic = 'force-dynamic';
 

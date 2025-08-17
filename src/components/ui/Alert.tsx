@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '../lib/cn';
 import { AlertCircle, CheckCircle, Info, XCircle, X as XIcon } from 'lucide-react';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {

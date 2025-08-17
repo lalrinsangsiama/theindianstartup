@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { requireAdmin } from '@/lib/auth';
-import { createClient } from '@/lib/supabase/server';
+import { requireAdmin } from '../lib/auth';
+import { createClient } from '../lib/supabase/server';
 
 export default async function AdminPage() {
   try {

@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthContext } from '@/contexts/AuthContext';
-import { createClient } from '@/lib/supabase/client';
+import { useAuthContext } from '../contexts/AuthContext';
+import { createClient } from '../lib/supabase/client';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {

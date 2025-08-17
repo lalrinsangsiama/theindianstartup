@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '../lib/cn';
 
 // Heading Component
 export interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import { Text } from '../../components/ui/Typography';
 import { Heading } from '../../components/ui/Typography';
 import { Badge } from '../../components/ui/Badge';

@@ -9,7 +9,7 @@ import { Input } from '../../components/ui/Input';
 import { Checkbox } from '../../components/ui/Input';
 import { Text } from '../../components/ui/Text';
 import { Alert } from '../../components/ui/Alert';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '../lib/supabase/client';
 import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
 function LoginContent() {

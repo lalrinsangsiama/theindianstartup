@@ -399,4 +399,4 @@ function MilestoneCard({
 }
 
 // Import cn utility
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';

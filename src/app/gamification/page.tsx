@@ -16,7 +16,7 @@ import { XPHistoryView } from '../../components/gamification/XPHistoryView';
 import { BadgeGrid } from '../../components/gamification/BadgeGrid';
 import { XPAnimation } from '../../components/gamification/XPAnimation';
 import { BadgeUnlockNotification } from '../../components/gamification/BadgeUnlockNotification';
-import { useXPSystem } from '@/hooks/useXPSystem';
+import { useXPSystem } from '../hooks/useXPSystem';
 import { 
   Zap, 
   Trophy,
@@ -27,7 +27,7 @@ import {
   Calendar,
   Users
 } from 'lucide-react';
-import { calculateLevel, getLevelTitle } from '@/lib/xp';
+import { calculateLevel, getLevelTitle } from '../lib/xp';
 import { Badge } from '../../components/ui/Badge';
 
 export default function GamificationPage() {

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { XPEventType, prepareXPAnimation } from '@/lib/xp';
-import { BadgeId } from '@/lib/badges';
+import { XPEventType, prepareXPAnimation } from '../lib/xp';
+import { BadgeId } from '../lib/badges';
 
 interface XPAwardResponse {
   success: boolean;

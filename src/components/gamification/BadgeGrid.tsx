@@ -6,8 +6,8 @@ import { Badge as UIBadge } from '../../components/ui/Badge as UIBadge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { BADGES, BadgeId, getBadgeProgress, sortBadges } from '@/lib/badges';
-import { cn } from '@/lib/cn';
+import { BADGES, BadgeId, getBadgeProgress, sortBadges } from '../lib/badges';
+import { cn } from '../lib/cn';
 import { Lock, Star, Info } from 'lucide-react';
 
 interface BadgeGridProps {

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '../lib/supabase/server';
 
 // Admin email addresses
 const ADMIN_EMAILS = [

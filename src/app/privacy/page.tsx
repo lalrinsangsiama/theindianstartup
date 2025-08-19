@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Logo } from '../components/icons/Logo';
-import { Button } from '../components/ui/Button';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { ContactSupport } from '../components/ui/ContactSupport';
+import { Logo } from '@/components/icons/Logo';
+import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { ContactSupport } from '@/components/ui/ContactSupport';
 import { ArrowLeft } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
@@ -40,7 +40,12 @@ export default function PrivacyPolicyPage() {
           <section>
             <Text className="mb-4">
               At The Indian Startup, we take your privacy seriously. This Privacy Policy explains how we collect, use, 
-              disclose, and safeguard your information when you use our platform.
+              disclose, and safeguard your information when you use our educational platform.
+            </Text>
+            <Text className="mb-4">
+              <strong>Important:</strong> The Indian Startup is an educational platform providing learning resources, guides, and templates. 
+              We do not provide professional services such as legal, financial, or business consulting. All information collected is used 
+              solely to enhance your learning experience.
             </Text>
           </section>
 
@@ -85,18 +90,21 @@ export default function PrivacyPolicyPage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">2. How We Use Your Information</Heading>
             <Text className="mb-4">
-              We use your information to:
+              We use your information exclusively for educational platform purposes:
             </Text>
             <ul className="list-disc pl-6 space-y-2 mb-4">
-              <li>Provide and maintain the Service</li>
-              <li>Process your subscription and payments</li>
-              <li>Send you updates and notifications</li>
-              <li>Track your progress and award achievements</li>
-              <li>Improve and personalize your experience</li>
-              <li>Communicate with you about the Service</li>
-              <li>Ensure security and prevent fraud</li>
+              <li>Provide access to educational content and learning materials</li>
+              <li>Process your course purchases and payments</li>
+              <li>Send course updates and learning notifications</li>
+              <li>Track your learning progress and award achievements</li>
+              <li>Improve and personalize your learning experience</li>
+              <li>Facilitate peer learning through community features</li>
+              <li>Ensure platform security and prevent fraud</li>
               <li>Comply with legal obligations</li>
             </ul>
+            <Text className="mb-4">
+              We do not use your information to provide professional services or act on your behalf in any business matters.
+            </Text>
           </section>
 
           <section>
@@ -121,7 +129,7 @@ export default function PrivacyPolicyPage() {
               <li>Your name and profile picture</li>
               <li>Achievements and badges</li>
               <li>Community posts and comments</li>
-              <li>Leaderboard rankings (if opted in)</li>
+              <li>Progress metrics and statistics</li>
             </ul>
 
             <Text weight="medium" className="mb-2">Legal Requirements</Text>

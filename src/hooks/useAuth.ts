@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '../lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthState {
@@ -145,50 +145,3 @@ export function useRequireAuth(redirectTo: string = '/login') {
   return { user, loading };
 }
 
-// Hook to check if user has active subscription
-export function useSubscription() {
-  const { user } = useAuth();
-  const [subscription, setSubscription] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
-
-  useEffect(() => {
-    if (!user) {
-      setSubscription(null);
-      setLoading(false);
-      return;
-    }
-
-    const fetchSubscription = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('Subscription')
-          .select('*')
-          .eq('userId', user.id)
-          .eq('status', 'active')
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
-
-        setSubscription(data);
-      } catch (error) {
-        console.error('Error fetching subscription:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSubscription();
-  }, [user, supabase]);
-
-  const hasActiveSubscription = !!subscription && 
-    new Date(subscription.expiryDate) > new Date();
-
-  return {
-    subscription,
-    loading,
-    hasActiveSubscription,
-  };
-}

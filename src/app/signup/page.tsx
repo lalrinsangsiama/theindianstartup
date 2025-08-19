@@ -1,20 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AuthLayout } from '../components/layout/AuthLayout';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Checkbox } from '../components/ui/Input';
-import { Text } from '../components/ui/Text';
-import { Alert } from '../components/ui/Alert';
-import { createClient } from '../lib/supabase/client';
-import { Mail, Lock, User, Phone, Check } from 'lucide-react';
+import { AuthLayout } from '@/components/layout/AuthLayout';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Checkbox } from '@/components/ui/Input';
+import { Text } from '@/components/ui/Typography';
+import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { createClient } from '@/lib/supabase/client';
+import { Mail, Lock, User, Phone, Check, ShoppingCart, Sparkles } from 'lucide-react';
+
+interface CartItem {
+  product: {
+    code: string;
+    title: string;
+    price: number;
+  };
+  quantity: number;
+}
 
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [hasEarlyBird, setHasEarlyBird] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -28,6 +41,29 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState('');
+
+  // Load cart from localStorage
+  useEffect(() => {
+    const savedCart = localStorage.getItem('preSignupCart');
+    const earlyBird = localStorage.getItem('earlyBirdPurchase');
+    
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+    if (earlyBird === 'true') {
+      setHasEarlyBird(true);
+    }
+  }, []);
+
+  const calculateTotal = () => {
+    const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    const discount = hasEarlyBird && cart.length > 1 ? subtotal * 0.05 : 0;
+    return {
+      subtotal,
+      discount,
+      total: subtotal - discount
+    };
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -91,6 +127,8 @@ export default function SignupPage() {
           data: {
             name: formData.name,
             phone: formData.phone,
+            pendingCart: cart.length > 0 ? cart : null,
+            hasEarlyBird: hasEarlyBird,
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -128,6 +166,54 @@ export default function SignupPage() {
       title="Start Your 30-Day Journey"
       subtitle="Join thousands of Indian founders launching their startups"
     >
+      {/* Show cart if present */}
+      {cart.length > 0 && (
+        <Card className="mb-6 p-4 bg-gray-50 border-2 border-accent">
+          <div className="flex items-center gap-2 mb-3">
+            <ShoppingCart className="w-5 h-5 text-accent" />
+            <Text weight="medium">Your Selected Courses</Text>
+            {hasEarlyBird && cart.length > 1 && (
+              <Badge className="bg-green-100 text-green-700 text-xs">
+                5% Early Bird Discount
+              </Badge>
+            )}
+          </div>
+          
+          <div className="space-y-2 mb-3">
+            {cart.map((item) => (
+              <div key={item.product.code} className="flex justify-between text-sm">
+                <Text>{item.product.title} {item.quantity > 1 && `(x${item.quantity})`}</Text>
+                <Text>₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</Text>
+              </div>
+            ))}
+          </div>
+          
+          {(() => {
+            const { subtotal, discount, total } = calculateTotal();
+            return (
+              <div className="border-t pt-3 space-y-1">
+                {discount > 0 && (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <Text color="muted">Subtotal</Text>
+                      <Text color="muted">₹{subtotal.toLocaleString('en-IN')}</Text>
+                    </div>
+                    <div className="flex justify-between text-sm text-green-600">
+                      <Text>Discount</Text>
+                      <Text>-₹{discount.toLocaleString('en-IN')}</Text>
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-between font-bold">
+                  <Text>Total (pay after signup)</Text>
+                  <Text>₹{total.toLocaleString('en-IN')}</Text>
+                </div>
+              </div>
+            );
+          })()}
+        </Card>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {signupError && (
           <Alert variant="error" title="Signup failed">
@@ -238,6 +324,7 @@ export default function SignupPage() {
               <Link href="/privacy" className="text-accent hover:underline" target="_blank">
                 Privacy Policy
               </Link>
+              . I understand this is an educational platform providing guides and resources only.
             </label>
           </div>
           {errors.acceptTerms && (

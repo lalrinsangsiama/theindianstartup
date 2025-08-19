@@ -1,10 +1,10 @@
 import React from 'react';
-import { Card } from '../../components/ui/Card';
-import { CardContent } from '../../components/ui/Card';
-import { CardHeader } from "../../components/ui/Card";
-import { CardTitle } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
-import { Text } from '../../components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Text } from '@/components/ui/Typography';
 import { 
   Zap, 
   TrendingUp, 
@@ -15,7 +15,7 @@ import {
   Users,
   FileText
 } from 'lucide-react';
-import { cn } from '../lib/cn';
+import { cn } from '@/lib/cn';
 
 interface XPEvent {
   id: string;

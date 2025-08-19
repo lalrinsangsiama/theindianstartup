@@ -51,15 +51,6 @@ export const trackUserRegistration = (userId: string, method: 'email' | 'google'
   });
 };
 
-// Track subscription purchase
-export const trackSubscriptionPurchase = (userId: string, amount: number, plan: string) => {
-  trackEvent('subscription_purchased', {
-    user_id: userId,
-    amount,
-    plan,
-    currency: 'INR',
-  });
-};
 
 // Track daily lesson progress
 export const trackLessonProgress = (userId: string, day: number, action: 'started' | 'completed') => {

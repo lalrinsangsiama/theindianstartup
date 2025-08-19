@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { requireAdmin } from '../lib/auth';
-import { createClient } from '../lib/supabase/server';
+import { requireAdmin } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export default async function AdminPage() {
   try {
@@ -14,12 +14,10 @@ export default async function AdminPage() {
   // Fetch statistics
   const [
     { count: totalUsers },
-    { count: activeSubscriptions },
     { count: totalLessons },
     { data: recentUsers }
   ] = await Promise.all([
     supabase.from('User').select('*', { count: 'exact', head: true }),
-    supabase.from('Subscription').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('DailyLesson').select('*', { count: 'exact', head: true }),
     supabase.from('User').select('*').order('createdAt', { ascending: false }).limit(10)
   ]);
@@ -30,15 +28,10 @@ export default async function AdminPage() {
         <h1 className="text-3xl font-bold font-mono mb-8">Admin Dashboard</h1>
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 border border-gray-200">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Users</h3>
             <p className="mt-2 text-3xl font-bold font-mono">{totalUsers || 0}</p>
-          </div>
-          
-          <div className="bg-white p-6 border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Active Subscriptions</h3>
-            <p className="mt-2 text-3xl font-bold font-mono">{activeSubscriptions || 0}</p>
           </div>
           
           <div className="bg-white p-6 border border-gray-200">

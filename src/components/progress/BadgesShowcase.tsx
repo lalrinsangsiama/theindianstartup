@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { cn } from '../lib/utils';
-import { Text } from '../../components/ui/Typography';
-import { Heading } from '../../components/ui/Typography';
-import { Card } from '../../components/ui/Card';
-import { CardContent } from '../../components/ui/Card';
-import { CardHeader } from "../../components/ui/Card";
-import { CardTitle } from '../../components/ui/Card';
-import { Badge as UIBadge } from '../../components/ui/Badge as UIBadge';
-import { Modal } from '../../components/ui/Modal';
-import { Button } from '../../components/ui/Button';
+import { cn } from '@/lib/utils';
+import { Text } from '@/components/ui/Typography';
+import { Heading } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { Badge as UIBadge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
 import { 
   Trophy, 
   Star,

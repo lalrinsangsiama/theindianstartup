@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
 // GET - Fetch posts with pagination and filtering
 export async function GET(request: NextRequest) {

@@ -1,9 +1,8 @@
 import { useCallback } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import {
   trackEvent,
   trackUserRegistration,
-  trackSubscriptionPurchase,
   trackLessonProgress,
   trackXPEarned,
   trackBadgeUnlocked,
@@ -13,7 +12,7 @@ import {
   trackPageView,
   isFeatureEnabled,
   getFeatureFlag,
-} from '../lib/posthog';
+} from '@/lib/posthog';
 import { 
   trackError,
   trackAuthError,
@@ -28,7 +27,7 @@ import {
   TrackableError,
   type ErrorCategory,
   type ErrorSeverity,
-} from '../lib/error-tracking';
+} from '@/lib/error-tracking';
 
 export function useAnalytics() {
   const { user } = useAuth();
@@ -56,12 +55,6 @@ export function useAnalytics() {
     }
   }, [user?.id]);
 
-  // Subscription purchase tracking
-  const trackPurchase = useCallback((amount: number, plan: string) => {
-    if (user?.id) {
-      trackSubscriptionPurchase(user.id, amount, plan);
-    }
-  }, [user?.id]);
 
   // Lesson progress tracking
   const trackLesson = useCallback((day: number, action: 'started' | 'completed') => {
@@ -210,7 +203,6 @@ export function useAnalytics() {
     
     // Specific event trackers
     trackRegistration,
-    trackPurchase,
     trackLesson,
     trackXP,
     trackBadge,

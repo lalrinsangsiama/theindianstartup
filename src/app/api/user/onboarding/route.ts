@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { createId } from '@paralleldrive/cuid2';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,10 +47,8 @@ export async function POST(request: NextRequest) {
 
     const { founderName, phone, startupName, startupIdea, targetMarket } = validation.data;
 
-    console.log('Updating user with data:', { founderName, phone, startupName, startupIdea, targetMarket });
-
     // Check if user already exists in our database
-    const { data: existingUser } = await supabase
+    const { data: existingUser, error: existingUserError } = await supabase
       .from('User')
       .select('*, StartupPortfolio(*)')
       .eq('id', user.id)
@@ -91,14 +90,20 @@ export async function POST(request: NextRequest) {
           throw new Error(`Failed to update portfolio: ${portfolioUpdateError.message}`);
         }
       } else {
-        const { error: portfolioInsertError } = await supabase
+        const { data: portfolioInsert, error: portfolioInsertError } = await supabase
           .from('StartupPortfolio')
           .insert({
+            id: createId(),
             userId: user.id,
             startupName,
             problemStatement: startupIdea,
             targetMarket: targetMarket ? { description: targetMarket } : null,
-          });
+            updatedAt: new Date().toISOString(),
+          })
+          .select('*')
+          .single();
+
+        // Portfolio creation for existing user
 
         if (portfolioInsertError) {
           console.error('Portfolio insert error:', portfolioInsertError);
@@ -127,14 +132,20 @@ export async function POST(request: NextRequest) {
       }
 
       // Create portfolio
-      const { error: portfolioInsertError } = await supabase
+      const { data: portfolioInsert, error: portfolioInsertError } = await supabase
         .from('StartupPortfolio')
         .insert({
+          id: createId(),
           userId: user.id,
           startupName,
           problemStatement: startupIdea,
           targetMarket: targetMarket ? { description: targetMarket } : null,
-        });
+          updatedAt: new Date().toISOString(),
+        })
+        .select('*')
+        .single();
+
+      // Portfolio creation for new user
 
       if (portfolioInsertError) {
         console.error('Portfolio insert error:', portfolioInsertError);
@@ -148,6 +159,7 @@ export async function POST(request: NextRequest) {
     const { error: xpEventError } = await supabase
       .from('XPEvent')
       .insert({
+        id: createId(),
         userId: user.id,
         type: 'onboarding_complete',
         points: 50,
@@ -172,7 +184,7 @@ export async function POST(request: NextRequest) {
       // Don't throw error here, as the main onboarding is successful
     }
 
-    console.log('Onboarding completed successfully for user:', user.id);
+    // Onboarding completed successfully
 
     return NextResponse.json({
       success: true,

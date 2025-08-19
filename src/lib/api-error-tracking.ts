@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { trackAPIError, trackPaymentError, trackAuthError, trackDatabaseError, TrackableError } from '../lib/error-tracking';
+import { trackAPIError, trackPaymentError, trackAuthError, trackDatabaseError, TrackableError } from '@/lib/error-tracking';
 
 // API error types
 export type APIErrorType = 

@@ -1,4 +1,4 @@
-# The Indian Startup Platform - P1 MVP Implementation Guide
+# The Indian Startup Platform - Modular Product Ecosystem Guide
 
 ## Project Overview
 
@@ -7,207 +7,165 @@
 **Email:** support@theindianstartup.in  
 **GitHub:** https://github.com/lalrinsangsiama/theindianstartup.git
 
-**Mission:** Launch with P1: 30-Day India Launch Sprint as a fully integrated, gamified web experience that helps Indian founders go from idea to launch-ready startup.
+**Mission:** Empower Indian founders with modular, step-by-step playbooks (P1-P11) that take them from idea to scale, with each product solving specific startup challenges.
 
-**Target Audience:** First-time Indian founders who want to launch their startup in 30 days with proper compliance and validation.
+**Target Audience:** Indian founders at any stage who need practical, India-specific guidance on building successful startups.
 
-**MVP Focus:** P1 only - proving the model before expanding to P2-P8
+**Business Model:** Modular product ecosystem with individual purchases (₹999-₹9,999) or All-Access Bundle (₹54,999)
 
-**Revenue Target:** ₹3 lakhs/month from P1 sales within 3 months
+**Revenue Target:** ₹10 lakhs/month within 6 months through diversified product sales
 
-## P1: 30-Day India Launch Sprint - Core Features
+## Product Ecosystem Overview
 
-### Product Structure
+### Free Access
+- Personal dashboard
+- Community discussions
+- Basic ecosystem directory
+- Founder networking
 
-**Price:** ₹4,999 (premium 30-day journey)  
-**Access:** 365 days from purchase date  
-**Format:** Daily lessons unlocked sequentially on the platform
+### Paid Products (P1-P11)
 
-### Daily Lesson Format
+#### P1: 30-Day India Launch Sprint (₹4,999)
+**Description:** Go from idea to incorporated startup with daily action plans  
+**Duration:** 30 days  
+**Modules:** 4 (Foundation, Building Blocks, Making it Real, Launch Ready)  
+**Outcome:** Launch-ready startup with legal entity, MVP, and first customers
 
-Each day includes:
-1. **Morning Brief** (2-3 min read)
-   - What you'll accomplish today
-   - Why it matters for Indian startups
-   - Expected time commitment
+#### P2: Incorporation & Compliance Kit - Complete (₹4,999)
+**Description:** Master Indian business incorporation and ongoing compliance with comprehensive legal framework  
+**Duration:** 40 days  
+**Modules:** 10 comprehensive modules (150+ templates)  
+**Outcome:** Fully incorporated, legally compliant business with all registrations, systems, and ongoing compliance management
 
-2. **Action Items** (30-60 min work)
-   - Step-by-step tasks with clear instructions
-   - India-specific guidance (MCA, GST, DPIIT, etc.)
-   - Screenshots and examples
+#### P3: Funding in India - Complete Mastery (₹5,999)
+**Description:** Master the Indian funding ecosystem from government grants to venture capital  
+**Duration:** 45 days  
+**Modules:** 12 (comprehensive coverage)  
+**Key Features:**
+- Government funding (₹20L-₹5Cr grants)
+- Angel investment strategies (₹25L-₹2Cr)
+- VC funding roadmap (Series A-D)
+- Debt funding mastery (MUDRA to venture debt)
+- Advanced instruments (convertible notes, SAFE)
+- 200+ templates and financial tools
+- Interactive calculators and term sheet generators
+**Outcome:** Active funding pipeline, investor meetings scheduled, 18-month funding roadmap
 
-3. **Resources & Tools**
-   - Downloadable templates
-   - Links to government portals
-   - Recommended tools
+#### P4: Finance Stack - CFO-Level Mastery (₹6,999)
+**Description:** Build world-class financial infrastructure with complete accounting systems and strategic finance  
+**Duration:** 45 days  
+**Modules:** 12 (comprehensive coverage)  
+**Key Features:**
+- Complete accounting system setup
+- GST compliance mastery (e-invoicing, e-way bill, ITC optimization)
+- MCA and tax compliance frameworks
+- Financial planning & analysis (FP&A)
+- Investor-ready reporting systems
+- Banking & treasury management
+- 250+ templates and tools
+- CFO strategic toolkit  
+**Outcome:** World-class financial infrastructure, complete compliance, real-time dashboards, investor-grade reporting
 
-4. **Proof of Work**
-   - Upload screenshots/documents
-   - Mark tasks as complete
-   - Earn XP points
+#### P5: Legal Stack - Bulletproof Legal Framework (₹7,999)
+**Description:** Build bulletproof legal infrastructure with contracts, IP protection, and dispute prevention  
+**Duration:** 45 days  
+**Modules:** 12 (comprehensive coverage)  
+**Key Features:**
+- Complete contract mastery system
+- IP strategy & protection framework
+- Employment law compliance suite
+- Dispute prevention mechanisms
+- Data protection & privacy systems
+- Regulatory compliance frameworks
+- M&A readiness documentation
+- 300+ legal templates and documents  
+**Outcome:** Bulletproof legal infrastructure, litigation-proof contracts, complete IP protection, employment law compliance
 
-5. **Evening Reflection**
-   - Quick form to capture learnings
-   - Share wins with community
-   - Unlock next day's content
+#### P6: Sales & GTM in India - Master Course (₹6,999)
+**Description:** Transform your startup into a revenue-generating machine with India-specific sales strategies  
+**Duration:** 60 days  
+**Modules:** 10 comprehensive modules (75+ templates)  
+**Outcome:** Revenue-generating sales machine with systematic customer acquisition and scalable sales organization
 
-### 30-Day Journey Overview
+#### P7: State-wise Scheme Map - Complete Navigation (₹4,999)
+**Description:** Master India's state ecosystem with comprehensive coverage of all states and UTs  
+**Duration:** 30 days  
+**Modules:** 10 (Federal Structure, Northern States, Western States, Southern States, Eastern States, North-Eastern States, Implementation Framework, Sector-Specific Benefits, Financial Planning, Advanced Strategies)  
+**Key Features:**
+- All 28 states + 8 UTs comprehensive coverage
+- 500+ state schemes database with eligibility criteria
+- State benefit calculators and optimization tools
+- Multi-state location analysis framework
+- Sector-specific state mapping (tech, manufacturing, agri, services)
+- Government contact directory with direct connections
+- Application templates and tracking systems
+- Investment summit access strategies
+- SEZ and industrial park benefits mapping
+- ROI maximization through state benefits
+- Policy monitoring and adaptation systems  
+**Outcome:** Optimized multi-state presence with 30-50% cost savings through strategic state benefits, government relationships established, maximum subsidy utilization
 
-**Week 1: Foundation (Days 1-7)**
-- Day 1: Idea Refinement & Goal Setting
-- Day 2: Market Research & Competitor Analysis
-- Day 3: Customer Discovery Interviews
-- Day 4: Value Proposition Refinement
-- Day 5: Business Model Design
-- Day 6: Brand Name & Domain Setup
-- Day 7: Week 1 Review & Legal Entity Decision
+#### P8: Investor-Ready Data Room Mastery (₹9,999)
+**Description:** Transform your startup with professional data room that accelerates fundraising and increases valuation  
+**Duration:** 45 days  
+**Modules:** 8 comprehensive modules  
+**Outcome:** Professional data room with 50+ templates, expert insights, and unicorn-scale documentation
 
-**Week 2: Building Blocks (Days 8-14)**
-- Day 8: Logo & Visual Identity
-- Day 9: Legal Entity Deep Dive
-- Day 10: Compliance Roadmap
-- Day 11: MVP Feature Planning
-- Day 12-13: MVP Development Sprint
-- Day 14: Week 2 Review & Testing Prep
+#### P9: Government Schemes & Funding Mastery (₹4,999)
+**Description:** Access ₹50 lakhs to ₹5 crores in government funding through systematic scheme navigation  
+**Duration:** 21 days  
+**Modules:** 4  
+**Outcome:** Eligibility mapping, application templates, and funding pipeline setup
 
-**Week 3: Making it Real (Days 15-21)**
-- Day 15-16: User Testing & Feedback
-- Day 17: Business Registration Prep
-- Day 18: GST & Tax Planning
-- Day 19: Banking & Finance Setup
-- Day 20: Pricing Strategy Finalization
-- Day 21: Week 3 Review & Launch Prep
+#### P10: Patent Mastery for Indian Startups (₹7,999)
+**Description:** Master intellectual property from filing to monetization with comprehensive patent strategy  
+**Duration:** 60 days  
+**Modules:** 12 expert modules (100+ templates)  
+**Outcome:** Complete patent strategy implementation, filed applications, IP portfolio management, and monetization capabilities
 
-**Week 4: Launch Ready (Days 22-30)**
-- Day 22: Digital Presence Setup
-- Day 23: First Customer Outreach
-- Day 24: Sales Process Design
-- Day 25: DPIIT Registration Prep
-- Day 26: Startup India Benefits
-- Day 27: Investor Pitch Basics
-- Day 28: Financial Projections
-- Day 29: Pitch Deck Creation
-- Day 30: Launch Day & Next Steps
+#### P11: Branding & Public Relations Mastery (₹7,999)
+**Description:** Transform into a recognized industry leader through powerful brand building and strategic PR  
+**Duration:** 54 days  
+**Modules:** 12 (Foundations, Customer Experience, Team Culture, PR Fundamentals, Award Strategies, Digital PR, Agency Relations, Regional PR, Founder Branding, Entertainment PR, Financial Communications, Global PR)  
+**Key Features:**
+- Complete brand identity system with 300+ templates
+- Media training and crisis management protocols
+- Award winning strategies and industry recognition
+- Personal branding for founders with LinkedIn mastery
+- Agency relationship management and optimization
+- Regional and cultural PR strategies for India
+- Entertainment, sports, and celebrity partnership strategies
+- Financial communications and investor relations
+- Global PR expansion strategies  
+**Outcome:** Powerful brand identity with active media presence, award wins, strong founder brand, and systematic PR engine generating continuous positive coverage
 
-## Gamification System
+#### P12: Marketing Mastery - Complete Growth Engine (₹9,999)
+**Description:** Build a data-driven marketing machine generating predictable growth across all channels  
+**Duration:** 60 days  
+**Modules:** 12 comprehensive modules  
+**Key Features:**
+- Complete digital marketing framework with 500+ templates
+- Content marketing and SEO mastery
+- Social media marketing across all platforms
+- Performance marketing and paid advertising
+- Email marketing automation systems
+- Growth hacking strategies for Indian market
+- Marketing analytics and attribution
+- Marketing technology stack setup
+- B2B and B2C marketing strategies
+**Outcome:** Data-driven marketing engine with multi-channel campaigns, measurable ROI, and predictable customer acquisition system
 
-### XP Points Structure
-- Complete daily lesson: 20 XP
-- Upload proof of work: 30 XP
-- Complete weekly milestone: 100 XP bonus
-- Help another founder: 10 XP
-- Perfect week (7 days streak): 50 XP bonus
+### All-Access Bundle (₹54,999)
+- All 12 products included
+- 30% savings (₹25,986 off)
+- 1-year access
+- Priority support
+- Exclusive bonus content
+- Quarterly updates
 
-### Achievement Badges
-1. **Starter Badge** - Complete Day 1
-2. **Researcher** - Complete market research & interviews
-3. **Brand Builder** - Secure domain and create logo
-4. **Legally Ready** - Complete compliance planning
-5. **MVP Master** - Launch working prototype
-6. **Testing Champion** - Get 10+ user feedback
-7. **Compliance Hero** - Complete all regulatory tasks
-8. **Sales Starter** - Get first paying customer
-9. **Pitch Perfect** - Complete pitch deck
-10. **Launch Legend** - Complete all 30 days
+## Technical Architecture
 
-### Leaderboard Features
-- Daily active founders
-- Weekly XP rankings
-- All-time completions
-- Streak leaders
-- City-wise rankings
-
-## Startup Dashboard (Member Portal)
-
-### 1. Profile Section
-- Founder name and photo
-- Startup name and tagline
-- Current day in journey
-- Total XP and rank
-- Badges earned
-- Current streak
-
-### 2. My Journey
-- Visual progress bar (1-30 days)
-- Completed vs pending lessons
-- Calendar view with checkmarks
-- Upcoming milestones
-- Quick access to current day
-
-### 3. Startup Portfolio (Auto-builds as you progress)
-
-**Idea & Vision**
-- Problem statement
-- Solution overview
-- Mission statement
-- Target market definition
-
-**Market Research**
-- TAM/SAM/SOM calculations
-- Competitor analysis matrix
-- Customer interview insights
-- Market opportunity summary
-
-**Business Model**
-- Revenue streams
-- Cost structure
-- Unit economics
-- Pricing strategy
-
-**Brand Assets**
-- Company name
-- Logo (upload)
-- Domain name
-- Social handles
-- Brand colors
-
-**Legal & Compliance**
-- Entity type decision
-- Registration checklist
-- GST readiness
-- Compliance calendar
-
-**Product**
-- MVP description
-- Feature list
-- User feedback summary
-- Product roadmap
-
-**Go-to-Market**
-- Customer personas
-- Sales strategy
-- Marketing channels
-- First 10 customers plan
-
-**Financials**
-- Basic projections
-- Funding requirements
-- Burn rate calculation
-- Revenue targets
-
-**Pitch Materials**
-- One-pager (auto-generated)
-- Pitch deck (template filled)
-- Demo video link
-- Investor FAQs
-
-### 4. Community Hub
-- Daily discussion threads
-- Peer support forum
-- Success stories
-- Expert office hours schedule
-- Resource library
-
-### 5. Tools & Resources
-- Template library
-- Startup glossary
-- Calculator tools
-- Bookmark manager
-- External links directory
-
-## Technical Implementation
-
-### Database Schema (Simplified for P1)
+### Database Schema (Modular System)
 
 ```prisma
 model User {
@@ -229,660 +187,404 @@ model User {
   badges          String[] // Badge IDs
   
   // Relations
-  subscription    Subscription?
+  purchases       Purchase[]
   portfolio       StartupPortfolio?
-  dailyProgress   DailyProgress[]
+  lessonProgress  LessonProgress[]
+  moduleProgress  ModuleProgress[]
   xpEvents        XPEvent[]
 }
 
-model Subscription {
+model Product {
   id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
-  
-  status          String   // active, expired, cancelled
-  startDate       DateTime
-  expiryDate      DateTime
-  
-  razorpayOrderId String?
-  amount          Int
-  
+  code            String   @unique // P1, P2, etc.
+  title           String
+  description     String
+  price           Int
+  isBundle        Boolean  @default(false)
+  bundleProducts  String[] // Product codes in bundle
+  estimatedDays   Int?
+  modules         Module[]
   createdAt       DateTime @default(now())
-}
-
-model DailyProgress {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  
-  day             Int
-  startedAt       DateTime
-  completedAt     DateTime?
-  
-  tasksCompleted  Json     // Array of task IDs
-  proofUploads    String[] // File URLs
-  reflection      String?
-  
-  xpEarned        Int      @default(0)
-}
-
-model StartupPortfolio {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
-  
-  // Basic Info
-  startupName     String?
-  tagline         String?
-  logo            String?
-  
-  // Idea & Vision
-  problemStatement String?
-  solution        String?
-  valueProposition String?
-  
-  // Market Research
-  targetMarket    Json?
-  competitors     Json?
-  marketSize      Json?
-  
-  // Business Model
-  revenueStreams  Json?
-  pricingStrategy Json?
-  
-  // Brand Assets
-  domain          String?
-  socialHandles   Json?
-  
-  // Legal
-  entityType      String?
-  complianceStatus Json?
-  
-  // Product
-  mvpDescription  String?
-  features        Json?
-  userFeedback    Json?
-  
-  // GTM
-  salesStrategy   Json?
-  customerPersonas Json?
-  
-  // Financials
-  projections     Json?
-  fundingNeeds    Int?
-  
-  // Pitch
-  pitchDeck       String? // URL
-  onePageSummary  String? // Auto-generated HTML
-  
   updatedAt       DateTime @updatedAt
 }
 
-model XPEvent {
+model Module {
+  id              String   @id @default(cuid())
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+  title           String
+  description     String?
+  orderIndex      Int
+  lessons         Lesson[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Lesson {
+  id              String   @id @default(cuid())
+  moduleId        String
+  module          Module   @relation(fields: [moduleId], references: [id])
+  day             Int
+  title           String
+  briefContent    String?
+  actionItems     Json?
+  resources       Json?
+  estimatedTime   Int      @default(45)
+  xpReward        Int      @default(50)
+  orderIndex      Int
+  progress        LessonProgress[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Purchase {
   id              String   @id @default(cuid())
   userId          String
   user            User     @relation(fields: [userId], references: [id])
+  productCode     String   // P1, P2, ALL_ACCESS, etc.
+  productName     String
+  amount          Int
+  currency        String   @default("INR")
+  status          String   // pending, completed, failed
+  isActive        Boolean  @default(true)
   
-  type            String   // daily_complete, upload_proof, help_peer, streak_bonus
-  points          Int
-  description     String
+  // Razorpay
+  razorpayOrderId    String?
+  razorpayPaymentId  String?
+  razorpaySignature  String?
+  
+  // Access dates (1 year validity)
+  purchaseDate    DateTime?
+  expiresAt       DateTime
+  
+  // Relations
+  lessonProgress  LessonProgress[]
+  moduleProgress  ModuleProgress[]
   
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
-model DailyLesson {
+model LessonProgress {
   id              String   @id @default(cuid())
-  day             Int      @unique
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  lessonId        String
+  lesson          Lesson   @relation(fields: [lessonId], references: [id])
+  purchaseId      String
+  purchase        Purchase @relation(fields: [purchaseId], references: [id])
   
-  title           String
-  briefContent    String   // Morning brief
-  actionItems     Json     // Array of tasks
-  resources       Json     // Links and downloads
-  estimatedTime   Int      // In minutes
+  completed       Boolean  @default(false)
+  completedAt     DateTime?
+  tasksCompleted  Json?
+  proofUploads    String[]
+  reflection      String?
+  xpEarned        Int      @default(0)
   
-  xpReward        Int      @default(20)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, lessonId])
 }
+
+model ModuleProgress {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  moduleId          String
+  module            Module   @relation(fields: [moduleId], references: [id])
+  purchaseId        String
+  purchase          Purchase @relation(fields: [purchaseId], references: [id])
+  
+  completedLessons  Int      @default(0)
+  totalLessons      Int      @default(0)
+  progressPercentage Int     @default(0)
+  completedAt       DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@unique([userId, moduleId])
+}
+```
+
+### Product Access Control
+
+```typescript
+// Product Protected Route Component
+<ProductProtectedRoute productCode="P1">
+  <JourneyContent />
+</ProductProtectedRoute>
+
+// Access Check Function
+check_product_access(userId, productCode) → boolean
+// Returns true if user has direct purchase OR ALL_ACCESS bundle
+
+// Get User Products
+get_user_products(userId) → Product[]
+// Returns all products with access status
 ```
 
 ### Key API Endpoints
 
 ```typescript
-// Auth & User
-POST   /api/auth/signup
-POST   /api/auth/login
-GET    /api/user/profile
-PATCH  /api/user/profile
+// Products & Access
+GET    /api/products                    // List all products
+GET    /api/products/:code/access       // Check access to specific product
+GET    /api/user/products              // User's owned products
 
-// Subscription
-POST   /api/checkout/create-order
-POST   /api/checkout/verify-payment
-GET    /api/subscription/status
+// Purchase Flow
+POST   /api/purchase/create-order      // Create Razorpay order
+POST   /api/purchase/verify            // Verify payment
+GET    /api/purchase/history           // Purchase history
 
-// Daily Lessons
-GET    /api/lessons/current
-GET    /api/lessons/:day
-POST   /api/lessons/:day/complete
-POST   /api/lessons/:day/upload-proof
+// Product Content (Protected)
+GET    /api/products/:code/modules     // Get product modules
+GET    /api/products/:code/lessons     // Get product lessons
+POST   /api/products/:code/progress    // Update progress
 
-// Portfolio
-GET    /api/portfolio
-PATCH  /api/portfolio/:section
+// Dashboard
+GET    /api/dashboard                  // Modular dashboard data
 
-// Gamification
-GET    /api/leaderboard
-GET    /api/user/badges
-POST   /api/xp/award
-
-// Community
-GET    /api/discussions/:day
-POST   /api/discussions/:day/comment
+// Legacy Support
+GET    /api/lessons/:day               // P1 lessons (backward compatible)
 ```
 
 ### Frontend Routes
 
 ```
 /                       - Landing page
-/signup                 - User registration
-/login                  - User login
-/dashboard              - Main member dashboard
-/journey                - 30-day journey view
-/journey/day/:day       - Individual day lesson
-/portfolio              - Startup portfolio
-/community              - Community discussions
-/leaderboard           - Gamification rankings
-/resources             - Templates & tools
-/profile               - User settings
+/pricing                - All products with prices
+/dashboard              - Modular dashboard (free access)
+/community              - Community hub (free access)
+
+/products/p1            - 30-Day Journey (requires P1/ALL_ACCESS)
+/products/p2            - Incorporation Kit (requires P2/ALL_ACCESS)
+/products/p3            - Funding Guide (requires P3/ALL_ACCESS)
+...etc
+
+/journey                - Legacy route → /products/p1
+/portfolio              - Startup portfolio (free access)
+/profile                - User settings
+/admin                  - Admin panel
 ```
 
-## Launch Strategy
+## Implementation Status
 
-### Week 1: Platform Development
-- Set up authentication with Supabase
-- Create landing page with P1 offer
-- Implement payment flow with Razorpay
-- Build basic dashboard structure
+### ✅ Completed (2025-08-19)
 
-### Week 2: Content Integration
-- Convert 30-day content to database
-- Create daily lesson UI
-- Implement progress tracking
-- Add proof upload functionality
+#### 1. Modular Product System
+- Product catalog with P1-P12 + ALL_ACCESS bundle
+- Individual product purchase flow
+- Bundle discount logic (30% off)
+- 1-year access model
+- Premium/comprehensive course positioning
 
-### Week 3: Gamification & Polish
-- Implement XP system
-- Create badge awarding logic
-- Build leaderboard
-- Add community features
-- Mobile responsiveness
+#### 2. Access Control
+- ProductProtectedRoute component
+- Product-specific access checking
+- Bundle access support
+- Expiry warnings
 
-### Week 4: Testing & Launch
-- Beta test with 10 founders
-- Fix bugs and improve UX
-- Create launch materials
-- Deploy to production
-- Launch marketing campaign
+#### 3. Database Migration
+- Complete migration scripts created
+- Product, Module, Lesson tables
+- Progress tracking per product
+- Migration validation scripts
 
-## Marketing & Growth
+#### 4. Updated UI/UX
+- New modular dashboard
+- Enhanced pricing page
+- Product-based navigation
+- Access prompts for locked content
 
-### Launch Tactics
-1. **Early Bird Offer**: ₹999 for first 100 founders
-2. **Referral Program**: Give ₹200, Get ₹200
-3. **Content Marketing**: Daily startup tips on LinkedIn
-4. **Community Partnerships**: Partner with college E-cells
-5. **Success Stories**: Feature graduates prominently
+#### 5. Payment Integration
+- Multi-product Razorpay support
+- Dynamic pricing validation
+- Product-specific purchase records
+- XP awards per product
 
-### Retention Strategy
-1. **Daily Email Reminders**: Gentle nudges to maintain streak
-2. **Peer Accountability**: Match founders in cohorts
-3. **Office Hours**: Weekly expert sessions
-4. **Alumni Network**: Post-30-day community access
-5. **Advanced Modules**: Upsell to P2-P8 after completion
+#### 6. Portfolio System (Production Ready)
+- **Activity-Driven Portfolio**: Auto-populates from course activities
+- **Smart Cross-Selling**: Empty sections drive course purchases
+- **Export Capabilities**: PDF generation, one-pagers, business model canvas
+- **Privacy-First Design**: No public profiles, founder-focused experience
+- **Error Boundaries**: Comprehensive error handling and validation
+- **Routes Available**:
+  - `/portfolio` (redirects to portfolio dashboard)
+  - `/portfolio/portfolio-dashboard` (main dashboard)
+  - `/portfolio/section/[sectionName]` (section details)
 
-## Success Metrics
+#### 7. Comprehensive Courses Added
+- P2: Incorporation & Compliance (₹4,999, 40 days, 10 modules)
+- P3: Funding Mastery (₹5,999, 45 days, 12 modules)
+- P4: Finance Stack - CFO-Level Mastery (₹6,999, 45 days, 12 modules)
+- P5: Legal Stack - Bulletproof Framework (₹7,999, 45 days, 12 modules)
+- P6: Sales & GTM Master Course (₹6,999, 60 days, 10 modules)
+- P7: State-wise Scheme Map (₹4,999, 30 days, 10 modules)
+- P8: Data Room Mastery (₹9,999, 45 days, 8 modules)
+- P10: Patent Mastery (₹7,999, 60 days, 12 modules)
+- P11: Branding & PR Mastery (₹7,999, 54 days, 12 modules)
+- P12: Marketing Mastery (₹9,999, 60 days, 12 modules)
 
-### Primary KPIs
-- Signups per week
-- Conversion rate (visitor → paid)
-- Day 7 retention rate
-- Completion rate (finish 30 days)
-- NPS score
+### 🚀 Migration Guide
 
-### Secondary KPIs
-- Average XP per user
-- Daily active users
-- Community engagement rate
-- Portfolio completion rate
-- Referral rate
+1. **Run Database Migration**
+   ```sql
+   -- In Supabase SQL Editor:
+   -- 1. Run 002_modular_products_schema.sql
+   -- 2. Run 003_p1_content_migration.sql
+   -- 3. Run 004_validate_migration.sql
+   -- 4. Run 005_migration_fixes.sql
+   -- 5. Run migrations/portfolio_system.sql
+   -- 6. Run migrations/portfolio_seed_data.sql
+   ```
 
-## Technical Setup Guide
+2. **Verify Migration**
+   - Check products created (12 total)
+   - Verify P1 has 30 lessons
+   - Confirm existing purchases migrated
+   - Verify portfolio tables and activity types created
 
-### Prerequisites
-```bash
-# Required
-Node.js 18+
-npm or yarn
-Git
+3. **Test Access Control**
+   - Purchase P1 → Access /journey
+   - Purchase ALL_ACCESS → Access all products
+   - No purchase → See upgrade prompts
 
-# Accounts needed
-- Supabase account
-- Razorpay account
-- GoDaddy email account (support@theindianstartup.in)
-- Vercel account
-```
+### 🎯 Portfolio Feature Integration
 
-### Initial Setup
-```bash
-# Clone repository
-git clone https://github.com/lalrinsangsiama/theindianstartup.git
-cd theindianstartup
+1. **Embed Activities in Course Lessons**:
+   ```tsx
+   import { ActivityCapture } from '@/components/portfolio/ActivityCapture';
 
-# Install dependencies
-npm install
+   <ActivityCapture 
+     activityTypeId="define_problem_statement"
+     activityName="Define Your Problem Statement"
+     lessonId="lesson-123"
+     courseCode="P1"
+     moduleId="module-456"
+   />
+   ```
 
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your credentials
+2. **Available Activity Types** (see `migrations/portfolio_seed_data.sql`):
+   - `define_problem_statement` → Idea & Vision section
+   - `target_market_analysis` → Market Research section  
+   - `business_model_canvas` → Business Model section
+   - `financial_projections` → Financial Planning section
+   - `legal_structure_decision` → Legal Compliance section
+   - `brand_identity_creation` → Brand Assets section
+   - `product_roadmap` → Product Development section
+   - `go_to_market_strategy` → GTM Strategy section
 
-# Set up database
-npx prisma generate
-npx prisma migrate dev
-npm run seed # Seed daily lessons
+3. **Portfolio API Endpoints**:
+   ```typescript
+   GET    /api/portfolio                           // Main portfolio data
+   GET    /api/portfolio/activities                // List activity types
+   PUT    /api/portfolio/activities/[activityId]   // Update activity
+   GET    /api/portfolio/recommendations           // Smart recommendations
+   POST   /api/portfolio/export                    // Export portfolio
+   ```
 
-# Run development server
-npm run dev
-```
+## Design System
 
-### Deployment
-```bash
-# Connect to Vercel
-vercel
-
-# Set environment variables in Vercel dashboard
-# Deploy
-vercel --prod
-```
-
-## Design System Implementation
-
-### Completed (2025-08-15)
-- ✅ **Comprehensive Design System Created**
-  - Typewriter/editorial theme with minimalist black & white aesthetic
-  - IBM Plex Mono for headings, Inter for body text
-  - Complete component library built with React + TypeScript
-  - Fully documented in `DESIGN-SYSTEM.md`
-
-### Design System Structure
-```
-src/
-├── styles/
-│   ├── design-tokens.ts    # Core design tokens (colors, typography, spacing)
-│   └── globals.css         # Global styles and utilities
-├── components/
-│   ├── ui/                 # All UI components
-│   │   ├── Button.tsx      # Primary, secondary, outline variants
-│   │   ├── Card.tsx        # Card components with variants
-│   │   ├── Badge.tsx       # Status badges & achievement badges
-│   │   ├── Input.tsx       # Form inputs, textarea, select, checkbox
-│   │   ├── Typography.tsx  # Heading, Text, Code, Quote components
-│   │   ├── ProgressBar.tsx # Progress, Journey, XP tracking
-│   │   ├── Modal.tsx       # Modal dialogs
-│   │   ├── Alert.tsx       # Alerts & toast notifications
-│   │   ├── Tabs.tsx        # Tab navigation
-│   │   ├── Avatar.tsx      # User avatars
-│   │   ├── Skeleton.tsx    # Loading states
-│   │   └── index.ts        # Centralized exports
-│   └── icons/
-│       └── Logo.tsx        # Logo components
-└── lib/
-    └── cn.ts              # Class name utility
-```
-
-### Design Principles
+### Core Principles
 1. **Clarity First** - Every element has a clear purpose
 2. **Minimal Distraction** - Black & white palette keeps focus on content
 3. **Typewriter Aesthetic** - Professional, founder-focused experience
 4. **Consistent Interactions** - Predictable hover states and transitions
 5. **Mobile-First** - Responsive design for all screen sizes
 
-### Usage Guidelines
-- **ALWAYS use the design system components** for new development
-- Import components from `@/components/ui`
-- Follow patterns in `DESIGN-SYSTEM.md` for implementation
-- Use design tokens from `src/styles/design-tokens.ts` for custom styles
-- View live examples at `/design-system` route
-
-### Key Components Available
-- **Buttons**: Primary, secondary, outline, ghost variants with loading states
+### Component Library
+- **Buttons**: Primary, secondary, outline, ghost variants
 - **Cards**: Default, bordered, interactive variants
-- **Forms**: Input, textarea, select, checkbox with validation states
-- **Typography**: Consistent heading and text components
-- **Progress**: Journey tracker, XP bars, progress indicators
-- **Gamification**: Achievement badges, leaderboards
-- **Feedback**: Alerts, toasts, modals
-- **Navigation**: Tabs, avatars
-- **Loading**: Skeleton components
+- **Forms**: Input, textarea, select with validation states
+- **Typography**: Heading, Text components with consistent styling
+- **Progress**: Journey tracker, XP bars, module progress
+- **Modals**: Product access prompts, purchase confirmations
+- **Badges**: Achievement badges, product badges
 
-## Email Integration Status
+## Email System
 
-### Completed (2025-08-15)
-- ✅ Nodemailer installed with TypeScript types
-- ✅ GoDaddy SMTP configuration in `.env.example`
-- ✅ Email service created at `src/lib/email.ts`
-- ✅ Email templates created at `src/lib/email-templates.ts`
+### Transactional Emails
+1. **Purchase Confirmation** - Sent for each product purchase
+2. **Access Expiry Warning** - 7 days before expiry
+3. **Product Completion** - Certificate of completion
+4. **Achievement Unlocked** - Badge notifications
 
-### Email Templates Available
-1. **Welcome Email** - Sent after successful payment
-2. **Daily Reminder** - Sent at 9 AM IST for active users
-3. **Purchase Confirmation** - Immediate payment confirmation
-4. **Achievement Unlocked** - Badge notification emails
-5. **Weekly Progress** - Weekly summary reports
+### Marketing Emails
+1. **Product Recommendations** - Based on owned products
+2. **Bundle Upgrade Offers** - For individual product owners
+3. **Success Stories** - From product graduates
+4. **New Product Launches** - P9+ announcements
 
-### Email Automation Complete ✅
-- ✅ Professional email templates with HTML layouts
-- ✅ Transactional emails (welcome, payment confirmation, achievements)
-- ✅ Email sequences (daily reminders, weekly progress, re-engagement)
-- ✅ Email management (preferences, unsubscribe, tracking)
-- ✅ Cron job endpoints for scheduled emails
-- ⭐ Manual Setup: Configure Supabase to use GoDaddy SMTP for auth emails
+## Success Metrics
 
----
+### Primary KPIs
+- Products sold per week (by type)
+- Bundle vs individual sales ratio
+- Average products per user
+- Product completion rates
+- Monthly recurring revenue
 
-## Phase 0 Implementation Status ✅
+### Secondary KPIs
+- Cross-sell rate (users with 2+ products)
+- Upgrade to bundle rate
+- Product-specific NPS scores
+- Community engagement by product
+- Renewal rate after 1 year
 
-### Completed (2025-08-15)
-
-#### 1. Email Service (GoDaddy) ✅
-- **Completed:**
-  - GoDaddy SMTP settings configured in `.env.local`
-  - Nodemailer installed and configured
-  - Email service created (`src/lib/email.ts`)
-  - Email templates created (`src/lib/email-templates.ts`)
-  - Test endpoint available at `/api/test-email`
-  
-- **Manual Setup Required:**
-  - Configure Supabase Auth to use GoDaddy SMTP in dashboard
-
-#### 4. Supabase Security ✅
-- **Completed:**
-  - Row Level Security (RLS) policies created (`prisma/rls-policies-step-by-step.sql`)
-  - All tables have appropriate RLS policies
-  - Auth helper functions with admin role support (`src/lib/auth.ts`)
-  - Security setup guide documented (`SUPABASE_SECURITY_SETUP.md`)
-  
-- **Manual Setup Required:**
-  - Apply RLS policies in Supabase SQL Editor
-  - Configure auth email templates in Supabase
-
-#### 5. Development Tools ✅
-- **Completed:**
-  - Seed script created (`prisma/seed.ts`) with:
-    - 10 achievement badges
-    - Daily lessons importer
-    - Test users (development mode)
-  - Content parser for 30-day content (`prisma/parse-content.ts`)
-  - Admin panel implemented at `/admin` route
-  - Admin API endpoint for seeding (`/api/admin/seed`)
-
-### Admin Panel Features
-
-**Access Control:**
-- Admin emails: `admin@theindianstartup.in`, `support@theindianstartup.in`
-- Requires authentication via Supabase
-- Protected routes with role-based access
-
-**Dashboard Features:**
-- User statistics (total users, active subscriptions)
-- Recent user signups with progress tracking
-- System status monitoring
-- Quick actions for database management
-
-**Admin Routes:**
-- `/admin` - Main dashboard
-- `/api/admin/seed` - Run seed script via API
-
-### Test Users (Development Mode)
+## Important Commands
 
 ```bash
-# Run seed script to create test users
-npm run seed
+# Development
+npm run dev              # Start dev server
+npm run build           # Production build
+npm run typecheck       # Type checking
+npm run lint            # Linting
+
+# Database
+npm run db:generate     # Generate Prisma client
+npm run db:push         # Push schema changes
+npm run seed            # Seed database
+
+# Testing
+npm run test            # Run tests
+npm run test:watch      # Watch mode
 ```
 
-Creates:
-- `test@theindianstartup.in` - Regular user with active subscription
-- `admin@theindianstartup.in` - Admin user with dashboard access
+## Support & Maintenance
 
-### Important Commands
+### Common Issues
 
-```bash
-# Generate Prisma client
-npm run db:generate
+1. **Product Access Not Working**
+   - Check Purchase table for valid expiresAt
+   - Verify productCode matches
+   - Test check_product_access function
 
-# Run seed script
-npm run seed
+2. **Bundle Not Giving Access**
+   - Ensure ALL_ACCESS purchase exists
+   - Check bundle access logic in API
+   - Verify expiresAt > NOW()
 
-# Development server
-npm run dev
+3. **Migration Issues**
+   - Run validation script
+   - Check for NULL values in required fields
+   - Apply migration fixes script
 
-# Type checking
-npm run typecheck
-
-# Linting
-npm run lint
-```
-
-### Next Steps (Phase 1)
-
-With Phase 0 foundation complete, ready to implement:
-1. Authentication flow (signup/login pages)
-2. Protected routes and session management
-3. User onboarding flow
-4. Member dashboard structure
+### Admin Tools
+- `/admin` - Dashboard with user management
+- `/admin/sql` - Direct SQL access (production caution!)
+- Product access override capabilities
+- Purchase management interface
 
 ---
 
-## Phase 1 Implementation Status ✅
+**Last Updated:** 2025-08-19  
+**Version:** 7.0.0 - Portfolio Integration Complete  
+**Status:** Production Ready with 12 Products + Portfolio System
 
-### Completed (2025-08-15)
-
-#### 1. Auth UI Components ✅
-All authentication pages implemented with consistent design:
-- **Signup Page** (`/signup`) - Email/password registration with real-time password strength indicators
-- **Login Page** (`/login`) - Email/password login with "Remember me" option
-- **Forgot Password** (`/forgot-password`) - Password reset request flow
-- **Reset Password** (`/reset-password`) - New password creation with validation
-- **Email Verification** (`/signup/verify-email`) - Email confirmation with resend functionality
-- **Auth Callback** (`/auth/callback`) - Handles auth redirects and email verification
-
-#### 2. Auth Logic ✅
-Complete authentication infrastructure:
-- **useAuth Hook** (`src/hooks/useAuth.ts`) - Authentication operations and state management
-- **AuthContext** (`src/contexts/AuthContext.tsx`) - Global auth state provider
-- **ProtectedRoute** (`src/components/auth/ProtectedRoute.tsx`) - Route protection wrapper
-- **Middleware** (`src/middleware.ts`) - Automatic route protection
-- **Session Management** - Auto-refresh and persistence handling
-- **Logout Functionality** - Clean session termination
-
-#### 3. User Onboarding ✅
-Multi-step onboarding flow:
-- **Onboarding Page** (`/onboarding`) - Collects founder and startup information
-- **Profile Creation** - Name, phone, startup name, idea, target market
-- **Portfolio Initialization** - Creates startup portfolio record
-- **XP Award** - 50 XP bonus for completing onboarding
-- **Dashboard Redirect** - Seamless transition to member area
-
-### Additional Features Implemented
-
-#### Enhanced Security & UX:
-1. **Role-based Access Control**
-   - Admin panel restricted to specific emails
-   - `requireAdmin()` function for protected endpoints
-
-2. **Subscription Status Checking**
-   - ProtectedRoute supports `requireSubscription` prop
-   - Automatic redirect to pricing for expired subscriptions
-
-3. **Profile Management API**
-   - GET/PATCH endpoints at `/api/user/profile`
-   - Comprehensive user data with relations
-
-4. **Email Resend Functionality**
-   - Verification email resend with cooldown
-   - Success/error feedback
-
-5. **Password Strength Indicators**
-   - Real-time validation on signup and reset pages
-   - Visual checkmarks for requirements
-
-6. **Remember Me Option**
-   - Configurable session persistence (30 days)
-   - Proper Supabase client configuration
-
-7. **Smart Redirect After Login**
-   - Preserves intended destination
-   - SessionStorage for attempted URLs
-
-8. **Consistent Auth Layout**
-   - Unified design across all auth pages
-   - Professional typewriter aesthetic
-
-### Auth System Architecture
-
-```
-src/
-├── app/
-│   ├── (auth)/
-│   │   ├── login/
-│   │   ├── signup/
-│   │   ├── forgot-password/
-│   │   ├── reset-password/
-│   │   └── auth/callback/
-│   ├── onboarding/
-│   └── api/
-│       └── user/
-│           ├── profile/
-│           └── onboarding/
-├── components/
-│   ├── auth/
-│   │   └── ProtectedRoute.tsx
-│   └── layout/
-│       └── AuthLayout.tsx
-├── contexts/
-│   └── AuthContext.tsx
-├── hooks/
-│   └── useAuth.ts
-├── lib/
-│   ├── auth.ts
-│   └── supabase/
-│       ├── client.ts
-│       ├── server.ts
-│       └── middleware.ts
-└── middleware.ts
-```
-
-### Testing Authentication
-
-```bash
-# Regular user flow
-1. Visit /signup → Create account
-2. Check email → Verify account
-3. Complete /onboarding → Enter dashboard
-4. Test logout → Return to login
-
-# Admin access
-1. Login with admin@theindianstartup.in
-2. Visit /admin → Access granted
-
-# Protected routes
-1. Visit /dashboard while logged out
-2. Redirected to /login
-3. Login → Returned to /dashboard
-```
-
----
-
-## Complete Implementation Status ✅
-
-### All Phases Completed (2025-08-15)
-
-#### ✅ **Phase 2: Member Dashboard** (Week 1-2)
-- **Dashboard Layout**: Responsive sidebar, mobile menu, user profile dropdown
-- **Progress Tracking**: Journey progress bar, streak counter, XP display, badges showcase
-- **Daily Lesson Interface**: `/journey/day/[day]` route, lesson content display, task checklist, proof upload
-
-#### ✅ **Phase 3: Content Management** (Week 2)
-- **30-Day Content**: All enhanced content parsed and loaded from `src/content/30-day-enhanced`
-- **Content Display**: MorningBrief, TaskChecklist, ResourcesSection, EveningReflection components
-- **File Organization**: DocumentChecklist, StartupFolderStructure integrated workflow
-
-#### ✅ **Phase 4: Gamification System** (Week 2-3)
-- **XP System**: Complete calculation logic, events tracking, animation on earn, history view
-- **Badges**: 10 achievement badges with icons, awarding logic, display grid, unlock notifications
-- **Leaderboard**: Daily active users, weekly XP rankings, streak leaders, city-wise rankings
-
-#### ✅ **Phase 5: Startup Portfolio** (Week 3)
-- **Portfolio Structure**: Edit pages, auto-save functionality, section navigation, progress indicators
-- **All 9 Sections**: Idea & Vision, Market Research, Business Model, Brand Assets, Legal & Compliance, Product, Go-to-Market, Financials, Pitch Materials
-- **Export Features**: One-page summary generator, PDF export, pitch deck templates, sharing functionality
-
-#### ✅ **Phase 6: Payment Integration** (Week 3-4)
-- **Razorpay Setup**: Live keys configured, payment button component, order creation API, verification webhook
-- **Subscription Management**: Pricing page (₹4,999), checkout flow, success/failure pages, access control
-- **Invoice Generation**: GST calculations, PDF invoices, email on purchase
-
-#### ✅ **Phase 7: Community Features** (Week 4)
-- **Core Community**: Hub page with stats, post creation system, comment system with nested replies, like/engagement tracking
-- **Success Stories**: Showcase with filtering and search
-- **Expert Sessions**: Office hours with registration system
-- **Ecosystem Directory**: Searchable directory for schemes/incubators/banks with reviews and ratings
-- **Announcements**: Admin posting system with priority-based display and click tracking
-
-#### ✅ **Phase 8: Email Automation** (Week 4)
-- **Professional Templates**: Welcome, payment confirmation, achievement notifications, milestone celebrations
-- **Email Sequences**: Daily reminders (9 AM IST), weekly progress reports, inactive user re-engagement
-- **Email Management**: User preference system, unsubscribe handling with tokens, email logging and tracking
-- **Automation Infrastructure**: Cron job endpoints, trigger integration, template system with layouts
-
-#### ✅ **Phase 9: Testing & Optimization** (Week 5)
-- **Testing Framework**: Jest with React Testing Library, critical path tests (20/20 passing), responsive testing component
-- **Performance**: Next.js optimization, lazy loading, comprehensive caching, bundle analysis, Core Web Vitals monitoring
-- **SEO**: Meta tags, dynamic sitemap, structured data (JSON-LD), robots.txt, PWA manifest
-- **Build Optimization**: Client/server component compatibility, TypeScript fixes, all tests passing
-
-#### ✅ **Extended Features Beyond Original Scope**
-- **Complete Design System**: Typewriter aesthetic with 20+ UI components
-- **Advanced Analytics**: PostHog integration with custom event tracking
-- **Error Monitoring**: Comprehensive error tracking and logging
-- **Performance Monitoring**: Real-time performance metrics and optimization
-- **Mobile Optimization**: Full responsive design with mobile-first approach
-- **Admin Panel**: Complete admin dashboard with user management and system monitoring
-
-### 📊 **Current Status: Production Ready** 
-
-**Implementation Progress: 100% Complete + Extended Features**
-
-✅ **All Core Features Implemented**  
-✅ **All Technical Requirements Met**  
-✅ **Extended Beyond Original Specifications**  
-✅ **Production-Ready Codebase**  
-✅ **Zero ESLint Warnings/Errors**  
-✅ **All Tests Passing**  
-
-### 🚀 **Ready for Launch**
-
-The platform is complete and ready for production deployment with:
-- Full authentication system
-- Complete 30-day journey experience  
-- Advanced gamification and community features
-- Professional email automation
-- Comprehensive admin tools
-- Production-grade performance and security
-
-### 🔄 **Manual Configuration Required**
-1. Configure Supabase to use GoDaddy SMTP for auth emails
-2. Apply RLS policies in Supabase SQL Editor  
-3. Set up production environment variables in Vercel
-
----
-
-**Last Updated:** 2025-08-15  
-**Version:** 3.0.0 - Complete Implementation (All Phases + Extended Features)**
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

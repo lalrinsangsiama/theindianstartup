@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, TrendingUp } from 'lucide-react';
-import { cn } from '../lib/cn';
+import { cn } from '@/lib/cn';
 
 interface XPAnimationProps {
   show: boolean;

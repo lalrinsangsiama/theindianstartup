@@ -1,107 +1,106 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUser } from '../../../lib/auth';
-import { apiRateLimit } from '../../../lib/rate-limit';
-import { z } from 'zod';
+import Razorpay from 'razorpay';
+import { createClient } from '@/lib/supabase/server';
+import { createId } from '@paralleldrive/cuid2';
 
-// Mock Razorpay for development - replace with actual Razorpay in production
-const createOrderSchema = z.object({
-  amount: z.number().min(1, 'Amount must be positive'),
-  currency: z.string().default('INR'),
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
-    const rateLimitResult = apiRateLimit(request);
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded' },
-        { status: 429 }
-      );
-    }
-
-    // Check authentication
-    const user = await getUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Validate request body
-    const body = await request.json();
-    const validation = createOrderSchema.safeParse(body);
+    const supabase = createClient();
     
-    if (!validation.success) {
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const body = await request.json();
+    const { productCode, amount } = body;
+    
+    // Get product from database
+    const { data: product, error: productError } = await supabase
+      .from('Product')
+      .select('*')
+      .eq('code', productCode)
+      .single();
+    
+    if (productError || !product) {
       return NextResponse.json(
-        { 
-          error: 'Invalid request', 
-          details: validation.error.errors 
-        },
+        { error: 'Invalid product' },
         { status: 400 }
       );
     }
+    
+    // Validate amount matches product price (convert from rupees to paise)
+    const expectedAmount = product.price * 100;
+    if (amount !== expectedAmount) {
+      return NextResponse.json(
+        { error: 'Invalid amount for product' },
+        { status: 400 }
+      );
+    }
+    
+    // Create Razorpay order
+    const order = await razorpay.orders.create({
+      amount: amount,
+      currency: 'INR',
+      receipt: `order_${createId()}`,
+      notes: {
+        userId: user.id,
+        productCode: productCode,
+        productId: product.id,
+        productTitle: product.title,
+        userEmail: user.email,
+      },
+    });
 
-    const { amount, currency } = validation.data;
+    // Calculate expiry date (1 year from now)
+    const expiresAt = new Date();
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
-    // In production, replace this with actual Razorpay integration
-    if (process.env.NODE_ENV === 'production') {
-      // Production Razorpay integration
-      if (!process.env.RAZORPAY_KEY_SECRET) {
-        return NextResponse.json(
-          { error: 'Payment service not configured' },
-          { status: 500 }
-        );
-      }
+    // Create pending purchase record
+    const purchaseData = {
+      id: createId(),
+      userId: user.id,
+      productId: product.id,
+      amount: amount,
+      currency: 'INR',
+      status: 'pending',
+      razorpayOrderId: order.id,
+      expiresAt: expiresAt.toISOString(),
+    };
 
-      // Initialize Razorpay (commented for now since package not installed)
-      /*
-      const Razorpay = require('razorpay');
-      const razorpay = new Razorpay({
-        key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        key_secret: process.env.RAZORPAY_KEY_SECRET,
-      });
+    const { error: purchaseError } = await supabase
+      .from('Purchase')
+      .insert(purchaseData);
 
-      const order = await razorpay.orders.create({
-        amount: amount * 100, // Razorpay expects amount in paise
-        currency,
-        receipt: `receipt_${user.id}_${Date.now()}`,
-        notes: {
-          userId: user.id,
-          userEmail: user.email,
-        },
-      });
-
-      return NextResponse.json({
-        orderId: order.id,
-        amount: order.amount,
-        currency: order.currency,
-        keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      });
-      */
-
-      // For now, return mock response in production too
-      return NextResponse.json({
-        orderId: `order_mock_${Date.now()}`,
-        amount: amount * 100,
-        currency,
-        keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_key',
-      });
+    if (purchaseError) {
+      console.error('Error creating purchase record:', purchaseError);
+      // Continue anyway - we'll create the record after payment
     }
 
-    // Development mock response
     return NextResponse.json({
-      orderId: `order_dev_${Date.now()}`,
-      amount: amount * 100,
-      currency,
-      keyId: 'rzp_test_development_key',
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      name: 'The Indian Startup',
+      description: `${product.title} - ${productCode}`,
+      prefill: {
+        name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+        email: user.email,
+        contact: user.user_metadata?.phone || '',
+      },
     });
 
   } catch (error) {
-    console.error('Payment order creation failed:', error);
+    console.error('Create order error:', error);
     return NextResponse.json(
-      { error: 'Failed to create payment order' },
+      { error: 'Failed to create order' },
       { status: 500 }
     );
   }

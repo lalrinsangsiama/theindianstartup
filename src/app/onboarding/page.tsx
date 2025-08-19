@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../hooks/useAuth';
-import { Logo } from '../components/icons/Logo';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { ProgressBar } from '../components/ui/ProgressBar';
-import { Alert } from '../components/ui/Alert';
-import { Card } from '../components/ui/Card';
+import { useAuth } from '@/hooks/useAuth';
+import { Logo } from '@/components/icons/Logo';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui/Card';
 import { Loader2, ArrowRight, Sparkles, Target, Rocket } from 'lucide-react';
 
 const ONBOARDING_STEPS = [
@@ -164,12 +164,51 @@ export default function OnboardingPage() {
       // Final step - redirect to dashboard
       setLoading(true);
       try {
-        // Add a small delay to ensure database updates are propagated
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        router.push('/dashboard');
+        // Verify that onboarding is complete before redirecting
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        while (attempts < maxAttempts) {
+          const response = await fetch('/api/user/profile', {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log(`Onboarding verification attempt ${attempts + 1}:`, {
+              hasCompletedOnboarding: data.hasCompletedOnboarding,
+              userName: data.user?.name,
+              needsOnboarding: data.needsOnboarding
+            });
+            
+            if (data.hasCompletedOnboarding && !data.needsOnboarding) {
+              console.log('Onboarding verified as complete, redirecting to dashboard');
+              router.push('/dashboard');
+              return;
+            }
+          }
+          
+          attempts++;
+          if (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+        
+        // If verification failed, still redirect but with a flag
+        console.log('Onboarding verification failed after max attempts, forcing redirect');
+        
+        // Check if user has pending cart from signup
+        const pendingCart = localStorage.getItem('preSignupCart');
+        if (pendingCart) {
+          // Redirect to pricing page with cart data
+          router.push('/pricing?fromOnboarding=true');
+        } else {
+          router.push('/dashboard?onboarding=complete');
+        }
       } catch (error) {
         console.error('Error during final redirect:', error);
-        router.push('/dashboard');
+        router.push('/dashboard?onboarding=complete');
       } finally {
         setLoading(false);
       }
@@ -341,7 +380,7 @@ export default function OnboardingPage() {
                   <Text size="sm">✓ Daily lessons unlocked</Text>
                   <Text size="sm">✓ Access to templates and resources</Text>
                   <Text size="sm">✓ Community support activated</Text>
-                  <Text size="sm">✓ Your startup portfolio initialized</Text>
+                  <Text size="sm">✓ Portfolio builder ready to grow with your progress</Text>
                 </div>
               </div>
             )}

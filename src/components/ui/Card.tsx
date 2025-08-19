@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '../lib/cn';
+import { cn } from '@/lib/cn';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'bordered' | 'interactive';
@@ -7,7 +7,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = 'default', padding = 'md', children, ...props }, ref) => {
+  ({ className, variant = 'default', padding = 'none', children, ...props }, ref) => {
     const baseStyles = 'bg-white relative';
     
     const variants = {
@@ -46,7 +46,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('space-y-1.5 mb-6', className)}
+      className={cn('space-y-1.5 px-6 pt-6 pb-4', className)}
       {...props}
     />
   )
@@ -80,7 +80,7 @@ CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('', className)} {...props} />
+    <div ref={ref} className={cn('px-6 pb-6', className)} {...props} />
   )
 );
 

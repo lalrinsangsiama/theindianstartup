@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,12 +17,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user profile with portfolio
+    // Get user profile with portfolio and purchases
     const { data: userProfile, error: profileError } = await supabase
       .from('User')
-      .select('*, StartupPortfolio(*)')
+      .select('*, StartupPortfolio(*), purchases:Purchase(*)')
       .eq('id', user.id)
       .maybeSingle();
+
+    // Removed debug logging
 
     // If user doesn't exist in our database yet, they haven't completed onboarding
     if (!userProfile) {
@@ -38,13 +40,27 @@ export async function GET(request: NextRequest) {
     // User has completed onboarding if they have a name set
     const hasCompletedOnboarding = !!(userProfile && userProfile.name);
 
-    return NextResponse.json({
+    // Check for active purchases
+    const activePurchases = userProfile?.purchases?.filter((purchase: any) => 
+      purchase.status === 'completed' && 
+      new Date(purchase.expiresAt) > new Date()
+    ) || [];
+    
+    const hasActiveAccess = activePurchases.length > 0;
+
+    const response = NextResponse.json({
       user: {
         ...userProfile,
-        portfolio: userProfile.StartupPortfolio?.[0] || null
+        portfolio: userProfile.StartupPortfolio?.[0] || null,
+        activePurchases,
+        hasActiveAccess
       },
       hasCompletedOnboarding,
     });
+
+    // Add cache headers for better performance
+    response.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
+    return response;
   } catch (error) {
     console.error('Profile fetch error:', error);
     return NextResponse.json(
@@ -77,9 +93,13 @@ export async function PATCH(request: NextRequest) {
       .update({
         name: body.name,
         phone: body.phone,
+        bio: body.bio || null,
+        linkedinUrl: body.linkedinUrl || null,
+        twitterUrl: body.twitterUrl || null,
+        websiteUrl: body.websiteUrl || null,
       })
       .eq('id', user.id)
-      .select('*')
+      .select('*, StartupPortfolio(*)')
       .maybeSingle();
 
     if (updateError) {

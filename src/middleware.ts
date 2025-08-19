@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '../lib/supabase/middleware'
+import { updateSession } from '@/lib/supabase/middleware'
 import { createServerClient } from '@supabase/ssr'
-import { SECURITY_HEADERS, logSecurityEvent } from '../lib/security'
-import { apiRateLimit, authRateLimit } from '../lib/rate-limit'
+import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
+import { apiRateLimit, authRateLimit } from '@/lib/rate-limit'
 
 export async function middleware(request: NextRequest) {
   // Apply security headers
@@ -69,7 +69,7 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Define protected routes
-  const protectedRoutes = ['/dashboard', '/journey', '/portfolio', '/community', '/leaderboard', '/resources', '/settings', '/admin', '/onboarding']
+  const protectedRoutes = ['/dashboard', '/journey', '/portfolio', '/profile', '/community', '/resources', '/analytics', '/settings', '/help', '/admin', '/onboarding', '/products']
   const authRoutes = ['/login', '/signup', '/forgot-password', '/reset-password']
 
   // Check if the current route is protected
@@ -91,7 +91,9 @@ export async function middleware(request: NextRequest) {
 
   // Special handling for admin routes
   if (pathname.startsWith('/admin') && user) {
-    const adminEmails = ['admin@theindianstartup.in', 'support@theindianstartup.in']
+    const adminEmails = process.env.ADMIN_EMAILS
+      ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim())
+      : []
     if (!adminEmails.includes(user.email || '')) {
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }

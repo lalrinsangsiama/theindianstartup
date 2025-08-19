@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { Card } from '../components/ui/Card';
-import { CardHeader } from '../components/ui/Card';
-import { CardTitle } from '../components/ui/CardTitle';
-import { CardContent } from '../components/ui/Card';
-import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '../components/progress';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { JourneyProgress, StreakCounter, XPDisplay, BadgesShowcase } from '@/components/progress';
 
 export default function ProgressDemoPage() {
   // Mock data for demonstration

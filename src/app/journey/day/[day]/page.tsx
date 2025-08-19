@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { DashboardLayout } from '../../../components/layout/DashboardLayout';
-import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
-import { Heading } from '../../../components/ui/Typography';
-import { Text } from '../../../components/ui/Typography';
-import { Card } from '../../../components/ui/Card';
-import { CardContent } from '../../../components/ui/Card';
-import { CardHeader } from '../../../components/ui/Card";
-import { CardTitle } from '../../../components/ui/Card';
-import { Badge } from '../../../components/ui/Badge';
-import { Button } from '../../../components/ui/Button';
-import { Alert } from '../../../components/ui/Alert';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -24,12 +24,12 @@ import {
 } from 'lucide-react';
 
 // Import the new enhanced components
-import { MorningBrief } from '../../../components/journey/MorningBrief';
-import { TaskChecklist, type Task } from '../../../components/journey/TaskChecklist';
-import { ResourcesSection, type Resource } from '../../../components/journey/ResourcesSection';
-import { DocumentChecklist } from '../../../components/journey/DocumentChecklist';
-import { StartupFolderStructure } from '../../../components/journey/StartupFolderStructure';
-import { EveningReflection } from '../../../components/journey/EveningReflection';
+import { MorningBrief } from '@/components/journey/MorningBrief';
+import { TaskChecklist, type Task } from '@/components/journey/TaskChecklist';
+import { ResourcesSection, type Resource } from '@/components/journey/ResourcesSection';
+import { DocumentChecklist } from '@/components/journey/DocumentChecklist';
+import { StartupFolderStructure } from '@/components/journey/StartupFolderStructure';
+import { EveningReflection } from '@/components/journey/EveningReflection';
 
 interface LessonData {
   day: number;
@@ -43,6 +43,7 @@ interface LessonData {
   successMetrics?: string[];
   expertTips?: string[];
   reflectionQuestions?: string[];
+  requiresAuth?: boolean;
 }
 
 interface ProofFile {
@@ -99,6 +100,40 @@ export default function DailyLessonPage() {
     } catch (error) {
       console.error('Error fetching lesson:', error);
       setError('Failed to load lesson data. Please try again.');
+      
+      // Set fallback lesson data to prevent total failure
+      setLessonData({
+        day: day,
+        title: `Day ${day}: Startup Journey`,
+        briefContent: `Welcome to Day ${day} of your startup journey. This lesson is currently being prepared.`,
+        estimatedTime: 45,
+        xpReward: 50,
+        actionItems: [
+          {
+            id: 'fallback-1',
+            title: 'Complete today\'s focus',
+            description: 'Work on your startup goals for today.',
+            xp: 25,
+            category: 'core',
+            estimatedTime: 30
+          }
+        ],
+        resources: []
+      });
+      
+      setTasks([
+        {
+          id: 'fallback-1',
+          title: 'Complete today\'s focus',
+          description: 'Work on your startup goals for today.',
+          xp: 25,
+          category: 'core',
+          completed: false,
+          documentsRequired: false,
+          documents: [],
+          estimatedTime: 30
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -106,7 +141,7 @@ export default function DailyLessonPage() {
 
   useEffect(() => {
     fetchLessonData();
-  }, [fetchLessonData]);
+  }, [day, fetchLessonData]);
 
   const handleTaskToggle = (taskId: string) => {
     setTasks(prevTasks => 
@@ -204,8 +239,36 @@ export default function DailyLessonPage() {
     );
   }
 
+  // Handle authentication required
+  if (lessonData.requiresAuth) {
+    return (
+      <DashboardLayout>
+        <div className="p-8">
+          <Alert variant="warning" title="Authentication Required">
+            Please log in to access lesson content. You need to be authenticated to view and complete daily lessons.
+          </Alert>
+          <div className="mt-6 space-x-4">
+            <Button
+              variant="primary"
+              onClick={() => router.push('/login')}
+            >
+              Log In
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/journey')}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Journey
+            </Button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
-    <ProtectedRoute>
+    <ProductProtectedRoute productCode="P1">
       <DashboardLayout>
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -376,6 +439,6 @@ export default function DailyLessonPage() {
           )}
         </div>
       </DashboardLayout>
-    </ProtectedRoute>
+    </ProductProtectedRoute>
   );
 }

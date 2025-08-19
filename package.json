@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^5.11.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -53,6 +54,7 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.39.7",
     "@types/canvas-confetti": "^1.9.0",
+    "autoprefixer": "^10.0.1",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -63,6 +65,7 @@
     "next": "^14.2.31",
     "next-themes": "^0.2.1",
     "nodemailer": "^7.0.5",
+    "postcss": "^8",
     "posthog-js": "^1.260.1",
     "razorpay": "^2.9.6",
     "react": "^18",
@@ -72,11 +75,9 @@
     "resend": "^3.2.0",
     "sonner": "^1.4.0",
     "tailwind-merge": "^2.6.0",
+    "tailwindcss": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4",
-    "autoprefixer": "^10.0.1",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.4.6",

@@ -1,293 +1,132 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
 
-// GET - Load user email preferences by token
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const token = searchParams.get('token');
-    
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Token required' },
-        { status: 400 }
-      );
-    }
+const emailPreferencesSchema = z.object({
+  emailFrequency: z.enum(['daily', 'weekly', 'never']),
+  emailTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
+  unsubscribeAll: z.boolean(),
+});
 
-    // Decode token to get userId and emailType
-    let userId: string;
-    try {
-      const decoded = Buffer.from(token, 'base64').toString('utf8');
-      [userId] = decoded.split(':');
-      
-      if (!userId) {
-        throw new Error('Invalid token format');
-      }
-    } catch (error) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 400 }
-      );
-    }
-
-    const supabase = createClient();
-
-    // Get user info
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('name, email')
-      .eq('id', userId)
-      .single();
-
-    if (userError || !userData) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Get email preferences
-    const { data: preferences, error: prefsError } = await supabase
-      .from('email_preferences')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    // If no preferences exist, return defaults
-    const defaultPreferences = {
-      daily_reminders: true,
-      weekly_reports: true,
-      achievements: true,
-      milestones: true,
-      community_digest: true,
-      product_updates: true,
-      marketing_emails: true,
-      unsubscribed_all: false,
-    };
-
-    return NextResponse.json({
-      userName: userData.name,
-      userEmail: userData.email,
-      preferences: preferences || defaultPreferences,
-    });
-
-  } catch (error) {
-    console.error('Email preferences GET error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST - Update user email preferences
 export async function POST(request: NextRequest) {
   try {
-    const { token, preferences } = await request.json();
-    
-    if (!token || !preferences) {
-      return NextResponse.json(
-        { error: 'Token and preferences required' },
-        { status: 400 }
-      );
-    }
-
-    // Decode token to get userId
-    let userId: string;
-    try {
-      const decoded = Buffer.from(token, 'base64').toString('utf8');
-      [userId] = decoded.split(':');
-      
-      if (!userId) {
-        throw new Error('Invalid token format');
-      }
-    } catch (error) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 400 }
-      );
-    }
-
     const supabase = createClient();
-
-    // Verify user exists
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', userId)
-      .single();
-
-    if (userError || !userData) {
+    
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
-    // Prepare preferences data for database
-    const prefsData = {
-      user_id: userId,
-      daily_reminders: preferences.dailyReminders ?? true,
-      weekly_reports: preferences.weeklyReports ?? true,
-      achievements: preferences.achievements ?? true,
-      milestones: preferences.milestones ?? true,
-      community_digest: preferences.communityDigest ?? true,
-      product_updates: preferences.productUpdates ?? true,
-      marketing_emails: preferences.marketingEmails ?? true,
-      unsubscribed_all: preferences.unsubscribedAll ?? false,
-      updated_at: new Date().toISOString(),
-    };
-
-    // Upsert email preferences
-    const { error: upsertError } = await supabase
-      .from('email_preferences')
-      .upsert(prefsData, {
-        onConflict: 'user_id',
-      });
-
-    if (upsertError) {
-      console.error('Failed to update email preferences:', upsertError);
+    // Parse and validate request body
+    const body = await request.json();
+    
+    const validation = emailPreferencesSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Failed to update preferences' },
+        { 
+          error: 'Invalid email preferences', 
+          details: validation.error.errors 
+        },
+        { status: 400 }
+      );
+    }
+
+    const { emailFrequency, emailTime, unsubscribeAll } = validation.data;
+
+    // For now, we'll store these preferences in the User table
+    // Note: You would need to add an emailPreferences JSON column to the User table
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('User')
+      .update({
+        // Store as JSON in a preferences field
+        emailPreferences: {
+          frequency: emailFrequency,
+          time: emailTime,
+          unsubscribeAll,
+          updatedAt: new Date().toISOString()
+        }
+      })
+      .eq('id', user.id)
+      .select('*')
+      .maybeSingle();
+
+    if (updateError) {
+      console.error('Email preferences update error:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update email preferences' },
         { status: 500 }
       );
     }
 
-    // Log the preference update
-    const { error: logError } = await supabase
-      .from('email_logs')
-      .insert({
-        user_id: userId,
-        email_type: 'preference_update',
-        subject: 'Email preferences updated',
-        sent_to: '', // Will be filled by trigger if needed
-        status: 'sent',
-        metadata: { action: 'preferences_updated', preferences: prefsData },
-        created_at: new Date().toISOString(),
-      });
-
-    if (logError) {
-      console.error('Failed to log preference update:', logError);
-      // Don't fail the request if logging fails
-    }
-
     return NextResponse.json({
       success: true,
-      message: 'Email preferences updated successfully',
+      preferences: {
+        emailFrequency,
+        emailTime,
+        unsubscribeAll
+      }
     });
-
   } catch (error) {
-    console.error('Email preferences POST error:', error);
+    console.error('Email preferences error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to save email preferences' },
       { status: 500 }
     );
   }
 }
 
-// DELETE - Complete unsubscribe (unsubscribe from all)
-export async function DELETE(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const token = searchParams.get('token');
-    
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Token required' },
-        { status: 400 }
-      );
-    }
-
-    // Decode token to get userId
-    let userId: string;
-    try {
-      const decoded = Buffer.from(token, 'base64').toString('utf8');
-      [userId] = decoded.split(':');
-      
-      if (!userId) {
-        throw new Error('Invalid token format');
-      }
-    } catch (error) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 400 }
-      );
-    }
-
     const supabase = createClient();
-
-    // Verify user exists
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id, email')
-      .eq('id', userId)
-      .single();
-
-    if (userError || !userData) {
+    
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
-    // Set all preferences to false and unsubscribed_all to true
-    const prefsData = {
-      user_id: userId,
-      daily_reminders: false,
-      weekly_reports: false,
-      achievements: false,
-      milestones: false,
-      community_digest: false,
-      product_updates: false,
-      marketing_emails: false,
-      unsubscribed_all: true,
-      updated_at: new Date().toISOString(),
-    };
+    // Get user's email preferences
+    const { data: userProfile, error: profileError } = await supabase
+      .from('User')
+      .select('emailPreferences')
+      .eq('id', user.id)
+      .maybeSingle();
 
-    // Upsert email preferences
-    const { error: upsertError } = await supabase
-      .from('email_preferences')
-      .upsert(prefsData, {
-        onConflict: 'user_id',
-      });
-
-    if (upsertError) {
-      console.error('Failed to unsubscribe user:', upsertError);
+    if (profileError) {
+      console.error('Failed to fetch email preferences:', profileError);
       return NextResponse.json(
-        { error: 'Failed to unsubscribe' },
+        { error: 'Failed to fetch email preferences' },
         { status: 500 }
       );
     }
 
-    // Log the unsubscribe
-    const { error: logError } = await supabase
-      .from('email_logs')
-      .insert({
-        user_id: userId,
-        email_type: 'unsubscribe_all',
-        subject: 'Unsubscribed from all emails',
-        sent_to: userData.email,
-        status: 'sent',
-        metadata: { action: 'unsubscribe_all' },
-        created_at: new Date().toISOString(),
-      });
+    // Return default preferences if none are set
+    const defaultPreferences = {
+      emailFrequency: 'daily',
+      emailTime: '09:00',
+      unsubscribeAll: false
+    };
 
-    if (logError) {
-      console.error('Failed to log unsubscribe:', logError);
-      // Don't fail the request if logging fails
-    }
+    const preferences = userProfile?.emailPreferences || defaultPreferences;
 
     return NextResponse.json({
-      success: true,
-      message: 'Successfully unsubscribed from all emails',
+      preferences
     });
-
   } catch (error) {
-    console.error('Email unsubscribe error:', error);
+    console.error('Get email preferences error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to get email preferences' },
       { status: 500 }
     );
   }

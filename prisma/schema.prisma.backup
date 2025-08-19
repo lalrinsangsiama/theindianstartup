@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  name            String
+  phone           String?
+  createdAt       DateTime          @default(now())
+  currentDay      Int               @default(1)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  totalXP         Int               @default(0)
+  currentStreak   Int               @default(0)
+  longestStreak   Int               @default(0)
+  badges          String[]
+  avatar          String?
+  bio             String?
+  linkedinUrl     String?
+  twitterUrl      String?
+  websiteUrl      String?
+  emailPreferences Json?
+  dailyProgress   DailyProgress[]
+  portfolio       StartupPortfolio?
+  xpEvents        XPEvent[]
+  purchases       Purchase[]
+}
+
+model DailyProgress {
+  id             String    @id @default(cuid())
+  userId         String
+  day            Int
+  startedAt      DateTime
+  completedAt    DateTime?
+  tasksCompleted Json
+  proofUploads   String[]
+  reflection     String?
+  xpEarned       Int       @default(0)
+  user           User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, day])
+}
+
+model StartupPortfolio {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  startupName      String?
+  tagline          String?
+  logo             String?
+  problemStatement String?
+  solution         String?
+  valueProposition String?
+  targetMarket     Json?
+  competitors      Json?
+  marketSize       Json?
+  revenueStreams   Json?
+  pricingStrategy  Json?
+  domain           String?
+  socialHandles    Json?
+  entityType       String?
+  complianceStatus Json?
+  mvpDescription   String?
+  features         Json?
+  userFeedback     Json?
+  salesStrategy    Json?
+  customerPersonas Json?
+  projections      Json?
+  fundingNeeds     Int?
+  pitchDeck        String?
+  onePageSummary   String?
+  updatedAt        DateTime @updatedAt @default(now())
+  user             User     @relation(fields: [userId], references: [id])
+}
+
+model XPEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  points      Int
+  description String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model DailyLesson {
+  id                  String   @id @default(cuid())
+  day                 Int      @unique
+  title               String
+  briefContent        String
+  actionItems         Json
+  resources           Json
+  estimatedTime       Int
+  xpReward            Int      @default(20)
+  expertTips          String[]
+  focus               String?
+  reflectionQuestions String[]
+  successMetrics      String[]
+}
+
+model Badge {
+  id          String @id @default(cuid())
+  code        String @unique
+  name        String
+  description String
+  icon        String
+  requirement String
+  xpRequired  Int?
+  dayRequired Int?
+}
+
+model Purchase {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  
+  // Product details
+  productType       String   @default("30_day_guide") // "30_day_guide", future products
+  productName       String   @default("30-Day India Launch Sprint")
+  
+  // Payment details
+  amount            Int      // Amount in paise (₹4,999 = 499900 paise)
+  currency          String   @default("INR")
+  status            String   // "pending", "completed", "failed", "refunded"
+  
+  // Razorpay integration
+  razorpayOrderId   String?  @unique
+  razorpayPaymentId String?  @unique
+  razorpaySignature String?
+  paymentMethod     String?  // "card", "netbanking", "upi", etc.
+  
+  // Access control
+  purchaseDate      DateTime @default(now())
+  accessStartDate   DateTime @default(now())
+  accessEndDate     DateTime // purchaseDate + 1 year
+  isActive          Boolean  @default(true)
+  
+  // Additional fields
+  failureReason     String?
+  refundReason      String?
+  refundDate        DateTime?
+  notes             String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt @default(now())
+}
+
+// Modular Product System Models
+model Product {
+  id              String   @id @default(cuid())
+  code            String   @unique // P1, P2, P3, etc.
+  title           String
+  description     String
+  price           Int      // Price in paise
+  isBundle        Boolean  @default(false)
+  bundleProducts  Json?    // Array of product codes in bundle
+  estimatedDays   Int?
+  modules         Module[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  title       String
+  description String?
+  orderIndex  Int
+  lessons     Lesson[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lesson {
+  id            String   @id @default(cuid())
+  moduleId      String
+  module        Module   @relation(fields: [moduleId], references: [id])
+  day           Int
+  title         String
+  briefContent  String?
+  actionItems   Json?    // Array of tasks
+  resources     Json?    // Array of resources
+  estimatedTime Int      @default(45) // in minutes
+  xpReward      Int      @default(50)
+  orderIndex    Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Waitlist {
+  id          String   @id @default(cuid())
+  email       String
+  productCode String
+  name        String?
+  joinedAt    DateTime @default(now())
+  notified    Boolean  @default(false)
+  notifiedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([email, productCode])
+  @@index([productCode])
+  @@index([joinedAt])
+}
+
+

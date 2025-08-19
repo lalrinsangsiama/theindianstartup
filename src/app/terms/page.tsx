@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Logo } from '../components/icons/Logo';
-import { Button } from '../components/ui/Button';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { ContactSupport } from '../components/ui/ContactSupport';
+import { Logo } from '@/components/icons/Logo';
+import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { ContactSupport } from '@/components/ui/ContactSupport';
 import { ArrowLeft } from 'lucide-react';
 
 export default function TermsOfServicePage() {
@@ -48,15 +48,15 @@ export default function TermsOfServicePage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">2. Description of Service</Heading>
             <Text className="mb-4">
-              The Indian Startup provides a 30-day structured program for Indian entrepreneurs to launch their startups. 
-              The Service includes:
+              The Indian Startup is an educational platform providing self-paced learning products, guides, and resources for Indian entrepreneurs. 
+              The platform offers informational content including:
             </Text>
             <ul className="list-disc pl-6 space-y-2 mb-4">
-              <li>Daily lessons and action items</li>
-              <li>India-specific compliance guidance</li>
-              <li>Templates and resources</li>
-              <li>Community access</li>
-              <li>Progress tracking and gamification features</li>
+              <li>Educational lessons and learning materials</li>
+              <li>Information about Indian business regulations</li>
+              <li>Templates and document examples</li>
+              <li>Community forum for peer learning</li>
+              <li>Progress tracking for your learning journey</li>
             </ul>
           </section>
 
@@ -79,7 +79,7 @@ export default function TermsOfServicePage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">4. Payment and Subscription</Heading>
             <Text className="mb-4">
-              <strong>Pricing:</strong> Access to the Service requires payment of ₹999 (launch offer) or ₹2,499 (regular price).
+              <strong>Pricing:</strong> Access to educational products ranges from ₹4,999 to ₹9,999 per product, or ₹54,999 for the All-Access Bundle.
             </Text>
             <Text className="mb-4">
               <strong>Access Period:</strong> Your subscription provides access for 365 days from the date of purchase.
@@ -138,19 +138,20 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <Heading as="h2" variant="h4" className="mb-4">8. Disclaimer</Heading>
+            <Heading as="h2" variant="h4" className="mb-4">8. Educational Content Disclaimer</Heading>
             <Text className="mb-4">
-              The Service is provided &quot;as is&quot; without warranties of any kind. While we strive to provide accurate and helpful information, 
-              we do not guarantee:
+              This platform provides educational content only. We do not provide legal, financial, or business services. 
+              While we strive to provide accurate information, we do not guarantee:
             </Text>
             <ul className="list-disc pl-6 space-y-2 mb-4">
               <li>The success of your startup</li>
-              <li>The accuracy of all compliance information</li>
-              <li>Uninterrupted access to the Service</li>
-              <li>That the Service will meet all your requirements</li>
+              <li>The completeness or accuracy of all information</li>
+              <li>That our educational content replaces professional advice</li>
+              <li>Uninterrupted access to the platform</li>
             </ul>
             <Text className="mb-4">
-              You should consult with legal, tax, and business professionals for advice specific to your situation.
+              <strong>Important:</strong> This is an educational platform only. You must consult with qualified legal, tax, and business professionals 
+              for advice specific to your situation. We do not provide any professional services.
             </Text>
           </section>
 

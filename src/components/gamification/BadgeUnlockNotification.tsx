@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BADGES, BadgeId } from '../lib/badges';
+import { BADGES, BadgeId } from '@/lib/badges';
 import { Star, X } from 'lucide-react';
-import { cn } from '../lib/cn';
+import { cn } from '@/lib/cn';
 
 interface BadgeUnlockNotificationProps {
   show: boolean;

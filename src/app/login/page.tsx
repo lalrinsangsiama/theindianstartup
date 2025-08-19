@@ -3,13 +3,13 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AuthLayout } from '../components/layout/AuthLayout';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Checkbox } from '../components/ui/Input';
-import { Text } from '../components/ui/Text';
-import { Alert } from '../components/ui/Alert';
-import { createClient } from '../lib/supabase/client';
+import { AuthLayout } from '@/components/layout/AuthLayout';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Checkbox } from '@/components/ui/Input';
+import { Text } from '@/components/ui/Typography';
+import { Alert } from '@/components/ui/Alert';
+import { createClient } from '@/lib/supabase/client';
 import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
 function LoginContent() {
@@ -218,14 +218,6 @@ function LoginContent() {
             >
               Start your journey
             </Link>
-          </Text>
-        </div>
-        
-        {/* Demo Account */}
-        <div className="border-t border-gray-200 pt-6">
-          <Text size="xs" color="muted" className="text-center">
-            Want to explore? Use demo account:{' '}
-            <span className="font-mono">demo@theindianstartup.in</span>
           </Text>
         </div>
       </form>

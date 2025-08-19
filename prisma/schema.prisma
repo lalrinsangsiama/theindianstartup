@@ -1,115 +1,566 @@
+// Updated schema for modular product ecosystem
+// This replaces the single 30-day journey with P1-P8 products
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String            @id @default(cuid())
-  email         String            @unique
-  name          String
-  phone         String?
-  createdAt     DateTime          @default(now())
-  currentDay    Int               @default(1)
-  startedAt     DateTime?
-  completedAt   DateTime?
-  totalXP       Int               @default(0)
-  currentStreak Int               @default(0)
-  longestStreak Int               @default(0)
-  badges        String[]
-  avatar        String?
-  bio           String?
-  linkedinUrl   String?
-  twitterUrl    String?
-  websiteUrl    String?
-  dailyProgress DailyProgress[]
-  portfolio     StartupPortfolio?
-  xpEvents      XPEvent[]
+  id              String   @id @default(cuid())
+  email           String   @unique
+  name            String?
+  phone           String?
+  bio             String?
+  linkedinUrl     String?
+  twitterUrl      String?
+  websiteUrl      String?
+  createdAt       DateTime @default(now())
+  
+  // Gamification
+  totalXP         Int      @default(0)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  badges          String[] // Badge IDs
+  
+  // Relations
+  purchases       Purchase[]
+  portfolio       StartupPortfolio?
+  portfolioActivities PortfolioActivity[]
+  xpEvents        XPEvent[]
+  reviews         Review[]
+  founderLogs     FounderLog[]
+  referrals       Referral[] @relation("ReferrerReferrals")
+  referredBy      Referral[] @relation("RefereeReferrals")
+  coupons         Coupon[]
 }
 
-model DailyProgress {
-  id             String    @id @default(cuid())
-  userId         String
-  day            Int
-  startedAt      DateTime
-  completedAt    DateTime?
-  tasksCompleted Json
-  proofUploads   String[]
-  reflection     String?
-  xpEarned       Int       @default(0)
-  user           User      @relation(fields: [userId], references: [id])
+model Product {
+  id              String   @id @default(cuid())
+  code            String   @unique // P1, P2, P3, etc. or "ALL_ACCESS"
+  slug            String   @unique
+  title           String
+  description     String
+  price           Int      // Price in paise
+  originalPrice   Int?     // For showing discounts
+  
+  // Product details
+  features        Json     // Array of feature descriptions
+  outcomes        Json     // Array of learning outcomes
+  estimatedTime   Int      // Total time in minutes
+  xpReward        Int      @default(0)
+  
+  // Content structure
+  modules         Module[]
+  
+  // Metadata
+  isActive        Boolean  @default(true)
+  isBundle        Boolean  @default(false) // True for All-Access
+  bundleProducts  String[] // Product codes included in bundle
+  sortOrder       Int      @default(0)
+  
+  // Relations
+  purchases       Purchase[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
 
-  @@unique([userId, day])
+model Module {
+  id              String   @id @default(cuid())
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  order           Int
+  title           String
+  description     String?
+  content         Json     // Rich content structure
+  
+  // Module components
+  lessons         Lesson[]
+  resources       Resource[]
+  
+  // Requirements
+  prerequisites   String[] // Module IDs that must be completed first
+  estimatedTime   Int      @default(0)
+  xpReward        Int      @default(20)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([productId, order])
+}
+
+model Lesson {
+  id              String   @id @default(cuid())
+  moduleId        String
+  module          Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  order           Int
+  title           String
+  briefContent    String   // Morning brief / introduction
+  actionItems     Json     // Tasks and checklists
+  resources       Json     // Links, downloads, tools
+  
+  // Lesson details
+  estimatedTime   Int      @default(30)
+  xpReward        Int      @default(20)
+  
+  // Progress tracking
+  progress        LessonProgress[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([moduleId, order])
+}
+
+model Resource {
+  id              String   @id @default(cuid())
+  moduleId        String?
+  module          Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  type            String   // template, guide, tool, video, etc.
+  url             String?
+  fileUrl         String?
+  
+  // Metadata
+  tags            String[]
+  isDownloadable  Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Purchase {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+  
+  // Payment details
+  amount          Int      // Amount paid in paise
+  originalAmount  Int?     // Original amount before discount
+  currency        String   @default("INR")
+  razorpayOrderId String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  
+  // Coupon usage
+  couponId        String?  @unique
+  coupon          Coupon?  @relation("CouponUsage", fields: [couponId], references: [id])
+  discountAmount  Int?     // Discount applied in paise
+  
+  // Access control
+  status          String   // pending, completed, failed, refunded
+  purchasedAt     DateTime @default(now())
+  expiresAt       DateTime // 1 year from purchase
+  
+  // Progress tracking
+  lessonsProgress LessonProgress[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, productId]) // One purchase per product per user
+}
+
+model LessonProgress {
+  id              String   @id @default(cuid())
+  purchaseId      String
+  purchase        Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  lessonId        String
+  lesson          Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  // Progress details
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  tasksCompleted  Json     @default("[]") // Array of completed task IDs
+  proofUploads    String[] @default([])   // File URLs
+  xpEarned        Int      @default(0)
+  
+  // Reflection and notes
+  reflection      String?
+  
+  @@unique([purchaseId, lessonId])
 }
 
 model StartupPortfolio {
-  id               String   @id @default(cuid())
-  userId           String   @unique
-  startupName      String?
-  tagline          String?
-  logo             String?
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Basic Info
+  startupName     String?
+  tagline         String?
+  logo            String?
+  
+  // Idea & Vision
   problemStatement String?
-  solution         String?
+  solution        String?
   valueProposition String?
-  targetMarket     Json?
-  competitors      Json?
-  marketSize       Json?
-  revenueStreams   Json?
-  pricingStrategy  Json?
-  domain           String?
-  socialHandles    Json?
-  entityType       String?
+  
+  // Market Research
+  targetMarket    Json?
+  competitors     Json?
+  marketSize      Json?
+  
+  // Business Model
+  revenueStreams  Json?
+  pricingStrategy Json?
+  
+  // Brand Assets
+  domain          String?
+  socialHandles   Json?
+  
+  // Legal
+  entityType      String?
   complianceStatus Json?
-  mvpDescription   String?
-  features         Json?
-  userFeedback     Json?
-  salesStrategy    Json?
+  
+  // Product
+  mvpDescription  String?
+  features        Json?
+  userFeedback    Json?
+  
+  // GTM
+  salesStrategy   Json?
   customerPersonas Json?
-  projections      Json?
-  fundingNeeds     Int?
-  pitchDeck        String?
-  onePageSummary   String?
-  updatedAt        DateTime @updatedAt
-  user             User     @relation(fields: [userId], references: [id])
+  
+  // Financials
+  projections     Json?
+  fundingNeeds    Int?
+  
+  // Pitch
+  pitchDeck       String? // URL
+  onePageSummary  String? // Auto-generated HTML
+  
+  // Portfolio activities
+  activities      PortfolioActivity[]
+  
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
+// Portfolio Activity System
+model ActivityType {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  portfolioSection String
+  portfolioField  String
+  dataSchema      Json     // JSON schema for validation
+  version         Int      @default(1)
+  isActive        Boolean  @default(true)
+  
+  // Relations
+  activities      PortfolioActivity[]
+  versions        ActivityTypeVersion[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([id, version])
+}
+
+model ActivityTypeVersion {
+  id              String   @id @default(cuid())
+  activityTypeId  String
+  activityType    ActivityType @relation(fields: [activityTypeId], references: [id], onDelete: Cascade)
+  
+  version         Int
+  dataSchema      Json
+  migrationScript Json?    // Script to migrate from previous version
+  
+  createdAt       DateTime @default(now())
+  
+  @@unique([activityTypeId, version])
+}
+
+model PortfolioActivity {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolioId     String
+  portfolio       StartupPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  
+  // Activity metadata
+  activityTypeId  String
+  activityType    ActivityType @relation(fields: [activityTypeId], references: [id])
+  activityVersion Int      @default(1)
+  
+  // Source tracking
+  sourceLesson    String?  // Lesson ID
+  sourceCourse    String?  // Course code (P1, P2, etc.)
+  sourceModule    String?  // Module ID
+  
+  // Activity data
+  data            Json     // The actual activity content
+  dataVersion     Int      @default(1)
+  isLatest        Boolean  @default(true)
+  
+  // Status
+  status          String   @default("draft") // draft, completed, reviewed
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId, activityTypeId])
+  @@index([sourceLesson])
+  @@index([sourceCourse])
+}
+
+// Portfolio Section Management
+model PortfolioSection {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  title           String
+  description     String?
+  order           Int
+  icon            String?
+  
+  // Fields within this section
+  fields          Json     // Array of field definitions
+  
+  // Requirements
+  requiredActivities String[] @default([]) // Activity type IDs required to complete section
+  
+  isActive        Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model XPEvent {
-  id          String   @id @default(cuid())
-  userId      String
-  type        String
-  points      Int
-  description String
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type            String   // lesson_complete, module_complete, product_complete, quiz_pass, proof_upload, community_contribution
+  points          Int
+  description     String
+  metadata        Json?    // Additional context
+  
+  createdAt       DateTime @default(now())
 }
 
-model DailyLesson {
-  id                  String   @id @default(cuid())
-  day                 Int      @unique
-  title               String
-  briefContent        String
-  actionItems         Json
-  resources           Json
-  estimatedTime       Int
-  xpReward            Int      @default(20)
-  expertTips          String[]
-  focus               String?
-  reflectionQuestions String[]
-  successMetrics      String[]
+// Community Models
+model Review {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  entityType      String   // incubator, scheme, investor, vendor
+  entityId        String
+  
+  rating          Int      // 1-5 stars
+  title           String
+  pros            String
+  cons            String
+  advice          String?
+  
+  // Verification
+  proofFiles      String[] @default([])
+  isVerified      Boolean  @default(false)
+  status          String   @default("pending") // pending, published, rejected
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FounderLog {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String
+  content         String   // Markdown
+  tags            String[] @default([])
+  attachments     String[] @default([])
+  
+  // Engagement
+  likes           Int      @default(0)
+  views           Int      @default(0)
+  
+  isPublished     Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Referral {
+  id              String   @id @default(cuid())
+  referrerId      String
+  referrer        User     @relation("ReferrerReferrals", fields: [referrerId], references: [id], onDelete: Cascade)
+  refereeId       String
+  referee         User     @relation("RefereeReferrals", fields: [refereeId], references: [id], onDelete: Cascade)
+  
+  // Reward tracking
+  rewardStatus    String   @default("pending") // pending, credited, expired
+  rewardAmount    Int      @default(0) // In paise
+  
+  createdAt       DateTime @default(now())
+  
+  @@unique([referrerId, refereeId])
+}
+
+// Ecosystem Models (from research)
+model Incubator {
+  id              String   @id @default(cuid())
+  name            String
+  state           String
+  city            String?
+  
+  // Program details
+  equityTake      Float?   // Percentage
+  stipend         Int?     // Monthly stipend in INR
+  duration        Int?     // Program duration in months
+  
+  // Metadata
+  sectorTags      String[] @default([])
+  stageTags       String[] @default([])
+  benefits        Json?    // Array of benefits
+  
+  // Application details
+  applicationWindow String?
+  website         String?
+  contactEmail    String?
+  
+  // Stats
+  acceptanceRate  Float?
+  alumniCount     Int?
+  avgRaised       Int?     // Average amount raised by alumni
+  
+  // Reviews
+  averageRating   Float?   @default(0)
+  reviewCount     Int      @default(0)
+  
+  isActive        Boolean  @default(true)
+  isVerified      Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Scheme {
+  id              String   @id @default(cuid())
+  name            String
+  owner           String   // central, state, psu
+  state           String?
+  
+  // Scheme details
+  sectorTags      String[] @default([])
+  stageTags       String[] @default([])
+  incentiveType   String   // grant, loan, tax_benefit, etc.
+  maxAmount       Int?     // Maximum benefit amount
+  
+  // Application details
+  isRolling       Boolean  @default(false)
+  deadline        DateTime?
+  eligibilityCriteria Json?
+  requiredDocuments Json?
+  
+  // Links and contacts
+  officialUrl     String?
+  applicationUrl  String?
+  contactInfo     Json?
+  
+  // Stats
+  successRate     Float?
+  avgTimeToApproval Int?   // Days
+  
+  isActive        Boolean  @default(true)
+  lastVerified    DateTime @default(now())
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Investor {
+  id              String   @id @default(cuid())
+  name            String
+  type            String   // angel, vc, family_office, etc.
+  
+  // Investment details
+  chequeMin       Int?     // Minimum investment in INR
+  chequeMax       Int?     // Maximum investment in INR
+  stageTags       String[] @default([])
+  sectorTags      String[] @default([])
+  
+  // Investment behavior
+  leadInvestment  Boolean  @default(false)
+  followInvestment Boolean @default(true)
+  avgTimeToDecision Int?   // Days
+  
+  // Contact
+  website         String?
+  linkedinUrl     String?
+  contactEmail    String?
+  
+  // Geography
+  focusStates     String[] @default([])
+  globalInvestment Boolean @default(false)
+  
+  isActive        Boolean  @default(true)
+  isVerified      Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Badge {
-  id          String @id @default(cuid())
-  code        String @unique
-  name        String
-  description String
-  icon        String
-  requirement String
-  xpRequired  Int?
-  dayRequired Int?
+  id              String   @id @default(cuid())
+  code            String   @unique
+  title           String
+  description     String
+  icon            String?  // Icon name or emoji
+  
+  // Requirements
+  requirementType String   // xp_threshold, product_complete, manual
+  requirementValue Json?   // Threshold or criteria
+  
+  // Appearance
+  color           String?
+  rarity          String   @default("common") // common, rare, epic, legendary
+  
+  isActive        Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
 }
 
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Coupon details
+  discountPercent Int      // 10 for 10% off
+  description     String   // e.g., "10% off your next course"
+  
+  // Usage restrictions
+  maxUses         Int      @default(1)
+  usedCount       Int      @default(0)
+  applicableProducts String[] @default([]) // Empty means all products except ALL_ACCESS
+  excludedProducts String[] @default(["ALL_ACCESS"]) // Cannot be used for bundle
+  
+  // Validity
+  validFrom       DateTime @default(now())
+  validUntil      DateTime // e.g., 6 months from creation
+  
+  // Usage tracking
+  usedAt          DateTime?
+  usedForPurchase Purchase? @relation("CouponUsage")
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([code])
+}

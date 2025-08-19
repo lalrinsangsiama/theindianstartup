@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from 'components/ui/Button';
-import { Heading } from 'components/ui/Typography';
-import { Text } from 'components/ui/Typography';
-import { Logo } from 'components/icons/Logo';
+import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { Logo } from '@/components/icons/Logo';
 import { Home, ArrowLeft, Search } from 'lucide-react';
 
 export default function NotFound() {
@@ -73,8 +73,8 @@ export default function NotFound() {
                 Popular pages:
               </Text>
               <div className="flex flex-wrap justify-center gap-2">
-                <Link href="/pricing" className="text-sm text-accent hover:underline">
-                  Pricing
+                <Link href="/signup" className="text-sm text-accent hover:underline">
+                  Sign Up
                 </Link>
                 <span className="text-gray-300">•</span>
                 <Link href="/dashboard" className="text-sm text-accent hover:underline">

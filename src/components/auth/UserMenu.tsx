@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuthContext } from '../contexts/AuthContext';
-import { Avatar } from '../../components/ui/Avatar';
-import { Button } from '../../components/ui/Button';
-import { Text } from '../../components/ui/Typography';
-import { Badge } from '../../components/ui/Badge';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useClientOnly } from '@/hooks/useClientOnly';
+import { Avatar } from '@/components/ui/Avatar';
+import { Button } from '@/components/ui/Button';
+import { Text } from '@/components/ui/Typography';
+import { Badge } from '@/components/ui/Badge';
 import { 
   User, 
   Settings, 
@@ -25,7 +26,8 @@ import {
 
 export function UserMenu() {
   const router = useRouter();
-  const { user, signOut } = useAuthContext();
+  const { user, signOut, loading } = useAuthContext();
+  const mounted = useClientOnly();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -63,6 +65,16 @@ export function UserMenu() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
+
+  // Show loading state to prevent hydration mismatch
+  if (loading || !mounted) {
+    return (
+      <div className="flex items-center gap-3">
+        <div className="w-16 h-8 bg-gray-200 animate-pulse rounded"></div>
+        <div className="w-24 h-8 bg-gray-200 animate-pulse rounded"></div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -110,9 +122,14 @@ export function UserMenu() {
           fallback={userInitial}
           src={user.user_metadata?.avatar_url}
         />
-        <span className="hidden md:block font-medium text-sm">
-          {userName}
-        </span>
+        <div className="hidden md:flex flex-col items-start">
+          <span className="font-medium text-sm">
+            {userName}
+          </span>
+          {userProfile?.activePurchases?.some((p: any) => p.product?.code === 'ALL_ACCESS') && (
+            <span className="text-xs text-purple-600 font-medium">All Access</span>
+          )}
+        </div>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -197,17 +214,14 @@ export function UserMenu() {
 
             <hr className="my-2 border-gray-200" />
 
-            <a
-              href="https://docs.theindianstartup.in"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/help"
               className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <HelpCircle className="w-4 h-4" />
               <span>Help & Support</span>
-              <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
-            </a>
+            </Link>
 
             <hr className="my-2 border-gray-200" />
 
@@ -221,22 +235,6 @@ export function UserMenu() {
             </button>
           </nav>
 
-          {/* Subscription Status */}
-          {userProfile?.subscription && (
-            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Text size="xs" weight="medium">P1: 30-Day Launch Sprint</Text>
-                  <Text size="xs" color="muted">
-                    {userProfile.subscription.status === 'active' ? 'Active' : 'Expired'}
-                  </Text>
-                </div>
-                {userProfile.subscription.status === 'active' && (
-                  <Badge size="sm" variant="success">Active</Badge>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

@@ -37,7 +37,7 @@ export const Logo: React.FC<LogoProps> = ({
     <svg
       width={width}
       height={height}
-      viewBox="0 0 200 40"
+      viewBox="0 0 220 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
@@ -55,26 +55,15 @@ export const Logo: React.FC<LogoProps> = ({
       
       {/* Text */}
       <text
-        x="45"
-        y="26"
+        x="40"
+        y="24"
         fontFamily="IBM Plex Mono, monospace"
         fontSize="16"
         fontWeight="600"
         fill="currentColor"
         letterSpacing="0.05em"
       >
-        THE INDIAN
-      </text>
-      <text
-        x="45"
-        y="38"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="12"
-        fontWeight="400"
-        fill="currentColor"
-        letterSpacing="0.1em"
-      >
-        STARTUP
+        THE INDIAN STARTUP
       </text>
     </svg>
   );

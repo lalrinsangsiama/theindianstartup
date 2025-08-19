@@ -1,21 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { Card } from '../components/ui/Card';
-import { CardContent } from '../components/ui/Card';
-import { CardHeader } from '../components/ui/Card";
-import { CardTitle } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Tabs } from '../components/ui/Tabs';
-import { TabsContent } from '../components/ui/Tabs';
-import { TabsList } from '../components/ui/TabsList';
-import { TabsTrigger } from '../components/ui/Tabs';
+import React, { useState, useEffect } from 'react';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Tabs } from '@/components/ui/Tabs';
+import { TabsContent } from '@/components/ui/Tabs';
+import { TabsList } from '@/components/ui/Tabs';
+import { TabsTrigger } from '@/components/ui/Tabs';
+import { Alert } from '@/components/ui/Alert';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { 
   FileText, 
   Download, 
@@ -31,7 +33,11 @@ import {
   TrendingUp,
   Shield,
   Star,
-  Filter
+  Filter,
+  Package,
+  Loader2,
+  ShoppingCart,
+  Sparkles
 } from 'lucide-react';
 
 // Mock data - in real app, fetch from API
@@ -163,10 +169,113 @@ const categoryIcons = {
   Design: FileText
 };
 
+interface Resource {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  url?: string;
+  fileUrl?: string;
+  tags: string[];
+  isDownloadable: boolean;
+  moduleTitle: string;
+  moduleId: string;
+  productCode: string;
+  productTitle: string;
+  source: 'module' | 'lesson';
+  lessonTitle?: string;
+}
+
+interface ResourceData {
+  resources: Resource[];
+  resourcesByProduct: Record<string, Resource[]>;
+  totalResources: number;
+  products: Array<{
+    code: string;
+    title: string;
+    resourceCount: number;
+  }>;
+  resourceTypes: string[];
+  tags: string[];
+  hasAllAccess: boolean;
+}
+
 export default function ResourcesPage() {
-  const [activeTab, setActiveTab] = useState('templates');
+  const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedProduct, setSelectedProduct] = useState('all');
+  const [resourceData, setResourceData] = useState<ResourceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        setLoading(true);
+        setError('');
+
+        const response = await fetch('/api/user/resources');
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch resources');
+        }
+
+        setResourceData(data);
+      } catch (err) {
+        console.error('Error fetching resources:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load resources');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, []);
+
+  // Filter resources based on search and filters
+  const getFilteredResources = () => {
+    if (!resourceData) return [];
+
+    let filtered = resourceData.resources;
+
+    // Filter by product
+    if (selectedProduct !== 'all') {
+      filtered = filtered.filter(r => r.productCode === selectedProduct);
+    }
+
+    // Filter by type/category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(r => r.type.toLowerCase() === selectedCategory.toLowerCase());
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(r => 
+        r.title.toLowerCase().includes(query) ||
+        r.description.toLowerCase().includes(query) ||
+        r.tags.some(tag => tag.toLowerCase().includes(query))
+      );
+    }
+
+    // Group by type for tabs
+    if (activeTab !== 'all') {
+      filtered = filtered.filter(r => {
+        if (activeTab === 'templates') {
+          return ['template', 'pdf', 'excel', 'powerpoint', 'document'].includes(r.type.toLowerCase());
+        } else if (activeTab === 'tools') {
+          return ['tool', 'calculator', 'web tool', 'online tool'].includes(r.type.toLowerCase());
+        } else if (activeTab === 'guides') {
+          return ['guide', 'article', 'tutorial', 'video'].includes(r.type.toLowerCase());
+        }
+        return true;
+      });
+    }
+
+    return filtered;
+  };
 
   const getIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -188,8 +297,9 @@ export default function ResourcesPage() {
     }
   };
 
-  const ResourceCard = ({ resource, showDownload = true }: { resource: any, showDownload?: boolean }) => {
-    const CategoryIcon = categoryIcons[resource.category as keyof typeof categoryIcons] || FileText;
+  const ResourceCard = ({ resource }: { resource: Resource }) => {
+    const showDownload = resource.isDownloadable || resource.fileUrl;
+    const isExternalLink = resource.url && !resource.fileUrl;
     
     return (
       <Card className="h-full transition-all hover:shadow-lg hover:border-black group">
@@ -197,62 +307,82 @@ export default function ResourcesPage() {
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               {getIcon(resource.type)}
-              <div className="flex items-center gap-2">
-                <CategoryIcon className="w-4 h-4 text-gray-500" />
-                <Badge variant="outline" size="sm">{resource.category}</Badge>
-              </div>
+              <Badge variant="outline" size="sm">{resource.type}</Badge>
             </div>
-            {resource.featured && (
-              <Badge variant="warning" size="sm">
-                <Star className="w-3 h-3 mr-1" />
-                Featured
-              </Badge>
-            )}
+            <Badge variant="default" size="sm">
+              {resource.productCode}
+            </Badge>
           </div>
 
           <Heading as="h3" variant="h5" className="mb-2 group-hover:text-blue-600 transition-colors">
             {resource.title}
           </Heading>
           
-          <Text color="muted" className="mb-4">
+          <Text color="muted" className="mb-2">
             {resource.description}
           </Text>
 
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-            <div className="flex items-center gap-4">
-              <span>{resource.type}</span>
-              {resource.size && <span>{resource.size}</span>}
-              {resource.readTime && <span>{resource.readTime}</span>}
+          <div className="flex flex-col gap-1 text-sm text-gray-500 mb-4">
+            <div className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              <span className="truncate">{resource.productTitle}</span>
             </div>
-            {resource.rating && (
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span>{resource.rating}</span>
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              <span className="truncate">{resource.moduleTitle}</span>
+            </div>
+            {resource.lessonTitle && (
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                <span className="truncate">{resource.lessonTitle}</span>
               </div>
             )}
           </div>
 
-          {resource.downloads && (
-            <Text size="sm" color="muted" className="mb-4">
-              {resource.downloads.toLocaleString()} downloads
-            </Text>
+          {resource.tags && resource.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-4">
+              {resource.tags.slice(0, 3).map((tag, index) => (
+                <Badge key={index} variant="outline" size="sm">
+                  {tag}
+                </Badge>
+              ))}
+              {resource.tags.length > 3 && (
+                <Badge variant="outline" size="sm">
+                  +{resource.tags.length - 3}
+                </Badge>
+              )}
+            </div>
           )}
 
           <div className="flex gap-2">
-            {showDownload ? (
-              <Button variant="primary" size="sm" className="flex-1">
+            {showDownload && resource.fileUrl && (
+              <Button 
+                variant="primary" 
+                size="sm" 
+                className="flex-1"
+                onClick={() => window.open(resource.fileUrl, '_blank')}
+              >
                 <Download className="w-4 h-4 mr-2" />
                 Download
               </Button>
-            ) : (
-              <Button variant="primary" size="sm" className="flex-1">
+            )}
+            {isExternalLink && (
+              <Button 
+                variant="primary" 
+                size="sm" 
+                className="flex-1"
+                onClick={() => window.open(resource.url, '_blank')}
+              >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Open Tool
+                Open Link
               </Button>
             )}
-            <Button variant="outline" size="sm">
-              <Star className="w-4 h-4" />
-            </Button>
+            {!showDownload && !isExternalLink && (
+              <Button variant="outline" size="sm" className="flex-1" disabled>
+                <FileText className="w-4 h-4 mr-2" />
+                View in Course
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -262,16 +392,137 @@ export default function ResourcesPage() {
   return (
     <ProtectedRoute >
       <DashboardLayout>
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-6 lg:p-8 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Heading as="h1" className="mb-2">
-              Startup Resources
-            </Heading>
-            <Text color="muted">
-              Templates, tools, and guides to accelerate your startup journey
-            </Text>
+            <div className="flex items-center justify-between">
+              <div>
+                <Heading as="h1" className="mb-2">
+                  Startup Resources
+                </Heading>
+                <Text color="muted">
+                  {resourceData?.hasAllAccess ? 
+                    'Access all resources from your courses in one place' :
+                    'Templates, tools, and guides from your purchased courses'
+                  }
+                </Text>
+              </div>
+              {resourceData && resourceData.totalResources > 0 && (
+                <Badge variant="default" size="lg">
+                  {resourceData.totalResources} Resources Available
+                </Badge>
+              )}
+            </div>
           </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="space-y-4">
+              <Skeleton className="h-20 w-full" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => (
+                  <Skeleton key={i} className="h-64 w-full" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !loading && (
+            <Alert variant="warning" className="mb-8">
+              {error}
+            </Alert>
+          )}
+
+          {/* No Resources State */}
+          {!loading && !error && resourceData?.totalResources === 0 && (
+            <Card className="p-12 text-center bg-gradient-to-br from-gray-50 to-white border-2 border-gray-100">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                  <FileText className="w-96 h-96" />
+                </div>
+                <div className="relative">
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <FileText className="w-12 h-12 text-gray-400" />
+                    <Calculator className="w-12 h-12 text-gray-400" />
+                    <BookOpen className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <Badge variant="warning" className="mb-4">
+                    🎯 Unlock Premium Resources
+                  </Badge>
+                  <Heading as="h3" variant="h3" className="mb-3">
+                    Get Access to 200+ Amazing Resources!
+                  </Heading>
+                  <Text size="lg" className="mb-2 font-medium">
+                    Each course includes exclusive templates, tools, and guides worth ₹50,000+
+                  </Text>
+                  <Text color="muted" className="mb-8 max-w-2xl mx-auto">
+                    From pitch deck templates to financial models, legal documents to marketing frameworks - 
+                    everything you need to build and scale your startup is waiting in our comprehensive courses.
+                  </Text>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-8">
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <Shield className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                      <Text weight="medium" size="sm">Legal Templates</Text>
+                      <Text size="xs" color="muted">Contracts, NDAs, Terms</Text>
+                    </div>
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                      <Text weight="medium" size="sm">Financial Tools</Text>
+                      <Text size="xs" color="muted">Models, Calculators, Trackers</Text>
+                    </div>
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <Briefcase className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                      <Text weight="medium" size="sm">Business Guides</Text>
+                      <Text size="xs" color="muted">Playbooks, Frameworks, SOPs</Text>
+                    </div>
+                  </div>
+
+                  <Button 
+                    variant="primary" 
+                    size="lg"
+                    onClick={() => window.location.href = '/pricing'}
+                    className="mb-3"
+                  >
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Explore Courses & Unlock Resources
+                  </Button>
+                  <Text size="sm" color="muted">
+                    Starting at just ₹4,999 per course
+                  </Text>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Main Content */}
+          {!loading && !error && resourceData && resourceData.totalResources > 0 && (
+            <>
+              {/* Course Filter Pills */}
+              {resourceData.products.length > 1 && (
+                <div className="mb-6 overflow-x-auto">
+                  <div className="flex gap-2 min-w-max">
+                    <Button
+                      variant={selectedProduct === 'all' ? 'primary' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedProduct('all')}
+                    >
+                      All Courses ({resourceData.totalResources})
+                    </Button>
+                    {resourceData.products.map(product => (
+                      <Button
+                        key={product.code}
+                        variant={selectedProduct === product.code ? 'primary' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedProduct(product.code)}
+                      >
+                        {product.title} ({product.resourceCount})
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
           {/* Search and Filters */}
           <Card className="mb-8">
@@ -295,82 +546,93 @@ export default function ResourcesPage() {
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   >
-                    <option value="all">All Categories</option>
-                    <option value="Planning">Planning</option>
-                    <option value="Legal">Legal</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Funding">Funding</option>
-                    <option value="Branding">Branding</option>
-                    <option value="Marketing">Marketing</option>
+                    <option value="all">All Types</option>
+                    {resourceData?.resourceTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
                   </select>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Resource Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-8">
-              <TabsTrigger value="templates" className="flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                Templates & Documents
-              </TabsTrigger>
-              <TabsTrigger value="tools" className="flex items-center gap-2">
-                <Calculator className="w-4 h-4" />
-                Online Tools
-              </TabsTrigger>
-              <TabsTrigger value="guides" className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4" />
-                Guides & Articles
-              </TabsTrigger>
-            </TabsList>
+              {/* Resource Tabs */}
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="mb-8">
+                  <TabsTrigger value="all" className="flex items-center gap-2">
+                    <Package className="w-4 h-4" />
+                    All Resources
+                  </TabsTrigger>
+                  <TabsTrigger value="templates" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Templates & Documents
+                  </TabsTrigger>
+                  <TabsTrigger value="tools" className="flex items-center gap-2">
+                    <Calculator className="w-4 h-4" />
+                    Online Tools
+                  </TabsTrigger>
+                  <TabsTrigger value="guides" className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Guides & Articles
+                  </TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="templates">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {resourceCategories.templates.map((resource) => (
-                  <ResourceCard key={resource.id} resource={resource} />
-                ))}
-              </div>
-            </TabsContent>
+                {/* Resources Grid */}
+                <div className="min-h-[400px]">
+                  {getFilteredResources().length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {getFilteredResources().map((resource) => (
+                        <ResourceCard key={resource.id} resource={resource} />
+                      ))}
+                    </div>
+                  ) : (
+                    <Card className="p-12 text-center">
+                      <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <Heading as="h4" variant="h5" className="mb-2">
+                        No Resources Found
+                      </Heading>
+                      <Text color="muted">
+                        Try adjusting your filters or search query
+                      </Text>
+                    </Card>
+                  )}
+                </div>
+              </Tabs>
 
-            <TabsContent value="tools">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {resourceCategories.tools.map((resource) => (
-                  <ResourceCard key={resource.id} resource={resource} showDownload={false} />
-                ))}
-              </div>
-            </TabsContent>
+              {/* Resource Summary by Product */}
+              {resourceData.products.length > 0 && (
+                <Card className="mt-12">
+                  <CardHeader>
+                    <CardTitle>Resources by Course</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {resourceData.products.map(product => (
+                        <button
+                          key={product.code}
+                          onClick={() => setSelectedProduct(product.code)}
+                          className={`p-4 border rounded-lg text-left transition-all ${
+                            selectedProduct === product.code 
+                              ? 'border-black bg-gray-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="outline">{product.code}</Badge>
+                            <Text size="sm" weight="medium">{product.resourceCount} items</Text>
+                          </div>
+                          <Text weight="medium">{product.title}</Text>
+                        </button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-            <TabsContent value="guides">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {resourceCategories.guides.map((resource) => (
-                  <ResourceCard key={resource.id} resource={resource} showDownload={false} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+            </>
+          )}
 
-          {/* Popular Categories */}
-          <Card className="mt-12">
-            <CardHeader>
-              <CardTitle>Popular Categories</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(categoryIcons).map(([category, Icon]) => (
-                  <button
-                    key={category}
-                    className="p-4 border border-gray-200 rounded-lg hover:border-black transition-colors text-center group"
-                  >
-                    <Icon className="w-8 h-8 mx-auto mb-2 text-gray-600 group-hover:text-black" />
-                    <Text size="sm" weight="medium">{category}</Text>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Request Resource */}
+          {/* Request Resource - Always Show */}
           <Card className="mt-8 bg-gray-50">
             <CardContent className="p-6 text-center">
               <Lightbulb className="w-12 h-12 text-blue-500 mx-auto mb-4" />

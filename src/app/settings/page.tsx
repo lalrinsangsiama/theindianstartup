@@ -1,60 +1,45 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { Card } from '../components/ui/Card';
-import { CardContent } from '../components/ui/Card';
-import { CardHeader } from '../components/ui/Card";
-import { CardTitle } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Checkbox } from '../components/ui/Input';
-import { Badge } from '../components/ui/Badge';
-import { Alert } from '../components/ui/Alert';
-import { Tabs } from '../components/ui/Tabs';
-import { TabsContent } from '../components/ui/Tabs';
-import { TabsList } from '../components/ui/TabsList';
-import { TabsTrigger } from '../components/ui/Tabs';
-import { useAuthContext } from '../contexts/AuthContext';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Checkbox } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { Alert } from '@/components/ui/Alert';
+import { Tabs } from '@/components/ui/Tabs';
+import { TabsContent } from '@/components/ui/Tabs';
+import { TabsList } from '@/components/ui/Tabs';
+import { TabsTrigger } from '@/components/ui/Tabs';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { 
-  User, 
   Bell, 
   Shield, 
-  CreditCard, 
   Download,
   Trash2,
   AlertTriangle,
   CheckCircle,
-  Mail,
-  Phone,
-  Globe,
-  Linkedin,
-  Twitter,
   Save,
-  Eye,
-  EyeOff
+  Key,
+  Smartphone,
+  FileText,
+  Loader2,
+  Mail
 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user } = useAuthContext();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('notifications');
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Profile form data
-  const [profileData, setProfileData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    bio: '',
-    linkedinUrl: '',
-    twitterUrl: '',
-    websiteUrl: ''
-  });
+  const [exportLoading, setExportLoading] = useState(false);
 
   // Notification preferences
   const [notifications, setNotifications] = useState({
@@ -74,88 +59,196 @@ export default function SettingsPage() {
     activityVisible: false
   });
 
-  useEffect(() => {
-    // Fetch user profile data
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/user/profile');
-        const data = await response.json();
-        if (data.user) {
-          setProfileData({
-            name: data.user.name || '',
-            email: data.user.email || '',
-            phone: data.user.phone || '',
-            bio: data.user.bio || '',
-            linkedinUrl: data.user.linkedinUrl || '',
-            twitterUrl: data.user.twitterUrl || '',
-            websiteUrl: data.user.websiteUrl || ''
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch profile:', error);
-      }
-    };
+  // Email preferences
+  const [emailPrefs, setEmailPrefs] = useState({
+    emailFrequency: 'daily', // daily, weekly, never
+    emailTime: '09:00',
+    unsubscribeAll: false
+  });
 
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
-
-  const handleSaveProfile = async () => {
+  const handleSaveNotifications = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/user/profile', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      if (response.ok) {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
-      }
+      // Save notification preferences
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (error) {
-      console.error('Failed to save profile:', error);
+      console.error('Failed to save notifications:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleExportData = () => {
-    // Mock data export functionality
-    const data = {
-      profile: profileData,
-      subscription: 'P1: 30-Day India Launch Sprint',
-      progress: {
-        currentDay: 7,
-        completedDays: 6,
-        totalXP: 850,
-        badges: ['Starter', 'Researcher']
+  const handleSavePrivacy = async () => {
+    setLoading(true);
+    try {
+      // Save privacy settings
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error('Failed to save privacy settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveEmailPrefs = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/user/email-preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailPrefs)
+      });
+      
+      if (response.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
       }
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'my-startup-data.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to save email preferences:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setExportLoading(true);
+    try {
+      // Fetch user's complete data
+      const response = await fetch('/api/user/export-data');
+      
+      if (!response.ok) throw new Error('Failed to export data');
+      
+      // The API should return a PDF blob
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `theindianstartup-data-${new Date().toISOString().split('T')[0]}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export data:', error);
+      // Fallback to HTML export if PDF generation fails
+      handleExportAsHTML();
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handleExportAsHTML = async () => {
+    try {
+      // Fetch user data
+      const profileRes = await fetch('/api/user/profile');
+      const profileData = await profileRes.json();
+      
+      // Generate HTML report
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>My Startup Journey - Data Export</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+            h1, h2 { color: #333; }
+            .section { margin-bottom: 30px; padding: 20px; background: #f5f5f5; border-radius: 8px; }
+            .stat { display: inline-block; margin: 10px 20px 10px 0; }
+            .label { font-weight: bold; color: #666; }
+            .value { font-size: 1.2em; color: #333; }
+            .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 0.9em; }
+          </style>
+        </head>
+        <body>
+          <h1>The Indian Startup - Your Journey Data</h1>
+          <p>Export Date: ${new Date().toLocaleDateString('en-IN', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}</p>
+          
+          <div class="section">
+            <h2>Personal Information</h2>
+            <div class="stat">
+              <div class="label">Name:</div>
+              <div class="value">${profileData.user?.name || 'Not provided'}</div>
+            </div>
+            <div class="stat">
+              <div class="label">Email:</div>
+              <div class="value">${profileData.user?.email || ''}</div>
+            </div>
+            <div class="stat">
+              <div class="label">Member Since:</div>
+              <div class="value">${new Date(profileData.user?.createdAt).toLocaleDateString('en-IN')}</div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <h2>Journey Progress</h2>
+            <div class="stat">
+              <div class="label">Current Day:</div>
+              <div class="value">${profileData.user?.currentDay || 1} of 30</div>
+            </div>
+            <div class="stat">
+              <div class="label">Total XP:</div>
+              <div class="value">${profileData.user?.totalXP || 0}</div>
+            </div>
+            <div class="stat">
+              <div class="label">Badges Earned:</div>
+              <div class="value">${profileData.user?.badges?.length || 0}</div>
+            </div>
+            <div class="stat">
+              <div class="label">Current Streak:</div>
+              <div class="value">${profileData.user?.currentStreak || 0} days</div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <h2>Startup Information</h2>
+            <div class="stat">
+              <div class="label">Startup Name:</div>
+              <div class="value">${profileData.user?.portfolio?.startupName || 'Not set'}</div>
+            </div>
+            <div class="stat">
+              <div class="label">Problem Statement:</div>
+              <div class="value">${profileData.user?.portfolio?.problemStatement || 'Not defined'}</div>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>This data export was generated from The Indian Startup platform.</p>
+            <p>For any questions, contact support@theindianstartup.in</p>
+          </div>
+        </body>
+        </html>
+      `;
+      
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `theindianstartup-data-${new Date().toISOString().split('T')[0]}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export HTML:', error);
+    }
   };
 
   return (
     <ProtectedRoute >
       <DashboardLayout>
-        <div className="p-8 max-w-4xl mx-auto">
+        <div className="p-6 lg:p-8 max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <Heading as="h1" className="mb-2">
-              Account Settings
+              Settings
             </Heading>
             <Text color="muted">
-              Manage your profile, preferences, and account settings
+              Manage your notification preferences, privacy, and account settings
             </Text>
           </div>
 
@@ -169,123 +262,27 @@ export default function SettingsPage() {
           {/* Settings Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-8">
-              <TabsTrigger value="profile" className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Profile
-              </TabsTrigger>
               <TabsTrigger value="notifications" className="flex items-center gap-2">
                 <Bell className="w-4 h-4" />
                 Notifications
+              </TabsTrigger>
+              <TabsTrigger value="email" className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Email Preferences
               </TabsTrigger>
               <TabsTrigger value="privacy" className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
                 Privacy
               </TabsTrigger>
-              <TabsTrigger value="subscription" className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                Subscription
+              <TabsTrigger value="security" className="flex items-center gap-2">
+                <Key className="w-4 h-4" />
+                Security
               </TabsTrigger>
               <TabsTrigger value="data" className="flex items-center gap-2">
                 <Download className="w-4 h-4" />
                 Data & Export
               </TabsTrigger>
             </TabsList>
-
-            {/* Profile Tab */}
-            <TabsContent value="profile">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Profile Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Full Name</label>
-                      <Input
-                        value={profileData.name}
-                        onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Email</label>
-                      <Input
-                        value={profileData.email}
-                        disabled
-                        className="bg-gray-50"
-                        icon={<Mail className="w-4 h-4" />}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Phone Number</label>
-                    <Input
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                      placeholder="+91 98765 43210"
-                      icon={<Phone className="w-4 h-4" />}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Bio</label>
-                    <textarea
-                      value={profileData.bio}
-                      onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                      placeholder="Tell us about yourself and your startup journey..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black resize-none"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <Heading as="h3" variant="h5">Social Links</Heading>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-2">LinkedIn Profile</label>
-                      <Input
-                        value={profileData.linkedinUrl}
-                        onChange={(e) => setProfileData({ ...profileData, linkedinUrl: e.target.value })}
-                        placeholder="https://linkedin.com/in/yourprofile"
-                        icon={<Linkedin className="w-4 h-4" />}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Twitter Profile</label>
-                      <Input
-                        value={profileData.twitterUrl}
-                        onChange={(e) => setProfileData({ ...profileData, twitterUrl: e.target.value })}
-                        placeholder="https://twitter.com/yourusername"
-                        icon={<Twitter className="w-4 h-4" />}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Website</label>
-                      <Input
-                        value={profileData.websiteUrl}
-                        onChange={(e) => setProfileData({ ...profileData, websiteUrl: e.target.value })}
-                        placeholder="https://yourstartup.com"
-                        icon={<Globe className="w-4 h-4" />}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <Button 
-                      variant="primary" 
-                      onClick={handleSaveProfile}
-                      isLoading={loading}
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Changes
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
             {/* Notifications Tab */}
             <TabsContent value="notifications">
@@ -363,9 +360,74 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <Button variant="primary">
+                    <Button 
+                      variant="primary"
+                      onClick={handleSaveNotifications}
+                      isLoading={loading}
+                    >
                       <Save className="w-4 h-4 mr-2" />
                       Save Preferences
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Email Preferences Tab */}
+            <TabsContent value="email">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Email Preferences</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Email Frequency</label>
+                    <select
+                      value={emailPrefs.emailFrequency}
+                      onChange={(e) => setEmailPrefs({ ...emailPrefs, emailFrequency: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    >
+                      <option value="daily">Daily Digest</option>
+                      <option value="weekly">Weekly Summary</option>
+                      <option value="never">No Email Notifications</option>
+                    </select>
+                  </div>
+
+                  {emailPrefs.emailFrequency === 'daily' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Preferred Time</label>
+                      <Input
+                        type="time"
+                        value={emailPrefs.emailTime}
+                        onChange={(e) => setEmailPrefs({ ...emailPrefs, emailTime: e.target.value })}
+                      />
+                      <Text size="xs" color="muted" className="mt-1">
+                        All times are in IST (Indian Standard Time)
+                      </Text>
+                    </div>
+                  )}
+
+                  <div className="border-t pt-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Text weight="medium">Unsubscribe from all emails</Text>
+                        <Text size="sm" color="muted">Stop receiving all email communications</Text>
+                      </div>
+                      <Checkbox
+                        checked={emailPrefs.unsubscribeAll}
+                        onChange={(e) => setEmailPrefs({ ...emailPrefs, unsubscribeAll: e.target.checked })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button 
+                      variant="primary"
+                      onClick={handleSaveEmailPrefs}
+                      isLoading={loading}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Email Preferences
                     </Button>
                   </div>
                 </CardContent>
@@ -394,7 +456,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <Text weight="medium">Journey Progress</Text>
-                        <Text size="sm" color="muted">Show your progress on leaderboards</Text>
+                        <Text size="sm" color="muted">Show your progress publicly</Text>
                       </div>
                       <Checkbox
                         checked={privacy.progressVisible}
@@ -426,7 +488,11 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <Button variant="primary">
+                    <Button 
+                      variant="primary"
+                      onClick={handleSavePrivacy}
+                      isLoading={loading}
+                    >
                       <Save className="w-4 h-4 mr-2" />
                       Save Settings
                     </Button>
@@ -435,49 +501,66 @@ export default function SettingsPage() {
               </Card>
             </TabsContent>
 
-            {/* Subscription Tab */}
-            <TabsContent value="subscription">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Subscription Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            {/* Security Tab */}
+            <TabsContent value="security">
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Password & Authentication</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Text weight="medium" className="mb-2">Change Password</Text>
+                      <Text size="sm" color="muted" className="mb-3">
+                        Update your password to keep your account secure
+                      </Text>
+                      <Button variant="outline">
+                        <Key className="w-4 h-4 mr-2" />
+                        Change Password
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Two-Factor Authentication</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                     <div className="flex items-center justify-between">
                       <div>
-                        <Text weight="medium" className="text-green-800">P1: 30-Day India Launch Sprint</Text>
-                        <Text size="sm" className="text-green-600">Active subscription</Text>
+                        <Text weight="medium">2FA Status</Text>
+                        <Text size="sm" color="muted">Add an extra layer of security to your account</Text>
                       </div>
-                      <Badge variant="success">Active</Badge>
+                      <Badge variant="outline">Not Enabled</Badge>
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Text weight="medium" className="mb-1">Plan</Text>
-                      <Text color="muted">30-Day India Launch Sprint</Text>
-                    </div>
-                    <div>
-                      <Text weight="medium" className="mb-1">Access Period</Text>
-                      <Text color="muted">365 days from purchase</Text>
-                    </div>
-                    <div>
-                      <Text weight="medium" className="mb-1">Amount Paid</Text>
-                      <Text color="muted">₹999 (Launch Offer)</Text>
-                    </div>
-                    <div>
-                      <Text weight="medium" className="mb-1">Purchase Date</Text>
-                      <Text color="muted">January 15, 2025</Text>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-6">
-                    <Button variant="outline">
-                      View Invoice
+                    <Button variant="outline" className="mt-4">
+                      <Smartphone className="w-4 h-4 mr-2" />
+                      Enable 2FA
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Active Sessions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Text size="sm" color="muted" className="mb-4">
+                      Manage devices where you&apos;re currently logged in
+                    </Text>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                        <div>
+                          <Text weight="medium">Current Device</Text>
+                          <Text size="sm" color="muted">Last active: Just now</Text>
+                        </div>
+                        <Badge variant="success">Active</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Data & Export Tab */}
@@ -489,12 +572,29 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent>
                     <Text color="muted" className="mb-4">
-                      Download a complete copy of your data including profile, progress, and portfolio information.
+                      Download a complete copy of your data including profile, progress, and portfolio information in a readable format.
                     </Text>
-                    <Button variant="primary" onClick={handleExportData}>
-                      <Download className="w-4 h-4 mr-2" />
-                      Export Data
-                    </Button>
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="primary" 
+                        onClick={handleExportData}
+                        isLoading={exportLoading}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Export as PDF
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={handleExportAsHTML}
+                        disabled={exportLoading}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Export as HTML
+                      </Button>
+                    </div>
+                    <Text size="xs" color="muted" className="mt-2">
+                      Your data will be compiled and downloaded to your device
+                    </Text>
                   </CardContent>
                 </Card>
 

@@ -263,7 +263,6 @@ export const cacheKeys = {
   dailyLesson: (day: number) => `daily_lesson:${day}`,
   userProgress: (userId: string) => `user_progress:${userId}`,
   badges: (userId: string) => `badges:${userId}`,
-  leaderboard: () => 'leaderboard',
   communityPosts: (page: number) => `community_posts:${page}`,
   ecosystemListings: (filters: string) => `ecosystem:${filters}`,
 };

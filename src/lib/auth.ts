@@ -1,10 +1,10 @@
-import { createClient } from '../lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
-// Admin email addresses
-const ADMIN_EMAILS = [
-  'admin@theindianstartup.in',
-  'support@theindianstartup.in', // Your main email
-];
+// Admin email addresses from environment variable
+// Format: ADMIN_EMAILS="email1@example.com,email2@example.com"
+const ADMIN_EMAILS = process.env.ADMIN_EMAILS
+  ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim())
+  : [];
 
 export async function getUser() {
   const supabase = createClient();
@@ -55,21 +55,65 @@ export async function requireAdmin() {
   return user;
 }
 
-export async function hasActiveSubscription() {
+export async function hasProductAccess(userId: string, productCode: string) {
   const supabase = createClient();
-  const user = await getUser();
   
-  if (!user) {
+  try {
+    // Check for direct product purchase or ALL_ACCESS bundle
+    const { data: purchases, error } = await supabase
+      .from('Purchase')
+      .select('product:Product(*)')
+      .eq('userId', userId)
+      .eq('status', 'completed')
+      .gt('expiresAt', new Date().toISOString());
+    
+    if (error) {
+      console.error('Error checking product access:', error);
+      return false;
+    }
+    
+    if (!purchases || purchases.length === 0) {
+      return false;
+    }
+    
+    // Check if user has direct access to the product or ALL_ACCESS bundle
+    return purchases.some((purchase: any) => {
+      const product = purchase.product;
+      if (!product) return false;
+      
+      // Direct product access
+      if (product.code === productCode) return true;
+      
+      // ALL_ACCESS bundle access
+      if (product.code === 'ALL_ACCESS' && product.isBundle) {
+        return product.bundleProducts?.includes(productCode) || true; // ALL_ACCESS includes all products
+      }
+      
+      return false;
+    });
+  } catch (error) {
+    console.error('Error checking product access:', error);
     return false;
   }
-  
-  const { data: subscription } = await supabase
-    .from('Subscription')
-    .select('*')
-    .eq('userId', user.id)
-    .eq('status', 'active')
-    .gt('expiryDate', new Date().toISOString())
-    .single();
-    
-  return !!subscription;
 }
+
+export async function requireProductAccess(productCode: string) {
+  const user = await requireAuth();
+  const hasAccess = await hasProductAccess(user.id, productCode);
+  
+  if (!hasAccess) {
+    throw new Error(`Access required - Please purchase ${productCode} or upgrade to ALL_ACCESS bundle`);
+  }
+  
+  return user;
+}
+
+// Backwards compatibility
+export async function hasActiveAccess(userId: string, productType: string = 'P1') {
+  return hasProductAccess(userId, productType);
+}
+
+export async function requireAccess(productType: string = 'P1') {
+  return requireProductAccess(productType);
+}
+

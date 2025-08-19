@@ -203,9 +203,9 @@ export const emailTemplates = {
         You're making incredible progress! Keep up the amazing work and unlock more achievements.
       </p>
       
-      ${emailButton('View All Achievements', 'https://theindianstartup.in/gamification')}
+      ${emailButton('View All Achievements', 'https://theindianstartup.in/dashboard')}
     `, unsubscribeUrl),
-    text: `Congratulations ${name}! You've unlocked the ${badgeName} achievement: ${description}. ${xpReward > 0 ? `+${xpReward} Bonus XP!` : ''} View your dashboard: https://theindianstartup.in/gamification`,
+    text: `Congratulations ${name}! You've unlocked the ${badgeName} achievement: ${description}. ${xpReward > 0 ? `+${xpReward} Bonus XP!` : ''} View your dashboard: https://theindianstartup.in/dashboard`,
   }),
 
   weeklyProgress: (name: string, stats: {

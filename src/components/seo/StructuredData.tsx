@@ -57,10 +57,10 @@ export function StructuredData({ type = 'organization', data = {} }: StructuredD
           },
           "offers": {
             "@type": "Offer",
-            "price": "4999",
+            "price": "0",
             "priceCurrency": "INR",
             "availability": "https://schema.org/InStock",
-            "url": "https://theindianstartup.in/pricing"
+            "url": "https://theindianstartup.in/signup"
           },
           "courseMode": "online",
           "educationalLevel": "intermediate",
@@ -118,10 +118,10 @@ export function StructuredData({ type = 'organization', data = {} }: StructuredD
           },
           "offers": {
             "@type": "Offer",
-            "price": "4999",
+            "price": "0",
             "priceCurrency": "INR",
             "availability": "https://schema.org/InStock",
-            "url": "https://theindianstartup.in/pricing",
+            "url": "https://theindianstartup.in/signup",
             "seller": {
               "@type": "Organization",
               "name": "The Indian Startup"

@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Logo } from '../../components/icons/Logo';
-import { UserMenu } from '../../components/auth/UserMenu';
-import { Button } from '../../components/ui/Button';
-import { Text } from '../../components/ui/Typography';
-import { Badge } from '../../components/ui/Badge';
-import { cn } from '../lib/utils';
+import { Logo } from '@/components/icons/Logo';
+import { UserMenu } from '@/components/auth/UserMenu';
+import { Button } from '@/components/ui/Button';
+import { Text } from '@/components/ui/Typography';
+import { Badge } from '@/components/ui/Badge';
+import { cn } from '@/lib/utils';
 import {
   Home,
   BookOpen,
@@ -25,6 +25,9 @@ import {
   Target,
   Award,
   Zap,
+  ShoppingCart,
+  Plus,
+  Minus,
 } from 'lucide-react';
 
 interface NavItem {
@@ -37,13 +40,10 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: Home },
-  { label: 'My Journey', href: '/journey', icon: BookOpen, badge: 'Day 7' },
+  { label: 'My Journey', href: '/journey', icon: BookOpen },
   { label: 'Startup Portfolio', href: '/portfolio', icon: Target },
-  { label: 'Gamification', href: '/gamification', icon: Zap },
   { label: 'Community', href: '/community', icon: Users, badge: 'New' },
-  { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
   { label: 'Resources', href: '/resources', icon: FileText },
-  { label: 'Analytics', href: '/analytics', icon: TrendingUp, disabled: true },
 ];
 
 const bottomNavigation: NavItem[] = [
@@ -54,10 +54,96 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+interface CartItem {
+  productCode: string;
+  title: string;
+  price: number;
+  quantity: number;
+}
+
+interface CartData {
+  items: CartItem[];
+  timestamp: number;
+  expiresAt: number;
+}
+
+// Cart persistence utility functions
+const CART_EXPIRY_HOURS = 24;
+
+const saveCartToStorage = (cart: CartItem[]) => {
+  const now = Date.now();
+  const cartData: CartData = {
+    items: cart,
+    timestamp: now,
+    expiresAt: now + (CART_EXPIRY_HOURS * 60 * 60 * 1000) // 24 hours
+  };
+  localStorage.setItem('dashboardCart', JSON.stringify(cartData));
+};
+
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem('dashboardCart');
+    if (!stored) return [];
+    
+    const cartData: CartData = JSON.parse(stored);
+    const now = Date.now();
+    
+    // Check if cart has expired
+    if (now > cartData.expiresAt) {
+      localStorage.removeItem('dashboardCart');
+      return [];
+    }
+    
+    // Return items if cart is still valid
+    return cartData.items || [];
+  } catch (error) {
+    console.error('Error loading cart from storage:', error);
+    localStorage.removeItem('dashboardCart');
+    return [];
+  }
+};
+
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [showCart, setShowCart] = useState(false);
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  const addToCart = useCallback((productCode: string, title: string, price: number) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.productCode === productCode);
+      if (existing) {
+        return prev.map(item => 
+          item.productCode === productCode 
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { productCode, title, price, quantity: 1 }];
+    });
+    setShowCart(true);
+  }, []);
+
+  const removeFromCart = useCallback((productCode: string) => {
+    setCart(prev => prev.filter(item => item.productCode !== productCode));
+  }, []);
+
+  const updateQuantity = useCallback((productCode: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productCode);
+    } else {
+      setCart(prev => prev.map(item => 
+        item.productCode === productCode 
+          ? { ...item, quantity }
+          : item
+      ));
+    }
+  }, [removeFromCart]);
+
+  const calculateTotal = useCallback(() => {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }, [cart]);
 
   useEffect(() => {
     // Fetch user profile for sidebar stats
@@ -72,7 +158,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     };
 
     fetchProfile();
+
+    // Load cart from localStorage with expiry check
+    const savedCart = loadCartFromStorage();
+    setCart(savedCart);
   }, []);
+
+  // Separate useEffect for exposing addToCart to global window
+  useEffect(() => {
+    // Expose addToCart function to global window for dashboard access
+    (window as any).dashboardAddToCart = addToCart;
+
+    // Cleanup function
+    return () => {
+      delete (window as any).dashboardAddToCart;
+    };
+  }, [addToCart]);
+
+  // Save cart to localStorage with expiry
+  useEffect(() => {
+    if (cart.length > 0) {
+      saveCartToStorage(cart);
+    } else {
+      localStorage.removeItem('dashboardCart');
+    }
+  }, [cart]);
 
   const isActive = (href: string) => {
     if (href === '/dashboard') {
@@ -85,12 +195,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     const Icon = item.icon;
     const active = isActive(item.href);
 
-    if (item.disabled) {
+    // Handle disabled items (like Analytics with "Soon" badge)
+    if (item.disabled || (item.badge === 'Soon' && item.href === '/analytics')) {
       return (
         <div className="relative px-3 py-2 flex items-center gap-3 text-gray-400 cursor-not-allowed">
           <Icon className="w-5 h-5 flex-shrink-0" />
           <span className="flex-1">{item.label}</span>
-          <Badge size="sm" variant="default">Soon</Badge>
+          {item.badge && <Badge size="sm" variant="default">{item.badge}</Badge>}
         </div>
       );
     }
@@ -137,7 +248,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <Menu className="w-5 h-5" />
           </button>
           <Logo variant="icon" className="h-8" />
-          <UserMenu />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCart(!showCart)}
+              className="relative p-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
+            </Button>
+            <UserMenu />
+          </div>
         </div>
       </header>
 
@@ -220,7 +346,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Quick Action */}
         <div className="p-4 border-t border-gray-200">
-          <Link href="/journey/day/7" onClick={() => setSidebarOpen(false)}>
+          <Link 
+            href={`/journey/day/${userProfile?.currentDay || 1}`} 
+            onClick={() => setSidebarOpen(false)}
+          >
             <Button variant="primary" className="w-full group">
               <Sparkles className="w-4 h-4 mr-2" />
               <span>Continue Journey</span>
@@ -265,7 +394,21 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </Badge>
               )}
             </div>
-            <UserMenu />
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => setShowCart(!showCart)}
+                className="relative"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                  </span>
+                )}
+              </Button>
+              <UserMenu />
+            </div>
           </div>
         </header>
 
@@ -274,6 +417,128 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Cart Sidebar */}
+      <div className={cn(
+        "fixed inset-y-0 right-0 w-96 bg-white border-l border-gray-200 transform transition-transform duration-300 z-50 shadow-xl",
+        showCart ? "translate-x-0" : "translate-x-full"
+      )}>
+        <div className="flex flex-col h-full">
+          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5" />
+              <Text weight="semibold">Your Cart</Text>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCart(false)}
+              className="p-1"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4">
+            {cart.length === 0 ? (
+              <div className="text-center py-8">
+                <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <Text color="muted">Your cart is empty</Text>
+                <Text size="sm" color="muted" className="mt-2">
+                  Add courses to start building your startup expertise
+                </Text>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {cart.map((item) => (
+                  <div key={item.productCode} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <Text weight="medium">{item.title}</Text>
+                        <Text size="sm" color="muted">{item.productCode}</Text>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFromCart(item.productCode)}
+                        className="p-1"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.productCode, item.quantity - 1)}
+                          className="p-1"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </Button>
+                        <span className="w-8 text-center text-sm">{item.quantity}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.productCode, item.quantity + 1)}
+                          className="p-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <Text weight="medium">
+                        ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                      </Text>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {cart.length > 0 && (
+            <div className="border-t border-gray-200 p-4">
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between font-bold text-lg">
+                  <Text>Total</Text>
+                  <Text>₹{calculateTotal().toLocaleString('en-IN')}</Text>
+                </div>
+                {cart.length > 1 && (
+                  <Text size="xs" className="text-green-600">
+                    💡 Buying multiple courses? Consider our All-Access Bundle!
+                  </Text>
+                )}
+              </div>
+              
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={() => {
+                  try {
+                    // Save cart and redirect to pricing
+                    saveCartToStorage(cart);
+                    window.location.href = '/pricing?fromCart=true';
+                  } catch (error) {
+                    console.error('Error saving cart:', error);
+                    alert('Failed to save cart. Please try again.');
+                  }
+                }}
+              >
+                Proceed to Checkout
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Cart Overlay */}
+      {showCart && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setShowCart(false)}
+        />
+      )}
     </div>
   );
 }

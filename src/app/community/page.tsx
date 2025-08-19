@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { Heading } from '../components/ui/Typography';
-import { Text } from '../components/ui/Typography';
-import { Card } from '../components/ui/Card';
-import { CardContent } from '../components/ui/Card';
-import { CardHeader } from '../components/ui/Card";
-import { CardTitle } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Badge } from '../components/ui/Badge';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { Heading } from '@/components/ui/Typography';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
+import { CardContent } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
 import { 
   Users, 
   MessageSquare, 
@@ -203,7 +203,7 @@ export default function CommunityPage() {
   return (
     <ProtectedRoute >
       <DashboardLayout>
-        <div className="max-w-7xl mx-auto p-8">
+        <div className="p-6 lg:p-8 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
@@ -231,7 +231,7 @@ export default function CommunityPage() {
 
             {/* Community Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-              <Card className="border-2 hover:border-blue-500 transition-colors">
+              <Card className="border-2 hover:border-black hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6 text-center">
                   <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                   <Text className="font-heading text-2xl font-bold">
@@ -241,7 +241,7 @@ export default function CommunityPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-green-500 transition-colors">
+              <Card className="border-2 hover:border-black hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6 text-center">
                   <Zap className="w-8 h-8 text-green-600 mx-auto mb-2" />
                   <Text className="font-heading text-2xl font-bold">
@@ -251,7 +251,7 @@ export default function CommunityPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-purple-500 transition-colors">
+              <Card className="border-2 hover:border-black hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6 text-center">
                   <MessageSquare className="w-8 h-8 text-purple-600 mx-auto mb-2" />
                   <Text className="font-heading text-2xl font-bold">
@@ -261,7 +261,7 @@ export default function CommunityPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:border-orange-500 transition-colors">
+              <Card className="border-2 hover:border-black hover:shadow-md transition-all duration-200">
                 <CardContent className="p-6 text-center">
                   <Video className="w-8 h-8 text-orange-600 mx-auto mb-2" />
                   <Text className="font-heading text-2xl font-bold">
@@ -311,7 +311,7 @@ export default function CommunityPage() {
               {/* Recent Posts */}
               <div className="space-y-4">
                 {recentPosts.map((post) => (
-                  <Card key={post.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={post.id} className="border-2 hover:border-black hover:shadow-md transition-all duration-200">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">

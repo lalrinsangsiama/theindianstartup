@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -149,7 +150,7 @@ export default function SuccessStoriesPage() {
 
       setStories(filteredStories);
     } catch (error) {
-      console.error('Error fetching success stories:', error);
+      logger.error('Error fetching success stories:', error);
     } finally {
       setLoading(false);
     }
@@ -209,7 +210,7 @@ export default function SuccessStoriesPage() {
                   Success Stories
                 </Heading>
                 <Text className="text-gray-600">
-                  Get inspired by fellow founders who&apos;ve built successful startups
+                  Get inspired by fellow founders who've built successful startups
                 </Text>
               </div>
             </div>

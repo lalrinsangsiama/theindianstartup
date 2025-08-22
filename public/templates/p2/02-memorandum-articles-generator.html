@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorandum & Articles Generator - The Indian Startup</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        .form-row { display: flex; gap: 15px; }
+        .form-row .form-group { flex: 1; }
+        .section { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #3498db; }
+        .required { color: #e74c3c; }
+        .btn { background: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin: 10px 5px; }
+        .btn:hover { background: #2980b9; }
+        .btn-secondary { background: #95a5a6; }
+        .btn-secondary:hover { background: #7f8c8d; }
+        .preview-section { background: #ffffff; border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 4px; }
+        .document-preview { font-family: 'Times New Roman', serif; line-height: 1.6; }
+        .help-text { font-size: 12px; color: #666; margin-top: 5px; }
+        .tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #f8f9fa; border: 1px solid #ddd; border-bottom: none; cursor: pointer; }
+        .tab.active { background: white; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .clause-list { background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .clause-item { margin: 10px 0; padding: 10px; background: white; border-radius: 4px; border-left: 3px solid #3498db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Memorandum & Articles of Association Generator</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Generate professional MOA & AOA documents for your company incorporation</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('form')">📝 Company Details</div>
+            <div class="tab" onclick="switchTab('moa')">📄 Memorandum Preview</div>
+            <div class="tab" onclick="switchTab('aoa')">📋 Articles Preview</div>
+        </div>
+
+        <div id="form-tab" class="tab-content active">
+            <form id="moaAoaForm">
+                <div class="section">
+                    <h2>Company Information</h2>
+                    
+                    <div class="form-group">
+                        <label>Company Name <span class="required">*</span></label>
+                        <input type="text" id="companyName" placeholder="ABC Private Limited" required>
+                        <div class="help-text">Enter the exact company name as approved by MCA</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>CIN (if available)</label>
+                            <input type="text" id="cin" placeholder="U72900DL2024PTC123456">
+                            <div class="help-text">Corporate Identity Number (assigned after incorporation)</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Incorporation</label>
+                            <input type="date" id="incorporationDate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Authorized Capital (₹) <span class="required">*</span></label>
+                            <input type="number" id="authorizedCapital" value="1000000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Face Value per Share (₹) <span class="required">*</span></label>
+                            <select id="faceValue" required>
+                                <option value="10">₹10</option>
+                                <option value="100">₹100</option>
+                                <option value="1000">₹1000</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Registered Office Address</h2>
+                    
+                    <div class="form-group">
+                        <label>Complete Address <span class="required">*</span></label>
+                        <textarea id="registeredAddress" rows="3" placeholder="Building No., Street, Area, City, State, PIN" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>State <span class="required">*</span></label>
+                            <select id="state" required>
+                                <option value="">Select State</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <!-- Add more states as needed -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>PIN Code <span class="required">*</span></label>
+                            <input type="text" id="pinCode" pattern="[0-9]{6}" maxlength="6" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Object Clause (Main Business Activities)</h2>
+                    
+                    <div class="form-group">
+                        <label>Primary Object <span class="required">*</span></label>
+                        <textarea id="primaryObject" rows="4" placeholder="To carry on the business of..." required></textarea>
+                        <div class="help-text">Describe your main business activity in detail</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ancillary Objects</label>
+                        <textarea id="ancillaryObjects" rows="3" placeholder="To carry on any other business activities..."></textarea>
+                        <div class="help-text">Additional business activities related to primary object</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Other Objects</label>
+                        <textarea id="otherObjects" rows="3" placeholder="Any other lawful business activities..."></textarea>
+                        <div class="help-text">Other business activities not covered above</div>
+                    </div>
+
+                    <div class="clause-list">
+                        <h4>Standard Clauses (Auto-included):</h4>
+                        <div class="clause-item">💼 To enter into contracts, agreements, and arrangements</div>
+                        <div class="clause-item">🏢 To acquire, lease, or dispose of properties</div>
+                        <div class="clause-item">💰 To borrow, lend, and invest money</div>
+                        <div class="clause-item">🤝 To form partnerships and joint ventures</div>
+                        <div class="clause-item">📈 To buy, sell, and deal in shares and securities</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Director Information</h2>
+                    <p style="color: #666;">First subscriber/director details</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Director Name <span class="required">*</span></label>
+                            <input type="text" id="directorName" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>DIN (if available)</label>
+                            <input type="text" id="directorDin" pattern="[0-9]{8}" placeholder="12345678">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Director Address</label>
+                        <textarea id="directorAddress" rows="2" placeholder="Complete address of first director"></textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Board Meeting & AGM Provisions</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Minimum Board Meetings per Year</label>
+                            <select id="boardMeetings">
+                                <option value="4">4 (Quarterly - Recommended)</option>
+                                <option value="6">6 (Bi-monthly)</option>
+                                <option value="12">12 (Monthly)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quorum for Board Meetings</label>
+                            <select id="quorum">
+                                <option value="2">2 Directors</option>
+                                <option value="1/3">One-third of total directors</option>
+                                <option value="majority">Majority of directors</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Financial Year End</label>
+                        <select id="financialYear">
+                            <option value="31-March">31st March (Standard)</option>
+                            <option value="31-December">31st December</option>
+                            <option value="30-September">30th September</option>
+                            <option value="30-June">30th June</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="button" class="btn" onclick="generateDocuments()">📄 Generate MOA & AOA</button>
+                    <button type="button" class="btn btn-secondary" onclick="previewMOA()">👁️ Preview MOA</button>
+                    <button type="button" class="btn btn-secondary" onclick="previewAOA()">👁️ Preview AOA</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="moa-tab" class="tab-content">
+            <div class="preview-section">
+                <h2>Memorandum of Association - Preview</h2>
+                <div id="moaPreview" class="document-preview">
+                    <p style="text-align: center; color: #666;">Fill the form to generate MOA preview</p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="downloadMOA()">📥 Download MOA</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="aoa-tab" class="tab-content">
+            <div class="preview-section">
+                <h2>Articles of Association - Preview</h2>
+                <div id="aoaPreview" class="document-preview">
+                    <p style="text-align: center; color: #666;">Fill the form to generate AOA preview</p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="downloadAOA()">📥 Download AOA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tabEl => {
+                tabEl.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function previewMOA() {
+            const form = document.getElementById('moaAoaForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const companyName = document.getElementById('companyName').value;
+            const state = document.getElementById('state').value;
+            const registeredAddress = document.getElementById('registeredAddress').value;
+            const authorizedCapital = document.getElementById('authorizedCapital').value;
+            const faceValue = document.getElementById('faceValue').value;
+            const primaryObject = document.getElementById('primaryObject').value;
+            const ancillaryObjects = document.getElementById('ancillaryObjects').value;
+            const otherObjects = document.getElementById('otherObjects').value;
+
+            const moaContent = `
+                <h3 style="text-align: center; text-decoration: underline;">MEMORANDUM OF ASSOCIATION</h3>
+                <h4 style="text-align: center;">OF</h4>
+                <h4 style="text-align: center; text-decoration: underline;">"${companyName.toUpperCase()}"</h4>
+                
+                <h4>I. THE NAME CLAUSE</h4>
+                <p>The name of the Company is "<strong>${companyName}</strong>"</p>
+                
+                <h4>II. THE REGISTERED OFFICE CLAUSE</h4>
+                <p>The Registered Office of the Company will be situated in the State of <strong>${state}</strong></p>
+                
+                <h4>III. THE OBJECTS CLAUSE</h4>
+                <p><strong>A. PRIMARY OBJECT:</strong></p>
+                <p>${primaryObject}</p>
+                
+                ${ancillaryObjects ? `<p><strong>B. ANCILLARY OBJECTS:</strong></p><p>${ancillaryObjects}</p>` : ''}
+                
+                ${otherObjects ? `<p><strong>C. OTHER OBJECTS:</strong></p><p>${otherObjects}</p>` : ''}
+                
+                <p><strong>D. STANDARD OBJECTS:</strong></p>
+                <ul>
+                    <li>To enter into any arrangements with any Government or authorities</li>
+                    <li>To acquire and undertake the whole or any part of the business</li>
+                    <li>To borrow or raise money for the purposes of the Company</li>
+                    <li>To invest and deal with the money of the Company</li>
+                    <li>To do all such other things as are incidental to the attainment of the above objects</li>
+                </ul>
+                
+                <h4>IV. THE LIABILITY CLAUSE</h4>
+                <p>The liability of the members is limited by shares.</p>
+                
+                <h4>V. THE CAPITAL CLAUSE</h4>
+                <p>The Authorized Share Capital of the Company is Rs. <strong>${new Intl.NumberFormat('en-IN').format(authorizedCapital)}</strong> (Rupees ${numberToWords(authorizedCapital)} only) divided into <strong>${authorizedCapital/faceValue}</strong> equity shares of Rs. <strong>${faceValue}</strong> each.</p>
+                
+                <br><br>
+                <p>We, the several persons whose names and addresses are subscribed, are desirous of being formed into a Company in pursuance of this Memorandum of Association.</p>
+                
+                <table style="width: 100%; border: 1px solid black; border-collapse: collapse; margin: 20px 0;">
+                    <tr style="border: 1px solid black;">
+                        <th style="border: 1px solid black; padding: 10px;">Names and addresses of subscribers</th>
+                        <th style="border: 1px solid black; padding: 10px;">No. of shares taken by each subscriber</th>
+                        <th style="border: 1px solid black; padding: 10px;">Signature</th>
+                    </tr>
+                    <tr style="border: 1px solid black;">
+                        <td style="border: 1px solid black; padding: 10px; height: 60px;">${document.getElementById('directorName').value || 'First Subscriber'}<br>${registeredAddress}</td>
+                        <td style="border: 1px solid black; padding: 10px; text-align: center;">1</td>
+                        <td style="border: 1px solid black; padding: 10px;"></td>
+                    </tr>
+                </table>
+                
+                <p><strong>Date:</strong> ___________</p>
+                <p><strong>Place:</strong> ${state}</p>
+                
+                <br><br>
+                <p><strong>Witness:</strong></p>
+                <p>Name: ___________________</p>
+                <p>Address: ___________________</p>
+                <p>Signature: ___________________</p>
+            `;
+
+            document.getElementById('moaPreview').innerHTML = moaContent;
+            switchTab('moa');
+        }
+
+        function previewAOA() {
+            const form = document.getElementById('moaAoaForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const companyName = document.getElementById('companyName').value;
+            const authorizedCapital = document.getElementById('authorizedCapital').value;
+            const faceValue = document.getElementById('faceValue').value;
+            const boardMeetings = document.getElementById('boardMeetings').value;
+            const quorum = document.getElementById('quorum').value;
+            const financialYear = document.getElementById('financialYear').value;
+
+            const aoaContent = `
+                <h3 style="text-align: center; text-decoration: underline;">ARTICLES OF ASSOCIATION</h3>
+                <h4 style="text-align: center;">OF</h4>
+                <h4 style="text-align: center; text-decoration: underline;">"${companyName.toUpperCase()}"</h4>
+                
+                <h4>TABLE 'F' IN THE FIRST SCHEDULE TO THE COMPANIES ACT, 2013</h4>
+                
+                <h4>PRELIMINARY</h4>
+                <p><strong>1. NAME:</strong> The name of the Company is "${companyName}"</p>
+                
+                <p><strong>2. REGISTERED OFFICE:</strong> The Registered Office of the Company will be situated in the state as mentioned in the Memorandum of Association.</p>
+                
+                <h4>SHARE CAPITAL AND VARIATION OF RIGHTS</h4>
+                <p><strong>3. SHARE CAPITAL:</strong> The Authorized Share Capital of the Company is Rs. ${new Intl.NumberFormat('en-IN').format(authorizedCapital)} divided into ${authorizedCapital/faceValue} equity shares of Rs. ${faceValue} each.</p>
+                
+                <p><strong>4. INCREASE OF CAPITAL:</strong> The Company may from time to time by ordinary resolution increase the share capital by such sum to be divided into shares of such amount as the resolution shall prescribe.</p>
+                
+                <p><strong>5. VARIATION OF RIGHTS:</strong> If at any time the share capital is divided into different classes of shares, the rights attached to any class may be varied with the consent in writing of the holders of not less than three-fourths of the issued shares of that class.</p>
+                
+                <h4>LIEN</h4>
+                <p><strong>6. COMPANY'S LIEN:</strong> The Company shall have a first and paramount lien on every share for all moneys called or payable at a fixed time in respect of that share.</p>
+                
+                <h4>CALLS ON SHARES</h4>
+                <p><strong>7. CALLS:</strong> The Board of Directors may from time to time make calls upon the members in respect of any money unpaid on their shares.</p>
+                
+                <h4>TRANSFER OF SHARES</h4>
+                <p><strong>8. TRANSFER:</strong> The instrument of transfer of any share shall be executed by or on behalf of both the transferor and transferee.</p>
+                
+                <p><strong>9. REGISTRATION:</strong> The Board of Directors may decline to register the transfer of a share on which the Company has a lien.</p>
+                
+                <h4>TRANSMISSION OF SHARES</h4>
+                <p><strong>10. DEATH OF MEMBER:</strong> In case of the death of a member, the survivor or survivors where the member was a joint holder, and his nominees or legal representatives where he was a sole holder, shall be the only persons recognized by the Company.</p>
+                
+                <h4>FORFEITURE OF SHARES</h4>
+                <p><strong>11. FORFEITURE:</strong> If a member fails to pay any call or instalment on the day appointed for payment thereof, the Board of Directors may serve a notice on him requiring payment of so much of the call.</p>
+                
+                <h4>GENERAL MEETINGS</h4>
+                <p><strong>12. ANNUAL GENERAL MEETING:</strong> The Company shall in each year hold a general meeting as its Annual General Meeting within 6 months from the closure of the financial year.</p>
+                
+                <p><strong>13. EXTRAORDINARY GENERAL MEETING:</strong> All general meetings other than Annual General Meetings shall be called Extraordinary General Meetings.</p>
+                
+                <h4>PROCEEDINGS AT GENERAL MEETINGS</h4>
+                <p><strong>14. QUORUM:</strong> No business shall be transacted at any general meeting unless a quorum of members is present at the time when the meeting proceeds to business.</p>
+                
+                <p><strong>15. CHAIRMAN:</strong> The Chairman, if any, of the Board of Directors shall preside as Chairman at every general meeting of the Company.</p>
+                
+                <h4>VOTES OF MEMBERS</h4>
+                <p><strong>16. VOTING RIGHTS:</strong> Every member shall have one vote for each equity share held by him.</p>
+                
+                <p><strong>17. PROXY:</strong> Any member entitled to attend and vote at a meeting of the Company shall be entitled to appoint another person as his proxy to attend and vote instead of himself.</p>
+                
+                <h4>BOARD OF DIRECTORS</h4>
+                <p><strong>18. NUMBER OF DIRECTORS:</strong> Unless otherwise determined by the Company in general meeting, the number of Directors shall not be less than 2.</p>
+                
+                <p><strong>19. RETIREMENT BY ROTATION:</strong> At every Annual General Meeting, one-third of such of the Directors for the time being as are liable to retire by rotation shall retire from office.</p>
+                
+                <h4>POWERS AND DUTIES OF DIRECTORS</h4>
+                <p><strong>20. POWERS:</strong> The management of the business of the Company shall be vested in the Board of Directors, who may pay all expenses incurred in promoting and registering the Company.</p>
+                
+                <h4>PROCEEDINGS OF DIRECTORS</h4>
+                <p><strong>21. MEETINGS:</strong> The Board of Directors may meet together for the dispatch of business, adjourn and otherwise regulate their meetings as they think fit. The Board shall meet at least ${boardMeetings} times in each year.</p>
+                
+                <p><strong>22. QUORUM:</strong> The quorum necessary for the transaction of the business of the Directors may be fixed by the Directors, and unless so fixed shall be ${quorum === '2' ? 'two' : quorum}.</p>
+                
+                <p><strong>23. VOTING:</strong> Questions arising at any meeting shall be decided by a majority of votes.</p>
+                
+                <h4>MANAGING DIRECTOR</h4>
+                <p><strong>24. APPOINTMENT:</strong> The Board of Directors may from time to time appoint one or more of their body to the office of Managing Director for such term as they may think fit.</p>
+                
+                <h4>DIVIDENDS</h4>
+                <p><strong>25. DECLARATION:</strong> The Company in general meeting may declare dividends, but no dividend shall exceed the amount recommended by the Board of Directors.</p>
+                
+                <p><strong>26. INTERIM DIVIDENDS:</strong> The Board of Directors may from time to time pay to the members such interim dividends as appear to the Board to be justified by the profits of the Company.</p>
+                
+                <h4>ACCOUNTS</h4>
+                <p><strong>27. BOOKS OF ACCOUNT:</strong> The Board of Directors shall cause proper books of account to be kept with respect to all sums of money received and expended by the Company.</p>
+                
+                <p><strong>28. FINANCIAL YEAR:</strong> The financial year of the Company shall end on ${financialYear}.</p>
+                
+                <h4>AUDIT</h4>
+                <p><strong>29. AUDITORS:</strong> Auditors shall be appointed and their duties regulated in accordance with the provisions of the Companies Act, 2013.</p>
+                
+                <h4>NOTICES</h4>
+                <p><strong>30. SERVICE OF NOTICE:</strong> A notice may be given by the Company to any member either personally or by sending it by post to him to his registered address.</p>
+                
+                <h4>WINDING UP</h4>
+                <p><strong>31. DISTRIBUTION:</strong> If the Company shall be wound up, the liquidator may divide amongst the members the whole or any part of the assets of the Company.</p>
+                
+                <h4>INDEMNITY</h4>
+                <p><strong>32. INDEMNITY:</strong> Every Director, auditor, or other officer for the time being of the Company shall be indemnified out of the assets of the Company against any liability incurred by him in defending any proceedings in which judgment is given in his favour.</p>
+                
+                <br><br>
+                <p>We, the several persons whose names and addresses are subscribed, are desirous of being formed into a Company in pursuance of this Memorandum of Association, and we respectively agree to take the number of shares in the capital of the Company set opposite our respective names.</p>
+            `;
+
+            document.getElementById('aoaPreview').innerHTML = aoaContent;
+            switchTab('aoa');
+        }
+
+        function generateDocuments() {
+            previewMOA();
+            previewAOA();
+            alert('✅ MOA & AOA documents generated successfully!\n\nNext steps:\n1. Review the documents in the preview tabs\n2. Download the documents\n3. Get them printed on stamp paper\n4. Submit with incorporation application\n\n⚠️ Important: Get legal review before final submission');
+        }
+
+        function downloadMOA() {
+            const content = document.getElementById('moaPreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Memorandum of Association</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; margin: 40px; line-height: 1.6; }
+                        h3, h4 { color: black; }
+                        table { border-collapse: collapse; width: 100%; }
+                        th, td { border: 1px solid black; padding: 8px; }
+                    </style>
+                </head>
+                <body>${content}</body>
+                </html>
+            `);
+            printWindow.print();
+        }
+
+        function downloadAOA() {
+            const content = document.getElementById('aoaPreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Articles of Association</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; margin: 40px; line-height: 1.6; }
+                        h3, h4 { color: black; }
+                    </style>
+                </head>
+                <body>${content}</body>
+                </html>
+            `);
+            printWindow.print();
+        }
+
+        function numberToWords(num) {
+            // Simple number to words converter for Indian currency
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 
+                         'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            
+            if (num === 0) return 'Zero';
+            if (num < 20) return ones[num];
+            if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '');
+            if (num < 1000) return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 ? ' ' + numberToWords(num % 100) : '');
+            if (num < 100000) return numberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 ? ' ' + numberToWords(num % 1000) : '');
+            if (num < 10000000) return numberToWords(Math.floor(num / 100000)) + ' Lakh' + (num % 100000 ? ' ' + numberToWords(num % 100000) : '');
+            return numberToWords(Math.floor(num / 10000000)) + ' Crore' + (num % 10000000 ? ' ' + numberToWords(num % 10000000) : '');
+        }
+
+        // Auto-save functionality
+        document.getElementById('moaAoaForm').addEventListener('input', function() {
+            const formData = new FormData(this);
+            localStorage.setItem('moaAoaDraft', JSON.stringify(Object.fromEntries(formData)));
+        });
+
+        // Load saved data on page load
+        window.addEventListener('load', function() {
+            const draft = localStorage.getItem('moaAoaDraft');
+            if (draft) {
+                const data = JSON.parse(draft);
+                Object.keys(data).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = data[key];
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+Fundraising Tracker - The Indian Startup
+Company:,___________________,Round:,___________________,Target Amount:,___________ Lakhs
+
+INVESTOR PIPELINE
+Investor Name,Type,Stage,Contact Person,Email,Phone,Introduction Source,Date Added,Last Contact,Next Follow-up,Amount Interest,Status,Notes
+,,,,,,,,,,,"Lead, Warm, Cold, Passed"
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+
+FUNDING SOURCES BY TYPE
+Investor Type,Count,Total Potential (Lakhs),Committed (Lakhs),Success Rate %,Avg Ticket Size,Notes
+Angel Investors,0,0,0,0%,0,Individual high-net-worth investors
+Venture Capital,0,0,0,0%,0,Institutional VC funds
+Corporate VCs,0,0,0,0%,0,Strategic corporate investors
+Government Grants,0,0,0,0%,0,SIDBI MUDRA NABARD grants
+Accelerators,0,0,0,0%,0,Accelerator programs with funding
+Family Offices,0,0,0,0%,0,Family office investments
+Crowdfunding,0,0,0,0%,0,Online crowdfunding platforms
+Total,=SUM(B15:B21),=SUM(C15:C21),=SUM(D15:D21),,,
+
+MEETING TRACKER
+Date,Investor,Meeting Type,Attendees,Duration,Outcome,Follow-up Required,Next Steps,Materials Shared,Feedback Received
+,,,,mins,,,,Pitch Deck Business Plan etc,
+,,,,mins,,,,,,
+,,,,mins,,,,,,
+,,,,mins,,,,,,
+,,,,mins,,,,,,
+,,,,mins,,,,,,
+,,,,mins,,,,,,
+,,,,mins,,,,,,
+
+DUE DILIGENCE CHECKLIST
+Document Category,Document Name,Status,Date Prepared,Last Updated,Shared With,Notes
+Corporate Documents,Certificate of Incorporation,Pending/Ready,,,,"MOA, AOA, Board Resolutions"
+Corporate Documents,Shareholder Agreements,Pending/Ready,,,,SHA with existing investors
+Corporate Documents,Cap Table,Pending/Ready,,,,Current ownership structure
+Financial Documents,Audited Financials,Pending/Ready,,,,Last 2-3 years if available
+Financial Documents,Management Accounts,Pending/Ready,,,,Monthly financial statements
+Financial Documents,Financial Projections,Pending/Ready,,,,5-year financial model
+Legal Documents,Material Contracts,Pending/Ready,,,,Key customer and vendor contracts
+Legal Documents,IP Documentation,Pending/Ready,,,,Patents trademarks copyrights
+Legal Documents,Employment Agreements,Pending/Ready,,,,Key employee contracts
+Legal Documents,Compliance Certificates,Pending/Ready,,,,GST PF ESI etc
+Business Documents,Business Plan,Pending/Ready,,,,Detailed business plan
+Business Documents,Market Research,Pending/Ready,,,,Market size and analysis
+Business Documents,Competitive Analysis,Pending/Ready,,,,Competitor benchmarking
+Business Documents,Technology Architecture,Pending/Ready,,,,Technical documentation
+
+TERM SHEET COMPARISON
+Term,Investor A,Investor B,Investor C,Industry Standard,Our Priority,Notes
+Valuation (Pre-money),,,,,,"Target valuation range"
+Investment Amount,,,,,,"Amount per investor"
+Equity %,,,,,,"Percentage dilution"
+Board Seats,,,,,,"Board composition"
+Liquidation Preference,,,,,,"1x participating/non-participating"
+Anti-dilution,,,,,,"Weighted average broad/narrow"
+Dividend Rate,,,,,,"Preferred dividend rate"
+Participation Rights,,,,,,"Pro-rata rights"
+Drag-Along Rights,,,,,,"Majority can force sale"
+Tag-Along Rights,,,,,,"Minority protection"
+Vesting Acceleration,,,,,,"Single/double trigger"
+Option Pool,,,,,,"Employee option pool %"
+
+FUNDING TIMELINE
+Milestone,Target Date,Actual Date,Status,Owner,Notes
+Pitch Deck Finalization,,,Pending/Complete,,Version 1.0 with financial projections
+Due Diligence Prep,,,Pending/Complete,,All documents ready
+Investor Outreach,,,Pending/Complete,,First 50 investors contacted
+Initial Meetings,,,Pending/Complete,,Screening meetings completed
+Term Sheet Received,,,Pending/Complete,,At least 2 term sheets
+Due Diligence,,,Pending/Complete,,Legal and financial DD
+Documentation,,,Pending/Complete,,Legal agreements signed
+Funding Close,,,Pending/Complete,,Money in bank
+
+EXPENSES TRACKER
+Expense Category,Description,Amount (INR),Date,Vendor,Status,Notes
+Legal Fees,Documentation and agreements,,,,"Paid, Pending",
+Audit Fees,Financial statement preparation,,,,,"CPA charges for DD prep"
+Marketing Materials,Pitch deck design,,,,,"Professional design services"
+Travel Expenses,Investor meetings,,,,,"Flights hotels meals"
+Administrative,Incorporation compliance,,,,,"ROC filings etc"
+Technology,Data room setup,,,,,"Virtual data room costs"
+Consultant Fees,Fundraising advisors,,,,,"Success fees typically 2-5%"
+Total Expenses,=SUM(C71:C77),,,,,"Budget vs actual tracking"
+
+KEY METRICS DASHBOARD
+Metric,Value,Target,Status,Trend,Notes
+Total Investors Contacted,0,100,,"↑↓→","Track outreach progress"
+Response Rate,0%,25%,,"↑↓→","Positive responses received"
+Meeting Conversion,0%,40%,,"↑↓→","Meetings from responses"
+Term Sheet Received,0,2,,"↑↓→","Target multiple term sheets"
+Average Time per Stage,0 days,30 days,,"↑↓→","Fundraising velocity"
+Total Committed Amount,0 Lakhs,Target Lakhs,,"↑↓→","Amount vs target"
+Fundraising Runway,0 months,6 months,,"↑↓→","Time to complete round"
+
+NEXT ACTIONS
+Priority,Action Item,Owner,Due Date,Status,Notes
+High,Finalize pitch deck,,,Pending/Complete,"Version 2.0 with feedback incorporated"
+High,Prepare data room,,,Pending/Complete,"All DD documents uploaded"
+Medium,Follow up with warm intros,,,Pending/Complete,"Send updates to existing contacts"
+Medium,Research new investors,,,Pending/Complete,"Identify 25 new potential investors"
+Low,Update financial model,,,Pending/Complete,"Incorporate latest metrics"
+
+INVESTOR FEEDBACK LOG
+Date,Investor,Feedback Category,Specific Feedback,Action Required,Owner,Status
+,,Business Model,,Yes/No,,Pending/Complete
+,,Financial Projections,,Yes/No,,Pending/Complete  
+,,Market Opportunity,,Yes/No,,Pending/Complete
+,,Team Capability,,Yes/No,,Pending/Complete
+,,Competitive Position,,Yes/No,,Pending/Complete
+,,Valuation Expectations,,Yes/No,,Pending/Complete
+
+CONTACT LOG
+Date,Investor,Contact Method,Purpose,Outcome,Next Step,Follow-up Date
+,,Email/Call/Meeting,Introduction/Update/Follow-up,,,
+,,Email/Call/Meeting,Introduction/Update/Follow-up,,,
+,,Email/Call/Meeting,Introduction/Update/Follow-up,,,
+,,Email/Call/Meeting,Introduction/Update/Follow-up,,,
+,,Email/Call/Meeting,Introduction/Update/Follow-up,,,
+
+NOTES & REMINDERS
+General Notes:
+- Key insights from investor feedback
+- Market trends affecting valuation
+- Competitive funding rounds in sector
+- Regulatory changes impacting business
+- Team updates and milestones achieved
+
+Weekly Review Checklist:
+□ Update investor pipeline status
+□ Send weekly updates to interested investors  
+□ Follow up on pending meetings
+□ Review and update financial projections
+□ Prepare materials for upcoming meetings
+□ Track expenses against budget
+□ Update timeline and milestones
+
+Success Metrics:
+□ Maintain 25%+ response rate to cold outreach
+□ Convert 40%+ of responses to meetings
+□ Receive term sheets from 10%+ of meetings
+□ Close funding within 6 months of starting
+□ Achieve target valuation range
+□ Minimize dilution while meeting funding needs
+
+Template Created by: The Indian Startup
+Contact: support@theindianstartup.in
+Version: 2.0
+Last Updated: 2024

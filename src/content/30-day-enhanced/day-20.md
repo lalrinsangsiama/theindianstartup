@@ -61,6 +61,18 @@ By the end of today, you will:
 
 ### Phase 1: Soft Launch Strategy Design (60 mins, 50 XP)
 
+### 📊 Portfolio Activity: Go-to-Market Strategy
+
+<ActivityCapture 
+  activityTypeId="go_to_market_strategy"
+  activityName="Launch Strategy & GTM Plan"
+  lessonId="p1-day-20"
+  courseCode="P1"
+  moduleId="making-it-real"
+/>
+
+**Instructions:** Document your complete go-to-market strategy including soft launch plan, marketing materials, and success metrics. This will be saved to your portfolio's "GTM Strategy" section and help you execute a successful product launch.
+
 #### 1.1 Launch Scope Definition *(25 mins)*
 **Soft Launch Framework:**
 

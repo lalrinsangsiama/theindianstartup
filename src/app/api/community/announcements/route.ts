@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -110,7 +111,7 @@ export async function GET(request: NextRequest) {
     const { data: announcements, error } = await query;
 
     if (error) {
-      console.error('Error fetching announcements:', error);
+      logger.error('Error fetching announcements:', error);
       return NextResponse.json(
         { error: 'Failed to fetch announcements' },
         { status: 500 }
@@ -169,7 +170,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Announcements API error:', error);
+    logger.error('Announcements API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -250,7 +251,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (announcementError) {
-      console.error('Error creating announcement:', announcementError);
+      logger.error('Error creating announcement:', announcementError);
       return NextResponse.json(
         { error: 'Failed to create announcement' },
         { status: 500 }
@@ -276,7 +277,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create announcement error:', error);
+    logger.error('Create announcement error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -118,19 +118,62 @@ export const ACTIVITY_MAPPINGS: ActivityMapping[] = [
     trigger: 'keyword',
     keywords: ['funding', 'investment', 'capital requirements']
   },
+  // P2 Course Legal Activities - Enhanced
+  {
+    activityTypeId: 'entity_selection_decision',
+    activityName: 'Entity Selection Decision',
+    portfolioSection: 'legal_compliance',
+    trigger: 'keyword',
+    keywords: ['business structure', 'entity selection', 'private limited', 'LLP', 'incorporation choice']
+  },
   {
     activityTypeId: 'incorporation_setup',
     activityName: 'Business Incorporation Setup',
     portfolioSection: 'legal_compliance',
     trigger: 'keyword',
-    keywords: ['incorporation', 'business registration', 'legal entity']
+    keywords: ['incorporation', 'business registration', 'legal entity', 'SPICe+', 'company formation']
+  },
+  {
+    activityTypeId: 'incorporation_document_completion',
+    activityName: 'Incorporation Document Completion',
+    portfolioSection: 'legal_compliance',
+    trigger: 'keyword',
+    keywords: ['incorporation certificate', 'CIN', 'MOA', 'AOA', 'incorporation documents']
+  },
+  {
+    activityTypeId: 'tax_registration_completion',
+    activityName: 'Tax Registration Completion',
+    portfolioSection: 'legal_compliance',
+    trigger: 'keyword',
+    keywords: ['PAN', 'TAN', 'GST', 'tax registration', 'tax compliance']
+  },
+  {
+    activityTypeId: 'labor_law_compliance_setup',
+    activityName: 'Labor Law Compliance Setup',
+    portfolioSection: 'legal_compliance',
+    trigger: 'keyword',
+    keywords: ['EPF', 'ESI', 'labor laws', 'employment compliance', 'shop act']
+  },
+  {
+    activityTypeId: 'ip_protection_setup',
+    activityName: 'IP Protection Setup',
+    portfolioSection: 'legal_compliance',
+    trigger: 'keyword',
+    keywords: ['trademark', 'copyright', 'IP protection', 'intellectual property', 'brand protection']
+  },
+  {
+    activityTypeId: 'compliance_calendar_creation',
+    activityName: 'Compliance Calendar Creation',
+    portfolioSection: 'legal_compliance',
+    trigger: 'keyword',
+    keywords: ['compliance calendar', 'filing deadlines', 'regulatory compliance', 'annual filings']
   },
   {
     activityTypeId: 'compliance_checklist',
     activityName: 'Compliance Checklist Creation',
     portfolioSection: 'legal_compliance',
     trigger: 'keyword',
-    keywords: ['compliance', 'legal requirements', 'regulations']
+    keywords: ['compliance', 'legal requirements', 'regulations', 'compliance management']
   },
   {
     activityTypeId: 'brand_positioning',
@@ -220,10 +263,20 @@ export function getActivitySuggestionsForLesson(
       30: ['growth_strategy_planning']
     },
     'P2': {
-      1: ['incorporation_setup'],
-      5: ['compliance_checklist'],
-      10: ['brand_positioning'],
-      15: ['risk_assessment']
+      1: ['entity_selection_decision'],
+      3: ['entity_selection_decision'], 
+      8: ['incorporation_setup', 'incorporation_document_completion'],
+      10: ['incorporation_document_completion'],
+      12: ['incorporation_document_completion'],
+      15: ['tax_registration_completion'],
+      18: ['tax_registration_completion'],
+      22: ['labor_law_compliance_setup'],
+      25: ['labor_law_compliance_setup'],
+      28: ['ip_protection_setup'],
+      32: ['ip_protection_setup'],
+      35: ['compliance_calendar_creation'],
+      38: ['compliance_calendar_creation'],
+      40: ['compliance_checklist']
     },
     'P3': {
       1: ['funding_requirements'],

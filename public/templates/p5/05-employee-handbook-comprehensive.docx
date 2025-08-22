@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Handbook - Comprehensive</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .section { margin: 25px 0; }
+        .clause { margin: 15px 0; }
+        .fill-in { border-bottom: 1px solid #000; min-width: 150px; }
+        h1 { font-size: 18px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 16px; margin-top: 30px; color: #333; }
+        h3 { font-size: 14px; margin-top: 20px; }
+        .checkbox { display: inline-block; width: 15px; height: 15px; border: 1px solid #000; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        .policy-box { border: 2px solid #000; padding: 15px; margin: 15px 0; background-color: #f9f9f9; }
+        .important { background-color: #ffffcc; padding: 10px; border-left: 4px solid #ff0000; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>EMPLOYEE HANDBOOK</h1>
+        <h2>Comprehensive Guide to Workplace Policies and Procedures</h2>
+        <p><strong>Company:</strong> <span class="fill-in">_________________________</span></p>
+        <p><strong>Effective Date:</strong> <span class="fill-in">_________________</span></p>
+        <p><strong>Version:</strong> 2.0</p>
+    </div>
+
+    <div class="section">
+        <h2>TABLE OF CONTENTS</h2>
+        <p>1. Welcome and Company Overview</p>
+        <p>2. Employment Policies</p>
+        <p>3. Code of Conduct and Ethics</p>
+        <p>4. Compensation and Benefits</p>
+        <p>5. Time Off and Leave Policies</p>
+        <p>6. Workplace Safety and Security</p>
+        <p>7. Anti-Harassment and Equal Opportunity</p>
+        <p>8. Technology and Information Security</p>
+        <p>9. Performance Management</p>
+        <p>10. Disciplinary Procedures</p>
+        <p>11. Grievance and Complaint Procedures</p>
+        <p>12. General Workplace Policies</p>
+    </div>
+
+    <div class="section">
+        <h2>1. WELCOME AND COMPANY OVERVIEW</h2>
+        
+        <div class="clause">
+            <h3>1.1 Welcome Message</h3>
+            <p>Welcome to <span class="fill-in">[Company Name]</span>! We are excited to have you join our team. This handbook contains important information about our company policies, procedures, benefits, and expectations.</p>
+            
+            <p>Please read this handbook carefully and keep it as a reference. If you have any questions, please contact the HR department or your manager.</p>
+        </div>
+
+        <div class="clause">
+            <h3>1.2 Company Mission and Values</h3>
+            <div class="policy-box">
+                <p><strong>Mission:</strong> <span class="fill-in">_________________________</span></p>
+                <p><strong>Vision:</strong> <span class="fill-in">_________________________</span></p>
+                <p><strong>Core Values:</strong></p>
+                <p>• <span class="fill-in">_________________________</span></p>
+                <p>• <span class="fill-in">_________________________</span></p>
+                <p>• <span class="fill-in">_________________________</span></p>
+                <p>• <span class="fill-in">_________________________</span></p>
+            </div>
+        </div>
+
+        <div class="clause">
+            <h3>1.3 Employment Relationship</h3>
+            <p>Employment with <span class="fill-in">[Company Name]</span> is at-will, meaning either you or the company may terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
+            
+            <p>This handbook is not a contract of employment and does not create any contractual rights. The company reserves the right to modify policies at any time.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. EMPLOYMENT POLICIES</h2>
+        
+        <div class="clause">
+            <h3>2.1 Equal Employment Opportunity</h3>
+            <p>We are committed to providing equal employment opportunities to all employees and applicants without regard to:</p>
+            <p>• Race, color, religion, or creed</p>
+            <p>• National origin or ancestry</p>
+            <p>• Sex, gender identity, or sexual orientation</p>
+            <p>• Age or disability</p>
+            <p>• Marital status or pregnancy</p>
+            <p>• Military or veteran status</p>
+            <p>• Any other characteristic protected by law</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.2 Background Checks and References</h3>
+            <p>The company may conduct background checks, reference checks, and verification of credentials as part of the hiring process, in compliance with applicable laws.</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.3 Probationary Period</h3>
+            <p><strong>Duration:</strong> <span class="fill-in">_____</span> months from start date</p>
+            <p><strong>Purpose:</strong> Mutual evaluation of job performance and fit</p>
+            <p><strong>Benefits:</strong> Prorated benefits available during probationary period</p>
+            <p><strong>Review:</strong> Formal performance review at end of probationary period</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. CODE OF CONDUCT AND ETHICS</h2>
+        
+        <div class="policy-box">
+            <h3>3.1 Professional Conduct Standards</h3>
+            <p>All employees are expected to:</p>
+            <p>• Maintain the highest standards of professional conduct</p>
+            <p>• Act with integrity, honesty, and fairness</p>
+            <p>• Respect the rights and dignity of all individuals</p>
+            <p>• Comply with all applicable laws and regulations</p>
+            <p>• Protect company assets and confidential information</p>
+            <p>• Avoid conflicts of interest</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.2 Conflicts of Interest</h3>
+            <p>Employees must avoid situations where personal interests conflict with company interests. This includes:</p>
+            <p>• Financial interests in competitors, suppliers, or customers</p>
+            <p>• Outside employment that interferes with job responsibilities</p>
+            <p>• Personal relationships that affect business decisions</p>
+            <p>• Using company resources for personal benefit</p>
+            
+            <p><strong>Disclosure:</strong> All potential conflicts must be disclosed to management immediately.</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.3 Confidentiality and Non-Disclosure</h3>
+            <div class="important">
+                <p><strong>CONFIDENTIAL INFORMATION INCLUDES:</strong></p>
+                <p>• Business strategies, plans, and financial information</p>
+                <p>• Customer lists, pricing, and contract terms</p>
+                <p>• Product specifications and technical data</p>
+                <p>• Employee information and compensation details</p>
+                <p>• Any non-public company information</p>
+            </div>
+            <p><strong>Obligations:</strong> Employees must maintain strict confidentiality during and after employment.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. COMPENSATION AND BENEFITS</h2>
+        
+        <div class="clause">
+            <h3>4.1 Salary and Wage Administration</h3>
+            <p><strong>Pay Periods:</strong> Monthly, paid on the last working day of each month</p>
+            <p><strong>Pay Reviews:</strong> Annual performance-based salary reviews</p>
+            <p><strong>Overtime:</strong> As per applicable labor laws and company policy</p>
+            <p><strong>Deductions:</strong> Statutory deductions (PF, ESI, TDS) as per law</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.2 Benefits Package</h3>
+            <table>
+                <tr>
+                    <th>Benefit</th>
+                    <th>Eligibility</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td>Health Insurance</td>
+                    <td>All full-time employees</td>
+                    <td>Family coverage up to ₹<span class="fill-in">_____</span></td>
+                </tr>
+                <tr>
+                    <td>Life Insurance</td>
+                    <td>All employees after probation</td>
+                    <td>₹<span class="fill-in">_____</span> coverage</td>
+                </tr>
+                <tr>
+                    <td>Provident Fund</td>
+                    <td>All employees</td>
+                    <td>As per EPF Act</td>
+                </tr>
+                <tr>
+                    <td>Gratuity</td>
+                    <td>After 5 years service</td>
+                    <td>As per Gratuity Act</td>
+                </tr>
+                <tr>
+                    <td>Professional Development</td>
+                    <td>All employees</td>
+                    <td>₹<span class="fill-in">_____</span> annually</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="clause">
+            <h3>4.3 Performance Incentives</h3>
+            <p><strong>Annual Bonus:</strong> Based on individual and company performance</p>
+            <p><strong>Recognition Programs:</strong> Employee of the month/quarter awards</p>
+            <p><strong>Stock Options:</strong> Eligible employees may receive equity compensation</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. TIME OFF AND LEAVE POLICIES</h2>
+        
+        <div class="clause">
+            <h3>5.1 Annual Leave</h3>
+            <p><strong>Entitlement:</strong> <span class="fill-in">_____</span> days per calendar year</p>
+            <p><strong>Accrual:</strong> Monthly accrual of <span class="fill-in">_____</span> days</p>
+            <p><strong>Approval:</strong> Manager approval required, minimum <span class="fill-in">_____</span> days advance notice</p>
+            <p><strong>Carry Forward:</strong> Maximum <span class="fill-in">_____</span> days to next year</p>
+            <p><strong>Encashment:</strong> Unused leave encashable upon resignation</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.2 Sick Leave</h3>
+            <p><strong>Entitlement:</strong> <span class="fill-in">_____</span> days per year</p>
+            <p><strong>Medical Certificate:</strong> Required for absence >3 days</p>
+            <p><strong>Accumulation:</strong> Up to <span class="fill-in">_____</span> days maximum</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.3 Maternity/Paternity Leave</h3>
+            <p><strong>Maternity Leave:</strong> 26 weeks as per Maternity Benefit Act</p>
+            <p><strong>Paternity Leave:</strong> <span class="fill-in">_____</span> days</p>
+            <p><strong>Adoption Leave:</strong> <span class="fill-in">_____</span> weeks</p>
+            <p><strong>Notification:</strong> Must provide advance notice as per law</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.4 Other Leave Types</h3>
+            <table>
+                <tr>
+                    <th>Leave Type</th>
+                    <th>Duration</th>
+                    <th>Conditions</th>
+                </tr>
+                <tr>
+                    <td>Casual Leave</td>
+                    <td><span class="fill-in">_____</span> days/year</td>
+                    <td>Short notice acceptable</td>
+                </tr>
+                <tr>
+                    <td>Bereavement Leave</td>
+                    <td><span class="fill-in">_____</span> days</td>
+                    <td>Immediate family</td>
+                </tr>
+                <tr>
+                    <td>Marriage Leave</td>
+                    <td><span class="fill-in">_____</span> days</td>
+                    <td>Employee's marriage</td>
+                </tr>
+                <tr>
+                    <td>Sabbatical Leave</td>
+                    <td>Up to <span class="fill-in">_____</span> months</td>
+                    <td>After <span class="fill-in">_____</span> years service</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. WORKPLACE SAFETY AND SECURITY</h2>
+        
+        <div class="clause">
+            <h3>6.1 Health and Safety Policy</h3>
+            <div class="policy-box">
+                <p>The company is committed to providing a safe and healthy work environment. All employees are responsible for:</p>
+                <p>• Following safety procedures and guidelines</p>
+                <p>• Reporting hazards, accidents, or near-misses immediately</p>
+                <p>• Using personal protective equipment when required</p>
+                <p>• Participating in safety training programs</p>
+                <p>• Maintaining clean and organized work areas</p>
+            </div>
+        </div>
+
+        <div class="clause">
+            <h3>6.2 Emergency Procedures</h3>
+            <p><strong>Emergency Contacts:</strong></p>
+            <p>• Fire: 101</p>
+            <p>• Police: 100</p>
+            <p>• Medical Emergency: 108</p>
+            <p>• Company Security: <span class="fill-in">_________________</span></p>
+            <p>• HR Emergency: <span class="fill-in">_________________</span></p>
+            
+            <p><strong>Evacuation Plan:</strong> Posted at all emergency exits</p>
+            <p><strong>First Aid:</strong> First aid kits located at <span class="fill-in">_________________</span></p>
+        </div>
+
+        <div class="clause">
+            <h3>6.3 Security Policies</h3>
+            <p>• Employee ID badges must be worn at all times</p>
+            <p>• Visitors must be registered and accompanied</p>
+            <p>• Office doors must be locked when unattended</p>
+            <p>• Personal belongings should be secured</p>
+            <p>• Report suspicious activities immediately</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7. ANTI-HARASSMENT AND EQUAL OPPORTUNITY</h2>
+        
+        <div class="important">
+            <h3>7.1 Prevention of Sexual Harassment Policy</h3>
+            <p>As per the Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013:</p>
+            
+            <p><strong>POSH Committee Members:</strong></p>
+            <p>• Presiding Officer: <span class="fill-in">_________________</span></p>
+            <p>• Internal Members: <span class="fill-in">_________________</span></p>
+            <p>• External Member: <span class="fill-in">_________________</span></p>
+            
+            <p><strong>Complaint Procedure:</strong></p>
+            <p>1. Written complaint to POSH Committee within 3 months</p>
+            <p>2. Investigation to be completed within 90 days</p>
+            <p>3. Confidentiality maintained throughout process</p>
+            <p>4. No retaliation against complainants</p>
+        </div>
+
+        <div class="clause">
+            <h3>7.2 Prohibited Conduct</h3>
+            <p>The following behaviors are strictly prohibited:</p>
+            <p>• Sexual harassment of any kind</p>
+            <p>• Discrimination based on protected characteristics</p>
+            <p>• Bullying, intimidation, or threats</p>
+            <p>• Offensive jokes, comments, or materials</p>
+            <p>• Unwelcome advances or requests for sexual favors</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. TECHNOLOGY AND INFORMATION SECURITY</h2>
+        
+        <div class="clause">
+            <h3>8.1 Acceptable Use Policy</h3>
+            <p><strong>Company Equipment:</strong></p>
+            <p>• Use for business purposes primarily</p>
+            <p>• Limited personal use acceptable</p>
+            <p>• No illegal or inappropriate content</p>
+            <p>• Software installation requires IT approval</p>
+            
+            <p><strong>Internet and Email:</strong></p>
+            <p>• Professional use of company email accounts</p>
+            <p>• No sharing of passwords or login credentials</p>
+            <p>• Report suspicious emails or security threats</p>
+            <p>• Social media use during work hours should be limited</p>
+        </div>
+
+        <div class="clause">
+            <h3>8.2 Data Protection and Privacy</h3>
+            <p><strong>Employee Responsibilities:</strong></p>
+            <p>• Protect customer and company data</p>
+            <p>• Use strong passwords and enable two-factor authentication</p>
+            <p>• Lock workstations when unattended</p>
+            <p>• Report data breaches or security incidents immediately</p>
+            <p>• Complete mandatory cybersecurity training</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>9. PERFORMANCE MANAGEMENT</h2>
+        
+        <div class="clause">
+            <h3>9.1 Performance Review Process</h3>
+            <p><strong>Review Schedule:</strong></p>
+            <p>• Probationary Review: <span class="fill-in">_____</span> months</p>
+            <p>• Annual Performance Review: Each <span class="fill-in">_____</span></p>
+            <p>• Mid-year Check-ins: <span class="fill-in">_____</span> frequency</p>
+            
+            <p><strong>Review Components:</strong></p>
+            <p>• Goal achievement and KPI performance</p>
+            <p>• Competency assessment</p>
+            <p>• Development needs identification</p>
+            <p>• Career planning discussion</p>
+        </div>
+
+        <div class="clause">
+            <h3>9.2 Professional Development</h3>
+            <p><strong>Training Opportunities:</strong></p>
+            <p>• Internal training programs and workshops</p>
+            <p>• External conferences and seminars</p>
+            <p>• Online learning platforms</p>
+            <p>• Mentorship and coaching programs</p>
+            <p>• Educational assistance for relevant courses</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>10. DISCIPLINARY PROCEDURES</h2>
+        
+        <div class="clause">
+            <h3>10.1 Progressive Discipline Policy</h3>
+            <p><strong>Step 1:</strong> Verbal Warning (documented)</p>
+            <p><strong>Step 2:</strong> Written Warning</p>
+            <p><strong>Step 3:</strong> Final Written Warning</p>
+            <p><strong>Step 4:</strong> Suspension (with/without pay)</p>
+            <p><strong>Step 5:</strong> Termination</p>
+            
+            <p><strong>Note:</strong> Serious misconduct may result in immediate termination without progressive steps.</p>
+        </div>
+
+        <div class="clause">
+            <h3>10.2 Grounds for Immediate Termination</h3>
+            <p>• Theft, fraud, or embezzlement</p>
+            <p>• Violence or threats of violence</p>
+            <p>• Possession of weapons or illegal substances</p>
+            <p>• Serious breach of confidentiality</p>
+            <p>• Insubordination or refusal to follow instructions</p>
+            <p>• Conviction of a serious crime</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>11. GRIEVANCE AND COMPLAINT PROCEDURES</h2>
+        
+        <div class="clause">
+            <h3>11.1 Grievance Process</h3>
+            <p><strong>Step 1:</strong> Informal discussion with immediate supervisor</p>
+            <p><strong>Step 2:</strong> Formal written complaint to HR department</p>
+            <p><strong>Step 3:</strong> Investigation and response within <span class="fill-in">_____</span> days</p>
+            <p><strong>Step 4:</strong> Appeal to senior management if unsatisfied</p>
+            <p><strong>Step 5:</strong> Final decision by company leadership</p>
+        </div>
+
+        <div class="clause">
+            <h3>11.2 Open Door Policy</h3>
+            <p>Employees are encouraged to speak with their manager or HR about any workplace concerns. All communications will be handled confidentially and without retaliation.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>12. GENERAL WORKPLACE POLICIES</h2>
+        
+        <div class="clause">
+            <h3>12.1 Working Hours and Attendance</h3>
+            <p><strong>Standard Hours:</strong> <span class="fill-in">_____</span> AM to <span class="fill-in">_____</span> PM, Monday to Friday</p>
+            <p><strong>Flexible Hours:</strong> Available with manager approval</p>
+            <p><strong>Remote Work:</strong> Subject to company policy and approval</p>
+            <p><strong>Punctuality:</strong> Expected to arrive on time and ready to work</p>
+        </div>
+
+        <div class="clause">
+            <h3>12.2 Dress Code</h3>
+            <p><span class="checkbox">☐</span> Business Professional</p>
+            <p><span class="checkbox">☐</span> Business Casual</p>
+            <p><span class="checkbox">☐</span> Smart Casual</p>
+            <p><span class="checkbox">☐</span> Casual (appropriate for workplace)</p>
+            
+            <p>Clothing should be clean, neat, and appropriate for a professional environment.</p>
+        </div>
+
+        <div class="clause">
+            <h3>12.3 Personal Property and Searches</h3>
+            <p>• Company reserves right to inspect bags, lockers, and vehicles on premises</p>
+            <p>• Personal property brought to work is at owner's risk</p>
+            <p>• Company not responsible for lost or stolen personal items</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #000; padding-top: 20px;">
+        <h2>EMPLOYEE ACKNOWLEDGMENT</h2>
+        <p>I acknowledge that I have received, read, and understand this Employee Handbook. I understand that it is my responsibility to comply with all policies and procedures outlined herein.</p>
+        
+        <br><br>
+        <p>Employee Signature: ___________________________ Date: ___________</p>
+        <p>Employee Name (Print): ______________________________________</p>
+        
+        <br>
+        <p><strong>IMPORTANT NOTICE:</strong></p>
+        <p>This handbook is a guide to company policies and procedures. The company reserves the right to modify, supplement, or rescind any policies at any time. This handbook does not create any contractual rights.</p>
+        
+        <p><strong>Template Source:</strong> The Indian Startup - P5 Legal Stack<br>
+        <strong>Version:</strong> 2.0 | <strong>Last Updated:</strong> December 2024<br>
+        <strong>Jurisdiction:</strong> India | <strong>Review Required:</strong> Legal counsel and HR specialist recommended</p>
+    </div>
+</body>
+</html>

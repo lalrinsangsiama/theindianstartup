@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { SafeHTML } from '@/lib/sanitize';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
 import { Card } from '@/components/ui/Card';
@@ -12,6 +14,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Alert } from '@/components/ui/Alert';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Textarea } from '@/components/ui/Input';
+import { ActivityCapture } from '@/components/portfolio/ActivityCapture';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -79,7 +82,7 @@ export default function FundingLessonPage({ params }: LessonPageProps) {
         setReflection(data.lesson.reflection || '');
         setCompletedTasks(new Set(data.lesson.tasksCompleted || []));
       } catch (err) {
-        console.error('Error fetching lesson:', err);
+        logger.error('Error fetching lesson:', err);
         setError(err instanceof Error ? err.message : 'Failed to load lesson');
       } finally {
         setLoading(false);
@@ -139,7 +142,7 @@ export default function FundingLessonPage({ params }: LessonPageProps) {
       }, 2000);
 
     } catch (err) {
-      console.error('Error completing lesson:', err);
+      logger.error('Error completing lesson:', err);
       setError(err instanceof Error ? err.message : 'Failed to complete lesson');
     } finally {
       setSaving(false);
@@ -238,9 +241,15 @@ export default function FundingLessonPage({ params }: LessonPageProps) {
 
             {/* Brief Content */}
             <div className="prose max-w-none">
-              <div dangerouslySetInnerHTML={{ 
-                __html: lesson.briefContent || 'This lesson will help you master key funding concepts and strategies.' 
-              }} />
+              <SafeHTML 
+                html={lesson.briefContent || 'This lesson will help you master key funding concepts and strategies.'}
+                options={{
+                  allowImages: true,
+                  allowLinks: true,
+                  allowStyles: true,
+                  allowTables: true
+                }}
+              />
             </div>
           </Card>
 
@@ -307,6 +316,51 @@ export default function FundingLessonPage({ params }: LessonPageProps) {
                 ))}
               </div>
             </Card>
+          )}
+
+          {/* Portfolio Activity Integration */}
+          {lesson.day <= 5 && (
+            <ActivityCapture
+              activityTypeId="funding_strategy_plan"
+              activityName="Funding Strategy Development"
+              lessonId={lesson.id}
+              courseCode="P3"
+              moduleId={lesson.module.id}
+              className="mb-6"
+            />
+          )}
+
+          {lesson.day > 5 && lesson.day <= 15 && (
+            <ActivityCapture
+              activityTypeId="investor_pipeline"
+              activityName="Investor Pipeline Management"
+              lessonId={lesson.id}
+              courseCode="P3"
+              moduleId={lesson.module.id}
+              className="mb-6"
+            />
+          )}
+
+          {lesson.day > 15 && lesson.day <= 25 && (
+            <ActivityCapture
+              activityTypeId="funding_documents"
+              activityName="Funding Documentation"
+              lessonId={lesson.id}
+              courseCode="P3"
+              moduleId={lesson.module.id}
+              className="mb-6"
+            />
+          )}
+
+          {lesson.day > 25 && (
+            <ActivityCapture
+              activityTypeId="government_grants"
+              activityName="Government Grant Applications"
+              lessonId={lesson.id}
+              courseCode="P3"
+              moduleId={lesson.module.id}
+              className="mb-6"
+            />
           )}
 
           {/* Reflection */}

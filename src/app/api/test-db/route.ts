@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { PrismaClient } from '@prisma/client';
 
 export async function GET() {
@@ -6,8 +7,8 @@ export async function GET() {
   const dbUrl = process.env.DATABASE_URL;
   const directUrl = process.env.DIRECT_URL;
   
-  console.log('DATABASE_URL exists:', !!dbUrl);
-  console.log('DIRECT_URL exists:', !!directUrl);
+  logger.info('DATABASE_URL exists:', !!dbUrl);
+  logger.info('DIRECT_URL exists:', !!directUrl);
   
   const prisma = new PrismaClient({
     log: ['query', 'error', 'warn'],

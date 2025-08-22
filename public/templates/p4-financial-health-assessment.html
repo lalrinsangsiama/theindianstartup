@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P4 Financial Health Assessment - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .assessment-section {
+            background-color: #f8f9fa;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #000;
+        }
+        
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .criteria-item {
+            display: contents;
+        }
+        
+        .criteria-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .criteria-points {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .point-button {
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        .point-button.selected {
+            background-color: #000;
+            color: #fff;
+        }
+        
+        .point-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .point-button.selected:hover {
+            background-color: #333;
+        }
+        
+        .score-summary {
+            background-color: #000;
+            color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .total-score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .score-label {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .score-interpretation {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4444 0%, #ffaa00 50%, #00aa00 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .recommendations {
+            background-color: #fff3cd;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .recommendations h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .recommendation-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .priority-high { border-left: 4px solid #ff4444; }
+        .priority-medium { border-left: 4px solid #ffaa00; }
+        .priority-low { border-left: 4px solid #00aa00; }
+        
+        .action-plan {
+            background-color: #e1f5fe;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 4px;
+            border-left: 4px solid #000;
+        }
+        
+        .timeline-period {
+            background-color: #000;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-right: 15px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .export-button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.2s;
+        }
+        
+        .export-button:hover {
+            background-color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .criteria-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .criteria-points {
+                margin-top: 10px;
+            }
+            
+            .total-score {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Financial Health Assessment</h1>
+            <p>Evaluate your startup's financial maturity with our comprehensive 100-point assessment</p>
+        </div>
+
+        <!-- Section 1: Accounting & Bookkeeping -->
+        <div class="assessment-section">
+            <h2 class="section-title">1. Accounting & Bookkeeping (20 points)</h2>
+            <div class="criteria-grid">
+                <div class="criteria-item">
+                    <span class="criteria-text">Books updated daily with all transactions recorded</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 1, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 1, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 1, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Monthly bank reconciliations completed within 5 days</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 2, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 2, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 2, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Comprehensive accounting policies documented and followed</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 3, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 3, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 3, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Clean audit reports with no qualifications or findings</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 4, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 4, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 4, 0)">0</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Compliance -->
+        <div class="assessment-section">
+            <h2 class="section-title">2. Compliance (20 points)</h2>
+            <div class="criteria-grid">
+                <div class="criteria-item">
+                    <span class="criteria-text">GST returns filed on time with zero penalties</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 5, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 5, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 5, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">TDS compliance complete with proper certificates</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 6, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 6, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 6, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">MCA filings current with annual returns filed</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 7, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 7, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 7, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Labor law compliance including PF, ESI, and statutory requirements</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 8, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 8, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 8, 0)">0</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Financial Planning -->
+        <div class="assessment-section">
+            <h2 class="section-title">3. Financial Planning (20 points)</h2>
+            <div class="criteria-grid">
+                <div class="criteria-item">
+                    <span class="criteria-text">Annual budget prepared with monthly review and updates</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 9, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 9, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 9, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Monthly variance analysis with explanations for deviations</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 10, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 10, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 10, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">18-month rolling cash flow forecast maintained</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 11, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 11, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 11, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Scenario planning models (best, base, worst case)</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 12, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 12, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 12, 0)">0</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Reporting & MIS -->
+        <div class="assessment-section">
+            <h2 class="section-title">4. Reporting & MIS (20 points)</h2>
+            <div class="criteria-grid">
+                <div class="criteria-item">
+                    <span class="criteria-text">Monthly MIS reports generated within 7 days of month-end</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 13, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 13, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 13, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Live KPI dashboards with real-time data</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 14, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 14, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 14, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Regular investor updates with professional formatting</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 15, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 15, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 15, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Professional board packs with variance analysis</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 16, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 16, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 16, 0)">0</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Controls & Systems -->
+        <div class="assessment-section">
+            <h2 class="section-title">5. Controls & Systems (20 points)</h2>
+            <div class="criteria-grid">
+                <div class="criteria-item">
+                    <span class="criteria-text">Proper segregation of duties in financial processes</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 17, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 17, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 17, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Well-defined approval matrices for expenses and investments</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 18, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 18, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 18, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Regular internal audits and process reviews</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 19, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 19, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 19, 0)">0</button>
+                    </div>
+                </div>
+                
+                <div class="criteria-item">
+                    <span class="criteria-text">Robust fraud prevention measures and monitoring</span>
+                    <div class="criteria-points">
+                        <button class="point-button" onclick="selectPoints(this, 20, 5)">5</button>
+                        <button class="point-button" onclick="selectPoints(this, 20, 3)">3</button>
+                        <button class="point-button" onclick="selectPoints(this, 20, 0)">0</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Summary -->
+        <div class="score-summary">
+            <div class="total-score" id="totalScore">0</div>
+            <div class="score-label">out of 100 points</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="score-interpretation" id="scoreInterpretation">
+                Select answers to see your financial health score
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="recommendations" id="recommendationsSection" style="display: none;">
+            <h3>🎯 Personalized Recommendations</h3>
+            <div id="recommendationsList"></div>
+        </div>
+
+        <!-- Action Plan -->
+        <div class="action-plan" id="actionPlanSection" style="display: none;">
+            <h3>📋 Your 90-Day Action Plan</h3>
+            <div id="actionPlanList"></div>
+        </div>
+
+        <button class="export-button" onclick="exportResults()">Export Assessment Results</button>
+    </div>
+
+    <script>
+        let scores = {};
+        let totalScore = 0;
+
+        function selectPoints(button, criteriaId, points) {
+            // Remove selection from other buttons in the same row
+            const allButtons = button.parentElement.querySelectorAll('.point-button');
+            allButtons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Select current button
+            button.classList.add('selected');
+            
+            // Update score
+            scores[criteriaId] = points;
+            updateTotalScore();
+        }
+
+        function updateTotalScore() {
+            totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            document.getElementById('totalScore').textContent = totalScore;
+            
+            const progressPercent = (totalScore / 100) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            
+            updateInterpretation();
+            generateRecommendations();
+            generateActionPlan();
+        }
+
+        function updateInterpretation() {
+            const interpretationElement = document.getElementById('scoreInterpretation');
+            let interpretation;
+            
+            if (totalScore >= 80) {
+                interpretation = "🏆 CFO-Level Excellence: Your financial infrastructure is world-class! You're ready for scale and investment.";
+            } else if (totalScore >= 60) {
+                interpretation = "✅ Good Foundation: Solid financial management with room for enhancement. Focus on automation and advanced analytics.";
+            } else if (totalScore >= 40) {
+                interpretation = "⚠️ Significant Gaps: Immediate action needed to strengthen financial controls and compliance. High risk of financial issues.";
+            } else {
+                interpretation = "🚨 Critical Risk: Your financial infrastructure needs urgent transformation. This should be your #1 priority to avoid business failure.";
+            }
+            
+            interpretationElement.textContent = interpretation;
+        }
+
+        function generateRecommendations() {
+            const recommendationsSection = document.getElementById('recommendationsSection');
+            const recommendationsList = document.getElementById('recommendationsList');
+            
+            if (totalScore > 0) {
+                recommendationsSection.style.display = 'block';
+                
+                const recommendations = [];
+                
+                // Analyze each section and provide recommendations
+                const sectionScores = calculateSectionScores();
+                
+                if (sectionScores.accounting < 15) {
+                    recommendations.push({
+                        priority: 'high',
+                        title: 'Accounting System Overhaul',
+                        description: 'Implement professional accounting software and establish daily bookkeeping processes. Consider hiring a qualified accountant.'
+                    });
+                }
+                
+                if (sectionScores.compliance < 15) {
+                    recommendations.push({
+                        priority: 'high',
+                        title: 'Compliance Automation',
+                        description: 'Set up automated GST and TDS filing systems. Engage a CA for compliance audit and corrective actions.'
+                    });
+                }
+                
+                if (sectionScores.planning < 15) {
+                    recommendations.push({
+                        priority: 'medium',
+                        title: 'Financial Planning Framework',
+                        description: 'Develop comprehensive budgets, cash flow forecasts, and scenario planning models. Implement monthly variance analysis.'
+                    });
+                }
+                
+                if (sectionScores.reporting < 15) {
+                    recommendations.push({
+                        priority: 'medium',
+                        title: 'MIS & Dashboard Development',
+                        description: 'Create automated reporting systems with real-time KPI dashboards. Establish professional investor update processes.'
+                    });
+                }
+                
+                if (sectionScores.controls < 15) {
+                    recommendations.push({
+                        priority: 'low',
+                        title: 'Internal Controls Enhancement',
+                        description: 'Implement proper segregation of duties, approval matrices, and fraud prevention measures. Conduct regular internal audits.'
+                    });
+                }
+                
+                recommendationsList.innerHTML = recommendations.map(rec => `
+                    <div class="recommendation-item priority-${rec.priority}">
+                        <h4>${rec.title}</h4>
+                        <p>${rec.description}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function generateActionPlan() {
+            const actionPlanSection = document.getElementById('actionPlanSection');
+            const actionPlanList = document.getElementById('actionPlanList');
+            
+            if (totalScore > 0) {
+                actionPlanSection.style.display = 'block';
+                
+                const sectionScores = calculateSectionScores();
+                const actionItems = [];
+                
+                // Week 1-2 actions
+                if (sectionScores.accounting < 15) {
+                    actionItems.push({
+                        period: 'Week 1-2',
+                        action: 'Set up accounting software and import historical data'
+                    });
+                }
+                
+                if (sectionScores.compliance < 15) {
+                    actionItems.push({
+                        period: 'Week 1-2',
+                        action: 'Audit current compliance status and file pending returns'
+                    });
+                }
+                
+                // Month 1 actions
+                actionItems.push({
+                    period: 'Month 1',
+                    action: 'Establish monthly closing process and first MIS report'
+                });
+                
+                if (sectionScores.planning < 15) {
+                    actionItems.push({
+                        period: 'Month 1',
+                        action: 'Create annual budget and 18-month cash flow forecast'
+                    });
+                }
+                
+                // Month 2-3 actions
+                if (sectionScores.reporting < 15) {
+                    actionItems.push({
+                        period: 'Month 2',
+                        action: 'Build automated dashboards and KPI tracking'
+                    });
+                }
+                
+                if (sectionScores.controls < 15) {
+                    actionItems.push({
+                        period: 'Month 3',
+                        action: 'Implement internal controls and approval workflows'
+                    });
+                }
+                
+                actionPlanList.innerHTML = actionItems.map(item => `
+                    <div class="timeline-item">
+                        <div class="timeline-period">${item.period}</div>
+                        <div>${item.action}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function calculateSectionScores() {
+            return {
+                accounting: (scores[1] || 0) + (scores[2] || 0) + (scores[3] || 0) + (scores[4] || 0),
+                compliance: (scores[5] || 0) + (scores[6] || 0) + (scores[7] || 0) + (scores[8] || 0),
+                planning: (scores[9] || 0) + (scores[10] || 0) + (scores[11] || 0) + (scores[12] || 0),
+                reporting: (scores[13] || 0) + (scores[14] || 0) + (scores[15] || 0) + (scores[16] || 0),
+                controls: (scores[17] || 0) + (scores[18] || 0) + (scores[19] || 0) + (scores[20] || 0)
+            };
+        }
+
+        function exportResults() {
+            const sectionScores = calculateSectionScores();
+            const currentDate = new Date().toLocaleDateString();
+            
+            const exportData = `
+Financial Health Assessment Results
+Generated on: ${currentDate}
+
+OVERALL SCORE: ${totalScore}/100
+
+SECTION BREAKDOWN:
+• Accounting & Bookkeeping: ${sectionScores.accounting}/20
+• Compliance: ${sectionScores.compliance}/20
+• Financial Planning: ${sectionScores.planning}/20
+• Reporting & MIS: ${sectionScores.reporting}/20
+• Controls & Systems: ${sectionScores.controls}/20
+
+INTERPRETATION:
+${document.getElementById('scoreInterpretation').textContent}
+
+NEXT STEPS:
+1. Enroll in P4: Finance Stack - CFO-Level Mastery course
+2. Implement recommendations based on your score
+3. Schedule monthly reassessments to track improvement
+4. Consider hiring financial expertise for areas scoring below 15
+
+Contact: support@theindianstartup.in
+Course: theindianstartup.in/products/p4
+            `;
+            
+            const blob = new Blob([exportData], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `financial-health-assessment-${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

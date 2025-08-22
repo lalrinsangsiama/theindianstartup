@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (updateError) {
-      console.error('Email preferences update error:', updateError);
+      logger.error('Email preferences update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update email preferences' },
         { status: 500 }
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Email preferences error:', error);
+    logger.error('Email preferences error:', error);
     return NextResponse.json(
       { error: 'Failed to save email preferences' },
       { status: 500 }
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     if (profileError) {
-      console.error('Failed to fetch email preferences:', profileError);
+      logger.error('Failed to fetch email preferences:', profileError);
       return NextResponse.json(
         { error: 'Failed to fetch email preferences' },
         { status: 500 }
@@ -124,7 +125,7 @@ export async function GET(request: NextRequest) {
       preferences
     });
   } catch (error) {
-    console.error('Get email preferences error:', error);
+    logger.error('Get email preferences error:', error);
     return NextResponse.json(
       { error: 'Failed to get email preferences' },
       { status: 500 }

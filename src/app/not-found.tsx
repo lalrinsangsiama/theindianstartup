@@ -43,8 +43,8 @@ export default function NotFound() {
               Oops! This page went on its own startup journey.
             </Heading>
             <Text color="muted" className="max-w-sm mx-auto">
-              The page you&apos;re looking for doesn&apos;t exist or may have been moved. 
-              Let&apos;s get you back on track to building your startup.
+              The page you're looking for doesn't exist or may have been moved. 
+              Let's get you back on track to building your startup.
             </Text>
           </div>
 

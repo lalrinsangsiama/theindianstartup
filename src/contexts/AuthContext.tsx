@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -8,8 +9,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  initialized: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  checkOnboardingStatus: () => Promise<{ hasCompletedOnboarding: boolean; needsOnboarding: boolean }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   
   const supabase = createClient();
 
@@ -25,13 +29,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session
     const initAuth = async () => {
       try {
+        logger.info('AuthProvider: Initializing auth state...');
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
+        logger.info('AuthProvider: Auth state initialized', { 
+          hasSession: !!session, 
+          userId: session?.user?.id 
+        });
       } catch (error) {
-        console.error('Error getting session:', error);
+        logger.error('Error getting session:', error);
       } finally {
         setLoading(false);
+        setInitialized(true);
       }
     };
 
@@ -39,10 +49,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        logger.info('AuthProvider: Auth state changed', { event, userId: session?.user?.id });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (!initialized) {
+          setInitialized(true);
+        }
       }
     );
 
@@ -62,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.clear();
       }
     } catch (error) {
-      console.error('Error signing out:', error);
+      logger.error('Error signing out:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -77,8 +91,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
     } catch (error) {
-      console.error('Error refreshing session:', error);
+      logger.error('Error refreshing session:', error);
       throw error;
+    }
+  };
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const response = await fetch('/api/user/profile');
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile');
+      }
+      const profileData = await response.json();
+      
+      return {
+        hasCompletedOnboarding: profileData.hasCompletedOnboarding || false,
+        needsOnboarding: !profileData.hasCompletedOnboarding
+      };
+    } catch (error) {
+      logger.error('Error checking onboarding status:', error);
+      return {
+        hasCompletedOnboarding: false,
+        needsOnboarding: true
+      };
     }
   };
 
@@ -86,8 +121,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     loading,
+    initialized,
     signOut,
     refreshSession,
+    checkOnboardingStatus,
   };
 
   return (

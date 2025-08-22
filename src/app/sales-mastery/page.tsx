@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
 import { Card } from '@/components/ui/Card';
@@ -192,7 +193,7 @@ export default function SalesMasteryPage() {
 
   const handleStartLesson = (moduleId: string) => {
     // Navigate to first lesson of module
-    console.log('Starting module:', moduleId);
+    logger.info('Starting module:', moduleId);
   };
 
   if (loading) {

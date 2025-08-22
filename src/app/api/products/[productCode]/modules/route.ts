@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { PRODUCTS } from '@/lib/product-access';
 
@@ -74,12 +75,10 @@ export async function GET(
         id,
         title,
         description,
-        order,
-        estimatedTime,
-        xpReward,
+        orderIndex,
         lessons:Lesson(
           id,
-          order,
+          orderIndex,
           title,
           briefContent,
           estimatedTime,
@@ -87,10 +86,10 @@ export async function GET(
         )
       `)
       .eq('productId', product.id)
-      .order('order', { ascending: true });
+      .order('orderIndex', { ascending: true });
 
     if (modulesError) {
-      console.error('Error fetching modules:', modulesError);
+      logger.error('Error fetching modules:', modulesError);
       return NextResponse.json({
         error: 'Failed to fetch modules'
       }, { status: 500 });
@@ -114,7 +113,6 @@ export async function GET(
     const modulesWithProgress = (modules || []).map(module => {
       const lessonsWithProgress = (module.lessons || []).map(lesson => ({
         ...lesson,
-        orderIndex: lesson.order, // Map to expected field name
         completed: lessonProgressMap.get(lesson.id)?.completed || false,
         isLocked: false // For now, don't lock lessons - can be implemented later
       }));
@@ -125,7 +123,6 @@ export async function GET(
 
       return {
         ...module,
-        orderIndex: module.order, // Map to expected field name
         progress,
         completedLessons,
         totalLessons,
@@ -146,7 +143,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Modules API error:', error);
+    logger.error('Modules API error:', error);
     return NextResponse.json({
       error: 'Internal server error'
     }, { status: 500 });

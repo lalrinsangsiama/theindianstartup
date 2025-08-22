@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Heading } from '@/components/ui/Typography';
 import { Text } from '@/components/ui/Typography';
@@ -113,7 +114,7 @@ export default function ProgressDemoPage() {
                 <JourneyProgress
                   currentDay={mockData.currentDay}
                   completedDays={mockData.completedDays}
-                  onDayClick={(day) => console.log('Clicked day:', day)}
+                  onDayClick={(day) => logger.info('Clicked day:', day)}
                 />
               </CardContent>
             </Card>
@@ -128,7 +129,7 @@ export default function ProgressDemoPage() {
                   currentDay={mockData.currentDay}
                   completedDays={mockData.completedDays}
                   variant="linear"
-                  onDayClick={(day) => console.log('Clicked day:', day)}
+                  onDayClick={(day) => logger.info('Clicked day:', day)}
                 />
               </CardContent>
             </Card>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -92,7 +93,7 @@ export default function BusinessModelPage() {
         setPricingTiers(data.pricingStrategy.tiers || []);
       }
     } catch (err) {
-      console.error('Error fetching portfolio:', err);
+      logger.error('Error fetching portfolio:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
@@ -127,7 +128,7 @@ export default function BusinessModelPage() {
 
       setLastSaved(new Date());
     } catch (err) {
-      console.error('Error saving portfolio:', err);
+      logger.error('Error saving portfolio:', err);
       setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
@@ -620,7 +621,7 @@ export default function BusinessModelPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Perfect! You&apos;ve defined your Business Model. Ready to work on Brand Assets?
+                  Perfect! You've defined your Business Model. Ready to work on Brand Assets?
                 </Text>
               </CardContent>
             </Card>

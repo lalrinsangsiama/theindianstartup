@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     if (purchaseError) {
-      console.error('Error fetching P1 progress:', purchaseError);
+      logger.error('Error fetching P1 progress:', purchaseError);
       return NextResponse.json(
         { error: 'Failed to fetch progress' },
         { status: 500 }
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('P1 progress error:', error);
+    logger.error('P1 progress error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch progress' },
       { status: 500 }

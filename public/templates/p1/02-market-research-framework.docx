@@ -1,0 +1,187 @@
+# MARKET RESEARCH FRAMEWORK
+**The Indian Startup Market Research Template**
+
+## 1. MARKET SIZING (TAM-SAM-SOM)
+
+### Total Addressable Market (TAM)
+- **Definition**: Total market demand for your product/service in India
+- **Research Method**: Government reports, industry associations, research firms
+- **Data Sources**: 
+  - Ministry of Statistics and Programme Implementation
+  - NASSCOM reports
+  - Industry association reports
+  - International research firms (McKinsey, BCG, Deloitte)
+
+**TAM Calculation Template:**
+```
+Population Segment: _____ million people
+Average Spending: ₹_____ per person annually  
+TAM = Population × Average Spending = ₹_____ crores
+```
+
+### Serviceable Addressable Market (SAM)  
+- **Definition**: Portion of TAM you can realistically target
+- **Factors**: Geographic reach, target demographics, regulatory constraints
+
+**SAM Calculation Template:**
+```  
+TAM: ₹_____ crores
+Geographic Coverage: ____% of India
+Demographic Match: ____% of population
+SAM = TAM × Geographic % × Demographic % = ₹_____ crores
+```
+
+### Serviceable Obtainable Market (SOM)
+- **Definition**: Market share you can realistically capture in 3 years
+- **Factors**: Competition, resources, execution capability
+
+**SOM Calculation Template:**
+```
+SAM: ₹_____ crores  
+Realistic Market Share: ____% (typically 1-5% for startups)
+SOM = SAM × Market Share % = ₹_____ crores
+```
+
+## 2. COMPETITOR ANALYSIS MATRIX
+
+| Competitor | Market Share | Pricing | Strengths | Weaknesses | Funding | Strategy |
+|------------|-------------|---------|-----------|------------|---------|----------|
+| Company A  | ____% | ₹____ | _______ | ________ | ₹____ Cr | _______ |
+| Company B  | ____% | ₹____ | _______ | ________ | ₹____ Cr | _______ |
+| Company C  | ____% | ₹____ | _______ | ________ | ₹____ Cr | _______ |
+
+## 3. CUSTOMER INTERVIEW TEMPLATE
+
+**Interview Guide (30 minutes)**
+
+### Opening (5 minutes)
+- "Hi [Name], thank you for taking time. I'm researching [problem area] to understand customer challenges."
+- "This is purely research - I'm not selling anything today."
+- "Can I record this for notes? Your identity will remain confidential."
+
+### Problem Discovery (10 minutes)
+1. "How do you currently handle [specific problem]?"
+2. "What's most frustrating about the current solution?"  
+3. "How much time/money do you spend on this monthly?"
+4. "If you could wave a magic wand, what would the perfect solution look like?"
+
+### Solution Validation (10 minutes)
+1. "I'm working on [brief solution description]. What's your first reaction?"
+2. "What would convince you to try this?"
+3. "What concerns would you have?"
+4. "How much would you be willing to pay for this monthly?"
+
+### Closing (5 minutes)
+1. "Who else faces this same problem?"
+2. "Can you introduce me to 2 others who might have this challenge?"
+3. "Would you be interested in testing an early version?"
+
+### Post-Interview Analysis
+- Pain Point Score (1-10): ____
+- Solution Fit Score (1-10): ____  
+- Willingness to Pay: ₹____/month
+- Referral Potential: High/Medium/Low
+
+## 4. PRICING RESEARCH TEMPLATE
+
+### Cost-Plus Pricing
+```
+Direct Costs: ₹____
+Indirect Costs: ₹____
+Desired Margin: ____%
+Price = (Direct + Indirect) × (1 + Margin%) = ₹____
+```
+
+### Value-Based Pricing  
+```
+Customer Current Spend: ₹____
+Time/Money Saved: ₹____
+Value Created: ₹____
+Value-Based Price (20-30% of value): ₹____
+```
+
+### Competitive Pricing
+```
+Competitor A Price: ₹____
+Competitor B Price: ₹____  
+Market Average: ₹____
+Your Positioning: Premium/Market/Budget
+Recommended Price: ₹____
+```
+
+## 5. REGULATORY RESEARCH CHECKLIST
+
+**Industry-Specific Regulations**
+□ SEBI regulations (if fintech)
+□ RBI guidelines (if financial services)  
+□ IRDAI norms (if insurance)
+□ TRAI regulations (if telecom)
+□ Ministry of Health (if healthcare)
+□ Ministry of Education (if edtech)
+
+**General Business Regulations**  
+□ Company incorporation requirements
+□ GST registration and compliance
+□ Labor law compliance
+□ Data protection (DPDP Act)
+□ Foreign investment regulations (if applicable)
+□ State-specific regulations
+
+**Compliance Cost Estimation**
+```
+Legal Consultation: ₹____
+Registration Fees: ₹____  
+Annual Compliance: ₹____
+Total Year 1: ₹____
+```
+
+## 6. MARKET ENTRY STRATEGY
+
+### Go-to-Market Approach
+**Primary Channel**: [Online/Offline/Hybrid]
+**Customer Acquisition**: [Paid ads/Content/Referrals/Partnerships]  
+**Geographic Strategy**: [City-wise rollout plan]
+
+### Pilot Market Selection
+**Criteria for Pilot City**:
+□ High target customer density
+□ Lower competition  
+□ Supportive ecosystem
+□ Regulatory friendliness
+□ Cost-effective operations
+
+**Recommended Pilot Markets**:
+1. Primary: __________ (Reason: _________)
+2. Secondary: ________ (Reason: _________)  
+3. Tertiary: _________ (Reason: _________)
+
+## 7. SUCCESS METRICS & MILESTONES
+
+### Year 1 Targets
+- Revenue: ₹______ 
+- Customers: ______
+- Market Share: ____%
+- Geographic Coverage: ____ cities
+
+### Key Performance Indicators
+- Customer Acquisition Cost: ₹____
+- Lifetime Value: ₹____
+- Monthly Recurring Revenue: ₹____
+- Churn Rate: ____%
+
+---
+
+**Research Completion Checklist:**
+□ Market size validated with 3+ sources
+□ 25+ customer interviews completed  
+□ Top 5 competitors analyzed
+□ Pricing strategy finalized
+□ Regulatory requirements mapped
+□ Go-to-market plan drafted
+□ Success metrics defined
+
+**Next Steps:**
+1. Create business model canvas
+2. Develop MVP requirements  
+3. Build financial projections
+4. Start pilot customer acquisition

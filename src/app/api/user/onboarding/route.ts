@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { createId } from '@paralleldrive/cuid2';
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      console.error('Auth error in onboarding:', authError);
+      logger.error('Auth error in onboarding:', authError);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
         .maybeSingle();
 
       if (updateError) {
-        console.error('User update error:', updateError);
+        logger.error('User update error:', updateError);
         throw new Error(`Failed to update user: ${updateError.message}`);
       }
 
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
           .eq('userId', user.id);
 
         if (portfolioUpdateError) {
-          console.error('Portfolio update error:', portfolioUpdateError);
+          logger.error('Portfolio update error:', portfolioUpdateError);
           throw new Error(`Failed to update portfolio: ${portfolioUpdateError.message}`);
         }
       } else {
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
         // Portfolio creation for existing user
 
         if (portfolioInsertError) {
-          console.error('Portfolio insert error:', portfolioInsertError);
+          logger.error('Portfolio insert error:', portfolioInsertError);
           throw new Error(`Failed to create portfolio: ${portfolioInsertError.message}`);
         }
       }
@@ -127,7 +128,7 @@ export async function POST(request: NextRequest) {
         .maybeSingle();
 
       if (insertError) {
-        console.error('User insert error:', insertError);
+        logger.error('User insert error:', insertError);
         throw new Error(`Failed to create user: ${insertError.message}`);
       }
 
@@ -148,7 +149,7 @@ export async function POST(request: NextRequest) {
       // Portfolio creation for new user
 
       if (portfolioInsertError) {
-        console.error('Portfolio insert error:', portfolioInsertError);
+        logger.error('Portfolio insert error:', portfolioInsertError);
         throw new Error(`Failed to create portfolio: ${portfolioInsertError.message}`);
       }
 
@@ -167,7 +168,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (xpEventError) {
-      console.error('XP event error:', xpEventError);
+      logger.error('XP event error:', xpEventError);
       // Don't throw error here, as the main onboarding is successful
     }
 
@@ -180,7 +181,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id);
 
     if (xpUpdateError) {
-      console.error('XP update error:', xpUpdateError);
+      logger.error('XP update error:', xpUpdateError);
       // Don't throw error here, as the main onboarding is successful
     }
 
@@ -191,7 +192,7 @@ export async function POST(request: NextRequest) {
       user: updatedUser,
     });
   } catch (error) {
-    console.error('Onboarding error:', error);
+    logger.error('Onboarding error:', error);
     
     // Provide more detailed error information
     let errorMessage = 'Failed to save onboarding data';

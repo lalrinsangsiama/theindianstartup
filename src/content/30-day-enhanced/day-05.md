@@ -32,7 +32,20 @@ Today, you'll design how your startup makes money sustainably. A **business mode
 - [ ] Create pricing tiers
 - [ ] Map cost structure
 - [ ] Project 12-month financials
+- [ ] **📊 Build Your Portfolio:** Complete Business Model Canvas activity below
 - [ ] Test model feasibility
+
+### 📊 Portfolio Activity: Business Model Canvas
+
+<ActivityCapture 
+  activityTypeId="business_model_canvas"
+  activityName="Business Model Canvas"
+  lessonId="p1-day-05"
+  courseCode="P1"
+  moduleId="foundation-week"
+/>
+
+**Instructions:** Complete all 9 building blocks of your Business Model Canvas using the framework above. This comprehensive model will be saved to your portfolio's "Business Model" section and can be exported as a professional presentation for investors.
 
 ### Final Polish (30 mins)
 - [ ] Stress test assumptions

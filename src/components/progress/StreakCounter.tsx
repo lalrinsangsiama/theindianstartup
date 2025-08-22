@@ -176,12 +176,12 @@ function DetailedStreak({
             {todayCompleted ? (
               <Badge variant="success" size="lg">
                 <CheckCircle2 className="w-4 h-4 mr-1" />
-                Today&apos;s lesson completed
+                Today's lesson completed
               </Badge>
             ) : (
               <Badge variant="default" size="lg">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                Complete today&apos;s lesson to maintain streak
+                Complete today's lesson to maintain streak
               </Badge>
             )}
           </div>

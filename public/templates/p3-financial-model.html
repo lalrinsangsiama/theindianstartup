@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-Year Financial Model Builder - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e0e0e0;
+        }
+        
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .input-group input,
+        .input-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .editable {
+            background: #f0f4ff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .editable:hover {
+            background: #e0e8ff;
+        }
+        
+        .calculated {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .total-row {
+            background: #f0f4ff;
+            font-weight: bold;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 400px;
+            position: relative;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-export {
+            background: #4ade80;
+            color: white;
+        }
+        
+        .scenario-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .error-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-container {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 5-Year Financial Model Builder</h1>
+            <p>Build investor-ready financial projections with automatic calculations</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('assumptions')">📝 Assumptions</button>
+            <button class="tab" onclick="showTab('revenue')">💰 Revenue</button>
+            <button class="tab" onclick="showTab('costs')">💸 Costs</button>
+            <button class="tab" onclick="showTab('pnl')">📈 P&L Statement</button>
+            <button class="tab" onclick="showTab('cashflow')">💵 Cash Flow</button>
+            <button class="tab" onclick="showTab('metrics')">🎯 Key Metrics</button>
+            <button class="tab" onclick="showTab('scenarios')">🔄 Scenarios</button>
+        </div>
+        
+        <!-- Assumptions Tab -->
+        <div id="assumptions" class="content-section active">
+            <div class="section-header">
+                <h2>Business Assumptions</h2>
+                <button class="btn btn-primary" onclick="calculateAll()">Recalculate Model</button>
+            </div>
+            
+            <h3 style="margin-bottom: 20px; color: #667eea;">Revenue Assumptions</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Business Model</label>
+                    <select id="business-model" onchange="updateRevenueInputs()">
+                        <option value="saas">SaaS (Subscription)</option>
+                        <option value="marketplace">Marketplace</option>
+                        <option value="ecommerce">E-commerce</option>
+                        <option value="services">Services</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Starting Monthly Users/Customers</label>
+                    <input type="number" id="starting-customers" value="100" onchange="calculateAll()">
+                    <span class="help-text">Current active customers</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Monthly Growth Rate (%)</label>
+                    <input type="number" id="growth-rate" value="15" step="0.1" onchange="calculateAll()">
+                    <span class="help-text">Expected MoM growth</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Average Revenue per User (₹)</label>
+                    <input type="number" id="arpu" value="500" onchange="calculateAll()">
+                    <span class="help-text">Monthly ARPU</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Churn Rate (% monthly)</label>
+                    <input type="number" id="churn-rate" value="5" step="0.1" onchange="calculateAll()">
+                    <span class="help-text">Customer loss rate</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Price Increase (% yearly)</label>
+                    <input type="number" id="price-increase" value="10" step="0.1" onchange="calculateAll()">
+                    <span class="help-text">Annual price hike</span>
+                </div>
+            </div>
+            
+            <h3 style="margin: 30px 0 20px; color: #667eea;">Cost Assumptions</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Cost of Goods Sold (% of Revenue)</label>
+                    <input type="number" id="cogs-percent" value="30" step="0.1" onchange="calculateAll()">
+                    <span class="help-text">Direct costs</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Starting Team Size</label>
+                    <input type="number" id="team-size" value="5" onchange="calculateAll()">
+                    <span class="help-text">Current employees</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Average Salary (₹/month)</label>
+                    <input type="number" id="avg-salary" value="50000" onchange="calculateAll()">
+                    <span class="help-text">Per employee</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Hiring Rate (people/quarter)</label>
+                    <input type="number" id="hiring-rate" value="2" onchange="calculateAll()">
+                    <span class="help-text">New hires per quarter</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Marketing (% of Revenue)</label>
+                    <input type="number" id="marketing-percent" value="20" step="0.1" onchange="calculateAll()">
+                    <span class="help-text">Customer acquisition</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Office & Admin (₹/month)</label>
+                    <input type="number" id="office-costs" value="100000" onchange="calculateAll()">
+                    <span class="help-text">Fixed monthly costs</span>
+                </div>
+            </div>
+            
+            <h3 style="margin: 30px 0 20px; color: #667eea;">Funding Assumptions</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Current Cash Balance (₹)</label>
+                    <input type="number" id="cash-balance" value="1000000" onchange="calculateAll()">
+                    <span class="help-text">Available cash</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Funding Round Amount (₹)</label>
+                    <input type="number" id="funding-amount" value="50000000" onchange="calculateAll()">
+                    <span class="help-text">Expected raise</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Funding Timeline (Month)</label>
+                    <input type="number" id="funding-month" value="6" min="1" max="60" onchange="calculateAll()">
+                    <span class="help-text">When funding closes</span>
+                </div>
+                
+                <div class="input-group">
+                    <label>Tax Rate (%)</label>
+                    <input type="number" id="tax-rate" value="30" step="0.1" onchange="calculateAll()">
+                    <span class="help-text">Corporate tax rate</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Revenue Tab -->
+        <div id="revenue" class="content-section">
+            <div class="section-header">
+                <h2>Revenue Projections</h2>
+                <button class="btn btn-export" onclick="exportToExcel()">Export to Excel</button>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-revenue-5y">₹0</div>
+                    <div class="metric-label">5-Year Total Revenue</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="year-5-arr">₹0</div>
+                    <div class="metric-label">Year 5 ARR</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="cagr">0%</div>
+                    <div class="metric-label">Revenue CAGR</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-customers">0</div>
+                    <div class="metric-label">Year 5 Customers</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="revenue-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Year 1</th>
+                            <th>Year 2</th>
+                            <th>Year 3</th>
+                            <th>Year 4</th>
+                            <th>Year 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Starting Customers</td>
+                            <td class="calculated" id="rev-customers-y1">0</td>
+                            <td class="calculated" id="rev-customers-y2">0</td>
+                            <td class="calculated" id="rev-customers-y3">0</td>
+                            <td class="calculated" id="rev-customers-y4">0</td>
+                            <td class="calculated" id="rev-customers-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>New Customers</td>
+                            <td class="calculated" id="rev-new-y1">0</td>
+                            <td class="calculated" id="rev-new-y2">0</td>
+                            <td class="calculated" id="rev-new-y3">0</td>
+                            <td class="calculated" id="rev-new-y4">0</td>
+                            <td class="calculated" id="rev-new-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Churned Customers</td>
+                            <td class="calculated" id="rev-churn-y1">0</td>
+                            <td class="calculated" id="rev-churn-y2">0</td>
+                            <td class="calculated" id="rev-churn-y3">0</td>
+                            <td class="calculated" id="rev-churn-y4">0</td>
+                            <td class="calculated" id="rev-churn-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Ending Customers</td>
+                            <td class="calculated" id="rev-end-y1">0</td>
+                            <td class="calculated" id="rev-end-y2">0</td>
+                            <td class="calculated" id="rev-end-y3">0</td>
+                            <td class="calculated" id="rev-end-y4">0</td>
+                            <td class="calculated" id="rev-end-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>ARPU (₹)</td>
+                            <td class="calculated" id="rev-arpu-y1">0</td>
+                            <td class="calculated" id="rev-arpu-y2">0</td>
+                            <td class="calculated" id="rev-arpu-y3">0</td>
+                            <td class="calculated" id="rev-arpu-y4">0</td>
+                            <td class="calculated" id="rev-arpu-y5">0</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Total Revenue (₹)</td>
+                            <td id="rev-total-y1">0</td>
+                            <td id="rev-total-y2">0</td>
+                            <td id="rev-total-y3">0</td>
+                            <td id="rev-total-y4">0</td>
+                            <td id="rev-total-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Growth Rate</td>
+                            <td class="calculated">-</td>
+                            <td class="calculated" id="rev-growth-y2">0%</td>
+                            <td class="calculated" id="rev-growth-y3">0%</td>
+                            <td class="calculated" id="rev-growth-y4">0%</td>
+                            <td class="calculated" id="rev-growth-y5">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <canvas id="revenueChart"></canvas>
+        </div>
+        
+        <!-- Costs Tab -->
+        <div id="costs" class="content-section">
+            <div class="section-header">
+                <h2>Cost Structure</h2>
+            </div>
+            
+            <div class="table-container">
+                <table id="costs-table">
+                    <thead>
+                        <tr>
+                            <th>Cost Category</th>
+                            <th>Year 1</th>
+                            <th>Year 2</th>
+                            <th>Year 3</th>
+                            <th>Year 4</th>
+                            <th>Year 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cost of Goods Sold</td>
+                            <td class="calculated" id="cogs-y1">0</td>
+                            <td class="calculated" id="cogs-y2">0</td>
+                            <td class="calculated" id="cogs-y3">0</td>
+                            <td class="calculated" id="cogs-y4">0</td>
+                            <td class="calculated" id="cogs-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Salaries & Benefits</td>
+                            <td class="calculated" id="salaries-y1">0</td>
+                            <td class="calculated" id="salaries-y2">0</td>
+                            <td class="calculated" id="salaries-y3">0</td>
+                            <td class="calculated" id="salaries-y4">0</td>
+                            <td class="calculated" id="salaries-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Marketing & Sales</td>
+                            <td class="calculated" id="marketing-y1">0</td>
+                            <td class="calculated" id="marketing-y2">0</td>
+                            <td class="calculated" id="marketing-y3">0</td>
+                            <td class="calculated" id="marketing-y4">0</td>
+                            <td class="calculated" id="marketing-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Office & Admin</td>
+                            <td class="calculated" id="office-y1">0</td>
+                            <td class="calculated" id="office-y2">0</td>
+                            <td class="calculated" id="office-y3">0</td>
+                            <td class="calculated" id="office-y4">0</td>
+                            <td class="calculated" id="office-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Technology & Infrastructure</td>
+                            <td class="editable" contenteditable="true" id="tech-y1">500000</td>
+                            <td class="editable" contenteditable="true" id="tech-y2">750000</td>
+                            <td class="editable" contenteditable="true" id="tech-y3">1000000</td>
+                            <td class="editable" contenteditable="true" id="tech-y4">1500000</td>
+                            <td class="editable" contenteditable="true" id="tech-y5">2000000</td>
+                        </tr>
+                        <tr>
+                            <td>Legal & Professional</td>
+                            <td class="editable" contenteditable="true" id="legal-y1">200000</td>
+                            <td class="editable" contenteditable="true" id="legal-y2">300000</td>
+                            <td class="editable" contenteditable="true" id="legal-y3">400000</td>
+                            <td class="editable" contenteditable="true" id="legal-y4">500000</td>
+                            <td class="editable" contenteditable="true" id="legal-y5">600000</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Total Operating Costs</td>
+                            <td id="total-costs-y1">0</td>
+                            <td id="total-costs-y2">0</td>
+                            <td id="total-costs-y3">0</td>
+                            <td id="total-costs-y4">0</td>
+                            <td id="total-costs-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Team Size (End of Year)</td>
+                            <td class="calculated" id="team-y1">0</td>
+                            <td class="calculated" id="team-y2">0</td>
+                            <td class="calculated" id="team-y3">0</td>
+                            <td class="calculated" id="team-y4">0</td>
+                            <td class="calculated" id="team-y5">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- P&L Tab -->
+        <div id="pnl" class="content-section">
+            <div class="section-header">
+                <h2>Profit & Loss Statement</h2>
+            </div>
+            
+            <div class="table-container">
+                <table id="pnl-table">
+                    <thead>
+                        <tr>
+                            <th>Line Item</th>
+                            <th>Year 1</th>
+                            <th>Year 2</th>
+                            <th>Year 3</th>
+                            <th>Year 4</th>
+                            <th>Year 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Revenue</strong></td>
+                            <td id="pnl-revenue-y1">0</td>
+                            <td id="pnl-revenue-y2">0</td>
+                            <td id="pnl-revenue-y3">0</td>
+                            <td id="pnl-revenue-y4">0</td>
+                            <td id="pnl-revenue-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>(-) Cost of Goods Sold</td>
+                            <td id="pnl-cogs-y1">0</td>
+                            <td id="pnl-cogs-y2">0</td>
+                            <td id="pnl-cogs-y3">0</td>
+                            <td id="pnl-cogs-y4">0</td>
+                            <td id="pnl-cogs-y5">0</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Gross Profit</strong></td>
+                            <td id="pnl-gross-y1">0</td>
+                            <td id="pnl-gross-y2">0</td>
+                            <td id="pnl-gross-y3">0</td>
+                            <td id="pnl-gross-y4">0</td>
+                            <td id="pnl-gross-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Gross Margin %</td>
+                            <td class="calculated" id="pnl-margin-y1">0%</td>
+                            <td class="calculated" id="pnl-margin-y2">0%</td>
+                            <td class="calculated" id="pnl-margin-y3">0%</td>
+                            <td class="calculated" id="pnl-margin-y4">0%</td>
+                            <td class="calculated" id="pnl-margin-y5">0%</td>
+                        </tr>
+                        <tr>
+                            <td>(-) Operating Expenses</td>
+                            <td id="pnl-opex-y1">0</td>
+                            <td id="pnl-opex-y2">0</td>
+                            <td id="pnl-opex-y3">0</td>
+                            <td id="pnl-opex-y4">0</td>
+                            <td id="pnl-opex-y5">0</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>EBITDA</strong></td>
+                            <td id="pnl-ebitda-y1">0</td>
+                            <td id="pnl-ebitda-y2">0</td>
+                            <td id="pnl-ebitda-y3">0</td>
+                            <td id="pnl-ebitda-y4">0</td>
+                            <td id="pnl-ebitda-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>EBITDA Margin %</td>
+                            <td class="calculated" id="pnl-ebitda-margin-y1">0%</td>
+                            <td class="calculated" id="pnl-ebitda-margin-y2">0%</td>
+                            <td class="calculated" id="pnl-ebitda-margin-y3">0%</td>
+                            <td class="calculated" id="pnl-ebitda-margin-y4">0%</td>
+                            <td class="calculated" id="pnl-ebitda-margin-y5">0%</td>
+                        </tr>
+                        <tr>
+                            <td>(-) Depreciation</td>
+                            <td class="editable" contenteditable="true">100000</td>
+                            <td class="editable" contenteditable="true">150000</td>
+                            <td class="editable" contenteditable="true">200000</td>
+                            <td class="editable" contenteditable="true">250000</td>
+                            <td class="editable" contenteditable="true">300000</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Net Income (Before Tax)</strong></td>
+                            <td id="pnl-net-bt-y1">0</td>
+                            <td id="pnl-net-bt-y2">0</td>
+                            <td id="pnl-net-bt-y3">0</td>
+                            <td id="pnl-net-bt-y4">0</td>
+                            <td id="pnl-net-bt-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>(-) Tax</td>
+                            <td id="pnl-tax-y1">0</td>
+                            <td id="pnl-tax-y2">0</td>
+                            <td id="pnl-tax-y3">0</td>
+                            <td id="pnl-tax-y4">0</td>
+                            <td id="pnl-tax-y5">0</td>
+                        </tr>
+                        <tr class="total-row" style="background: #d4edda;">
+                            <td><strong>Net Income (After Tax)</strong></td>
+                            <td id="pnl-net-y1">0</td>
+                            <td id="pnl-net-y2">0</td>
+                            <td id="pnl-net-y3">0</td>
+                            <td id="pnl-net-y4">0</td>
+                            <td id="pnl-net-y5">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Cash Flow Tab -->
+        <div id="cashflow" class="content-section">
+            <div class="section-header">
+                <h2>Cash Flow Statement</h2>
+            </div>
+            
+            <div id="runway-alert" class="warning-box" style="display:none;">
+                ⚠️ Warning: Cash runway ends in Month <span id="runway-month"></span>. Consider raising funds or reducing burn.
+            </div>
+            
+            <div class="table-container">
+                <table id="cashflow-table">
+                    <thead>
+                        <tr>
+                            <th>Cash Flow Item</th>
+                            <th>Year 1</th>
+                            <th>Year 2</th>
+                            <th>Year 3</th>
+                            <th>Year 4</th>
+                            <th>Year 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Beginning Cash</td>
+                            <td id="cf-begin-y1">0</td>
+                            <td id="cf-begin-y2">0</td>
+                            <td id="cf-begin-y3">0</td>
+                            <td id="cf-begin-y4">0</td>
+                            <td id="cf-begin-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>(+) Cash from Operations</td>
+                            <td id="cf-ops-y1">0</td>
+                            <td id="cf-ops-y2">0</td>
+                            <td id="cf-ops-y3">0</td>
+                            <td id="cf-ops-y4">0</td>
+                            <td id="cf-ops-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>(+) Funding Raised</td>
+                            <td id="cf-funding-y1">0</td>
+                            <td id="cf-funding-y2">0</td>
+                            <td id="cf-funding-y3">0</td>
+                            <td id="cf-funding-y4">0</td>
+                            <td id="cf-funding-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>(-) Capital Expenditure</td>
+                            <td class="editable" contenteditable="true">500000</td>
+                            <td class="editable" contenteditable="true">1000000</td>
+                            <td class="editable" contenteditable="true">1500000</td>
+                            <td class="editable" contenteditable="true">2000000</td>
+                            <td class="editable" contenteditable="true">2500000</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Ending Cash</strong></td>
+                            <td id="cf-end-y1">0</td>
+                            <td id="cf-end-y2">0</td>
+                            <td id="cf-end-y3">0</td>
+                            <td id="cf-end-y4">0</td>
+                            <td id="cf-end-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly Burn Rate</td>
+                            <td class="calculated" id="cf-burn-y1">0</td>
+                            <td class="calculated" id="cf-burn-y2">0</td>
+                            <td class="calculated" id="cf-burn-y3">0</td>
+                            <td class="calculated" id="cf-burn-y4">0</td>
+                            <td class="calculated" id="cf-burn-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Runway (Months)</td>
+                            <td class="calculated" id="cf-runway-y1">0</td>
+                            <td class="calculated" id="cf-runway-y2">0</td>
+                            <td class="calculated" id="cf-runway-y3">0</td>
+                            <td class="calculated" id="cf-runway-y4">0</td>
+                            <td class="calculated" id="cf-runway-y5">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Key Metrics Tab -->
+        <div id="metrics" class="content-section">
+            <div class="section-header">
+                <h2>Key Investor Metrics</h2>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="ltv-cac-ratio">0</div>
+                    <div class="metric-label">LTV/CAC Ratio</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="payback-period">0</div>
+                    <div class="metric-label">Payback Period (Months)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="break-even">Never</div>
+                    <div class="metric-label">Break-even Timeline</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="roi">0%</div>
+                    <div class="metric-label">5-Year ROI</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Year 1</th>
+                            <th>Year 2</th>
+                            <th>Year 3</th>
+                            <th>Year 4</th>
+                            <th>Year 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Revenue per Employee</td>
+                            <td class="calculated" id="rev-emp-y1">0</td>
+                            <td class="calculated" id="rev-emp-y2">0</td>
+                            <td class="calculated" id="rev-emp-y3">0</td>
+                            <td class="calculated" id="rev-emp-y4">0</td>
+                            <td class="calculated" id="rev-emp-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Acquisition Cost</td>
+                            <td class="calculated" id="cac-y1">0</td>
+                            <td class="calculated" id="cac-y2">0</td>
+                            <td class="calculated" id="cac-y3">0</td>
+                            <td class="calculated" id="cac-y4">0</td>
+                            <td class="calculated" id="cac-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Customer Lifetime Value</td>
+                            <td class="calculated" id="ltv-y1">0</td>
+                            <td class="calculated" id="ltv-y2">0</td>
+                            <td class="calculated" id="ltv-y3">0</td>
+                            <td class="calculated" id="ltv-y4">0</td>
+                            <td class="calculated" id="ltv-y5">0</td>
+                        </tr>
+                        <tr>
+                            <td>Magic Number</td>
+                            <td class="calculated" id="magic-y1">0</td>
+                            <td class="calculated" id="magic-y2">0</td>
+                            <td class="calculated" id="magic-y3">0</td>
+                            <td class="calculated" id="magic-y4">0</td>
+                            <td class="calculated" id="magic-y5">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Scenarios Tab -->
+        <div id="scenarios" class="content-section">
+            <div class="section-header">
+                <h2>Scenario Analysis</h2>
+            </div>
+            
+            <div class="scenario-selector">
+                <button class="scenario-btn active" onclick="loadScenario('base')">Base Case</button>
+                <button class="scenario-btn" onclick="loadScenario('optimistic')">Optimistic (+50% growth)</button>
+                <button class="scenario-btn" onclick="loadScenario('pessimistic')">Pessimistic (-30% growth)</button>
+                <button class="scenario-btn" onclick="loadScenario('recession')">Recession Case</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Year 5 Revenue</th>
+                            <th>Year 5 Profit</th>
+                            <th>Break-even</th>
+                            <th>Cash Needed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base Case</td>
+                            <td id="scenario-base-rev">₹0</td>
+                            <td id="scenario-base-profit">₹0</td>
+                            <td id="scenario-base-breakeven">Month 0</td>
+                            <td id="scenario-base-cash">₹0</td>
+                        </tr>
+                        <tr>
+                            <td>Optimistic</td>
+                            <td id="scenario-opt-rev">₹0</td>
+                            <td id="scenario-opt-profit">₹0</td>
+                            <td id="scenario-opt-breakeven">Month 0</td>
+                            <td id="scenario-opt-cash">₹0</td>
+                        </tr>
+                        <tr>
+                            <td>Pessimistic</td>
+                            <td id="scenario-pess-rev">₹0</td>
+                            <td id="scenario-pess-profit">₹0</td>
+                            <td id="scenario-pess-breakeven">Month 0</td>
+                            <td id="scenario-pess-cash">₹0</td>
+                        </tr>
+                        <tr>
+                            <td>Recession</td>
+                            <td id="scenario-rec-rev">₹0</td>
+                            <td id="scenario-rec-profit">₹0</td>
+                            <td id="scenario-rec-breakeven">Month 0</td>
+                            <td id="scenario-rec-cash">₹0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="warning-box">
+                <strong>💡 Scenario Planning Tips:</strong>
+                <ul style="margin: 10px 0 0 20px;">
+                    <li>Always prepare for the pessimistic case</li>
+                    <li>Raise 18-24 months of runway based on base case</li>
+                    <li>Have contingency plans for each scenario</li>
+                    <li>Update scenarios quarterly based on actuals</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Financial model calculations
+        let modelData = {
+            revenue: {},
+            costs: {},
+            pnl: {},
+            cashflow: {},
+            metrics: {}
+        };
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function calculateAll() {
+            calculateRevenue();
+            calculateCosts();
+            calculatePnL();
+            calculateCashFlow();
+            calculateMetrics();
+            calculateScenarios();
+        }
+        
+        function calculateRevenue() {
+            const startingCustomers = parseFloat(document.getElementById('starting-customers').value) || 0;
+            const growthRate = parseFloat(document.getElementById('growth-rate').value) / 100 || 0;
+            const churnRate = parseFloat(document.getElementById('churn-rate').value) / 100 || 0;
+            const baseARPU = parseFloat(document.getElementById('arpu').value) || 0;
+            const priceIncrease = parseFloat(document.getElementById('price-increase').value) / 100 || 0;
+            
+            let customers = startingCustomers;
+            let totalRevenue5Y = 0;
+            
+            for (let year = 1; year <= 5; year++) {
+                const yearlyGrowth = Math.pow(1 + growthRate, 12) - 1;
+                const yearlyChurn = 1 - Math.pow(1 - churnRate, 12);
+                
+                const newCustomers = Math.round(customers * yearlyGrowth);
+                const churnedCustomers = Math.round(customers * yearlyChurn);
+                const endingCustomers = customers + newCustomers - churnedCustomers;
+                const avgCustomers = (customers + endingCustomers) / 2;
+                
+                const arpu = baseARPU * Math.pow(1 + priceIncrease, year - 1);
+                const revenue = Math.round(avgCustomers * arpu * 12);
+                
+                totalRevenue5Y += revenue;
+                
+                // Update table
+                document.getElementById(`rev-customers-y${year}`).textContent = Math.round(customers).toLocaleString('en-IN');
+                document.getElementById(`rev-new-y${year}`).textContent = newCustomers.toLocaleString('en-IN');
+                document.getElementById(`rev-churn-y${year}`).textContent = churnedCustomers.toLocaleString('en-IN');
+                document.getElementById(`rev-end-y${year}`).textContent = endingCustomers.toLocaleString('en-IN');
+                document.getElementById(`rev-arpu-y${year}`).textContent = '₹' + Math.round(arpu).toLocaleString('en-IN');
+                document.getElementById(`rev-total-y${year}`).textContent = '₹' + revenue.toLocaleString('en-IN');
+                
+                if (year > 1) {
+                    const prevRevenue = modelData.revenue[`year${year-1}`] || 0;
+                    const growth = prevRevenue > 0 ? ((revenue - prevRevenue) / prevRevenue * 100).toFixed(1) : 0;
+                    document.getElementById(`rev-growth-y${year}`).textContent = growth + '%';
+                }
+                
+                modelData.revenue[`year${year}`] = revenue;
+                customers = endingCustomers;
+            }
+            
+            // Update metrics
+            document.getElementById('total-revenue-5y').textContent = '₹' + (totalRevenue5Y / 10000000).toFixed(1) + ' Cr';
+            document.getElementById('year-5-arr').textContent = '₹' + (modelData.revenue.year5 / 10000000).toFixed(1) + ' Cr';
+            document.getElementById('total-customers').textContent = customers.toLocaleString('en-IN');
+            
+            // Calculate CAGR
+            const cagr = (Math.pow(modelData.revenue.year5 / modelData.revenue.year1, 1/4) - 1) * 100;
+            document.getElementById('cagr').textContent = cagr.toFixed(1) + '%';
+        }
+        
+        function calculateCosts() {
+            const cogsPercent = parseFloat(document.getElementById('cogs-percent').value) / 100 || 0;
+            const startingTeam = parseFloat(document.getElementById('team-size').value) || 0;
+            const avgSalary = parseFloat(document.getElementById('avg-salary').value) || 0;
+            const hiringRate = parseFloat(document.getElementById('hiring-rate').value) || 0;
+            const marketingPercent = parseFloat(document.getElementById('marketing-percent').value) / 100 || 0;
+            const officeCosts = parseFloat(document.getElementById('office-costs').value) || 0;
+            
+            let teamSize = startingTeam;
+            
+            for (let year = 1; year <= 5; year++) {
+                const revenue = modelData.revenue[`year${year}`] || 0;
+                
+                // Calculate costs
+                const cogs = Math.round(revenue * cogsPercent);
+                const salaries = Math.round(teamSize * avgSalary * 12 * (1 + (year - 1) * 0.1)); // 10% salary increase yearly
+                const marketing = Math.round(revenue * marketingPercent);
+                const office = Math.round(officeCosts * 12 * Math.pow(1.1, year - 1)); // 10% increase yearly
+                
+                // Get editable values
+                const tech = parseFloat(document.getElementById(`tech-y${year}`).textContent) || 0;
+                const legal = parseFloat(document.getElementById(`legal-y${year}`).textContent) || 0;
+                
+                const totalCosts = cogs + salaries + marketing + office + tech + legal;
+                
+                // Update table
+                document.getElementById(`cogs-y${year}`).textContent = '₹' + cogs.toLocaleString('en-IN');
+                document.getElementById(`salaries-y${year}`).textContent = '₹' + salaries.toLocaleString('en-IN');
+                document.getElementById(`marketing-y${year}`).textContent = '₹' + marketing.toLocaleString('en-IN');
+                document.getElementById(`office-y${year}`).textContent = '₹' + office.toLocaleString('en-IN');
+                document.getElementById(`total-costs-y${year}`).textContent = '₹' + totalCosts.toLocaleString('en-IN');
+                document.getElementById(`team-y${year}`).textContent = Math.round(teamSize);
+                
+                modelData.costs[`year${year}`] = {
+                    cogs: cogs,
+                    salaries: salaries,
+                    marketing: marketing,
+                    office: office,
+                    tech: tech,
+                    legal: legal,
+                    total: totalCosts,
+                    opex: salaries + marketing + office + tech + legal
+                };
+                
+                teamSize += hiringRate * 4; // 4 quarters per year
+            }
+        }
+        
+        function calculatePnL() {
+            const taxRate = parseFloat(document.getElementById('tax-rate').value) / 100 || 0;
+            
+            for (let year = 1; year <= 5; year++) {
+                const revenue = modelData.revenue[`year${year}`] || 0;
+                const costs = modelData.costs[`year${year}`] || {};
+                
+                const grossProfit = revenue - costs.cogs;
+                const grossMargin = revenue > 0 ? (grossProfit / revenue * 100) : 0;
+                
+                const ebitda = grossProfit - costs.opex;
+                const ebitdaMargin = revenue > 0 ? (ebitda / revenue * 100) : 0;
+                
+                const depreciation = 100000 * Math.pow(1.5, year - 1); // Increasing depreciation
+                const netBeforeTax = ebitda - depreciation;
+                const tax = netBeforeTax > 0 ? netBeforeTax * taxRate : 0;
+                const netIncome = netBeforeTax - tax;
+                
+                // Update table
+                document.getElementById(`pnl-revenue-y${year}`).textContent = '₹' + revenue.toLocaleString('en-IN');
+                document.getElementById(`pnl-cogs-y${year}`).textContent = '₹' + costs.cogs.toLocaleString('en-IN');
+                document.getElementById(`pnl-gross-y${year}`).textContent = '₹' + grossProfit.toLocaleString('en-IN');
+                document.getElementById(`pnl-margin-y${year}`).textContent = grossMargin.toFixed(1) + '%';
+                document.getElementById(`pnl-opex-y${year}`).textContent = '₹' + costs.opex.toLocaleString('en-IN');
+                document.getElementById(`pnl-ebitda-y${year}`).textContent = '₹' + ebitda.toLocaleString('en-IN');
+                document.getElementById(`pnl-ebitda-margin-y${year}`).textContent = ebitdaMargin.toFixed(1) + '%';
+                document.getElementById(`pnl-net-bt-y${year}`).textContent = '₹' + netBeforeTax.toLocaleString('en-IN');
+                document.getElementById(`pnl-tax-y${year}`).textContent = '₹' + Math.round(tax).toLocaleString('en-IN');
+                document.getElementById(`pnl-net-y${year}`).textContent = '₹' + Math.round(netIncome).toLocaleString('en-IN');
+                
+                // Color code based on profitability
+                const netCell = document.getElementById(`pnl-net-y${year}`);
+                netCell.style.color = netIncome >= 0 ? 'green' : 'red';
+                
+                modelData.pnl[`year${year}`] = {
+                    revenue: revenue,
+                    grossProfit: grossProfit,
+                    ebitda: ebitda,
+                    netIncome: netIncome
+                };
+            }
+        }
+        
+        function calculateCashFlow() {
+            const startingCash = parseFloat(document.getElementById('cash-balance').value) || 0;
+            const fundingAmount = parseFloat(document.getElementById('funding-amount').value) || 0;
+            const fundingMonth = parseFloat(document.getElementById('funding-month').value) || 0;
+            const fundingYear = Math.ceil(fundingMonth / 12);
+            
+            let cash = startingCash;
+            
+            for (let year = 1; year <= 5; year++) {
+                const beginningCash = cash;
+                const netIncome = modelData.pnl[`year${year}`]?.netIncome || 0;
+                const depreciation = 100000 * Math.pow(1.5, year - 1);
+                const cashFromOps = netIncome + depreciation; // Add back depreciation
+                
+                const funding = year === fundingYear ? fundingAmount : 0;
+                const capex = 500000 * Math.pow(2, (year - 1) / 2); // Exponential capex growth
+                
+                cash = beginningCash + cashFromOps + funding - capex;
+                
+                const monthlyBurn = -cashFromOps / 12;
+                const runway = monthlyBurn > 0 ? Math.round(cash / monthlyBurn) : 999;
+                
+                // Update table
+                document.getElementById(`cf-begin-y${year}`).textContent = '₹' + Math.round(beginningCash).toLocaleString('en-IN');
+                document.getElementById(`cf-ops-y${year}`).textContent = '₹' + Math.round(cashFromOps).toLocaleString('en-IN');
+                document.getElementById(`cf-funding-y${year}`).textContent = '₹' + funding.toLocaleString('en-IN');
+                document.getElementById(`cf-end-y${year}`).textContent = '₹' + Math.round(cash).toLocaleString('en-IN');
+                document.getElementById(`cf-burn-y${year}`).textContent = '₹' + Math.abs(Math.round(monthlyBurn)).toLocaleString('en-IN');
+                document.getElementById(`cf-runway-y${year}`).textContent = runway > 100 ? '∞' : runway;
+                
+                // Color code cash position
+                const cashCell = document.getElementById(`cf-end-y${year}`);
+                cashCell.style.color = cash >= 0 ? 'green' : 'red';
+                
+                // Show runway alert if needed
+                if (cash < 0 && year <= 3) {
+                    document.getElementById('runway-alert').style.display = 'block';
+                    document.getElementById('runway-month').textContent = (year - 1) * 12 + Math.round(beginningCash / Math.abs(monthlyBurn));
+                }
+            }
+        }
+        
+        function calculateMetrics() {
+            // Calculate key metrics
+            const marketingSpend = modelData.costs.year1?.marketing || 0;
+            const newCustomers = parseFloat(document.getElementById('rev-new-y1').textContent.replace(/,/g, '')) || 1;
+            const cac = Math.round(marketingSpend / newCustomers);
+            
+            const arpu = parseFloat(document.getElementById('arpu').value) || 0;
+            const churnRate = parseFloat(document.getElementById('churn-rate').value) / 100 || 0.01;
+            const ltv = Math.round(arpu / churnRate);
+            
+            const ltvCacRatio = (ltv / cac).toFixed(1);
+            const paybackPeriod = Math.round(cac / arpu);
+            
+            // Find break-even month
+            let breakEvenMonth = 'Never';
+            for (let year = 1; year <= 5; year++) {
+                if (modelData.pnl[`year${year}`]?.netIncome > 0) {
+                    breakEvenMonth = `Year ${year}`;
+                    break;
+                }
+            }
+            
+            // Calculate ROI
+            const totalInvestment = parseFloat(document.getElementById('funding-amount').value) || 1;
+            const year5Value = modelData.revenue.year5 * 10; // Simple 10x revenue valuation
+            const roi = ((year5Value - totalInvestment) / totalInvestment * 100).toFixed(0);
+            
+            // Update metric cards
+            document.getElementById('ltv-cac-ratio').textContent = ltvCacRatio + 'x';
+            document.getElementById('payback-period').textContent = paybackPeriod;
+            document.getElementById('break-even').textContent = breakEvenMonth;
+            document.getElementById('roi').textContent = roi + '%';
+            
+            // Update metrics table
+            for (let year = 1; year <= 5; year++) {
+                const revenue = modelData.revenue[`year${year}`] || 0;
+                const teamSize = parseFloat(document.getElementById(`team-y${year}`).textContent) || 1;
+                const revPerEmployee = Math.round(revenue / teamSize);
+                
+                document.getElementById(`rev-emp-y${year}`).textContent = '₹' + revPerEmployee.toLocaleString('en-IN');
+                document.getElementById(`cac-y${year}`).textContent = '₹' + Math.round(cac * Math.pow(1.1, year - 1)).toLocaleString('en-IN');
+                document.getElementById(`ltv-y${year}`).textContent = '₹' + Math.round(ltv * Math.pow(1.1, year - 1)).toLocaleString('en-IN');
+                
+                // Magic Number = (Current Quarter ARR - Previous Quarter ARR) / Previous Quarter Sales & Marketing Spend
+                const magicNumber = year > 1 ? 
+                    ((modelData.revenue[`year${year}`] - modelData.revenue[`year${year-1}`]) / modelData.costs[`year${year-1}`]?.marketing).toFixed(2) : 
+                    'N/A';
+                document.getElementById(`magic-y${year}`).textContent = magicNumber;
+            }
+        }
+        
+        function calculateScenarios() {
+            // Store base case
+            const baseGrowth = parseFloat(document.getElementById('growth-rate').value);
+            
+            // Calculate scenarios
+            const scenarios = [
+                { name: 'base', growth: baseGrowth },
+                { name: 'opt', growth: baseGrowth * 1.5 },
+                { name: 'pess', growth: baseGrowth * 0.7 },
+                { name: 'rec', growth: baseGrowth * 0.3 }
+            ];
+            
+            scenarios.forEach(scenario => {
+                // Temporarily change growth rate
+                document.getElementById('growth-rate').value = scenario.growth;
+                calculateRevenue();
+                calculatePnL();
+                
+                // Update scenario table
+                document.getElementById(`scenario-${scenario.name}-rev`).textContent = 
+                    '₹' + (modelData.revenue.year5 / 10000000).toFixed(1) + ' Cr';
+                document.getElementById(`scenario-${scenario.name}-profit`).textContent = 
+                    '₹' + (modelData.pnl.year5?.netIncome / 10000000).toFixed(1) + ' Cr';
+                
+                // Find break-even
+                let breakeven = 'Never';
+                for (let year = 1; year <= 5; year++) {
+                    if (modelData.pnl[`year${year}`]?.netIncome > 0) {
+                        breakeven = `Month ${year * 12}`;
+                        break;
+                    }
+                }
+                document.getElementById(`scenario-${scenario.name}-breakeven`).textContent = breakeven;
+                
+                // Calculate cash needed
+                let maxCashNeeded = 0;
+                let cumulativeCash = parseFloat(document.getElementById('cash-balance').value) || 0;
+                for (let year = 1; year <= 5; year++) {
+                    cumulativeCash += modelData.pnl[`year${year}`]?.netIncome || 0;
+                    if (cumulativeCash < maxCashNeeded) {
+                        maxCashNeeded = cumulativeCash;
+                    }
+                }
+                document.getElementById(`scenario-${scenario.name}-cash`).textContent = 
+                    '₹' + (Math.abs(maxCashNeeded) / 10000000).toFixed(1) + ' Cr';
+            });
+            
+            // Restore base case
+            document.getElementById('growth-rate').value = baseGrowth;
+            calculateAll();
+        }
+        
+        function loadScenario(scenarioType) {
+            // Update scenario buttons
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Adjust inputs based on scenario
+            const baseGrowth = 15;
+            const scenarios = {
+                'base': { growth: baseGrowth, costs: 1 },
+                'optimistic': { growth: baseGrowth * 1.5, costs: 0.9 },
+                'pessimistic': { growth: baseGrowth * 0.7, costs: 1.1 },
+                'recession': { growth: baseGrowth * 0.3, costs: 0.7 }
+            };
+            
+            const scenario = scenarios[scenarioType];
+            document.getElementById('growth-rate').value = scenario.growth;
+            
+            // Recalculate
+            calculateAll();
+        }
+        
+        function exportToExcel() {
+            // Create CSV content
+            let csv = 'Financial Model Export\n\n';
+            
+            // Add revenue data
+            csv += 'Revenue Projections\n';
+            csv += 'Year,Customers,Revenue,Growth\n';
+            for (let year = 1; year <= 5; year++) {
+                csv += `${year},${document.getElementById(`rev-end-y${year}`).textContent},${document.getElementById(`rev-total-y${year}`).textContent},${document.getElementById(`rev-growth-y${year}`).textContent || '-'}\n`;
+            }
+            
+            csv += '\nP&L Statement\n';
+            csv += 'Year,Revenue,Gross Profit,EBITDA,Net Income\n';
+            for (let year = 1; year <= 5; year++) {
+                csv += `${year},${document.getElementById(`pnl-revenue-y${year}`).textContent},${document.getElementById(`pnl-gross-y${year}`).textContent},${document.getElementById(`pnl-ebitda-y${year}`).textContent},${document.getElementById(`pnl-net-y${year}`).textContent}\n`;
+            }
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'financial-model.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            calculateAll();
+        };
+        
+        // Auto-save to localStorage
+        setInterval(() => {
+            const inputs = {};
+            document.querySelectorAll('input, select').forEach(input => {
+                inputs[input.id] = input.value;
+            });
+            localStorage.setItem('financialModel', JSON.stringify(inputs));
+        }, 10000);
+    </script>
+</body>
+</html>

@@ -102,9 +102,41 @@
     @apply transition-colors duration-200;
   }
   
-  /* Focus states */
+  /* Enhanced Focus states for accessibility */
   :focus-visible {
     @apply outline-none ring-2 ring-black ring-offset-2 ring-offset-white;
+  }
+  
+  /* Ensure focus is visible on all interactive elements */
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply ring-2 ring-black ring-offset-2;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .btn-primary {
+      @apply border-4 border-black;
+    }
+    
+    .card-hover {
+      @apply border-2 border-gray-900;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
   
   /* Selection */
@@ -205,6 +237,31 @@
   /* Text balance */
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Safe area utilities for modern mobile devices */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .pt-safe {
+    padding-top: max(1rem, env(safe-area-inset-top));
   }
   
   /* Animations */

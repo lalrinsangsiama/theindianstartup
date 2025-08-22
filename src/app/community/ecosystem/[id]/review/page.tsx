@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -105,7 +106,7 @@ export default function WriteReviewPage() {
       
       setListing(mockListing);
     } catch (error) {
-      console.error('Error fetching listing info:', error);
+      logger.error('Error fetching listing info:', error);
       setError('Failed to load listing information');
     } finally {
       setLoading(false);
@@ -174,7 +175,7 @@ export default function WriteReviewPage() {
       }, 2000);
 
     } catch (err) {
-      console.error('Error submitting review:', err);
+      logger.error('Error submitting review:', err);
       setError(err instanceof Error ? err.message : 'Failed to submit review');
     } finally {
       setSubmitting(false);
@@ -252,7 +253,7 @@ export default function WriteReviewPage() {
                   Listing Not Found
                 </Heading>
                 <Text color="muted" className="mb-6">
-                  The listing you want to review doesn&apos;t exist or has been removed.
+                  The listing you want to review doesn't exist or has been removed.
                 </Text>
                 <Button variant="primary" onClick={() => router.push('/community/ecosystem')}>
                   Back to Directory

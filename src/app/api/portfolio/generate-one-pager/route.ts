@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ summary });
   } catch (error) {
-    console.error('Error generating one-pager:', error);
+    logger.error('Error generating one-pager:', error);
     return NextResponse.json(
       { error: 'Failed to generate one-pager' },
       { status: 500 }

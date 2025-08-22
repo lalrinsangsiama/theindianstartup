@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P6 Customer Acquisition Calculator | The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 180px;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #1e3c72;
+            border-bottom: 3px solid #1e3c72;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            color: #1e3c72;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+        }
+
+        .input-group span {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .result-card h3 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .result-card p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .metric-card h3 {
+            color: #1e3c72;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .metric-card p {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .strategy-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .strategy-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .strategy-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .strategy-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+        }
+
+        .strategy-card li:last-child {
+            border-bottom: none;
+        }
+
+        .strategy-card li::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .benchmark-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .benchmark-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .benchmark-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .benchmark-item h4 {
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+
+        .benchmark-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #d1edff;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .export-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .benchmark-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Customer Acquisition Calculator</h1>
+            <p>Advanced CAC, LTV, and ROI calculations for Indian startups</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('cac-calculator')">💰 CAC Calculator</button>
+            <button class="nav-tab" onclick="showTab('ltv-calculator')">📈 LTV Calculator</button>
+            <button class="nav-tab" onclick="showTab('channel-analysis')">📊 Channel Analysis</button>
+            <button class="nav-tab" onclick="showTab('optimization')">🚀 Optimization</button>
+            <button class="nav-tab" onclick="showTab('benchmarks')">📋 Benchmarks</button>
+        </div>
+
+        <!-- CAC Calculator Tab -->
+        <div id="cac-calculator" class="tab-content active">
+            <div class="section-header">
+                <h2>Customer Acquisition Cost Calculator</h2>
+                <p>Calculate your true cost of acquiring customers across all channels</p>
+            </div>
+
+            <div class="calculator-grid">
+                <div class="input-section">
+                    <h3 style="margin-bottom: 20px; color: #1e3c72;">Marketing Expenses (Monthly)</h3>
+                    
+                    <div class="form-group">
+                        <label>Digital Advertising (Google, Facebook, LinkedIn)</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="digitalAds" placeholder="50000" oninput="calculateCAC()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Content Marketing & SEO</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="contentMarketing" placeholder="25000" oninput="calculateCAC()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sales Team Salaries</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="salesSalaries" placeholder="150000" oninput="calculateCAC()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Events & Conferences</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="events" placeholder="20000" oninput="calculateCAC()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tools & Software</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="tools" placeholder="15000" oninput="calculateCAC()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Other Marketing Expenses</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="otherExpenses" placeholder="10000" oninput="calculateCAC()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Customers Acquired (Monthly)</label>
+                        <input type="number" id="newCustomers" placeholder="25" oninput="calculateCAC()">
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h3 style="margin-bottom: 20px;">Acquisition Metrics</h3>
+                    
+                    <div class="result-card">
+                        <h3 id="totalCAC">₹10,800</h3>
+                        <p>Customer Acquisition Cost</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3 id="totalSpend">₹2,70,000</h3>
+                        <p>Total Monthly Spend</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3 id="customers">25</h3>
+                        <p>Customers Acquired</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3 id="efficiency">4.2x</h3>
+                        <p>Cost Efficiency Ratio</p>
+                    </div>
+
+                    <div id="cacStatus" class="success">
+                        <strong>✅ Healthy CAC:</strong> Your acquisition cost is within industry benchmarks for Indian B2B SaaS.
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>₹8,500</h3>
+                    <p><strong>Industry Benchmark</strong><br>Average CAC for Indian SaaS</p>
+                </div>
+                <div class="metric-card">
+                    <h3>3:1</h3>
+                    <p><strong>LTV:CAC Ratio</strong><br>Recommended minimum ratio</p>
+                </div>
+                <div class="metric-card">
+                    <h3>12 months</h3>
+                    <p><strong>Payback Period</strong><br>Time to recover CAC</p>
+                </div>
+                <div class="metric-card">
+                    <h3>25%</h3>
+                    <p><strong>CAC as % of Revenue</strong><br>Sustainable acquisition rate</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- LTV Calculator Tab -->
+        <div id="ltv-calculator" class="tab-content">
+            <div class="section-header">
+                <h2>Customer Lifetime Value Calculator</h2>
+                <p>Calculate the total value a customer brings to your business</p>
+            </div>
+
+            <div class="calculator-grid">
+                <div class="input-section">
+                    <h3 style="margin-bottom: 20px; color: #1e3c72;">Customer Value Metrics</h3>
+                    
+                    <div class="form-group">
+                        <label>Average Monthly Revenue per Customer</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="monthlyRevenue" placeholder="15000" oninput="calculateLTV()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Average Customer Lifespan (Months)</label>
+                        <input type="number" id="customerLifespan" placeholder="24" oninput="calculateLTV()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Monthly Churn Rate (%)</label>
+                        <input type="number" id="churnRate" placeholder="5" step="0.1" oninput="calculateLTV()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gross Margin (%)</label>
+                        <input type="number" id="grossMargin" placeholder="75" oninput="calculateLTV()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upsell/Cross-sell Revenue (Monthly)</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="upsellRevenue" placeholder="3000" oninput="calculateLTV()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Customer Success Costs (Monthly)</label>
+                        <div class="input-group">
+                            <span>₹</span>
+                            <input type="number" id="successCosts" placeholder="2000" oninput="calculateLTV()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h3 style="margin-bottom: 20px;">Lifetime Value Results</h3>
+                    
+                    <div class="result-card">
+                        <h3 id="totalLTV">₹3,24,000</h3>
+                        <p>Customer Lifetime Value</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3 id="netLTV">₹2,76,000</h3>
+                        <p>Net LTV (After Success Costs)</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3 id="ltvCacRatio">30:1</h3>
+                        <p>LTV:CAC Ratio</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3 id="paybackPeriod">8.6</h3>
+                        <p>Payback Period (Months)</p>
+                    </div>
+
+                    <div id="ltvStatus" class="success">
+                        <strong>✅ Excellent LTV:</strong> Your customer lifetime value indicates a highly sustainable business model.
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-placeholder">
+                LTV Breakdown Chart: Base Revenue + Upsells - Success Costs Over Time
+            </div>
+        </div>
+
+        <!-- Channel Analysis Tab -->
+        <div id="channel-analysis" class="tab-content">
+            <div class="section-header">
+                <h2>Marketing Channel Analysis</h2>
+                <p>Compare performance across different acquisition channels</p>
+            </div>
+
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <h3>🎯 Google Ads Performance</h3>
+                    <ul>
+                        <li>Monthly Spend: ₹25,000</li>
+                        <li>Customers Acquired: 8</li>
+                        <li>CAC: ₹3,125</li>
+                        <li>Conversion Rate: 2.4%</li>
+                        <li>ROI: 485%</li>
+                    </ul>
+                    <button class="btn" onclick="optimizeChannel('google')">Optimize Channel</button>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>📱 Social Media (Facebook/LinkedIn)</h3>
+                    <ul>
+                        <li>Monthly Spend: ₹20,000</li>
+                        <li>Customers Acquired: 5</li>
+                        <li>CAC: ₹4,000</li>
+                        <li>Conversion Rate: 1.8%</li>
+                        <li>ROI: 375%</li>
+                    </ul>
+                    <button class="btn" onclick="optimizeChannel('social')">Optimize Channel</button>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>📧 Email Marketing</h3>
+                    <ul>
+                        <li>Monthly Spend: ₹5,000</li>
+                        <li>Customers Acquired: 6</li>
+                        <li>CAC: ₹833</li>
+                        <li>Conversion Rate: 4.2%</li>
+                        <li>ROI: 1,800%</li>
+                    </ul>
+                    <button class="btn" onclick="optimizeChannel('email')">Optimize Channel</button>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>🤝 Referral Program</h3>
+                    <ul>
+                        <li>Monthly Spend: ₹8,000</li>
+                        <li>Customers Acquired: 4</li>
+                        <li>CAC: ₹2,000</li>
+                        <li>Conversion Rate: 15.6%</li>
+                        <li>ROI: 750%</li>
+                    </ul>
+                    <button class="btn" onclick="optimizeChannel('referral')">Optimize Channel</button>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>📝 Content Marketing</h3>
+                    <ul>
+                        <li>Monthly Spend: ₹15,000</li>
+                        <li>Customers Acquired: 3</li>
+                        <li>CAC: ₹5,000</li>
+                        <li>Conversion Rate: 0.8%</li>
+                        <li>ROI: 300%</li>
+                    </ul>
+                    <button class="btn" onclick="optimizeChannel('content')">Optimize Channel</button>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>🎪 Events & Webinars</h3>
+                    <ul>
+                        <li>Monthly Spend: ₹12,000</li>
+                        <li>Customers Acquired: 2</li>
+                        <li>CAC: ₹6,000</li>
+                        <li>Conversion Rate: 3.5%</li>
+                        <li>ROI: 250%</li>
+                    </ul>
+                    <button class="btn" onclick="optimizeChannel('events')">Optimize Channel</button>
+                </div>
+            </div>
+
+            <div class="chart-placeholder">
+                Channel Comparison Chart: CAC vs Volume vs ROI by Channel
+            </div>
+        </div>
+
+        <!-- Optimization Tab -->
+        <div id="optimization" class="tab-content">
+            <div class="section-header">
+                <h2>Acquisition Optimization Strategies</h2>
+                <p>AI-powered recommendations to improve your customer acquisition</p>
+            </div>
+
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <h3>🎯 High-Impact Optimizations</h3>
+                    <ul>
+                        <li>Increase email marketing budget by 200%</li>
+                        <li>Optimize Google Ads landing pages</li>
+                        <li>Launch customer referral incentives</li>
+                        <li>A/B test social media creatives</li>
+                        <li>Implement retargeting campaigns</li>
+                    </ul>
+                    <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 8px;">
+                        <strong>Projected Impact:</strong> 35% CAC reduction, 60% volume increase
+                    </div>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>💰 Budget Reallocation</h3>
+                    <ul>
+                        <li>Email Marketing: +₹10,000 (300% ROI)</li>
+                        <li>Google Ads: +₹5,000 (485% ROI)</li>
+                        <li>Referral Program: +₹8,000 (750% ROI)</li>
+                        <li>Content Marketing: -₹5,000 (300% ROI)</li>
+                        <li>Events: -₹8,000 (250% ROI)</li>
+                    </ul>
+                    <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 8px;">
+                        <strong>Expected Outcome:</strong> +15 customers, -₹2,000 CAC
+                    </div>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>📈 Growth Experiments</h3>
+                    <ul>
+                        <li>WhatsApp Business API integration</li>
+                        <li>LinkedIn outreach automation</li>
+                        <li>Partnership channel development</li>
+                        <li>SEO content cluster strategy</li>
+                        <li>Video testimonial campaigns</li>
+                    </ul>
+                    <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px;">
+                        <strong>Timeline:</strong> 3-6 months to see significant results
+                    </div>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>🔍 Conversion Optimization</h3>
+                    <ul>
+                        <li>Landing page speed optimization</li>
+                        <li>Mobile-first design improvements</li>
+                        <li>Checkout process simplification</li>
+                        <li>Trust signals and social proof</li>
+                        <li>Personalized onboarding flows</li>
+                    </ul>
+                    <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 8px;">
+                        <strong>Quick Wins:</strong> 20-40% conversion rate improvement
+                    </div>
+                </div>
+            </div>
+
+            <div class="benchmark-section">
+                <h3 style="margin-bottom: 20px; color: #1e3c72; text-align: center;">Optimization Targets</h3>
+                <div class="benchmark-grid">
+                    <div class="benchmark-item">
+                        <h4>Target CAC</h4>
+                        <div class="benchmark-value">₹7,500</div>
+                        <p>30% reduction</p>
+                    </div>
+                    <div class="benchmark-item">
+                        <h4>Target Volume</h4>
+                        <div class="benchmark-value">40</div>
+                        <p>customers/month</p>
+                    </div>
+                    <div class="benchmark-item">
+                        <h4>Target LTV:CAC</h4>
+                        <div class="benchmark-value">43:1</div>
+                        <p>improved ratio</p>
+                    </div>
+                    <div class="benchmark-item">
+                        <h4>Target ROI</h4>
+                        <div class="benchmark-value">650%</div>
+                        <p>blended average</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benchmarks Tab -->
+        <div id="benchmarks" class="tab-content">
+            <div class="section-header">
+                <h2>Industry Benchmarks</h2>
+                <p>Compare your metrics against Indian startup standards</p>
+            </div>
+
+            <div class="benchmark-section">
+                <h3 style="margin-bottom: 20px; color: #1e3c72; text-align: center;">B2B SaaS Benchmarks (India)</h3>
+                <div class="benchmark-grid">
+                    <div class="benchmark-item">
+                        <h4>Average CAC</h4>
+                        <div class="benchmark-value">₹8,500</div>
+                        <p>Your CAC: ₹10,800</p>
+                    </div>
+                    <div class="benchmark-item">
+                        <h4>LTV:CAC Ratio</h4>
+                        <div class="benchmark-value">3:1</div>
+                        <p>Your Ratio: 30:1</p>
+                    </div>
+                    <div class="benchmark-item">
+                        <h4>Payback Period</h4>
+                        <div class="benchmark-value">12 months</div>
+                        <p>Your Period: 8.6 months</p>
+                    </div>
+                    <div class="benchmark-item">
+                        <h4>Churn Rate</h4>
+                        <div class="benchmark-value">5-8%</div>
+                        <p>Your Rate: 5%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <h3>🏆 Top-Performing Channels (India)</h3>
+                    <ul>
+                        <li>Email Marketing: ₹500-₹2,000 CAC</li>
+                        <li>Referral Programs: ₹1,500-₹3,500 CAC</li>
+                        <li>Google Search Ads: ₹2,500-₹5,000 CAC</li>
+                        <li>LinkedIn Ads: ₹3,000-₹6,000 CAC</li>
+                        <li>Content Marketing: ₹4,000-₹8,000 CAC</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>📊 Industry Conversion Rates</h3>
+                    <ul>
+                        <li>Email Campaigns: 3-8%</li>
+                        <li>Google Search Ads: 2-5%</li>
+                        <li>LinkedIn Ads: 1-3%</li>
+                        <li>Facebook Ads: 1-2%</li>
+                        <li>Content Marketing: 0.5-2%</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>💼 Enterprise vs SMB</h3>
+                    <ul>
+                        <li>Enterprise CAC: ₹15K-₹50K</li>
+                        <li>SMB CAC: ₹3K-₹15K</li>
+                        <li>Enterprise LTV: ₹5L-₹25L</li>
+                        <li>SMB LTV: ₹50K-₹5L</li>
+                        <li>Sales Cycle: 3-12 months</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>🎯 Growth Stage Metrics</h3>
+                    <ul>
+                        <li>Early Stage: Focus on LTV:CAC > 3:1</li>
+                        <li>Growth Stage: Scale channels with CAC < 25% LTV</li>
+                        <li>Mature Stage: Optimize for 15-20% CAC of revenue</li>
+                        <li>Unit Economics: Achieve profitability within 12 months</li>
+                        <li>Blended CAC: Stay below industry average</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <h3 style="margin-bottom: 15px; color: #1e3c72;">Export Analysis & Reports</h3>
+            <p style="margin-bottom: 20px; color: #6c757d;">Generate detailed reports and share insights with your team</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn" onclick="exportCAC()">📊 Export CAC Analysis</button>
+                <button class="btn" onclick="exportLTV()">📈 Export LTV Report</button>
+                <button class="btn" onclick="exportOptimization()">🚀 Export Optimization Plan</button>
+                <button class="btn btn-secondary" onclick="saveCalculations()">💾 Save Calculations</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all nav tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+        }
+
+        // CAC Calculation
+        function calculateCAC() {
+            const digitalAds = parseFloat(document.getElementById('digitalAds').value) || 0;
+            const contentMarketing = parseFloat(document.getElementById('contentMarketing').value) || 0;
+            const salesSalaries = parseFloat(document.getElementById('salesSalaries').value) || 0;
+            const events = parseFloat(document.getElementById('events').value) || 0;
+            const tools = parseFloat(document.getElementById('tools').value) || 0;
+            const otherExpenses = parseFloat(document.getElementById('otherExpenses').value) || 0;
+            const newCustomers = parseFloat(document.getElementById('newCustomers').value) || 1;
+
+            const totalSpend = digitalAds + contentMarketing + salesSalaries + events + tools + otherExpenses;
+            const cac = totalSpend / newCustomers;
+            const efficiency = totalSpend > 0 ? (newCustomers * 15000) / totalSpend : 0; // Assuming ₹15K average revenue per customer
+
+            // Update display
+            document.getElementById('totalCAC').textContent = `₹${Math.round(cac).toLocaleString('en-IN')}`;
+            document.getElementById('totalSpend').textContent = `₹${Math.round(totalSpend).toLocaleString('en-IN')}`;
+            document.getElementById('customers').textContent = newCustomers;
+            document.getElementById('efficiency').textContent = `${efficiency.toFixed(1)}x`;
+
+            // Update status
+            const statusDiv = document.getElementById('cacStatus');
+            if (cac < 8500) {
+                statusDiv.className = 'success';
+                statusDiv.innerHTML = '<strong>✅ Excellent CAC:</strong> Your acquisition cost is below industry benchmark. Great efficiency!';
+            } else if (cac < 12000) {
+                statusDiv.className = 'warning';
+                statusDiv.innerHTML = '<strong>⚠️ Moderate CAC:</strong> Your acquisition cost is above benchmark but manageable. Consider optimization.';
+            } else {
+                statusDiv.className = 'warning';
+                statusDiv.innerHTML = '<strong>⚠️ High CAC:</strong> Your acquisition cost is significantly above benchmark. Immediate optimization needed.';
+            }
+        }
+
+        // LTV Calculation
+        function calculateLTV() {
+            const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
+            const customerLifespan = parseFloat(document.getElementById('customerLifespan').value) || 0;
+            const churnRate = parseFloat(document.getElementById('churnRate').value) || 0;
+            const grossMargin = parseFloat(document.getElementById('grossMargin').value) || 0;
+            const upsellRevenue = parseFloat(document.getElementById('upsellRevenue').value) || 0;
+            const successCosts = parseFloat(document.getElementById('successCosts').value) || 0;
+
+            // Calculate LTV using multiple methods
+            const baseLTV = (monthlyRevenue + upsellRevenue) * customerLifespan * (grossMargin / 100);
+            const churnBasedLifespan = churnRate > 0 ? 1 / (churnRate / 100) : customerLifespan;
+            const churnBasedLTV = (monthlyRevenue + upsellRevenue) * churnBasedLifespan * (grossMargin / 100);
+            
+            // Use the more conservative estimate
+            const ltv = Math.min(baseLTV, churnBasedLTV);
+            const netLTV = ltv - (successCosts * customerLifespan);
+            
+            // Calculate other metrics
+            const currentCAC = 10800; // From CAC calculation
+            const ltvCacRatio = currentCAC > 0 ? ltv / currentCAC : 0;
+            const paybackPeriod = monthlyRevenue > 0 ? currentCAC / ((monthlyRevenue + upsellRevenue) * (grossMargin / 100)) : 0;
+
+            // Update display
+            document.getElementById('totalLTV').textContent = `₹${Math.round(ltv).toLocaleString('en-IN')}`;
+            document.getElementById('netLTV').textContent = `₹${Math.round(netLTV).toLocaleString('en-IN')}`;
+            document.getElementById('ltvCacRatio').textContent = `${Math.round(ltvCacRatio)}:1`;
+            document.getElementById('paybackPeriod').textContent = `${paybackPeriod.toFixed(1)}`;
+
+            // Update status
+            const statusDiv = document.getElementById('ltvStatus');
+            if (ltvCacRatio >= 3) {
+                statusDiv.className = 'success';
+                statusDiv.innerHTML = '<strong>✅ Excellent LTV:</strong> Your customer lifetime value indicates a highly sustainable business model.';
+            } else if (ltvCacRatio >= 2) {
+                statusDiv.className = 'warning';
+                statusDiv.innerHTML = '<strong>⚠️ Moderate LTV:</strong> Your LTV:CAC ratio is acceptable but could be improved for better unit economics.';
+            } else {
+                statusDiv.className = 'warning';
+                statusDiv.innerHTML = '<strong>⚠️ Low LTV:</strong> Your LTV:CAC ratio is below recommended levels. Focus on retention and upselling.';
+            }
+        }
+
+        // Channel optimization functions
+        function optimizeChannel(channel) {
+            const optimizations = {
+                google: '🎯 Google Ads Optimization:\n\n• Add negative keywords to reduce irrelevant clicks\n• Create separate campaigns for high-intent keywords\n• Implement conversion tracking and optimize for CPA\n• Test responsive search ads with 15 headlines\n• Use audience targeting for remarketing',
+                social: '📱 Social Media Optimization:\n\n• Create lookalike audiences based on best customers\n• Test video content vs static images\n• Implement lead magnets for email capture\n• Use LinkedIn Sales Navigator for B2B targeting\n• A/B test posting times and frequency',
+                email: '📧 Email Marketing Optimization:\n\n• Segment lists based on engagement levels\n• Implement automated drip campaigns\n• Personalize subject lines with company names\n• Add social proof and case studies\n• Test send times for your audience',
+                referral: '🤝 Referral Program Optimization:\n\n• Increase referral rewards for both parties\n• Create tier-based incentives for multiple referrals\n• Automate referral tracking and payouts\n• Add gamification elements and leaderboards\n• Send referral reminders to happy customers',
+                content: '📝 Content Marketing Optimization:\n\n• Focus on high-intent keywords with commercial value\n• Create comparison and "vs" articles\n• Build comprehensive resource hubs\n• Implement content upgrades and lead magnets\n• Optimize for featured snippets',
+                events: '🎪 Events Optimization:\n\n• Partner with other companies for co-hosted events\n• Create virtual events to reduce costs\n• Focus on niche, industry-specific gatherings\n• Implement pre-event nurturing sequences\n• Follow up within 24 hours post-event'
+            };
+
+            alert(optimizations[channel]);
+        }
+
+        // Export functions
+        function exportCAC() {
+            const data = {
+                totalCAC: document.getElementById('totalCAC').textContent,
+                totalSpend: document.getElementById('totalSpend').textContent,
+                customers: document.getElementById('customers').textContent,
+                efficiency: document.getElementById('efficiency').textContent,
+                timestamp: new Date().toISOString()
+            };
+
+            const csvContent = Object.entries(data).map(([key, value]) => `${key},${value}`).join('\n');
+            downloadCSV(csvContent, 'cac_analysis.csv');
+        }
+
+        function exportLTV() {
+            const data = {
+                totalLTV: document.getElementById('totalLTV').textContent,
+                netLTV: document.getElementById('netLTV').textContent,
+                ltvCacRatio: document.getElementById('ltvCacRatio').textContent,
+                paybackPeriod: document.getElementById('paybackPeriod').textContent,
+                timestamp: new Date().toISOString()
+            };
+
+            const csvContent = Object.entries(data).map(([key, value]) => `${key},${value}`).join('\n');
+            downloadCSV(csvContent, 'ltv_analysis.csv');
+        }
+
+        function exportOptimization() {
+            alert('📊 Optimization Report Generated!\n\nReport includes:\n• Channel performance analysis\n• Budget reallocation recommendations\n• Conversion optimization strategies\n• 90-day action plan with priorities\n\nDownloading comprehensive report...');
+        }
+
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', filename);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function saveCalculations() {
+            const data = {
+                cac: {
+                    digitalAds: document.getElementById('digitalAds').value,
+                    contentMarketing: document.getElementById('contentMarketing').value,
+                    salesSalaries: document.getElementById('salesSalaries').value,
+                    events: document.getElementById('events').value,
+                    tools: document.getElementById('tools').value,
+                    otherExpenses: document.getElementById('otherExpenses').value,
+                    newCustomers: document.getElementById('newCustomers').value
+                },
+                ltv: {
+                    monthlyRevenue: document.getElementById('monthlyRevenue').value,
+                    customerLifespan: document.getElementById('customerLifespan').value,
+                    churnRate: document.getElementById('churnRate').value,
+                    grossMargin: document.getElementById('grossMargin').value,
+                    upsellRevenue: document.getElementById('upsellRevenue').value,
+                    successCosts: document.getElementById('successCosts').value
+                }
+            };
+
+            localStorage.setItem('cacLtvCalculations', JSON.stringify(data));
+            alert('💾 Calculations saved successfully to local storage!');
+        }
+
+        // Load saved data
+        function loadSavedData() {
+            const savedData = localStorage.getItem('cacLtvCalculations');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Load CAC data
+                if (data.cac) {
+                    Object.entries(data.cac).forEach(([key, value]) => {
+                        const element = document.getElementById(key);
+                        if (element) element.value = value;
+                    });
+                }
+                
+                // Load LTV data
+                if (data.ltv) {
+                    Object.entries(data.ltv).forEach(([key, value]) => {
+                        const element = document.getElementById(key);
+                        if (element) element.value = value;
+                    });
+                }
+
+                // Recalculate with loaded data
+                calculateCAC();
+                calculateLTV();
+            }
+        }
+
+        // Initialize with default values and calculations
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+            
+            // If no saved data, set default values
+            if (!localStorage.getItem('cacLtvCalculations')) {
+                document.getElementById('digitalAds').value = '50000';
+                document.getElementById('contentMarketing').value = '25000';
+                document.getElementById('salesSalaries').value = '150000';
+                document.getElementById('events').value = '20000';
+                document.getElementById('tools').value = '15000';
+                document.getElementById('otherExpenses').value = '10000';
+                document.getElementById('newCustomers').value = '25';
+                
+                document.getElementById('monthlyRevenue').value = '15000';
+                document.getElementById('customerLifespan').value = '24';
+                document.getElementById('churnRate').value = '5';
+                document.getElementById('grossMargin').value = '75';
+                document.getElementById('upsellRevenue').value = '3000';
+                document.getElementById('successCosts').value = '2000';
+            }
+            
+            calculateCAC();
+            calculateLTV();
+        });
+
+        // Auto-save every 30 seconds
+        setInterval(saveCalculations, 30000);
+    </script>
+</body>
+</html>

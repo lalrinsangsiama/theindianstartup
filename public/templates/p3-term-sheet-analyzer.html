@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Term Sheet Analyzer & Negotiation Tool - P3 Funding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8fafc;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e53e3e 0%, #dd6b20 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .analyzer-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .controls-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .main-analyzer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .analyzer-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: #e53e3e;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .term-analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .term-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #e53e3e;
+            position: relative;
+        }
+        
+        .term-card.good {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        
+        .term-card.caution {
+            border-left-color: #d69e2e;
+            background: #fffdf7;
+        }
+        
+        .term-card.danger {
+            border-left-color: #e53e3e;
+            background: #fffaf7;
+        }
+        
+        .term-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .term-value {
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .term-impact {
+            font-size: 14px;
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+        
+        .term-recommendation {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            border-left: 3px solid;
+        }
+        
+        .term-recommendation.good {
+            border-left-color: #38a169;
+            color: #38a169;
+        }
+        
+        .term-recommendation.caution {
+            border-left-color: #d69e2e;
+            color: #d69e2e;
+        }
+        
+        .term-recommendation.danger {
+            border-left-color: #e53e3e;
+            color: #e53e3e;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th {
+            background: #f7fafc;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .score-excellent {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .score-good {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+        
+        .score-fair {
+            background: #fef5e7;
+            color: #744210;
+        }
+        
+        .score-poor {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-group h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .form-row {
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .form-row input,
+        .form-row select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #e53e3e;
+        }
+        
+        .negotiation-tips {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .negotiation-tips h4 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .negotiation-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .negotiation-tips li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .negotiation-tips li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #e53e3e 0%, #dd6b20 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #c53030;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e53e3e;
+            color: #e53e3e;
+        }
+        
+        .waterfall-analysis {
+            margin: 30px 0;
+        }
+        
+        .waterfall-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .waterfall-table th {
+            background: #2d3748;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .waterfall-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .waterfall-table .series-a {
+            background: #fed7d7;
+        }
+        
+        .waterfall-table .series-b {
+            background: #fef5e7;
+        }
+        
+        .waterfall-table .common {
+            background: #f0fff4;
+        }
+        
+        @media (max-width: 1200px) {
+            .analyzer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .term-analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Term Sheet Analyzer</h1>
+            <p>Analyze, compare, and negotiate funding terms like a pro with data-driven insights</p>
+        </div>
+        
+        <div class="analyzer-grid">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>🏢 Deal Parameters</h3>
+                    <div class="form-row">
+                        <label>Investment Amount (₹)</label>
+                        <input type="number" id="investmentAmount" value="100000000" onchange="analyzeTerms()">
+                    </div>
+                    <div class="form-row">
+                        <label>Pre-Money Valuation (₹)</label>
+                        <input type="number" id="preMoneyVal" value="400000000" onchange="analyzeTerms()">
+                    </div>
+                    <div class="form-row">
+                        <label>Round Type</label>
+                        <select id="roundType" onchange="analyzeTerms()">
+                            <option value="pre-seed">Pre-Seed</option>
+                            <option value="seed">Seed</option>
+                            <option value="series-a" selected>Series A</option>
+                            <option value="series-b">Series B</option>
+                            <option value="series-c">Series C+</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Industry Sector</label>
+                        <select id="industrySector" onchange="analyzeTerms()">
+                            <option value="saas">SaaS</option>
+                            <option value="fintech">FinTech</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="healthtech">HealthTech</option>
+                            <option value="edtech">EdTech</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>📈 Key Terms</h3>
+                    <div class="form-row">
+                        <label>Liquidation Preference</label>
+                        <select id="liquidationPref" onchange="analyzeTerms()">
+                            <option value="1x-non-participating">1x Non-Participating</option>
+                            <option value="1x-participating">1x Participating</option>
+                            <option value="2x-non-participating">2x Non-Participating</option>
+                            <option value="2x-participating">2x Participating</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Anti-Dilution</label>
+                        <select id="antiDilution" onchange="analyzeTerms()">
+                            <option value="none">None</option>
+                            <option value="weighted-average" selected>Weighted Average</option>
+                            <option value="full-ratchet">Full Ratchet</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Board Composition</label>
+                        <select id="boardComposition" onchange="analyzeTerms()">
+                            <option value="founder-control">Founder Control (3F/2I)</option>
+                            <option value="balanced" selected>Balanced (2F/2I/1Ind)</option>
+                            <option value="investor-control">Investor Control (2F/3I)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Option Pool %</label>
+                        <input type="number" id="optionPool" value="15" min="5" max="25" onchange="analyzeTerms()">
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="generateReport()">📋 Generate Report</button>
+                    <button class="btn btn-secondary" onclick="compareWithMarket()">📊 Market Compare</button>
+                    <button class="btn btn-outline" onclick="exportAnalysis()">💾 Export Analysis</button>
+                </div>
+            </div>
+            
+            <!-- Main Analyzer -->
+            <div class="main-analyzer">
+                <!-- Terms Analysis -->
+                <div class="analyzer-section">
+                    <h2 class="section-title">🔍 Terms Analysis</h2>
+                    
+                    <div class="term-analysis-grid" id="termsGrid">
+                        <!-- Terms will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Impact Analysis -->
+                <div class="analyzer-section">
+                    <h2 class="section-title">💰 Financial Impact Analysis</h2>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="founderDilution">20.0%</div>
+                            <div class="metric-label">Founder Dilution</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="postMoneyValue">₹50Cr</div>
+                            <div class="metric-label">Post-Money Valuation</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="liquidationThreshold">₹10Cr</div>
+                            <div class="metric-label">Liquidation Threshold</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="termScore">7.5/10</div>
+                            <div class="metric-label">Overall Term Score</div>
+                        </div>
+                    </div>
+                    
+                    <div class="waterfall-analysis">
+                        <h3>💧 Exit Waterfall Analysis</h3>
+                        <table class="waterfall-table">
+                            <thead>
+                                <tr>
+                                    <th>Exit Scenario</th>
+                                    <th>Exit Value</th>
+                                    <th>Series A Returns</th>
+                                    <th>Founder Returns</th>
+                                    <th>Founder %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="series-a">
+                                    <td>Fire Sale</td>
+                                    <td>₹25Cr</td>
+                                    <td>₹10Cr (40%)</td>
+                                    <td>₹12Cr (48%)</td>
+                                    <td>48%</td>
+                                </tr>
+                                <tr class="series-b">
+                                    <td>Modest Exit</td>
+                                    <td>₹100Cr</td>
+                                    <td>₹20Cr (20%)</td>
+                                    <td>₹64Cr (64%)</td>
+                                    <td>64%</td>
+                                </tr>
+                                <tr class="common">
+                                    <td>Good Exit</td>
+                                    <td>₹500Cr</td>
+                                    <td>₹100Cr (20%)</td>
+                                    <td>₹320Cr (64%)</td>
+                                    <td>64%</td>
+                                </tr>
+                                <tr class="common">
+                                    <td>Great Exit</td>
+                                    <td>₹1,000Cr</td>
+                                    <td>₹200Cr (20%)</td>
+                                    <td>₹640Cr (64%)</td>
+                                    <td>64%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Market Comparison -->
+                <div class="analyzer-section">
+                    <h2 class="section-title">📈 Market Benchmark Comparison</h2>
+                    
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Term</th>
+                                <th>Your Deal</th>
+                                <th>Market Standard</th>
+                                <th>Percentile</th>
+                                <th>Assessment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Liquidation Preference</td>
+                                <td id="yourLiqPref">1x Non-Participating</td>
+                                <td>1x Non-Participating</td>
+                                <td>50th</td>
+                                <td><span class="score-badge score-good">✓ Standard</span></td>
+                            </tr>
+                            <tr>
+                                <td>Anti-Dilution</td>
+                                <td id="yourAntiDilution">Weighted Average</td>
+                                <td>Weighted Average</td>
+                                <td>50th</td>
+                                <td><span class="score-badge score-good">✓ Standard</span></td>
+                            </tr>
+                            <tr>
+                                <td>Board Control</td>
+                                <td id="yourBoardControl">Balanced</td>
+                                <td>Balanced</td>
+                                <td>60th</td>
+                                <td><span class="score-badge score-good">✓ Fair</span></td>
+                            </tr>
+                            <tr>
+                                <td>Option Pool</td>
+                                <td id="yourOptionPool">15%</td>
+                                <td>12-18%</td>
+                                <td>55th</td>
+                                <td><span class="score-badge score-good">✓ Reasonable</span></td>
+                            </tr>
+                            <tr>
+                                <td>Valuation</td>
+                                <td id="yourValuation">₹40Cr</td>
+                                <td>₹35-45Cr</td>
+                                <td>60th</td>
+                                <td><span class="score-badge score-good">✓ Fair</span></td>
+                            </tr>
+                            <tr>
+                                <td>Dilution</td>
+                                <td id="yourDilution">25%</td>
+                                <td>20-30%</td>
+                                <td>65th</td>
+                                <td><span class="score-badge score-fair">⚠ High-Normal</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Negotiation Strategy -->
+                <div class="analyzer-section">
+                    <h2 class="section-title">🤝 Negotiation Strategy & Tips</h2>
+                    
+                    <div class="negotiation-tips">
+                        <h4>💪 Strong Negotiation Points</h4>
+                        <ul id="strongPoints">
+                            <li>Standard liquidation preference shows reasonable investor behavior</li>
+                            <li>Weighted average anti-dilution is founder-friendly</li>
+                            <li>Valuation is within market range for your stage</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="negotiation-tips">
+                        <h4>⚠️ Areas to Push Back</h4>
+                        <ul id="pushBackPoints">
+                            <li>Option pool could be reduced from 15% to 12%</li>
+                            <li>Request board observer seat for additional founder representative</li>
+                            <li>Negotiate milestone-based option pool increases</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="negotiation-tips">
+                        <h4>🎯 Negotiation Priorities</h4>
+                        <ul id="priorityPoints">
+                            <li><strong>High Priority:</strong> Maintain founder-friendly liquidation preference</li>
+                            <li><strong>Medium Priority:</strong> Optimize option pool size and structure</li>
+                            <li><strong>Low Priority:</strong> Board composition (if balanced)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="negotiation-tips">
+                        <h4>📝 Counter-Proposal Suggestions</h4>
+                        <ul id="counterProposals">
+                            <li>Reduce option pool to 12% with ability to increase upon hitting milestones</li>
+                            <li>Add pro-rata rights for founders in future rounds</li>
+                            <li>Include founder vesting acceleration on involuntary termination</li>
+                            <li>Add board observer rights for key advisors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let dealData = {
+            investment: 100000000,
+            preMoney: 400000000,
+            roundType: 'series-a',
+            industry: 'saas',
+            liquidationPref: '1x-non-participating',
+            antiDilution: 'weighted-average',
+            boardComposition: 'balanced',
+            optionPool: 15
+        };
+        
+        function analyzeTerms() {
+            // Update deal data from form
+            dealData.investment = parseFloat(document.getElementById('investmentAmount').value) || 100000000;
+            dealData.preMoney = parseFloat(document.getElementById('preMoneyVal').value) || 400000000;
+            dealData.roundType = document.getElementById('roundType').value;
+            dealData.industry = document.getElementById('industrySector').value;
+            dealData.liquidationPref = document.getElementById('liquidationPref').value;
+            dealData.antiDilution = document.getElementById('antiDilution').value;
+            dealData.boardComposition = document.getElementById('boardComposition').value;
+            dealData.optionPool = parseFloat(document.getElementById('optionPool').value) || 15;
+            
+            updateTermsGrid();
+            updateMetrics();
+            updateComparison();
+            updateNegotiationTips();
+        }
+        
+        function updateTermsGrid() {
+            const termsGrid = document.getElementById('termsGrid');
+            const terms = getTermAnalysis();
+            
+            termsGrid.innerHTML = '';
+            
+            terms.forEach(term => {
+                const termCard = document.createElement('div');
+                termCard.className = `term-card ${term.status}`;
+                
+                termCard.innerHTML = `
+                    <div class="term-name">${term.name}</div>
+                    <div class="term-value">${term.value}</div>
+                    <div class="term-impact">${term.impact}</div>
+                    <div class="term-recommendation ${term.status}">${term.recommendation}</div>
+                `;
+                
+                termsGrid.appendChild(termCard);
+            });
+        }
+        
+        function getTermAnalysis() {
+            const postMoney = dealData.preMoney + dealData.investment;
+            const dilution = (dealData.investment / postMoney) * 100;
+            
+            return [
+                {
+                    name: "Liquidation Preference",
+                    value: dealData.liquidationPref.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    impact: dealData.liquidationPref.includes('participating') ? 
+                        "⚠️ Investor gets money back PLUS pro-rata share" : 
+                        "✅ Investor gets money back OR pro-rata share (better option)",
+                    recommendation: dealData.liquidationPref.includes('participating') ? 
+                        "🔴 Negotiate to non-participating" : "✅ Accept - Standard terms",
+                    status: dealData.liquidationPref.includes('participating') ? 'danger' : 'good'
+                },
+                {
+                    name: "Anti-Dilution Protection",
+                    value: dealData.antiDilution.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    impact: dealData.antiDilution === 'full-ratchet' ? 
+                        "⚠️ Full protection for investor in down rounds" : 
+                        dealData.antiDilution === 'weighted-average' ? 
+                        "⚖️ Balanced protection based on amount invested" : 
+                        "✅ No anti-dilution protection",
+                    recommendation: dealData.antiDilution === 'full-ratchet' ? 
+                        "🔴 Very founder-unfriendly - push for weighted average" : 
+                        dealData.antiDilution === 'weighted-average' ? 
+                        "🟡 Standard but try to negotiate narrow-based" : 
+                        "✅ Best case scenario",
+                    status: dealData.antiDilution === 'full-ratchet' ? 'danger' : 
+                            dealData.antiDilution === 'weighted-average' ? 'caution' : 'good'
+                },
+                {
+                    name: "Board Composition",
+                    value: dealData.boardComposition.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    impact: dealData.boardComposition === 'investor-control' ? 
+                        "⚠️ Investors have majority board control" : 
+                        dealData.boardComposition === 'founder-control' ? 
+                        "✅ Founders maintain board control" : 
+                        "⚖️ Balanced control with independent tie-breaker",
+                    recommendation: dealData.boardComposition === 'investor-control' ? 
+                        "🔴 Push for balanced or founder control" : 
+                        "✅ Reasonable composition",
+                    status: dealData.boardComposition === 'investor-control' ? 'danger' : 'good'
+                },
+                {
+                    name: "Option Pool Size",
+                    value: `${dealData.optionPool}%`,
+                    impact: dealData.optionPool > 18 ? 
+                        "⚠️ Large option pool increases founder dilution" : 
+                        dealData.optionPool < 10 ? 
+                        "⚠️ May be insufficient for hiring needs" : 
+                        "✅ Standard range for employee incentives",
+                    recommendation: dealData.optionPool > 18 ? 
+                        "🔴 Negotiate down to 12-15%" : 
+                        dealData.optionPool < 10 ? 
+                        "🟡 Consider if sufficient for growth" : 
+                        "✅ Within reasonable range",
+                    status: dealData.optionPool > 18 || dealData.optionPool < 10 ? 'caution' : 'good'
+                },
+                {
+                    name: "Valuation & Dilution",
+                    value: `₹${(postMoney/10000000).toFixed(1)}Cr post-money, ${dilution.toFixed(1)}% dilution`,
+                    impact: dilution > 30 ? 
+                        "⚠️ High dilution may impact founder motivation" : 
+                        "✅ Reasonable dilution for growth capital",
+                    recommendation: dilution > 30 ? 
+                        "🟡 Consider if valuation reflects fair market value" : 
+                        "✅ Good balance of capital and ownership",
+                    status: dilution > 30 ? 'caution' : 'good'
+                },
+                {
+                    name: "Pro-Rata Rights",
+                    value: "Investor has pro-rata participation rights",
+                    impact: "✅ Standard investor protection to maintain ownership percentage",
+                    recommendation: "✅ Accept - Standard term that's mutually beneficial",
+                    status: 'good'
+                }
+            ];
+        }
+        
+        function updateMetrics() {
+            const postMoney = dealData.preMoney + dealData.investment;
+            const dilution = (dealData.investment / postMoney) * 100;
+            const liquidationThreshold = dealData.investment; // Simplified
+            
+            document.getElementById('founderDilution').textContent = dilution.toFixed(1) + '%';
+            document.getElementById('postMoneyValue').textContent = '₹' + (postMoney/10000000).toFixed(1) + 'Cr';
+            document.getElementById('liquidationThreshold').textContent = '₹' + (liquidationThreshold/10000000).toFixed(1) + 'Cr';
+            
+            // Calculate term score
+            let score = 10;
+            if (dealData.liquidationPref.includes('participating')) score -= 2;
+            if (dealData.antiDilution === 'full-ratchet') score -= 2;
+            if (dealData.boardComposition === 'investor-control') score -= 1.5;
+            if (dealData.optionPool > 18) score -= 1;
+            if (dilution > 30) score -= 1;
+            
+            document.getElementById('termScore').textContent = Math.max(score, 0).toFixed(1) + '/10';
+        }
+        
+        function updateComparison() {
+            document.getElementById('yourLiqPref').textContent = 
+                dealData.liquidationPref.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('yourAntiDilution').textContent = 
+                dealData.antiDilution.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('yourBoardControl').textContent = 
+                dealData.boardComposition.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('yourOptionPool').textContent = dealData.optionPool + '%';
+            document.getElementById('yourValuation').textContent = '₹' + (dealData.preMoney/10000000).toFixed(0) + 'Cr';
+            
+            const dilution = (dealData.investment / (dealData.preMoney + dealData.investment)) * 100;
+            document.getElementById('yourDilution').textContent = dilution.toFixed(1) + '%';
+        }
+        
+        function updateNegotiationTips() {
+            // This would be more sophisticated in a real implementation
+            const strongPoints = document.getElementById('strongPoints');
+            const pushBackPoints = document.getElementById('pushBackPoints');
+            
+            // Clear existing content
+            strongPoints.innerHTML = '';
+            pushBackPoints.innerHTML = '';
+            
+            // Add dynamic tips based on terms
+            if (!dealData.liquidationPref.includes('participating')) {
+                strongPoints.innerHTML += '<li>Non-participating liquidation preference is founder-friendly</li>';
+            } else {
+                pushBackPoints.innerHTML += '<li>Push back on participating liquidation preference</li>';
+            }
+            
+            if (dealData.antiDilution === 'weighted-average') {
+                strongPoints.innerHTML += '<li>Weighted average anti-dilution is reasonable</li>';
+            } else if (dealData.antiDilution === 'full-ratchet') {
+                pushBackPoints.innerHTML += '<li>Full ratchet anti-dilution is very unfavorable - negotiate hard</li>';
+            }
+            
+            if (dealData.optionPool > 18) {
+                pushBackPoints.innerHTML += '<li>Option pool is above market - negotiate down to 12-15%</li>';
+            }
+        }
+        
+        function generateReport() {
+            const reportWindow = window.open('', '_blank');
+            const postMoney = dealData.preMoney + dealData.investment;
+            const dilution = (dealData.investment / postMoney) * 100;
+            
+            const reportHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Term Sheet Analysis Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 40px; }
+                        h1 { color: #e53e3e; text-align: center; }
+                        .summary { background: #f7fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                        .term-analysis { margin: 30px 0; }
+                        .warning { color: #e53e3e; font-weight: bold; }
+                        .good { color: #38a169; font-weight: bold; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+                        th { background: #f7fafc; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Term Sheet Analysis Report</h1>
+                    <div class="summary">
+                        <h2>Deal Summary</h2>
+                        <p><strong>Investment:</strong> ₹${(dealData.investment/10000000).toFixed(1)} Cr</p>
+                        <p><strong>Pre-Money:</strong> ₹${(dealData.preMoney/10000000).toFixed(1)} Cr</p>
+                        <p><strong>Post-Money:</strong> ₹${(postMoney/10000000).toFixed(1)} Cr</p>
+                        <p><strong>Founder Dilution:</strong> ${dilution.toFixed(1)}%</p>
+                        <p><strong>Round Type:</strong> ${dealData.roundType}</p>
+                    </div>
+                    
+                    <div class="term-analysis">
+                        <h2>Key Terms Analysis</h2>
+                        ${getTermAnalysis().map(term => `
+                            <h3>${term.name}</h3>
+                            <p><strong>Your Terms:</strong> ${term.value}</p>
+                            <p><strong>Impact:</strong> ${term.impact}</p>
+                            <p><strong>Recommendation:</strong> ${term.recommendation}</p>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="recommendations">
+                        <h2>Overall Recommendations</h2>
+                        <ul>
+                            <li>Overall term score: <strong>${document.getElementById('termScore').textContent}</strong></li>
+                            <li>Terms are ${parseFloat(document.getElementById('termScore').textContent.split('/')[0]) >= 7 ? 'generally favorable' : 'need significant negotiation'}</li>
+                            <li>Focus negotiation efforts on liquidation preferences and option pool size</li>
+                            <li>Ensure anti-dilution protection is reasonable (weighted average preferred)</li>
+                        </ul>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            reportWindow.document.write(reportHTML);
+            reportWindow.document.close();
+        }
+        
+        function compareWithMarket() {
+            alert('Market comparison updated based on current industry benchmarks and round type.');
+            analyzeTerms(); // Refresh analysis
+        }
+        
+        function exportAnalysis() {
+            const analysisData = {
+                dealSummary: dealData,
+                metrics: {
+                    postMoney: dealData.preMoney + dealData.investment,
+                    dilution: (dealData.investment / (dealData.preMoney + dealData.investment)) * 100,
+                    termScore: document.getElementById('termScore').textContent
+                },
+                termsAnalysis: getTermAnalysis(),
+                timestamp: new Date().toISOString()
+            };
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(analysisData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "term_sheet_analysis.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+        
+        // Initialize analysis on load
+        window.onload = function() {
+            analyzeTerms();
+        };
+        
+        // Auto-save functionality
+        setInterval(() => {
+            localStorage.setItem('termSheetAnalysis', JSON.stringify(dealData));
+        }, 10000);
+        
+        // Load saved data if available
+        const savedData = localStorage.getItem('termSheetAnalysis');
+        if (savedData) {
+            const saved = JSON.parse(savedData);
+            Object.keys(saved).forEach(key => {
+                const element = document.getElementById(key === 'investment' ? 'investmentAmount' : 
+                                                     key === 'preMoney' ? 'preMoneyVal' : key);
+                if (element) {
+                    element.value = saved[key];
+                }
+            });
+            dealData = { ...dealData, ...saved };
+            analyzeTerms();
+        }
+    </script>
+</body>
+</html>

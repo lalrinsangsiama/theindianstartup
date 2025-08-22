@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import Razorpay from 'razorpay';
 
@@ -82,7 +83,7 @@ export async function POST(
       .eq('id', id);
 
     if (updateError) {
-      console.error('Error updating sponsorship order:', updateError);
+      logger.error('Error updating sponsorship order:', updateError);
       return NextResponse.json(
         { error: 'Failed to update sponsorship order' },
         { status: 500 }
@@ -108,7 +109,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Create payment order error:', error);
+    logger.error('Create payment order error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -178,7 +179,7 @@ export async function PATCH(
       .eq('id', id);
 
     if (updateError) {
-      console.error('Error updating payment status:', updateError);
+      logger.error('Error updating payment status:', updateError);
       return NextResponse.json(
         { error: 'Failed to update payment status' },
         { status: 500 }
@@ -193,8 +194,35 @@ export async function PATCH(
       description: `Completed payment for ${order.type} sponsorship`
     });
 
-    // TODO: Send email notification to admins about new sponsorship order
-    // TODO: Send confirmation email to user
+    // Send email notifications
+    try {
+      const { sendSponsorshipNotificationToAdmin, sendSponsorshipConfirmationToUser } = await import('@/lib/email');
+      
+      // Get user profile for email data
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('name, email')
+        .eq('id', user.id)
+        .single();
+      
+      const emailData = {
+        sponsorshipId: order.id,
+        userName: userProfile?.name || user.email || '',
+        userEmail: userProfile?.email || user.email || '',
+        amount: order.total_amount,
+        eventTitle: order.title || 'Community Expert Session',
+        paymentId: razorpay_payment_id
+      };
+
+      // Send notifications in parallel
+      await Promise.allSettled([
+        sendSponsorshipNotificationToAdmin(emailData),
+        sendSponsorshipConfirmationToUser(emailData)
+      ]);
+    } catch (emailError) {
+      // Don't fail the payment if email fails
+      logger.error('Failed to send sponsorship emails', emailError);
+    }
 
     return NextResponse.json({
       success: true,
@@ -207,7 +235,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Verify payment error:', error);
+    logger.error('Verify payment error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

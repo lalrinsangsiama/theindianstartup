@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Templates Library - The Indian Startup</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .template-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        }
+        
+        .template-card h3 {
+            color: #2c3e50;
+            margin: 0 0 15px 0;
+            font-size: 18px;
+        }
+        
+        .template-card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .template-features {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        
+        .template-features li {
+            padding: 5px 0;
+            color: #27ae60;
+            font-size: 14px;
+        }
+        
+        .template-features li::before {
+            content: "✓ ";
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .download-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        
+        .btn-pdf {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-pdf:hover {
+            background: #c0392b;
+        }
+        
+        .btn-excel {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-excel:hover {
+            background: #219a52;
+        }
+        
+        .btn-word {
+            background: #2980b9;
+            color: white;
+        }
+        
+        .btn-word:hover {
+            background: #21618c;
+        }
+        
+        .format-tag {
+            display: inline-block;
+            background: #ecf0f1;
+            color: #34495e;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin: 2px;
+        }
+        
+        .quality-badges {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .badge {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .badge.new {
+            background: #e74c3c;
+        }
+        
+        .badge.popular {
+            background: #f39c12;
+        }
+        
+        .badge.professional {
+            background: #9b59b6;
+        }
+        
+        .upgrade-notice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .upgrade-notice h2 {
+            margin: 0 0 15px 0;
+        }
+        
+        .upgrade-notice p {
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .download-section {
+                flex-direction: column;
+            }
+            
+            .download-btn {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Professional Templates Library</h1>
+            <p>Industry-grade templates for Indian startups - Instantly downloadable</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Templates</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Formats</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Professional</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-grid">
+            <!-- Business Planning Templates -->
+            <div class="template-card">
+                <div class="quality-badges">
+                    <span class="badge new">NEW</span>
+                    <span class="badge popular">POPULAR</span>
+                </div>
+                <h3>Business Model Canvas</h3>
+                <p>Professional A3 landscape canvas with guided sections, examples, and print-ready format. Perfect for strategic planning and investor presentations.</p>
+                <ul class="template-features">
+                    <li>Print-ready A3 landscape format</li>
+                    <li>Guided examples for each section</li>
+                    <li>Professional design and layout</li>
+                    <li>Startup-specific instructions</li>
+                </ul>
+                <div class="format-tag">PDF</div>
+                <div class="download-section">
+                    <a href="pdf/business-model-canvas-professional.html" class="download-btn btn-pdf" target="_blank">Download PDF</a>
+                </div>
+            </div>
+
+            <!-- Financial Planning Templates -->
+            <div class="template-card">
+                <div class="quality-badges">
+                    <span class="badge new">NEW</span>
+                    <span class="badge professional">PRO</span>
+                </div>
+                <h3>5-Year Financial Projections</h3>
+                <p>Comprehensive financial model with P&L, cash flow, and key metrics. Includes assumptions section and sensitivity analysis.</p>
+                <ul class="template-features">
+                    <li>Complete P&L and cash flow statements</li>
+                    <li>Key performance indicators</li>
+                    <li>Assumption documentation</li>
+                    <li>Multi-page professional format</li>
+                </ul>
+                <div class="format-tag">PDF</div>
+                <div class="download-section">
+                    <a href="pdf/financial-projections-template.html" class="download-btn btn-pdf" target="_blank">Download PDF</a>
+                </div>
+            </div>
+
+            <!-- Excel Financial Model -->
+            <div class="template-card">
+                <div class="quality-badges">
+                    <span class="badge new">NEW</span>
+                    <span class="badge popular">POPULAR</span>
+                </div>
+                <h3>Startup Financial Model</h3>
+                <p>Excel-ready financial model with automated calculations, charts, and scenario analysis. Includes revenue projections and funding requirements.</p>
+                <ul class="template-features">
+                    <li>Automated calculations with formulas</li>
+                    <li>Revenue and cost modeling</li>
+                    <li>Customer metrics and unit economics</li>
+                    <li>Funding requirement analysis</li>
+                </ul>
+                <div class="format-tag">EXCEL/CSV</div>
+                <div class="download-section">
+                    <a href="excel/startup-financial-model.csv" class="download-btn btn-excel" download>Download Excel</a>
+                </div>
+            </div>
+
+            <!-- Fundraising Tracker -->
+            <div class="template-card">
+                <div class="quality-badges">
+                    <span class="badge new">NEW</span>
+                    <span class="badge professional">PRO</span>
+                </div>
+                <h3>Fundraising Tracker</h3>
+                <p>Complete investor pipeline management with due diligence checklist, term sheet comparison, and meeting tracker.</p>
+                <ul class="template-features">
+                    <li>Investor pipeline management</li>
+                    <li>Meeting and contact tracking</li>
+                    <li>Due diligence checklist</li>
+                    <li>Term sheet comparison table</li>
+                </ul>
+                <div class="format-tag">EXCEL/CSV</div>
+                <div class="download-section">
+                    <a href="excel/fundraising-tracker.csv" class="download-btn btn-excel" download>Download Excel</a>
+                </div>
+            </div>
+
+            <!-- Legal Templates -->
+            <div class="template-card">
+                <div class="quality-badges">
+                    <span class="badge new">NEW</span>
+                    <span class="badge professional">PRO</span>
+                </div>
+                <h3>Founders Agreement</h3>
+                <p>Comprehensive co-founder agreement template with equity split, vesting schedules, IP assignment, and exit clauses for Indian startups.</p>
+                <ul class="template-features">
+                    <li>Equity split and vesting terms</li>
+                    <li>IP assignment clauses</li>
+                    <li>Role and responsibility matrix</li>
+                    <li>Exit and dispute resolution</li>
+                </ul>
+                <div class="format-tag">WORD/HTML</div>
+                <div class="download-section">
+                    <a href="word/founders-agreement-template.html" class="download-btn btn-word" target="_blank">Download Word</a>
+                </div>
+            </div>
+
+            <!-- Employment Contract -->
+            <div class="template-card">
+                <div class="quality-badges">
+                    <span class="badge new">NEW</span>
+                    <span class="badge professional">PRO</span>
+                </div>
+                <h3>Employment Contract</h3>
+                <p>Indian labor law compliant employment agreement with compensation structure, benefits, confidentiality, and termination clauses.</p>
+                <ul class="template-features">
+                    <li>Indian labor law compliant</li>
+                    <li>Detailed compensation structure</li>
+                    <li>Confidentiality and IP clauses</li>
+                    <li>ESOP and equity provisions</li>
+                </ul>
+                <div class="format-tag">WORD/HTML</div>
+                <div class="download-section">
+                    <a href="word/employment-contract-template.html" class="download-btn btn-word" target="_blank">Download Word</a>
+                </div>
+            </div>
+
+            <!-- Coming Soon Templates -->
+            <div class="template-card" style="opacity: 0.7;">
+                <div class="quality-badges">
+                    <span class="badge">COMING SOON</span>
+                </div>
+                <h3>Pitch Deck Template</h3>
+                <p>Investor-ready pitch deck with 15 essential slides, design guidelines, and startup-specific content suggestions.</p>
+                <ul class="template-features">
+                    <li>15 investor-ready slides</li>
+                    <li>Professional design system</li>
+                    <li>Content guidelines included</li>
+                    <li>Multiple format options</li>
+                </ul>
+                <div class="format-tag">PDF</div><div class="format-tag">PPT</div>
+                <div class="download-section">
+                    <button class="download-btn" style="background: #95a5a6; cursor: not-allowed;" disabled>Coming Soon</button>
+                </div>
+            </div>
+
+            <div class="template-card" style="opacity: 0.7;">
+                <div class="quality-badges">
+                    <span class="badge">COMING SOON</span>
+                </div>
+                <h3>Legal Document Kit</h3>
+                <p>Complete legal document collection including NDAs, service agreements, terms of service, and privacy policies.</p>
+                <ul class="template-features">
+                    <li>10+ essential legal documents</li>
+                    <li>Indian law compliant</li>
+                    <li>Customizable templates</li>
+                    <li>Industry-specific versions</li>
+                </ul>
+                <div class="format-tag">PDF</div><div class="format-tag">WORD</div>
+                <div class="download-section">
+                    <button class="download-btn" style="background: #95a5a6; cursor: not-allowed;" disabled>Coming Soon</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="upgrade-notice">
+            <h2>🚀 Want More Professional Templates?</h2>
+            <p>Get access to 300+ premium templates, interactive tools, and expert guidance</p>
+            <p><strong>Includes:</strong> Legal documents, financial models, marketing templates, HR policies, and much more</p>
+            <a href="https://theindianstartup.in/pricing" class="cta-button">View All Products →</a>
+        </div>
+
+        <div class="footer">
+            <h3>How to Use These Templates</h3>
+            <p><strong>PDF Templates:</strong> Download and print for offline use, or save and edit in PDF editors</p>
+            <p><strong>Excel Templates:</strong> Open in Excel, Google Sheets, or any spreadsheet application</p>
+            <p><strong>Word Templates:</strong> Open in browser, then save as .docx or copy content to Word</p>
+            <br>
+            <p style="color: #7f8c8d; font-size: 12px;">
+                ⚠️ These templates are for educational purposes. Consult legal and financial professionals for advice specific to your situation.
+            </p>
+            <br>
+            <p><strong>The Indian Startup</strong> | theindianstartup.in | Template Library v2.0</p>
+        </div>
+    </div>
+</body>
+</html>

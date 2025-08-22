@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { PRODUCTS } from '@/lib/product-access';
 
@@ -66,7 +67,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Product access check error:', error);
+    logger.error('Product access check error:', error);
     return NextResponse.json({
       hasAccess: false,
       error: 'Failed to check access'

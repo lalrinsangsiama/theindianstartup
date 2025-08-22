@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -46,7 +47,7 @@ export async function POST(
       .single();
 
     if (checkError && checkError.code !== 'PGRST116') {
-      console.error('Error checking save status:', checkError);
+      logger.error('Error checking save status:', checkError);
       return NextResponse.json(
         { error: 'Failed to check save status' },
         { status: 500 }
@@ -64,7 +65,7 @@ export async function POST(
         .eq('id', existingSave.id);
 
       if (deleteError) {
-        console.error('Error removing save:', deleteError);
+        logger.error('Error removing save:', deleteError);
         return NextResponse.json(
           { error: 'Failed to unsave announcement' },
           { status: 500 }
@@ -84,7 +85,7 @@ export async function POST(
         });
 
       if (insertError) {
-        console.error('Error saving announcement:', insertError);
+        logger.error('Error saving announcement:', insertError);
         return NextResponse.json(
           { error: 'Failed to save announcement' },
           { status: 500 }
@@ -102,7 +103,7 @@ export async function POST(
       .eq('id', id);
 
     if (updateError) {
-      console.error('Error updating saves count:', updateError);
+      logger.error('Error updating saves count:', updateError);
       // Don't fail the request if count update fails
     }
 
@@ -124,7 +125,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Save announcement error:', error);
+    logger.error('Save announcement error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

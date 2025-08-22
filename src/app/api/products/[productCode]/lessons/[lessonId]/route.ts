@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { PRODUCTS } from '@/lib/product-access';
 
@@ -137,7 +138,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Lesson API error:', error);
+    logger.error('Lesson API error:', error);
     return NextResponse.json({
       error: 'Internal server error'
     }, { status: 500 });
@@ -206,7 +207,7 @@ export async function POST(
       .single();
 
     if (error) {
-      console.error('Error updating lesson progress:', error);
+      logger.error('Error updating lesson progress:', error);
       return NextResponse.json({
         error: 'Failed to update progress'
       }, { status: 500 });
@@ -233,7 +234,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Lesson completion error:', error);
+    logger.error('Lesson completion error:', error);
     return NextResponse.json({
       error: 'Internal server error'
     }, { status: 500 });

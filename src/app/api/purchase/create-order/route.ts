@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { validateCoupon } from '@/lib/coupon-utils';
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
         .single();
       
       if (createError || !newProduct) {
-        console.error('Failed to create product:', createError);
+        logger.error('Failed to create product:', createError);
         return NextResponse.json(
           { error: 'Failed to create product record' },
           { status: 500 }
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (dbError) {
-      console.error('Database error:', dbError);
+      logger.error('Database error:', dbError);
       return NextResponse.json(
         { error: 'Failed to create purchase record' },
         { status: 500 }
@@ -176,7 +177,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create order error:', error);
+    logger.error('Create order error:', error);
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }

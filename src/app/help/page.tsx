@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Heading, Text } from '@/components/ui/Typography';
@@ -237,7 +238,7 @@ export default function HelpPage() {
         throw new Error('Failed to submit request');
       }
     } catch (error) {
-      console.error('Failed to submit contact form:', error);
+      logger.error('Failed to submit contact form:', error);
       // You could show an error state here
     } finally {
       setIsSubmitting(false);
@@ -427,14 +428,14 @@ export default function HelpPage() {
             <CardHeader>
               <CardTitle>Still Need Help?</CardTitle>
               <Text color="muted">
-                Can&apos;t find what you&apos;re looking for? Send us a message and we&apos;ll get back to you quickly.
+                Can't find what you're looking for? Send us a message and we'll get back to you quickly.
               </Text>
             </CardHeader>
             <CardContent>
               {submitSuccess && (
                 <Alert variant="success" className="mb-6">
                   <CheckCircle className="w-4 h-4" />
-                  Thank you! We&apos;ve received your message and will respond within 24 hours.
+                  Thank you! We've received your message and will respond within 24 hours.
                 </Alert>
               )}
               
@@ -459,7 +460,7 @@ export default function HelpPage() {
                     <option value="low">Low - General question</option>
                     <option value="normal">Normal - Need help</option>
                     <option value="high">High - Account issue</option>
-                    <option value="urgent">Urgent - Can&apos;t access content</option>
+                    <option value="urgent">Urgent - Can't access content</option>
                   </select>
                 </div>
                 

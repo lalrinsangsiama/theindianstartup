@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Employment Offer Letter Template</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .letterhead { border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
+        .section { margin: 25px 0; }
+        .clause { margin: 15px 0; }
+        .fill-in { border-bottom: 1px solid #000; min-width: 150px; }
+        h1 { font-size: 18px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 16px; margin-top: 30px; color: #333; }
+        h3 { font-size: 14px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        .benefits-box { border: 2px solid #000; padding: 15px; margin: 15px 0; background-color: #f9f9f9; }
+        .important { background-color: #ffffcc; padding: 10px; border-left: 4px solid #ff0000; margin: 15px 0; }
+        .signature-section { margin-top: 40px; border-top: 1px solid #000; padding-top: 20px; }
+        .checkbox { display: inline-block; width: 15px; height: 15px; border: 1px solid #000; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <div class="letterhead">
+        <table width="100%" style="border: none;">
+            <tr>
+                <td width="70%" style="border: none;">
+                    <h1 style="text-align: left; margin: 0;">[COMPANY NAME]</h1>
+                    <p style="margin: 5px 0;">
+                        <span class="fill-in">_________________________</span><br>
+                        <span class="fill-in">_________________________</span><br>
+                        <span class="fill-in">_________________________</span><br>
+                        Phone: <span class="fill-in">_______________</span><br>
+                        Email: <span class="fill-in">_______________</span><br>
+                        Website: <span class="fill-in">_______________</span>
+                    </p>
+                </td>
+                <td width="30%" style="border: none; text-align: right;">
+                    <p>
+                        CIN: <span class="fill-in">_______________</span><br>
+                        GST: <span class="fill-in">_______________</span><br>
+                        <br>
+                        <strong>Date:</strong> <span class="fill-in">_______________</span><br>
+                        <strong>Ref:</strong> <span class="fill-in">_______________</span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <p><strong>To:</strong></p>
+        <p><span class="fill-in">_________________________</span></p>
+        <p><span class="fill-in">_________________________</span></p>
+        <p><span class="fill-in">_________________________</span></p>
+        <p><span class="fill-in">_________________________</span></p>
+        
+        <p><strong>Email:</strong> <span class="fill-in">_________________________</span></p>
+        <p><strong>Phone:</strong> <span class="fill-in">_________________________</span></p>
+    </div>
+
+    <div class="section">
+        <h2 style="text-align: center;">EMPLOYMENT OFFER LETTER</h2>
+        
+        <p>Dear <span class="fill-in">[Candidate Name]</span>,</p>
+
+        <p>We are pleased to offer you employment with <span class="fill-in">[Company Name]</span> ("Company"). We believe your skills, experience, and enthusiasm will be valuable additions to our team.</p>
+
+        <p>This letter outlines the terms and conditions of our employment offer. Please review carefully and let us know if you have any questions.</p>
+    </div>
+
+    <div class="section">
+        <h2>1. POSITION AND RESPONSIBILITIES</h2>
+        
+        <div class="clause">
+            <h3>1.1 Job Details</h3>
+            <p><strong>Position Title:</strong> <span class="fill-in">_________________________</span></p>
+            <p><strong>Department:</strong> <span class="fill-in">_________________________</span></p>
+            <p><strong>Reports To:</strong> <span class="fill-in">_________________________</span></p>
+            <p><strong>Location:</strong> <span class="fill-in">_________________________</span></p>
+            <p><strong>Employment Type:</strong> 
+                <span class="checkbox">☐</span> Full-time 
+                <span class="checkbox">☐</span> Part-time 
+                <span class="checkbox">☐</span> Contract
+            </p>
+            <p><strong>Start Date:</strong> <span class="fill-in">_________________________</span></p>
+        </div>
+
+        <div class="clause">
+            <h3>1.2 Key Responsibilities</h3>
+            <p>Your primary responsibilities will include:</p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            
+            <p>Additional duties may be assigned as needed to support business objectives.</p>
+        </div>
+
+        <div class="clause">
+            <h3>1.3 Working Hours</h3>
+            <p><strong>Standard Hours:</strong> <span class="fill-in">_____</span> hours per week</p>
+            <p><strong>Schedule:</strong> <span class="fill-in">_____</span> AM to <span class="fill-in">_____</span> PM, Monday to Friday</p>
+            <p><strong>Flexibility:</strong> 
+                <span class="checkbox">☐</span> Flexible working hours available
+                <span class="checkbox">☐</span> Remote work options available
+                <span class="checkbox">☐</span> Hybrid work arrangement
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. COMPENSATION PACKAGE</h2>
+        
+        <div class="benefits-box">
+            <h3>2.1 Base Salary</h3>
+            <p><strong>Annual Salary:</strong> ₹<span class="fill-in">_____________</span> per annum</p>
+            <p><strong>Monthly Salary:</strong> ₹<span class="fill-in">_____________</span> per month</p>
+            <p><strong>Pay Schedule:</strong> Monthly, paid on the last working day of each month</p>
+            <p><strong>First Salary:</strong> Pro-rated for the first month based on actual working days</p>
+            
+            <h3>2.2 Variable Compensation</h3>
+            <p><strong>Performance Bonus:</strong> 
+                <span class="checkbox">☐</span> Eligible for annual performance bonus up to <span class="fill-in">___</span>% of annual salary
+                <span class="checkbox">☐</span> Not applicable
+            </p>
+            <p><strong>Sales Commission:</strong> 
+                <span class="checkbox">☐</span> <span class="fill-in">___</span>% commission on sales targets
+                <span class="checkbox">☐</span> Not applicable
+            </p>
+            <p><strong>Stock Options:</strong> 
+                <span class="checkbox">☐</span> Eligible for Employee Stock Option Plan (ESOP)
+                <span class="checkbox">☐</span> Not applicable at this time
+            </p>
+        </div>
+
+        <div class="clause">
+            <h3>2.3 Benefits and Perquisites</h3>
+            <table>
+                <tr>
+                    <th>Benefit</th>
+                    <th>Details</th>
+                    <th>Value/Limit</th>
+                </tr>
+                <tr>
+                    <td>Medical Insurance</td>
+                    <td>Health insurance for employee and family</td>
+                    <td>₹<span class="fill-in">_____</span> annual limit</td>
+                </tr>
+                <tr>
+                    <td>Life Insurance</td>
+                    <td>Term life insurance coverage</td>
+                    <td>₹<span class="fill-in">_____</span> coverage</td>
+                </tr>
+                <tr>
+                    <td>Provident Fund</td>
+                    <td>EPF contribution as per statutory requirements</td>
+                    <td>12% of basic salary</td>
+                </tr>
+                <tr>
+                    <td>Gratuity</td>
+                    <td>As per Payment of Gratuity Act</td>
+                    <td>After 5 years of service</td>
+                </tr>
+                <tr>
+                    <td>Professional Development</td>
+                    <td>Training, conferences, and skill development</td>
+                    <td>₹<span class="fill-in">_____</span> annually</td>
+                </tr>
+                <tr>
+                    <td>Internet/Phone Reimbursement</td>
+                    <td>Monthly reimbursement for work-related usage</td>
+                    <td>₹<span class="fill-in">_____</span> per month</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="clause">
+            <h3>2.4 Leave Entitlements</h3>
+            <p><strong>Annual Leave:</strong> <span class="fill-in">_____</span> days per calendar year</p>
+            <p><strong>Sick Leave:</strong> <span class="fill-in">_____</span> days per year</p>
+            <p><strong>Casual Leave:</strong> <span class="fill-in">_____</span> days per year</p>
+            <p><strong>Maternity/Paternity Leave:</strong> As per applicable laws plus company policy</p>
+            <p><strong>Public Holidays:</strong> As per company calendar</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. TERMS AND CONDITIONS</h2>
+        
+        <div class="clause">
+            <h3>3.1 Probationary Period</h3>
+            <p><strong>Duration:</strong> <span class="fill-in">_____</span> months from the start date</p>
+            <p><strong>Review:</strong> Performance review at the end of probationary period</p>
+            <p><strong>Confirmation:</strong> Confirmation subject to satisfactory performance</p>
+            <p><strong>Notice Period:</strong> <span class="fill-in">_____</span> days notice during probation period</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.2 Post-Probation Employment</h3>
+            <p><strong>Notice Period:</strong> <span class="fill-in">_____</span> days written notice for resignation</p>
+            <p><strong>Employment Type:</strong> At-will employment (subject to notice period)</p>
+            <p><strong>Performance Reviews:</strong> Annual performance evaluations</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.3 Confidentiality and Non-Disclosure</h3>
+            <div class="important">
+                <p><strong>CONFIDENTIALITY REQUIREMENT:</strong></p>
+                <p>You will be required to maintain strict confidentiality regarding:</p>
+                <p>• Company business information and strategies</p>
+                <p>• Customer data and business relationships</p>
+                <p>• Technical specifications and intellectual property</p>
+                <p>• Employee information and compensation details</p>
+                <p>• Any other proprietary or confidential information</p>
+            </div>
+        </div>
+
+        <div class="clause">
+            <h3>3.4 Non-Compete and Non-Solicitation</h3>
+            <p><strong>Non-Compete Period:</strong> <span class="fill-in">_____</span> months after employment termination</p>
+            <p><strong>Geographic Scope:</strong> <span class="fill-in">_________________________</span></p>
+            <p><strong>Non-Solicitation:</strong> <span class="fill-in">_____</span> months restriction on soliciting employees/customers</p>
+            <p><strong>Intellectual Property:</strong> All work-related IP belongs to the Company</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. REQUIRED DOCUMENTS</h2>
+        
+        <div class="clause">
+            <h3>4.1 Documentation Required on Joining</h3>
+            <p>Please bring the following documents on your first day:</p>
+            
+            <p><span class="checkbox">☐</span> PAN Card (original and photocopy)</p>
+            <p><span class="checkbox">☐</span> Aadhaar Card (original and photocopy)</p>
+            <p><span class="checkbox">☐</span> Educational certificates and transcripts</p>
+            <p><span class="checkbox">☐</span> Previous employment experience certificates</p>
+            <p><span class="checkbox">☐</span> Salary slips from previous employer (last 3 months)</p>
+            <p><span class="checkbox">☐</span> Bank account details and cancelled cheque</p>
+            <p><span class="checkbox">☐</span> Passport-size photographs (<span class="fill-in">___</span> copies)</p>
+            <p><span class="checkbox">☐</span> Medical fitness certificate</p>
+            <p><span class="checkbox">☐</span> Previous employer relieving letter and experience certificate</p>
+            <p><span class="checkbox">☐</span> Form 16 from previous employer (if applicable)</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.2 Background Verification</h3>
+            <p>Your employment is subject to satisfactory completion of:</p>
+            <p>• Reference checks from previous employers</p>
+            <p>• Educational qualification verification</p>
+            <p>• Identity and address verification</p>
+            <p>• Criminal background check (if applicable)</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. ACCEPTANCE TERMS</h2>
+        
+        <div class="clause">
+            <h3>5.1 Offer Validity</h3>
+            <p><strong>Offer Valid Until:</strong> <span class="fill-in">_________________________</span></p>
+            <p><strong>Response Required By:</strong> <span class="fill-in">_________________________</span></p>
+        </div>
+
+        <div class="clause">
+            <h3>5.2 Conditions of Employment</h3>
+            <p>This offer is contingent upon:</p>
+            <p>• Satisfactory completion of reference and background checks</p>
+            <p>• Verification of educational qualifications and work experience</p>
+            <p>• Execution of employment agreement and related documents</p>
+            <p>• Medical examination (if required)</p>
+            <p>• Legal authorization to work in India</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.3 Additional Terms</h3>
+            <p><strong>Employee Handbook:</strong> You will receive and must comply with the Employee Handbook</p>
+            <p><strong>Company Policies:</strong> You are expected to follow all company policies and procedures</p>
+            <p><strong>Code of Conduct:</strong> You must adhere to the company's code of conduct and ethics</p>
+        </div>
+    </div>
+
+    <div class="signature-section">
+        <h2>ACCEPTANCE AND SIGNATURES</h2>
+        
+        <p>To accept this offer, please sign and return this letter along with the required documents by <span class="fill-in">[date]</span>.</p>
+
+        <p>We are excited about the possibility of you joining our team and look forward to your positive response.</p>
+
+        <br>
+        <p>Sincerely,</p>
+        <br><br>
+
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <p><strong>FOR THE COMPANY:</strong></p>
+                    <br><br>
+                    <p>_________________________</p>
+                    <p>Signature</p>
+                    <br>
+                    <p><span class="fill-in">_________________________</span></p>
+                    <p>Name</p>
+                    <br>
+                    <p><span class="fill-in">_________________________</span></p>
+                    <p>Title</p>
+                    <br>
+                    <p>Date: <span class="fill-in">_______________</span></p>
+                </td>
+                <td width="50%">
+                    <p><strong>ACCEPTANCE BY CANDIDATE:</strong></p>
+                    <br><br>
+                    <p>_________________________</p>
+                    <p>Signature</p>
+                    <br>
+                    <p><span class="fill-in">_________________________</span></p>
+                    <p>Name</p>
+                    <br>
+                    <p>Date: <span class="fill-in">_______________</span></p>
+                    <br><br>
+                    <p><strong>I accept this offer and agree to join on:</strong></p>
+                    <p><span class="fill-in">_________________________</span></p>
+                    <p>(Start Date)</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="important">
+            <p><strong>IMPORTANT NOTES:</strong></p>
+            <p>• This offer letter supersedes all previous discussions and communications</p>
+            <p>• Employment is subject to execution of detailed employment agreement</p>
+            <p>• Any changes to terms must be in writing and signed by both parties</p>
+            <p>• This offer is valid only for the person named above</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #000; padding-top: 20px;">
+        <p><strong>HR CONTACT INFORMATION:</strong></p>
+        <p>For any questions regarding this offer or joining process:</p>
+        <p><strong>HR Manager:</strong> <span class="fill-in">_________________________</span></p>
+        <p><strong>Email:</strong> <span class="fill-in">_________________________</span></p>
+        <p><strong>Phone:</strong> <span class="fill-in">_________________________</span></p>
+        
+        <br>
+        <p><strong>TEMPLATE INFORMATION:</strong></p>
+        <p><strong>Template Source:</strong> The Indian Startup - P5 Legal Stack<br>
+        <strong>Version:</strong> 2.0 | <strong>Last Updated:</strong> December 2024<br>
+        <strong>Jurisdiction:</strong> India | <strong>Review Required:</strong> HR and legal review recommended</p>
+    </div>
+</body>
+</html>

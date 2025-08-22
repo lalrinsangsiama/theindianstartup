@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (error) {
-      console.error('Waitlist error:', error);
+      logger.error('Waitlist error:', error);
       return NextResponse.json(
         { error: 'Failed to join waitlist' },
         { status: 500 }
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error('Waitlist API error:', error);
+    logger.error('Waitlist API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -94,7 +95,7 @@ export async function GET(request: NextRequest) {
       .eq('productCode', productCode);
 
     if (error) {
-      console.error('Waitlist count error:', error);
+      logger.error('Waitlist count error:', error);
       return NextResponse.json(
         { error: 'Failed to get waitlist count' },
         { status: 500 }
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Waitlist GET error:', error);
+    logger.error('Waitlist GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

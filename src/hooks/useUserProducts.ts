@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 interface UserProduct {
@@ -40,7 +41,7 @@ export function useUserProducts() {
           setUserProducts(products);
         }
       } catch (error) {
-        console.error('Failed to fetch user products:', error);
+        logger.error('Failed to fetch user products:', error);
         setUserProducts([]);
       } finally {
         setIsLoading(false);

@@ -54,7 +54,7 @@ export default function ProductPage() {
               {getProductTitle(normalizedCode)}
             </h1>
             <p className="text-gray-600">
-              This product content is being prepared. You&apos;ll be redirected to the content area soon.
+              This product content is being prepared. You'll be redirected to the content area soon.
             </p>
           </div>
         </div>
@@ -71,9 +71,9 @@ function getProductTitle(productCode: string): string {
     P4: 'Finance Stack - CFO-Level Mastery',
     P5: 'Legal Stack - Bulletproof Framework',
     P6: 'Sales & GTM Master Course',
-    P7: 'State-wise Scheme Map',
+    P7: 'State Ecosystem Mastery - Complete Infrastructure Navigation',
     P8: 'Investor-Ready Data Room Mastery',
-    P9: 'Government Schemes & Funding Mastery',
+    P9: 'National & International Government Ecosystem Mastery',
     P10: 'Patent Mastery for Indian Startups',
     P11: 'Branding & Public Relations Mastery',
     P12: 'Marketing Mastery - Complete Growth Engine'

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -250,7 +251,7 @@ export default function EcosystemDirectoryPage() {
 
       setListings(mockListings);
     } catch (error) {
-      console.error('Error fetching listings:', error);
+      logger.error('Error fetching listings:', error);
     } finally {
       setLoading(false);
     }
@@ -634,7 +635,7 @@ export default function EcosystemDirectoryPage() {
                   No listings found
                 </Heading>
                 <Text color="muted" className="mb-6">
-                  Try adjusting your filters or search terms to find what you&apos;re looking for.
+                  Try adjusting your filters or search terms to find what you're looking for.
                 </Text>
                 <div className="flex gap-3 justify-center">
                   <Button variant="outline" onClick={() => {

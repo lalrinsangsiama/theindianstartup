@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P9 Government Schemes Eligibility Calculator - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .calculator-section {
+            background-color: #f8f9fa;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #000;
+        }
+        
+        .btn {
+            background-color: #000;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #333;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .scheme-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .scheme-card h3 {
+            color: #000;
+            margin-bottom: 10px;
+        }
+        
+        .scheme-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .detail-item strong {
+            color: #000;
+        }
+        
+        .match-percentage {
+            float: right;
+            background: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Government Schemes Eligibility Calculator</h1>
+            <p>Discover which government schemes you're eligible for based on your startup profile</p>
+        </div>
+
+        <div class="calculator-section">
+            <h2 style="margin-bottom: 20px;">Tell us about your startup</h2>
+            
+            <div class="form-group">
+                <label for="businessType">Business Type</label>
+                <select id="businessType" required>
+                    <option value="">Select Business Type</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="service">Service</option>
+                    <option value="trading">Trading</option>
+                    <option value="technology">Technology/Software</option>
+                    <option value="agriculture">Agriculture/Food Processing</option>
+                    <option value="export">Export Business</option>
+                    <option value="biotech">Biotechnology</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="businessStage">Business Stage</label>
+                <select id="businessStage" required>
+                    <option value="">Select Stage</option>
+                    <option value="idea">Idea Stage</option>
+                    <option value="startup">Startup (0-2 years)</option>
+                    <option value="early">Early Stage (2-5 years)</option>
+                    <option value="growth">Growth Stage (5+ years)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fundingRequired">Funding Required (₹)</label>
+                <select id="fundingRequired" required>
+                    <option value="">Select Funding Range</option>
+                    <option value="1000000">₹10 Lakh - ₹25 Lakh</option>
+                    <option value="2500000">₹25 Lakh - ₹50 Lakh</option>
+                    <option value="5000000">₹50 Lakh - ₹1 Crore</option>
+                    <option value="10000000">₹1 Crore - ₹5 Crore</option>
+                    <option value="50000000">₹5 Crore+</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <select id="location" required>
+                    <option value="">Select State</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="karnataka">Karnataka</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="tamil_nadu">Tamil Nadu</option>
+                    <option value="telangana">Telangana</option>
+                    <option value="west_bengal">West Bengal</option>
+                    <option value="rajasthan">Rajasthan</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="founderProfile">Founder Profile</label>
+                <select id="founderProfile" required>
+                    <option value="">Select Profile</option>
+                    <option value="general">General Category</option>
+                    <option value="woman">Woman Entrepreneur</option>
+                    <option value="sc_st">SC/ST</option>
+                    <option value="obc">OBC</option>
+                    <option value="minority">Minority</option>
+                    <option value="differently_abled">Differently Abled</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="calculateEligibility()">Find My Eligible Schemes</button>
+        </div>
+
+        <div id="results" class="results">
+            <h2>🎯 Your Eligible Government Schemes</h2>
+            <div id="schemesList"></div>
+        </div>
+    </div>
+
+    <script>
+        const schemes = [
+            {
+                name: 'Prime Minister Employment Generation Programme (PMEGP)',
+                ministry: 'MSME Ministry',
+                maxFunding: 2500000,
+                subsidy: 35,
+                eligibility: ['manufacturing', 'service', 'trading'],
+                stages: ['idea', 'startup'],
+                specialCategories: ['general', 'woman', 'sc_st', 'obc', 'minority'],
+                description: 'Provides 15-35% subsidy for manufacturing and service sector projects'
+            },
+            {
+                name: 'Startup India Seed Fund Scheme',
+                ministry: 'DPIIT',
+                maxFunding: 5000000,
+                subsidy: 0,
+                eligibility: ['technology', 'manufacturing', 'service'],
+                stages: ['idea', 'startup'],
+                specialCategories: ['general', 'woman', 'sc_st', 'obc', 'minority'],
+                description: 'Seed funding support up to ₹50 lakhs for DPIIT recognized startups'
+            },
+            {
+                name: 'Stand Up India Scheme',
+                ministry: 'Finance Ministry',
+                maxFunding: 10000000,
+                subsidy: 0,
+                eligibility: ['manufacturing', 'service', 'trading'],
+                stages: ['idea', 'startup'],
+                specialCategories: ['woman', 'sc_st'],
+                description: 'Bank loans between ₹10 lakh to ₹1 crore for SC/ST/Women entrepreneurs'
+            },
+            {
+                name: 'CGTMSE - Credit Guarantee Scheme',
+                ministry: 'MSME Ministry',
+                maxFunding: 20000000,
+                subsidy: 85,
+                eligibility: ['manufacturing', 'service', 'trading'],
+                stages: ['startup', 'early', 'growth'],
+                specialCategories: ['general', 'woman', 'sc_st', 'obc', 'minority'],
+                description: 'Collateral-free credit guarantee for MSME loans up to ₹2 crores'
+            },
+            {
+                name: 'NABARD Village Entrepreneurship Programme',
+                ministry: 'Agriculture Ministry',
+                maxFunding: 1000000,
+                subsidy: 50,
+                eligibility: ['agriculture'],
+                stages: ['idea', 'startup'],
+                specialCategories: ['general', 'woman', 'sc_st', 'obc'],
+                description: 'Rural entrepreneurship development with grant support up to ₹10 lakhs'
+            },
+            {
+                name: 'Technology Development Fund by DSIR',
+                ministry: 'Science & Technology',
+                maxFunding: 10000000,
+                subsidy: 0,
+                eligibility: ['technology', 'biotech'],
+                stages: ['startup', 'early'],
+                specialCategories: ['general', 'woman', 'sc_st', 'obc', 'minority'],
+                description: 'Grant funding for technology development and innovation projects'
+            }
+        ];
+
+        function calculateEligibility() {
+            const businessType = document.getElementById('businessType').value;
+            const businessStage = document.getElementById('businessStage').value;
+            const fundingRequired = parseInt(document.getElementById('fundingRequired').value);
+            const founderProfile = document.getElementById('founderProfile').value;
+
+            if (!businessType || !businessStage || !fundingRequired || !founderProfile) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const eligibleSchemes = schemes.filter(scheme => {
+                return scheme.eligibility.includes(businessType) &&
+                       scheme.stages.includes(businessStage) &&
+                       scheme.maxFunding >= fundingRequired &&
+                       scheme.specialCategories.includes(founderProfile);
+            }).map(scheme => {
+                // Calculate match percentage
+                let matchScore = 50; // Base score
+                if (scheme.eligibility.includes(businessType)) matchScore += 20;
+                if (scheme.stages.includes(businessStage)) matchScore += 15;
+                if (scheme.specialCategories.includes(founderProfile)) matchScore += 15;
+                
+                return { ...scheme, matchScore: Math.min(matchScore, 95) };
+            }).sort((a, b) => b.matchScore - a.matchScore);
+
+            displayResults(eligibleSchemes);
+        }
+
+        function displayResults(schemes) {
+            const resultsDiv = document.getElementById('results');
+            const schemesListDiv = document.getElementById('schemesList');
+
+            if (schemes.length === 0) {
+                schemesListDiv.innerHTML = '<div class="no-results">No schemes found matching your criteria. Consider expanding your search parameters.</div>';
+            } else {
+                schemesListDiv.innerHTML = schemes.map(scheme => `
+                    <div class="scheme-card">
+                        <h3>${scheme.name}
+                            <span class="match-percentage">${scheme.matchScore}% Match</span>
+                        </h3>
+                        <p>${scheme.description}</p>
+                        <div class="scheme-details">
+                            <div class="detail-item">
+                                <strong>Ministry:</strong> ${scheme.ministry}
+                            </div>
+                            <div class="detail-item">
+                                <strong>Max Funding:</strong> ₹${(scheme.maxFunding / 100000).toFixed(0)} Lakh
+                            </div>
+                            ${scheme.subsidy > 0 ? `
+                            <div class="detail-item">
+                                <strong>Subsidy:</strong> ${scheme.subsidy}%
+                            </div>` : ''}
+                            <div class="detail-item">
+                                <strong>Eligibility:</strong> ${scheme.eligibility.join(', ')}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

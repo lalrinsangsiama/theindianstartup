@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email';
 import { z } from 'zod';
@@ -145,7 +146,7 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (emailError) {
-      console.error('Failed to send support emails:', emailError);
+      logger.error('Failed to send support emails:', emailError);
       // Don't fail the request if email fails, but log it
     }
 
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
           createdAt: new Date().toISOString(),
         });
     } catch (logError) {
-      console.error('Failed to log support ticket:', logError);
+      logger.error('Failed to log support ticket:', logError);
       // Don't fail the request if logging fails
     }
 
@@ -177,7 +178,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Support contact error:', error);
+    logger.error('Support contact error:', error);
     return NextResponse.json(
       { error: 'Failed to submit support request' },
       { status: 500 }

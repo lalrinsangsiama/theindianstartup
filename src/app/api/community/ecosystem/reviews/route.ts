@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (reviewError) {
-      console.error('Error creating review:', reviewError);
+      logger.error('Error creating review:', reviewError);
       return NextResponse.json(
         { error: 'Failed to create review' },
         { status: 500 }
@@ -144,7 +145,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create review error:', error);
+    logger.error('Create review error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -203,7 +204,7 @@ export async function GET(request: NextRequest) {
     const { data: reviews, error } = await query;
 
     if (error) {
-      console.error('Error fetching reviews:', error);
+      logger.error('Error fetching reviews:', error);
       return NextResponse.json(
         { error: 'Failed to fetch reviews' },
         { status: 500 }
@@ -237,7 +238,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Fetch reviews error:', error);
+    logger.error('Fetch reviews error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

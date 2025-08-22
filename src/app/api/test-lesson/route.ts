@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
       .order('day', { ascending: true });
 
     if (lessonError) {
-      console.error('Database error:', lessonError);
+      logger.error('Database error:', lessonError);
       return NextResponse.json({
         error: 'Database connection failed',
         details: lessonError.message,
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Test lesson API error:', error);
+    logger.error('Test lesson API error:', error);
     return NextResponse.json({
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error',

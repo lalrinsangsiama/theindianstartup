@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export async function PATCH(request: NextRequest) {
@@ -29,7 +30,7 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error updating business model:', error);
+      logger.error('Error updating business model:', error);
       return NextResponse.json(
         { error: 'Failed to update business model' },
         { status: 500 }
@@ -42,7 +43,7 @@ export async function PATCH(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Business model API error:', error);
+    logger.error('Business model API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

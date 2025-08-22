@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Grant Application Builder - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .scheme-selector {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .scheme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .scheme-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .scheme-card:hover {
+            border-color: #28a745;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+        }
+        
+        .scheme-card.selected {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .scheme-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .scheme-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .scheme-details {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .scheme-eligibility {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .application-form {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: none;
+        }
+        
+        .application-form.active {
+            display: block;
+        }
+        
+        .form-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #28a745;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        
+        .tips-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .tips-box h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .tips-box ul {
+            margin-left: 20px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .file-upload {
+            border: 2px dashed #28a745;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload:hover {
+            background: #f8fff9;
+        }
+        
+        .file-upload.dragover {
+            background: #d4edda;
+        }
+        
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: #28a745;
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #20c997;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #28a745;
+            border: 2px solid #28a745;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .timeline {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-top: 30px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .timeline-step {
+            background: #28a745;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .timeline-content h4 {
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scheme-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Government Grant Application Builder</h1>
+            <p>Access ₹20L to ₹5Cr in non-dilutive government funding</p>
+        </div>
+        
+        <!-- Scheme Selection -->
+        <div class="scheme-selector">
+            <h2 style="color: #333; margin-bottom: 20px;">Select Government Scheme</h2>
+            <div class="scheme-grid">
+                <div class="scheme-card" onclick="selectScheme('startup-india')">
+                    <div class="scheme-title">Startup India Seed Fund</div>
+                    <div class="scheme-amount">₹20L - ₹2Cr</div>
+                    <div class="scheme-details">Conceptual validation, prototype development, product testing, market entry</div>
+                    <div class="scheme-eligibility">
+                        <strong>Eligibility:</strong> DPIIT recognized startup, incorporated < 2 years
+                    </div>
+                </div>
+                
+                <div class="scheme-card" onclick="selectScheme('samridh')">
+                    <div class="scheme-title">SAMRIDH Scheme</div>
+                    <div class="scheme-amount">₹40L - ₹10Cr</div>
+                    <div class="scheme-details">Scaling up manufactured products, creating manufacturing infrastructure</div>
+                    <div class="scheme-eligibility">
+                        <strong>Eligibility:</strong> Manufacturing sector, prototype ready, B2B/B2G market
+                    </div>
+                </div>
+                
+                <div class="scheme-card" onclick="selectScheme('msme-schemes')">
+                    <div class="scheme-title">MSME Schemes</div>
+                    <div class="scheme-amount">₹10L - ₹5Cr</div>
+                    <div class="scheme-details">Credit linked capital subsidy, technology development, market development</div>
+                    <div class="scheme-eligibility">
+                        <strong>Eligibility:</strong> MSME registered, manufacturing/service sector
+                    </div>
+                </div>
+                
+                <div class="scheme-card" onclick="selectScheme('state-schemes')">
+                    <div class="scheme-title">State Startup Schemes</div>
+                    <div class="scheme-amount">₹5L - ₹2Cr</div>
+                    <div class="scheme-details">State-specific incentives, capital subsidies, infrastructure support</div>
+                    <div class="scheme-eligibility">
+                        <strong>Eligibility:</strong> Registered in respective state, local impact
+                    </div>
+                </div>
+                
+                <div class="scheme-card" onclick="selectScheme('research-grants')">
+                    <div class="scheme-title">Research Grants (DST/DBT)</div>
+                    <div class="scheme-amount">₹25L - ₹5Cr</div>
+                    <div class="scheme-details">R&D projects, technology development, innovation support</div>
+                    <div class="scheme-eligibility">
+                        <strong>Eligibility:</strong> Research component, PhD/technical team, IP potential
+                    </div>
+                </div>
+                
+                <div class="scheme-card" onclick="selectScheme('export-schemes')">
+                    <div class="scheme-title">Export Promotion Schemes</div>
+                    <div class="scheme-amount">₹15L - ₹3Cr</div>
+                    <div class="scheme-details">Export marketing, market development, trade promotion</div>
+                    <div class="scheme-eligibility">
+                        <strong>Eligibility:</strong> Export potential, manufactured goods, international market ready
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Application Form -->
+        <div class="application-form" id="applicationForm">
+            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 30px;">
+                <h2 style="color: #28a745;">Government Grant Application</h2>
+                <div class="progress-bar" style="width: 200px;">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
+            
+            <!-- Company Information -->
+            <div class="form-section">
+                <h3 class="section-title">🏢 Company Information</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Company Name <span class="required">*</span></label>
+                        <input type="text" id="company-name" required>
+                        <div class="help-text">As per incorporation certificate</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>CIN Number <span class="required">*</span></label>
+                        <input type="text" id="cin-number" required>
+                        <div class="help-text">Corporate Identification Number</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Date of Incorporation <span class="required">*</span></label>
+                        <input type="date" id="incorporation-date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>DPIIT Recognition Number</label>
+                        <input type="text" id="dpiit-number">
+                        <div class="help-text">Required for most startup schemes</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Industry Sector <span class="required">*</span></label>
+                        <select id="industry-sector" required>
+                            <option value="">Select Sector</option>
+                            <option value="technology">Technology/Software</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="healthcare">Healthcare & Biotech</option>
+                            <option value="fintech">Financial Technology</option>
+                            <option value="agriculture">Agriculture & Food</option>
+                            <option value="education">Education Technology</option>
+                            <option value="clean-energy">Clean Energy</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Business Stage <span class="required">*</span></label>
+                        <select id="business-stage" required>
+                            <option value="">Select Stage</option>
+                            <option value="ideation">Ideation</option>
+                            <option value="prototype">Prototype</option>
+                            <option value="validation">Validation</option>
+                            <option value="early-traction">Early Traction</option>
+                            <option value="scaling">Scaling</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Registered Address <span class="required">*</span></label>
+                    <textarea id="registered-address" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Company Description <span class="required">*</span></label>
+                    <textarea id="company-description" placeholder="Brief description of your company, products/services, and mission in 200-300 words" required></textarea>
+                    <div class="help-text">Clearly explain what your company does and its purpose</div>
+                </div>
+            </div>
+            
+            <!-- Founder Information -->
+            <div class="form-section">
+                <h3 class="section-title">👥 Founder Information</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Lead Founder Name <span class="required">*</span></label>
+                        <input type="text" id="founder-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Founder Email <span class="required">*</span></label>
+                        <input type="email" id="founder-email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Founder Phone <span class="required">*</span></label>
+                        <input type="tel" id="founder-phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Founder Education</label>
+                        <input type="text" id="founder-education" placeholder="e.g., B.Tech IIT Delhi, MBA IIM Ahmedabad">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Founder Experience</label>
+                        <input type="text" id="founder-experience" placeholder="Previous work experience and years">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Number of Co-founders</label>
+                        <select id="co-founders-count">
+                            <option value="0">Solo founder</option>
+                            <option value="1">1 Co-founder</option>
+                            <option value="2">2 Co-founders</option>
+                            <option value="3">3 Co-founders</option>
+                            <option value="4+">4+ Co-founders</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Team Background & Expertise</label>
+                    <textarea id="team-background" placeholder="Describe your team's background, relevant experience, and why you're the right team to solve this problem"></textarea>
+                    <div class="help-text">Highlight domain expertise, technical skills, and complementary strengths</div>
+                </div>
+            </div>
+            
+            <!-- Project Details -->
+            <div class="form-section">
+                <h3 class="section-title">🚀 Project Details</h3>
+                
+                <div class="form-group">
+                    <label>Project Title <span class="required">*</span></label>
+                    <input type="text" id="project-title" required placeholder="Clear, descriptive project name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Problem Statement <span class="required">*</span></label>
+                    <textarea id="problem-statement" required placeholder="Clearly define the problem you're solving. Use data and statistics to quantify the problem size and impact."></textarea>
+                    <div class="help-text">Be specific about the problem, affected population, and current solutions' limitations</div>
+                </div>
+                
+                <div class="tips-box">
+                    <h4>💡 Problem Statement Tips</h4>
+                    <ul>
+                        <li>Use statistics to quantify the problem size</li>
+                        <li>Explain why existing solutions are inadequate</li>
+                        <li>Show the economic or social impact of not solving it</li>
+                        <li>Make it relatable and urgent</li>
+                    </ul>
+                </div>
+                
+                <div class="form-group">
+                    <label>Proposed Solution <span class="required">*</span></label>
+                    <textarea id="proposed-solution" required placeholder="Describe your innovative solution, how it works, and why it's better than existing alternatives."></textarea>
+                    <div class="help-text">Focus on innovation, feasibility, and clear benefits</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Technology & Innovation</label>
+                    <textarea id="technology-innovation" placeholder="Explain the technology stack, innovative elements, IP potential, and technical feasibility."></textarea>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Target Market Size</label>
+                        <input type="text" id="market-size" placeholder="e.g., ₹1000 Cr TAM, 10M potential users">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Revenue Model</label>
+                        <select id="revenue-model">
+                            <option value="">Select Model</option>
+                            <option value="subscription">Subscription</option>
+                            <option value="transaction">Transaction Fees</option>
+                            <option value="marketplace">Marketplace Commission</option>
+                            <option value="licensing">Licensing</option>
+                            <option value="product-sales">Product Sales</option>
+                            <option value="freemium">Freemium</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current Stage</label>
+                        <select id="current-stage">
+                            <option value="">Select Stage</option>
+                            <option value="concept">Concept/Idea</option>
+                            <option value="prototype">Prototype Development</option>
+                            <option value="testing">Testing/Validation</option>
+                            <option value="pilot">Pilot Implementation</option>
+                            <option value="commercial">Commercial Launch</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Team Size</label>
+                        <input type="number" id="team-size" min="1" placeholder="Current team size">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financial Information -->
+            <div class="form-section">
+                <h3 class="section-title">💰 Financial Information</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Grant Amount Requested <span class="required">*</span></label>
+                        <input type="number" id="grant-amount" required placeholder="Amount in ₹">
+                        <div class="help-text">Be realistic and justify the amount</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Project Duration <span class="required">*</span></label>
+                        <select id="project-duration" required>
+                            <option value="">Select Duration</option>
+                            <option value="6">6 months</option>
+                            <option value="12">12 months</option>
+                            <option value="18">18 months</option>
+                            <option value="24">24 months</option>
+                            <option value="36">36 months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Previous Funding Raised</label>
+                        <input type="text" id="previous-funding" placeholder="e.g., ₹50L from angels, ₹2Cr Series A">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current Revenue (if any)</label>
+                        <input type="text" id="current-revenue" placeholder="e.g., ₹5L monthly, ₹60L annual">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Budget Breakdown <span class="required">*</span></label>
+                    <textarea id="budget-breakdown" required placeholder="Detailed breakdown of how grant money will be used:
+• Personnel costs: ₹X (Y%)
+• Equipment/Technology: ₹X (Y%)
+• Marketing/Operations: ₹X (Y%)
+• Infrastructure: ₹X (Y%)
+• Contingency: ₹X (Y%)"></textarea>
+                    <div class="help-text">Provide percentage allocation for each category</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Expected Outcomes & Milestones</label>
+                    <textarea id="expected-outcomes" placeholder="List specific, measurable outcomes and milestones:
+• Month 3: Complete prototype testing
+• Month 6: Launch pilot with 100 users
+• Month 12: Achieve ₹10L revenue
+• Month 18: Expand to 3 cities"></textarea>
+                </div>
+            </div>
+            
+            <!-- Impact & Benefits -->
+            <div class="form-section">
+                <h3 class="section-title">🎯 Impact & Benefits</h3>
+                
+                <div class="form-group">
+                    <label>Social/Economic Impact <span class="required">*</span></label>
+                    <textarea id="social-impact" required placeholder="Describe the broader impact your project will have on society, economy, or environment. Include quantifiable benefits where possible."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Job Creation Potential</label>
+                    <input type="text" id="job-creation" placeholder="e.g., 50 direct jobs, 200 indirect jobs in 3 years">
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Beneficiaries Reached</label>
+                        <input type="text" id="beneficiaries" placeholder="e.g., 10,000 farmers, 1M urban commuters">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Geographic Coverage</label>
+                        <input type="text" id="geographic-coverage" placeholder="e.g., Pan-India, 5 states, Rural areas">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sustainability & Scalability</label>
+                    <textarea id="sustainability" placeholder="Explain how the project will be sustainable after grant period and potential for scaling up."></textarea>
+                </div>
+            </div>
+            
+            <!-- Risk Assessment -->
+            <div class="form-section">
+                <h3 class="section-title">⚠️ Risk Assessment & Mitigation</h3>
+                
+                <div class="form-group">
+                    <label>Key Risks Identified</label>
+                    <textarea id="key-risks" placeholder="Identify main risks:
+• Technical risks
+• Market risks  
+• Financial risks
+• Regulatory risks
+• Team risks"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Risk Mitigation Strategies</label>
+                    <textarea id="risk-mitigation" placeholder="For each risk identified above, provide specific mitigation strategies and contingency plans."></textarea>
+                </div>
+            </div>
+            
+            <!-- Document Checklist -->
+            <div class="form-section">
+                <h3 class="section-title">📋 Document Checklist</h3>
+                
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-incorporation">
+                        <label for="doc-incorporation">Certificate of Incorporation</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-moa-aoa">
+                        <label for="doc-moa-aoa">Memorandum & Articles of Association</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-dpiit">
+                        <label for="doc-dpiit">DPIIT Recognition Certificate</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-pan">
+                        <label for="doc-pan">Company PAN Card</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-gst">
+                        <label for="doc-gst">GST Registration Certificate</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-bank">
+                        <label for="doc-bank">Bank Account Details</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-financial">
+                        <label for="doc-financial">Financial Statements (if applicable)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-business-plan">
+                        <label for="doc-business-plan">Detailed Business Plan</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-founder-cv">
+                        <label for="doc-founder-cv">Founder CVs/Resumes</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc-pitch-deck">
+                        <label for="doc-pitch-deck">Pitch Deck/Presentation</label>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>⚠️ Important:</strong> Ensure all documents are self-attested and in PDF format. Some schemes may require additional sector-specific documents.
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="saveDraft()">Save as Draft</button>
+                <button class="btn btn-primary" onclick="generateApplication()">Generate Application</button>
+                <button class="btn btn-secondary" onclick="downloadPDF()">Download PDF</button>
+            </div>
+        </div>
+        
+        <!-- Application Timeline -->
+        <div class="timeline">
+            <h3 style="color: #28a745; margin-bottom: 20px;">📅 Typical Application Timeline</h3>
+            
+            <div class="timeline-item">
+                <div class="timeline-step">1</div>
+                <div class="timeline-content">
+                    <h4>Application Submission</h4>
+                    <p>Submit complete application with all required documents. Most applications are submitted online through respective portals.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-step">2</div>
+                <div class="timeline-content">
+                    <h4>Initial Screening (2-4 weeks)</h4>
+                    <p>Administrative review for completeness and basic eligibility criteria. Incomplete applications may be returned.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-step">3</div>
+                <div class="timeline-content">
+                    <h4>Technical Evaluation (4-8 weeks)</h4>
+                    <p>Expert committee reviews technical feasibility, innovation potential, and market viability.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-step">4</div>
+                <div class="timeline-content">
+                    <h4>Presentation/Interview (1-2 weeks)</h4>
+                    <p>Shortlisted applicants present to evaluation committee. Prepare 10-15 minute presentation + Q&A.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-step">5</div>
+                <div class="timeline-content">
+                    <h4>Final Decision (2-4 weeks)</h4>
+                    <p>Committee makes final selection. Successful applicants receive sanction letter with terms and conditions.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-step">6</div>
+                <div class="timeline-content">
+                    <h4>Fund Disbursement (2-6 weeks)</h4>
+                    <p>After accepting terms and completing formalities, funds are typically disbursed in tranches based on milestones.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedScheme = '';
+        let applicationData = {};
+        
+        function selectScheme(scheme) {
+            selectedScheme = scheme;
+            
+            // Update selected state
+            document.querySelectorAll('.scheme-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Show application form
+            document.getElementById('applicationForm').classList.add('active');
+            document.getElementById('applicationForm').scrollIntoView({ behavior: 'smooth' });
+            
+            // Update form based on scheme
+            updateFormForScheme(scheme);
+        }
+        
+        function updateFormForScheme(scheme) {
+            const schemeDetails = {
+                'startup-india': {
+                    title: 'Startup India Seed Fund Scheme',
+                    maxAmount: 20000000,
+                    duration: 'up to 2 years',
+                    focus: 'Prototype development, proof of concept, product trials'
+                },
+                'samridh': {
+                    title: 'SAMRIDH Scheme',
+                    maxAmount: 100000000,
+                    duration: 'up to 3 years',
+                    focus: 'Scaling manufacturing, creating production infrastructure'
+                },
+                'msme-schemes': {
+                    title: 'MSME Technology Development Scheme',
+                    maxAmount: 50000000,
+                    duration: '12-24 months',
+                    focus: 'Technology upgradation, quality certification, R&D'
+                }
+            };
+            
+            const details = schemeDetails[scheme] || schemeDetails['startup-india'];
+            
+            // Update form title and hints
+            document.querySelector('.application-form h2').textContent = details.title + ' Application';
+            
+            // Set max grant amount
+            document.getElementById('grant-amount').setAttribute('max', details.maxAmount);
+            document.getElementById('grant-amount').placeholder = `Max: ₹${(details.maxAmount/10000000).toFixed(0)} Cr`;
+        }
+        
+        function updateProgress() {
+            const totalFields = document.querySelectorAll('input[required], textarea[required], select[required]').length;
+            const filledFields = Array.from(document.querySelectorAll('input[required], textarea[required], select[required]'))
+                .filter(field => field.value.trim() !== '').length;
+            
+            const progress = (filledFields / totalFields) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function saveDraft() {
+            // Collect all form data
+            const formData = {};
+            document.querySelectorAll('input, textarea, select').forEach(field => {
+                formData[field.id] = field.value;
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('grantApplicationDraft', JSON.stringify({
+                scheme: selectedScheme,
+                data: formData,
+                savedAt: new Date().toISOString()
+            }));
+            
+            alert('Draft saved successfully! You can continue later.');
+        }
+        
+        function loadDraft() {
+            const saved = localStorage.getItem('grantApplicationDraft');
+            if (saved) {
+                const draft = JSON.parse(saved);
+                
+                // Restore scheme selection
+                if (draft.scheme) {
+                    selectScheme(draft.scheme);
+                }
+                
+                // Restore form data
+                Object.keys(draft.data).forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.value = draft.data[fieldId];
+                    }
+                });
+                
+                updateProgress();
+            }
+        }
+        
+        function generateApplication() {
+            // Validate required fields
+            const requiredFields = document.querySelectorAll('input[required], textarea[required], select[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#dc3545';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e0e0e0';
+                }
+            });
+            
+            if (!isValid) {
+                alert('Please fill all required fields marked with *');
+                return;
+            }
+            
+            // Generate application content
+            const applicationHTML = generateApplicationHTML();
+            
+            // Open in new window
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(applicationHTML);
+            newWindow.document.close();
+        }
+        
+        function generateApplicationHTML() {
+            const companyName = document.getElementById('company-name').value;
+            const projectTitle = document.getElementById('project-title').value;
+            const grantAmount = document.getElementById('grant-amount').value;
+            
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${selectedScheme.toUpperCase()} Application - ${companyName}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 40px; line-height: 1.6; }
+                        h1 { color: #28a745; text-align: center; margin-bottom: 30px; }
+                        h2 { color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 10px; margin-top: 30px; }
+                        .info-grid { display: grid; grid-template-columns: 200px 1fr; gap: 10px; margin: 20px 0; }
+                        .label { font-weight: bold; }
+                        p { margin: 15px 0; }
+                        .signature-section { margin-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+                        .signature-box { border-top: 1px solid #333; padding-top: 10px; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Government Grant Application</h1>
+                    <h2>${selectedScheme.replace('-', ' ').toUpperCase()} SCHEME</h2>
+                    
+                    <h2>1. Company Information</h2>
+                    <div class="info-grid">
+                        <div class="label">Company Name:</div>
+                        <div>${document.getElementById('company-name').value}</div>
+                        <div class="label">CIN Number:</div>
+                        <div>${document.getElementById('cin-number').value}</div>
+                        <div class="label">Incorporation Date:</div>
+                        <div>${document.getElementById('incorporation-date').value}</div>
+                        <div class="label">Industry Sector:</div>
+                        <div>${document.getElementById('industry-sector').value}</div>
+                        <div class="label">Business Stage:</div>
+                        <div>${document.getElementById('business-stage').value}</div>
+                    </div>
+                    
+                    <p><strong>Registered Address:</strong><br>${document.getElementById('registered-address').value}</p>
+                    <p><strong>Company Description:</strong><br>${document.getElementById('company-description').value}</p>
+                    
+                    <h2>2. Founder Information</h2>
+                    <div class="info-grid">
+                        <div class="label">Lead Founder:</div>
+                        <div>${document.getElementById('founder-name').value}</div>
+                        <div class="label">Email:</div>
+                        <div>${document.getElementById('founder-email').value}</div>
+                        <div class="label">Phone:</div>
+                        <div>${document.getElementById('founder-phone').value}</div>
+                        <div class="label">Education:</div>
+                        <div>${document.getElementById('founder-education').value}</div>
+                        <div class="label">Co-founders:</div>
+                        <div>${document.getElementById('co-founders-count').value}</div>
+                    </div>
+                    
+                    <p><strong>Team Background:</strong><br>${document.getElementById('team-background').value}</p>
+                    
+                    <h2>3. Project Details</h2>
+                    <p><strong>Project Title:</strong> ${document.getElementById('project-title').value}</p>
+                    <p><strong>Problem Statement:</strong><br>${document.getElementById('problem-statement').value}</p>
+                    <p><strong>Proposed Solution:</strong><br>${document.getElementById('proposed-solution').value}</p>
+                    <p><strong>Technology & Innovation:</strong><br>${document.getElementById('technology-innovation').value}</p>
+                    
+                    <h2>4. Financial Information</h2>
+                    <div class="info-grid">
+                        <div class="label">Grant Requested:</div>
+                        <div>₹${parseInt(document.getElementById('grant-amount').value || 0).toLocaleString('en-IN')}</div>
+                        <div class="label">Project Duration:</div>
+                        <div>${document.getElementById('project-duration').value} months</div>
+                        <div class="label">Previous Funding:</div>
+                        <div>${document.getElementById('previous-funding').value || 'None'}</div>
+                        <div class="label">Current Revenue:</div>
+                        <div>${document.getElementById('current-revenue').value || 'Pre-revenue'}</div>
+                    </div>
+                    
+                    <p><strong>Budget Breakdown:</strong><br>${document.getElementById('budget-breakdown').value}</p>
+                    <p><strong>Expected Outcomes:</strong><br>${document.getElementById('expected-outcomes').value}</p>
+                    
+                    <h2>5. Impact & Benefits</h2>
+                    <p><strong>Social/Economic Impact:</strong><br>${document.getElementById('social-impact').value}</p>
+                    <p><strong>Job Creation:</strong> ${document.getElementById('job-creation').value}</p>
+                    <p><strong>Beneficiaries:</strong> ${document.getElementById('beneficiaries').value}</p>
+                    <p><strong>Geographic Coverage:</strong> ${document.getElementById('geographic-coverage').value}</p>
+                    <p><strong>Sustainability:</strong><br>${document.getElementById('sustainability').value}</p>
+                    
+                    <h2>6. Risk Assessment</h2>
+                    <p><strong>Key Risks:</strong><br>${document.getElementById('key-risks').value}</p>
+                    <p><strong>Mitigation Strategies:</strong><br>${document.getElementById('risk-mitigation').value}</p>
+                    
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <div>Founder Signature</div>
+                            <div style="margin-top: 20px;">Date: _____________</div>
+                        </div>
+                        <div class="signature-box">
+                            <div>Company Seal</div>
+                            <div style="margin-top: 20px;">Place: _____________</div>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 40px; font-size: 12px; color: #666;">
+                        <strong>Declaration:</strong> I hereby declare that the information provided in this application is true and correct to the best of my knowledge. I understand that any false information may lead to rejection of the application or cancellation of the grant.
+                    </p>
+                </body>
+                </html>
+            `;
+        }
+        
+        function downloadPDF() {
+            // Generate application and trigger download
+            generateApplication();
+            
+            // Note: For actual PDF generation, you would integrate with a PDF library
+            alert('Application generated! Print as PDF from the opened window for submission.');
+        }
+        
+        // Auto-save progress
+        setInterval(() => {
+            updateProgress();
+        }, 2000);
+        
+        // Load draft on page load
+        window.onload = function() {
+            loadDraft();
+            
+            // Add change listeners for progress tracking
+            document.querySelectorAll('input, textarea, select').forEach(field => {
+                field.addEventListener('input', updateProgress);
+                field.addEventListener('change', updateProgress);
+            });
+        };
+    </script>
+</body>
+</html>

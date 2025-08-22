@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P3 Funding Mastery - Beginner's Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #ffffff;
+            color: #000000;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 3px solid #000;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .difficulty-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin: 10px 0;
+            padding: 5px 15px;
+            border: 1px solid #000;
+            background: #f0f0f0;
+        }
+
+        .difficulty-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+
+        .difficulty-dot.filled {
+            background: #000;
+        }
+
+        .learning-path {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .level-section {
+            border: 2px solid #000;
+            padding: 30px;
+            background: #fff;
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .level-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .level-beginner {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .level-intermediate {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+
+        .level-advanced {
+            border-color: #dc3545;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+
+        .level-expert {
+            border-color: #6f42c1;
+            background: linear-gradient(135deg, #e2d9f3 0%, #d6c7ed 100%);
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .topic-card {
+            padding: 20px;
+            border: 1px solid #000;
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        .topic-card:hover {
+            box-shadow: 5px 5px 0px #000;
+            transform: translate(-2px, -2px);
+        }
+
+        .topic-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .topic-description {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .topic-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tool-tag {
+            padding: 4px 8px;
+            background: #f0f0f0;
+            border: 1px solid #000;
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            background: #000;
+            color: #fff;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f0f0;
+        }
+
+        .progress-tracker {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #000;
+            background: #f9f9f9;
+        }
+
+        .progress-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .progress-items {
+            display: grid;
+            gap: 10px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #000;
+            cursor: pointer;
+        }
+
+        .progress-checkbox.checked {
+            background: #000;
+            position: relative;
+        }
+
+        .progress-checkbox.checked:after {
+            content: '✓';
+            color: #fff;
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            font-size: 12px;
+        }
+
+        .glossary {
+            margin-top: 40px;
+            padding: 30px;
+            border: 2px solid #000;
+            background: #f8f9fa;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .term-card {
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #666;
+        }
+
+        .term-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .term-definition {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .next-steps {
+            margin-top: 40px;
+            padding: 30px;
+            border: 3px solid #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .level-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>P3 Funding Mastery - Complete Learning Path</h1>
+            <p>Your comprehensive guide from funding basics to advanced deal structuring. Master every aspect of startup funding in India with step-by-step guidance.</p>
+            <div class="difficulty-indicator">
+                <span>Difficulty: </span>
+                <div class="difficulty-dot filled"></div>
+                <div class="difficulty-dot filled"></div>
+                <div class="difficulty-dot filled"></div>
+                <div class="difficulty-dot"></div>
+                <div class="difficulty-dot"></div>
+                <span>Beginner to Advanced</span>
+            </div>
+        </div>
+
+        <div class="learning-path">
+            <!-- BEGINNER LEVEL -->
+            <div class="level-section level-beginner">
+                <div class="level-header">
+                    <h2 class="level-title">🌱 BEGINNER LEVEL</h2>
+                    <div class="difficulty-indicator">
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot"></div>
+                        <div class="difficulty-dot"></div>
+                        <div class="difficulty-dot"></div>
+                        <div class="difficulty-dot"></div>
+                        <span>Start Here</span>
+                    </div>
+                </div>
+                
+                <p style="margin-bottom: 20px; font-size: 16px;">
+                    <strong>Perfect for:</strong> Complete beginners, first-time founders, students, professionals considering entrepreneurship
+                </p>
+                
+                <div class="topics-grid">
+                    <div class="topic-card">
+                        <div class="topic-title">🎯 Funding Fundamentals</div>
+                        <div class="topic-description">
+                            Learn what funding means, why startups need it, and different types of funding available. Understand basic terminology and concepts.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Assessment</span>
+                            <span class="tool-tag">Calculator</span>
+                            <span class="tool-tag">Guide</span>
+                        </div>
+                        <a href="/templates/p3-funding-readiness-assessment.html" class="btn">Start Assessment</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">💡 Understanding Your Needs</div>
+                        <div class="topic-description">
+                            Calculate how much funding you actually need, understand different use cases, and learn about funding stages (Pre-seed, Seed, Series A, etc.).
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Calculator</span>
+                            <span class="tool-tag">Examples</span>
+                            <span class="tool-tag">Worksheet</span>
+                        </div>
+                        <a href="/templates/p3-financial-model.html" class="btn">Use Calculator</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">🏛️ Government Schemes for Beginners</div>
+                        <div class="topic-description">
+                            Discover free money available through government schemes. Learn about Startup India, MUDRA loans, and state-specific benefits.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Database</span>
+                            <span class="tool-tag">Applications</span>
+                            <span class="tool-tag">Tracker</span>
+                        </div>
+                        <a href="/templates/p3-government-grant-application.html" class="btn">Explore Schemes</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">📊 Your First Pitch Deck</div>
+                        <div class="topic-description">
+                            Create your first investor presentation with guided templates. Learn what slides to include and how to tell your startup story effectively.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Template</span>
+                            <span class="tool-tag">Builder</span>
+                            <span class="tool-tag">Examples</span>
+                        </div>
+                        <a href="/templates/p3-investor-pitch-deck.html" class="btn">Build Pitch Deck</a>
+                    </div>
+                </div>
+
+                <div style="background: rgba(40, 167, 69, 0.1); padding: 15px; margin-top: 20px; border-left: 4px solid #28a745;">
+                    <strong>Beginner Success Milestone:</strong> Complete funding readiness assessment (Score 60+), create first pitch deck, apply to 2 government schemes, and calculate your funding needs.
+                </div>
+            </div>
+
+            <!-- INTERMEDIATE LEVEL -->
+            <div class="level-section level-intermediate">
+                <div class="level-header">
+                    <h2 class="level-title">⚡ INTERMEDIATE LEVEL</h2>
+                    <div class="difficulty-indicator">
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot"></div>
+                        <div class="difficulty-dot"></div>
+                        <span>Building Momentum</span>
+                    </div>
+                </div>
+                
+                <p style="margin-bottom: 20px; font-size: 16px;">
+                    <strong>Perfect for:</strong> Founders with basic understanding, those who've attempted fundraising, early-stage startups
+                </p>
+                
+                <div class="topics-grid">
+                    <div class="topic-card">
+                        <div class="topic-title">🎯 Angel Investor Outreach</div>
+                        <div class="topic-description">
+                            Learn to identify and approach angel investors. Master the art of warm introductions, cold outreach, and building investor relationships.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">CRM</span>
+                            <span class="tool-tag">Templates</span>
+                            <span class="tool-tag">Tracker</span>
+                        </div>
+                        <a href="/templates/p3-investor-crm-tracker.html" class="btn">Manage Investors</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">📈 Financial Modeling</div>
+                        <div class="topic-description">
+                            Build sophisticated financial models with projections, scenarios, and unit economics. Understand key metrics that investors care about.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Model Builder</span>
+                            <span class="tool-tag">Scenarios</span>
+                            <span class="tool-tag">Metrics</span>
+                        </div>
+                        <a href="/templates/p3-financial-model.html" class="btn">Build Model</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">📋 Due Diligence Preparation</div>
+                        <div class="topic-description">
+                            Prepare for investor due diligence with comprehensive checklists, data room setup, and document organization strategies.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Checklist</span>
+                            <span class="tool-tag">Data Room</span>
+                            <span class="tool-tag">Templates</span>
+                        </div>
+                        <a href="/templates/p3-due-diligence-checklist.html" class="btn">Prepare DD</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">💼 VC Fund Research</div>
+                        <div class="topic-description">
+                            Research and target venture capital funds. Understand fund thesis, portfolio companies, and investment criteria for better alignment.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Database</span>
+                            <span class="tool-tag">Research</span>
+                            <span class="tool-tag">Analysis</span>
+                        </div>
+                        <a href="/templates/p3-investor-crm-tracker.html" class="btn">Research VCs</a>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255, 193, 7, 0.1); padding: 15px; margin-top: 20px; border-left: 4px solid #ffc107;">
+                    <strong>Intermediate Success Milestone:</strong> Build investor pipeline (20+ contacts), create 5-year financial model, complete due diligence preparation, and secure first investor meeting.
+                </div>
+            </div>
+
+            <!-- ADVANCED LEVEL -->
+            <div class="level-section level-advanced">
+                <div class="level-header">
+                    <h2 class="level-title">🚀 ADVANCED LEVEL</h2>
+                    <div class="difficulty-indicator">
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot"></div>
+                        <span>Deal Making</span>
+                    </div>
+                </div>
+                
+                <p style="margin-bottom: 20px; font-size: 16px;">
+                    <strong>Perfect for:</strong> Startups in active fundraising, founders with investor interest, Series A+ preparation
+                </p>
+                
+                <div class="topics-grid">
+                    <div class="topic-card">
+                        <div class="topic-title">📑 Term Sheet Negotiation</div>
+                        <div class="topic-description">
+                            Master the art of term sheet negotiation. Understand valuation, equity, liquidation preferences, and key terms that impact your future.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Simulator</span>
+                            <span class="tool-tag">Calculator</span>
+                            <span class="tool-tag">Templates</span>
+                        </div>
+                        <a href="/templates/p3-term-sheet-negotiation.html" class="btn">Master Terms</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">🌍 International Funding</div>
+                        <div class="topic-description">
+                            Access global investors and navigate cross-border funding regulations. Understand FEMA compliance and international fund structures.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Regulations</span>
+                            <span class="tool-tag">Compliance</span>
+                            <span class="tool-tag">Networks</span>
+                        </div>
+                        <a href="/templates/p3-investor-crm-tracker.html" class="btn">Go Global</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">💹 Advanced Instruments</div>
+                        <div class="topic-description">
+                            Master convertible notes, SAFE agreements, revenue-based financing, and other sophisticated funding instruments.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Calculator</span>
+                            <span class="tool-tag">Simulator</span>
+                            <span class="tool-tag">Comparison</span>
+                        </div>
+                        <a href="/templates/p3-term-sheet-negotiation.html" class="btn">Learn Instruments</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">🎯 Series A+ Strategy</div>
+                        <div class="topic-description">
+                            Prepare for growth stage funding with advanced metrics, scaling strategies, and institutional investor requirements.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Metrics</span>
+                            <span class="tool-tag">Strategy</span>
+                            <span class="tool-tag">Modeling</span>
+                        </div>
+                        <a href="/templates/p3-financial-model.html" class="btn">Scale Strategy</a>
+                    </div>
+                </div>
+
+                <div style="background: rgba(220, 53, 69, 0.1); padding: 15px; margin-top: 20px; border-left: 4px solid #dc3545;">
+                    <strong>Advanced Success Milestone:</strong> Negotiate favorable term sheet, secure lead investor, complete due diligence process, and close funding round.
+                </div>
+            </div>
+
+            <!-- EXPERT LEVEL -->
+            <div class="level-section level-expert">
+                <div class="level-header">
+                    <h2 class="level-title">🏆 EXPERT LEVEL</h2>
+                    <div class="difficulty-indicator">
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <div class="difficulty-dot filled"></div>
+                        <span>Master Class</span>
+                    </div>
+                </div>
+                
+                <p style="margin-bottom: 20px; font-size: 16px;">
+                    <strong>Perfect for:</strong> Serial entrepreneurs, funded startups, preparing for exits, investment banking
+                </p>
+                
+                <div class="topics-grid">
+                    <div class="topic-card">
+                        <div class="topic-title">📊 IPO Preparation</div>
+                        <div class="topic-description">
+                            Prepare for public offerings with compliance, financial auditing, governance structures, and public market readiness.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Readiness</span>
+                            <span class="tool-tag">Compliance</span>
+                            <span class="tool-tag">Governance</span>
+                        </div>
+                        <a href="/templates/p3-due-diligence-checklist.html" class="btn">IPO Ready</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">🤝 M&A Strategy</div>
+                        <div class="topic-description">
+                            Master merger and acquisition strategies, strategic buyer identification, and exit planning for maximum value creation.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Valuation</span>
+                            <span class="tool-tag">Strategy</span>
+                            <span class="tool-tag">Exit</span>
+                        </div>
+                        <a href="/templates/p3-financial-model.html" class="btn">Plan Exit</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">🌟 Ecosystem Building</div>
+                        <div class="topic-description">
+                            Build funding ecosystems, mentor other founders, angel investing, and creating value beyond your own startup.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Network</span>
+                            <span class="tool-tag">Mentoring</span>
+                            <span class="tool-tag">Investing</span>
+                        </div>
+                        <a href="/templates/p3-investor-crm-tracker.html" class="btn">Build Ecosystem</a>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-title">⚡ Crisis & Recovery</div>
+                        <div class="topic-description">
+                            Navigate funding crises, bridge financing, turnaround strategies, and recovery funding during challenging times.
+                        </div>
+                        <div class="topic-tools">
+                            <span class="tool-tag">Crisis Plan</span>
+                            <span class="tool-tag">Bridge</span>
+                            <span class="tool-tag">Recovery</span>
+                        </div>
+                        <a href="/templates/p3-financial-model.html" class="btn">Crisis Strategy</a>
+                    </div>
+                </div>
+
+                <div style="background: rgba(111, 66, 193, 0.1); padding: 15px; margin-top: 20px; border-left: 4px solid #6f42c1;">
+                    <strong>Expert Success Milestone:</strong> Successful exit strategy execution, ecosystem contribution, expert advisory roles, and industry thought leadership.
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-header">📈 Your Learning Progress Tracker</div>
+            <div class="progress-items">
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Complete funding readiness assessment (Score 60+)</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Create and refine your pitch deck (10 slides)</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Build 18-month financial projections</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Apply to 3+ government schemes</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Build investor pipeline (20+ contacts)</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Complete due diligence preparation</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Understand term sheet negotiations</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Secure first investor meeting</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Close first funding round</span>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-checkbox" onclick="toggleProgress(this)"></div>
+                    <span>Plan and execute growth strategy</span>
+                </div>
+            </div>
+            <button class="btn" onclick="saveProgress()" style="margin-top: 15px;">Save Progress</button>
+        </div>
+
+        <!-- Funding Glossary -->
+        <div class="glossary">
+            <h2 style="margin-bottom: 20px;">📚 Funding Glossary for Beginners</h2>
+            <div class="glossary-grid">
+                <div class="term-card">
+                    <div class="term-title">Angel Investor</div>
+                    <div class="term-definition">Individual who invests personal money in early-stage startups, typically ₹25L-₹2Cr range.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Venture Capital (VC)</div>
+                    <div class="term-definition">Professional investment firm that invests larger amounts (₹2Cr+) in exchange for equity.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Valuation</div>
+                    <div class="term-definition">The estimated worth of your company, determines how much equity you give for investment.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Equity</div>
+                    <div class="term-definition">Ownership percentage in your company that you give to investors in exchange for money.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Term Sheet</div>
+                    <div class="term-definition">Document outlining key terms of investment - amount, valuation, rights, etc.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Due Diligence</div>
+                    <div class="term-definition">Detailed investigation by investors of your business, finances, and legal structure.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Runway</div>
+                    <div class="term-definition">How long your current money will last based on monthly burn rate.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Series A, B, C</div>
+                    <div class="term-definition">Funding rounds as company grows - A (early growth), B (scaling), C (expansion).</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">Convertible Note</div>
+                    <div class="term-definition">Loan that converts to equity in future funding round, common for early-stage funding.</div>
+                </div>
+                <div class="term-card">
+                    <div class="term-title">SAFE Agreement</div>
+                    <div class="term-definition">Simple Agreement for Future Equity - investor gets equity when certain events occur.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="next-steps">
+            <h2 style="margin-bottom: 20px;">🎯 Ready to Start Your Funding Journey?</h2>
+            <p style="margin-bottom: 20px; font-size: 16px;">
+                Choose your starting point based on your current experience level and dive into the comprehensive P3 Funding Mastery course.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="/templates/p3-funding-readiness-assessment.html" class="btn" style="font-size: 14px; padding: 12px 20px;">
+                    🎯 Start with Assessment
+                </a>
+                <a href="/templates/p3-investor-pitch-deck.html" class="btn" style="font-size: 14px; padding: 12px 20px;">
+                    📊 Build Pitch Deck
+                </a>
+                <a href="/templates/p3-financial-model.html" class="btn" style="font-size: 14px; padding: 12px 20px;">
+                    💹 Create Financial Model
+                </a>
+                <a href="/products/p3" class="btn" style="font-size: 14px; padding: 12px 20px; background: #28a745;">
+                    🚀 Access Full Course
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleProgress(element) {
+            element.classList.toggle('checked');
+            updateProgressStats();
+        }
+
+        function updateProgressStats() {
+            const total = document.querySelectorAll('.progress-checkbox').length;
+            const completed = document.querySelectorAll('.progress-checkbox.checked').length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            // Could update a progress indicator here
+            console.log(`Progress: ${completed}/${total} (${percentage}%)`);
+        }
+
+        function saveProgress() {
+            const progressData = Array.from(document.querySelectorAll('.progress-checkbox')).map((checkbox, index) => ({
+                index,
+                completed: checkbox.classList.contains('checked')
+            }));
+            
+            localStorage.setItem('p3_learning_progress', JSON.stringify(progressData));
+            alert('Progress saved! Your learning journey is tracked locally.');
+        }
+
+        // Load saved progress on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedProgress = localStorage.getItem('p3_learning_progress');
+            if (savedProgress) {
+                const progressData = JSON.parse(savedProgress);
+                progressData.forEach(item => {
+                    if (item.completed) {
+                        const checkbox = document.querySelectorAll('.progress-checkbox')[item.index];
+                        if (checkbox) {
+                            checkbox.classList.add('checked');
+                        }
+                    }
+                });
+                updateProgressStats();
+            }
+        });
+    </script>
+</body>
+</html>

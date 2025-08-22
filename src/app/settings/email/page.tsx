@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -46,14 +47,14 @@ export default function EmailSettingsPage() {
 
   const fetchPreferences = async () => {
     try {
-      const response = await fetch('/api/emails/preferences');
+      const response = await fetch('/api/user/email-preferences');
       const data = await response.json();
       
       if (data.preferences) {
         setPreferences(data.preferences);
       }
     } catch (error) {
-      console.error('Failed to fetch preferences:', error);
+      logger.error('Failed to fetch preferences:', error);
       setMessage({ type: 'error', text: 'Failed to load email preferences' });
     } finally {
       setLoading(false);
@@ -65,7 +66,7 @@ export default function EmailSettingsPage() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/emails/preferences', {
+      const response = await fetch('/api/user/email-preferences', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
@@ -80,7 +81,7 @@ export default function EmailSettingsPage() {
         throw new Error(data.error || 'Failed to update preferences');
       }
     } catch (error) {
-      console.error('Failed to update preferences:', error);
+      logger.error('Failed to update preferences:', error);
       setMessage({ type: 'error', text: 'Failed to update email preferences' });
     } finally {
       setSaving(false);
@@ -176,7 +177,7 @@ export default function EmailSettingsPage() {
           <div>
             <Heading as="h1" variant="h2">Email Preferences</Heading>
             <Text color="muted" className="mt-2">
-              Choose which emails you&apos;d like to receive from The Indian Startup
+              Choose which emails you'd like to receive from The Indian Startup
             </Text>
           </div>
 
@@ -197,7 +198,7 @@ export default function EmailSettingsPage() {
               <div>
                 <Text weight="medium">All emails are disabled</Text>
                 <Text size="sm" color="muted">
-                  You&apos;ve unsubscribed from all emails. Enable specific types below or contact support if this was a mistake.
+                  You've unsubscribed from all emails. Enable specific types below or contact support if this was a mistake.
                 </Text>
               </div>
               <Button 

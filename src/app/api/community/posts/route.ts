@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 // GET - Fetch posts with pagination and filtering
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
     const { data: posts, error } = await query;
 
     if (error) {
-      console.error('Error fetching posts:', error);
+      logger.error('Error fetching posts:', error);
       return NextResponse.json(
         { error: 'Failed to fetch posts' },
         { status: 500 }
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Posts API error:', error);
+    logger.error('Posts API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (postError) {
-      console.error('Error creating post:', postError);
+      logger.error('Error creating post:', postError);
       return NextResponse.json(
         { error: 'Failed to create post' },
         { status: 500 }
@@ -144,7 +145,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create post error:', error);
+    logger.error('Create post error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

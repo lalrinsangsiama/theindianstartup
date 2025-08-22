@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
@@ -8,7 +9,7 @@ import { UserMenu } from '@/components/auth/UserMenu';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
 import { Badge } from '@/components/ui/Badge';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/cn';
 import {
   Home,
   BookOpen,
@@ -28,6 +29,8 @@ import {
   ShoppingCart,
   Plus,
   Minus,
+  Building,
+  MapPin,
 } from 'lucide-react';
 
 interface NavItem {
@@ -42,6 +45,7 @@ const navigation: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: Home },
   { label: 'My Journey', href: '/journey', icon: BookOpen },
   { label: 'Startup Portfolio', href: '/portfolio', icon: Target },
+  { label: 'Government Schemes', href: '/government-schemes', icon: Building, badge: 'Updated' },
   { label: 'Community', href: '/community', icon: Users, badge: 'New' },
   { label: 'Resources', href: '/resources', icon: FileText },
 ];
@@ -97,7 +101,7 @@ const loadCartFromStorage = (): CartItem[] => {
     // Return items if cart is still valid
     return cartData.items || [];
   } catch (error) {
-    console.error('Error loading cart from storage:', error);
+    logger.error('Error loading cart from storage:', error);
     localStorage.removeItem('dashboardCart');
     return [];
   }
@@ -153,7 +157,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         const data = await response.json();
         setUserProfile(data.user);
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        logger.error('Failed to fetch profile:', error);
       }
     };
 
@@ -519,7 +523,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     saveCartToStorage(cart);
                     window.location.href = '/pricing?fromCart=true';
                   } catch (error) {
-                    console.error('Error saving cart:', error);
+                    logger.error('Error saving cart:', error);
                     alert('Failed to save cart. Please try again.');
                   }
                 }}

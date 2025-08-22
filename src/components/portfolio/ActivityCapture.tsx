@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
@@ -84,7 +85,7 @@ export function ActivityCapture({
       }
 
     } catch (err) {
-      console.error('Failed to fetch activity data:', err);
+      logger.error('Failed to fetch activity data:', err);
       setError('Failed to load activity data');
     } finally {
       setIsLoading(false);
@@ -152,7 +153,7 @@ export function ActivityCapture({
       setTimeout(() => setShowPortfolioPreview(false), 3000);
 
     } catch (err) {
-      console.error('Failed to save activity:', err);
+      logger.error('Failed to save activity:', err);
       setError('Failed to save activity. Please try again.');
     } finally {
       setIsSaving(false);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -68,7 +69,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Activity GET error:', error);
+    logger.error('Activity GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -212,12 +213,37 @@ export async function PUT(
       }
 
       result = { activity: newActivity, action: 'created' };
+
+      // Award XP for portfolio activity completion (only for new completed activities)
+      if (status === 'completed') {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/xp/award`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cookie': request.headers.get('cookie') || '',
+            },
+            body: JSON.stringify({
+              eventType: 'PORTFOLIO_SECTION',
+              metadata: {
+                activityTypeId,
+                sourceCourse,
+                sourceModule,
+                sourceLesson,
+              },
+            }),
+          });
+        } catch (xpError) {
+          logger.error('Error awarding portfolio XP:', xpError);
+          // Don't fail the whole operation for XP issues
+        }
+      }
     }
 
     return NextResponse.json(result);
 
   } catch (error) {
-    console.error('Activity PUT error:', error);
+    logger.error('Activity PUT error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -278,7 +304,7 @@ export async function DELETE(
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('Activity DELETE error:', error);
+    logger.error('Activity DELETE error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -36,6 +36,18 @@ By the end of today, you will:
 
 ### Phase 1: 30-Day Achievement Review (90 mins, 80 XP)
 
+### 📊 Portfolio Activity: Journey Completion & Legacy
+
+<ActivityCapture 
+  activityTypeId="define_problem_statement"
+  activityName="30-Day Journey Completion Summary"
+  lessonId="p1-day-30"
+  courseCode="P1"
+  moduleId="launch-ready"
+/>
+
+**Instructions:** Complete your comprehensive 30-day achievement summary, including key milestones, lessons learned, and next-step recommendations. This capstone activity will be saved to your portfolio and serve as a testament to your entrepreneurial transformation.
+
 #### 1.1 Comprehensive Progress Assessment *(45 mins)*
 **30-Day Transformation Analysis:**
 

@@ -93,7 +93,7 @@ export default function LessonCompletePage() {
                   Congratulations! 🎉
                 </Heading>
                 <Text className="text-xl mb-8">
-                  You&apos;ve completed Day {day} of your startup journey
+                  You've completed Day {day} of your startup journey
                 </Text>
 
                 {/* Achievements Grid */}
@@ -160,7 +160,7 @@ export default function LessonCompletePage() {
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-8">
                     <Star className="w-6 h-6 text-purple-600 mx-auto mb-2" />
                     <Text weight="medium" className="text-purple-800">
-                      Week {Math.ceil(day / 7)} Complete! You&apos;re making incredible progress.
+                      Week {Math.ceil(day / 7)} Complete! You're making incredible progress.
                     </Text>
                   </div>
                 )}

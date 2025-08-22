@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -74,7 +75,7 @@ function ProfileContent() {
           websiteUrl: data.user.websiteUrl || ''
         });
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        logger.error('Failed to fetch profile:', error);
         setMessage({ type: 'error', text: 'Failed to load profile data' });
       } finally {
         setLoading(false);
@@ -104,7 +105,7 @@ function ProfileContent() {
       setIsEditing(false);
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      logger.error('Failed to update profile:', error);
       setMessage({ type: 'error', text: 'Failed to update profile' });
     } finally {
       setSaving(false);

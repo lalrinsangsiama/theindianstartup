@@ -203,7 +203,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <Heading as="h2" variant="h4" className="mb-4">8. Children&apos;s Privacy</Heading>
+            <Heading as="h2" variant="h4" className="mb-4">8. Children's Privacy</Heading>
             <Text className="mb-4">
               Our Service is not intended for children under 18. We do not knowingly collect information from children. 
               If you believe we have collected information from a child, please contact us immediately.
@@ -230,7 +230,7 @@ export default function PrivacyPolicyPage() {
             <Heading as="h2" variant="h4" className="mb-4">11. Changes to This Policy</Heading>
             <Text className="mb-4">
               We may update this Privacy Policy from time to time. We will notify you of any material changes by email 
-              and by posting the new policy on this page. The &quot;Last updated&quot; date will be revised.
+              and by posting the new policy on this page. The "Last updated" date will be revised.
             </Text>
           </section>
 

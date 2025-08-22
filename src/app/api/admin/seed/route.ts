@@ -1,66 +1,70 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { requireAdmin } from '@/lib/auth';
-import { spawn } from 'child_process';
+import { contentSeeder, SeedingProgress } from '@/lib/admin-seeding';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    // Check admin access
     await requireAdmin();
-    
-    // Use spawn instead of exec for better security
-    // This prevents shell injection attacks
-    const seedProcess = spawn('npm', ['run', 'seed'], {
-      env: process.env,
-      shell: false // Explicitly disable shell
-    });
-    
-    let stdout = '';
-    let stderr = '';
-    
-    // Collect output
-    seedProcess.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-    
-    seedProcess.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-    
-    // Wait for process to complete
-    await new Promise<void>((resolve, reject) => {
-      seedProcess.on('close', (code) => {
-        if (code !== 0) {
-          reject(new Error(`Seed process exited with code ${code}`));
-        } else {
-          resolve();
-        }
-      });
-      
-      seedProcess.on('error', (err) => {
-        reject(err);
-      });
-    });
-    
-    // Check for meaningful errors (ignore Prisma info messages)
-    if (stderr && !stderr.includes('Prisma schema loaded')) {
-      return NextResponse.json(
-        { success: false, error: 'Seed process encountered errors' },
-        { status: 500 }
-      );
-    }
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Seed completed successfully'
-      // Don't expose stdout in production
-    });
   } catch (error) {
-    console.error('Seed error:', error);
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { action } = await request.json();
+
+  try {
+    switch (action) {
+      case 'seed_all':
+        const progress = await contentSeeder.seedAllCourses();
+        return NextResponse.json({ 
+          success: true, 
+          message: 'All courses seeded successfully',
+          progress 
+        });
+
+      case 'validate':
+        const validation = await contentSeeder.validateSeededContent();
+        return NextResponse.json({ 
+          success: true, 
+          validation 
+        });
+
+      case 'clear_content':
+        await contentSeeder.clearAllContent();
+        return NextResponse.json({ 
+          success: true, 
+          message: 'All content cleared successfully' 
+        });
+
+      default:
+        return NextResponse.json(
+          { error: 'Invalid action' },
+          { status: 400 }
+        );
+    }
+  } catch (error) {
+    logger.error('Seeding error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to run seed process'
-      },
+      { error: `Seeding failed: ${error}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    await requireAdmin();
+  } catch (error) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const validation = await contentSeeder.validateSeededContent();
+    return NextResponse.json(validation);
+  } catch (error) {
+    logger.error('Validation error:', error);
+    return NextResponse.json(
+      { error: `Validation failed: ${error}` },
       { status: 500 }
     );
   }

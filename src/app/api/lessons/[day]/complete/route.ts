@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth';
 
@@ -51,7 +52,7 @@ export async function POST(
       .single();
 
     if (progressError && progressError.code !== 'PGRST116') {
-      console.error('Error fetching progress:', progressError);
+      logger.error('Error fetching progress:', progressError);
       return NextResponse.json(
         { error: 'Failed to fetch progress' },
         { status: 500 }
@@ -77,7 +78,7 @@ export async function POST(
         .eq('id', progress.id);
 
       if (updateError) {
-        console.error('Error updating progress:', updateError);
+        logger.error('Error updating progress:', updateError);
         return NextResponse.json(
           { error: 'Failed to update progress' },
           { status: 500 }
@@ -90,7 +91,7 @@ export async function POST(
         .insert(progressData);
 
       if (createError) {
-        console.error('Error creating progress:', createError);
+        logger.error('Error creating progress:', createError);
         return NextResponse.json(
           { error: 'Failed to create progress' },
           { status: 500 }
@@ -106,7 +107,7 @@ export async function POST(
       .single();
 
     if (userFetchError) {
-      console.error('Error fetching user data:', userFetchError);
+      logger.error('Error fetching user data:', userFetchError);
       // Don't fail the whole operation, just log the error
     } else {
       const newTotalXP = (currentUser.totalXP || 0) + xpEarned;
@@ -121,7 +122,7 @@ export async function POST(
         .eq('id', user.id);
 
       if (userUpdateError) {
-        console.error('Error updating user:', userUpdateError);
+        logger.error('Error updating user:', userUpdateError);
         // Don't fail the whole operation
       }
     }
@@ -139,7 +140,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Complete lesson API error:', error);
+    logger.error('Complete lesson API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -157,7 +158,7 @@ async function checkAndAwardBadges(userId: string, dayNumber: number, supabase: 
       .lte('dayRequired', dayNumber);
 
     if (badgesError) {
-      console.error('Error fetching badges:', badgesError);
+      logger.error('Error fetching badges:', badgesError);
       return;
     }
 
@@ -169,7 +170,7 @@ async function checkAndAwardBadges(userId: string, dayNumber: number, supabase: 
       .single();
 
     if (userBadgesError) {
-      console.error('Error fetching user badges:', userBadgesError);
+      logger.error('Error fetching user badges:', userBadgesError);
       return;
     }
 
@@ -195,7 +196,7 @@ async function checkAndAwardBadges(userId: string, dayNumber: number, supabase: 
     }
 
   } catch (error) {
-    console.error('Error checking badges:', error);
+    logger.error('Error checking badges:', error);
     // Don't throw - badges are not critical
   }
 }

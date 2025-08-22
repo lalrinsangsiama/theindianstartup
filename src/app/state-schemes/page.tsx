@@ -276,7 +276,7 @@ export default function StateSchemesPage() {
               State-wise Scheme Map - Complete Navigation
             </Heading>
             <Text size="lg" color="muted" className="mb-6 max-w-3xl">
-              Master India&apos;s state-level business ecosystem with comprehensive coverage of 
+              Master India's state-level business ecosystem with comprehensive coverage of 
               all 28 states and 8 UTs. Navigate 500+ schemes, optimize location strategy, 
               and unlock 30-50% cost savings through strategic state benefits.
             </Text>
@@ -322,7 +322,7 @@ export default function StateSchemesPage() {
                     <div>
                       <Text weight="medium">Ready to unlock state benefits?</Text>
                       <Text size="sm" color="muted">
-                        Start with Module 1 to understand India&apos;s federal structure
+                        Start with Module 1 to understand India's federal structure
                       </Text>
                     </div>
                     <Button 
@@ -340,7 +340,7 @@ export default function StateSchemesPage() {
             {/* Key Outcomes */}
             <Card className="p-6 mb-8 bg-gradient-to-r from-emerald-50 to-teal-50">
               <Heading as="h3" variant="h6" className="mb-4">
-                What You&apos;ll Achieve
+                What You'll Achieve
               </Heading>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-3">
@@ -447,7 +447,7 @@ export default function StateSchemesPage() {
                   {isExpanded && (
                     <div className="px-6 pb-6 border-t">
                       <div className="pt-4">
-                        <Text weight="medium" className="mb-3">What you&apos;ll learn:</Text>
+                        <Text weight="medium" className="mb-3">What you'll learn:</Text>
                         <div className="space-y-2 mb-4">
                           {module.topics.map((topic, topicIndex) => (
                             <div key={topicIndex} className="flex items-center gap-2">

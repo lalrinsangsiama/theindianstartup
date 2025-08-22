@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { sendEmail } from '@/lib/email';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('Welcome email failed:', error);
+    logger.error('Welcome email failed:', error);
     return NextResponse.json(
       { error: 'Failed to send welcome email' },
       { status: 500 }

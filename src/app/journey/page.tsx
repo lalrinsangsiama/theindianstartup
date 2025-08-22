@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -200,7 +201,7 @@ export default function JourneyPage() {
         setHasAllAccess(hasAllAccessBundle);
         
       } catch (err) {
-        console.error('Failed to fetch user products:', err);
+        logger.error('Failed to fetch user products:', err);
         setError('Failed to load your products. Please try refreshing the page.');
       } finally {
         setIsLoading(false);

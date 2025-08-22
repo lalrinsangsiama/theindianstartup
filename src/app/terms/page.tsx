@@ -40,7 +40,7 @@ export default function TermsOfServicePage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">1. Acceptance of Terms</Heading>
             <Text className="mb-4">
-              By accessing or using The Indian Startup platform (&quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). 
+              By accessing or using The Indian Startup platform ("Service"), you agree to be bound by these Terms of Service ("Terms"). 
               If you disagree with any part of these terms, you may not access the Service.
             </Text>
           </section>
@@ -117,7 +117,7 @@ export default function TermsOfServicePage() {
             <ul className="list-disc pl-6 space-y-2 mb-4">
               <li>Retain ownership of your content</li>
               <li>Grant us a license to use, display, and distribute your content within the Service</li>
-              <li>Confirm that your content doesn&apos;t violate any laws or third-party rights</li>
+              <li>Confirm that your content doesn't violate any laws or third-party rights</li>
               <li>Agree that we may moderate or remove content that violates these Terms</li>
             </ul>
           </section>

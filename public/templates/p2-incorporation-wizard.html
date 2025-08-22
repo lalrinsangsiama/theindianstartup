@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Incorporation Wizard - P2 Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.95);
+            color: #2d3748;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .wizard-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-number.active {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-number.completed {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #718096;
+            text-align: center;
+            max-width: 80px;
+        }
+        
+        .step-label.active {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .help-text {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        .info-card {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .info-card h4 {
+            color: #3182ce;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-card {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .warning-card h4 {
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #edf2f7;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .cost-calculator {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .cost-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .cost-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #38a169;
+            margin-bottom: 5px;
+        }
+        
+        .cost-label {
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        .total-cost {
+            background: #667eea;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        
+        .total-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .timeline {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timeline-step {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .timeline-content h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content p {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .doc-checklist {
+            background: #fffbeb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .doc-checklist h4 {
+            color: #d69e2e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-indicator {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .cost-breakdown {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Smart Incorporation Wizard</h1>
+            <p>Complete step-by-step guide to incorporate your startup legally in India with real-time cost calculation</p>
+        </div>
+        
+        <div class="wizard-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            
+            <div class="step-indicator">
+                <div class="step">
+                    <div class="step-number active" id="step1">1</div>
+                    <div class="step-label active">Business Info</div>
+                </div>
+                <div class="step">
+                    <div class="step-number" id="step2">2</div>
+                    <div class="step-label">Structure</div>
+                </div>
+                <div class="step">
+                    <div class="step-number" id="step3">3</div>
+                    <div class="step-label">Directors</div>
+                </div>
+                <div class="step">
+                    <div class="step-number" id="step4">4</div>
+                    <div class="step-label">Compliance</div>
+                </div>
+                <div class="step">
+                    <div class="step-number" id="step5">5</div>
+                    <div class="step-label">Summary</div>
+                </div>
+            </div>
+            
+            <!-- Step 1: Business Information -->
+            <div id="content1" class="step-content active">
+                <div class="form-section">
+                    <h3>🏢 Basic Business Information</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Proposed Company Name *</label>
+                            <input type="text" id="companyName" placeholder="e.g., Tech Solutions Private Limited" onchange="updateSummary()">
+                            <div class="help-text">Must end with 'Private Limited' for Pvt Ltd company</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Alternative Company Names</label>
+                            <input type="text" id="altNames" placeholder="2-3 backup names (comma separated)" onchange="updateSummary()">
+                            <div class="help-text">In case your first choice is not available</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Business Activity *</label>
+                            <select id="businessActivity" onchange="updateSummary(); updateCosts()">
+                                <option value="">Select primary business activity</option>
+                                <option value="software">Software Development</option>
+                                <option value="ecommerce">E-commerce</option>
+                                <option value="consulting">Consulting Services</option>
+                                <option value="manufacturing">Manufacturing</option>
+                                <option value="trading">Trading</option>
+                                <option value="restaurant">Restaurant/Food</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="education">Education</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Registered Office State *</label>
+                            <select id="state" onchange="updateSummary(); updateCosts()">
+                                <option value="">Select state</option>
+                                <option value="maharashtra">Maharashtra</option>
+                                <option value="delhi">Delhi</option>
+                                <option value="karnataka">Karnataka</option>
+                                <option value="tamilnadu">Tamil Nadu</option>
+                                <option value="gujarat">Gujarat</option>
+                                <option value="rajasthan">Rajasthan</option>
+                                <option value="westbengal">West Bengal</option>
+                                <option value="other">Other State</option>
+                            </select>
+                            <div class="help-text">Affects stamp duty and registration costs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Business Description</label>
+                        <textarea id="businessDesc" rows="3" placeholder="Briefly describe what your company will do" onchange="updateSummary()"></textarea>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h4>💡 Name Availability Check</h4>
+                    <p>Your company name will be checked for availability on MCA portal. Keep 2-3 backup names ready. Names should be unique and not identical to existing companies.</p>
+                </div>
+            </div>
+            
+            <!-- Step 2: Company Structure -->
+            <div id="content2" class="step-content">
+                <div class="form-section">
+                    <h3>🏗️ Company Structure & Capital</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Company Type *</label>
+                            <select id="companyType" onchange="updateSummary(); updateCosts()">
+                                <option value="private">Private Limited Company</option>
+                                <option value="opc">One Person Company (OPC)</option>
+                                <option value="llp">Limited Liability Partnership</option>
+                                <option value="partnership">Partnership Firm</option>
+                            </select>
+                            <div class="help-text">Most startups choose Private Limited for funding eligibility</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Authorized Capital (₹) *</label>
+                            <input type="number" id="authCapital" value="1000000" min="100000" onchange="updateSummary(); updateCosts()">
+                            <div class="help-text">Minimum ₹1 lakh. Higher capital = higher stamp duty</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Paid-up Capital (₹) *</label>
+                            <input type="number" id="paidCapital" value="100000" min="1000" onchange="updateSummary()">
+                            <div class="help-text">Amount you'll actually invest initially</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Number of Shares</label>
+                            <input type="number" id="numShares" value="10000" min="100" onchange="updateSummary()">
+                            <div class="help-text">Total shares = Authorized Capital ÷ Face Value</div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="dpiitReg" onchange="updateCosts()">
+                            <label for="dpiitReg">
+                                <strong>DPIIT Startup Registration</strong><br>
+                                <small>Required for tax benefits and government schemes (₹0 - Free)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="trademarkReg" onchange="updateCosts()">
+                            <label for="trademarkReg">
+                                <strong>Trademark Registration</strong><br>
+                                <small>Protect your brand name and logo (₹9,000 - ₹10,000)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="gstReg" onchange="updateCosts()">
+                            <label for="gstReg">
+                                <strong>GST Registration</strong><br>
+                                <small>Mandatory if turnover > ₹20 lakhs (₹0 - Free)</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="warning-card">
+                    <h4>⚠️ Capital Structure Tips</h4>
+                    <p>Keep authorized capital reasonable initially. You can increase it later. Higher authorized capital means higher stamp duty. For startups, ₹10 lakhs authorized capital is usually sufficient.</p>
+                </div>
+            </div>
+            
+            <!-- Step 3: Directors & Shareholders -->
+            <div id="content3" class="step-content">
+                <div class="form-section">
+                    <h3>👥 Directors & Shareholders</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Number of Directors *</label>
+                            <select id="numDirectors" onchange="generateDirectorFields(); updateCosts()">
+                                <option value="2">2 Directors (Minimum)</option>
+                                <option value="3">3 Directors</option>
+                                <option value="4">4 Directors</option>
+                                <option value="5">5 Directors</option>
+                            </select>
+                            <div class="help-text">Private Limited companies need minimum 2 directors</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Number of Shareholders *</label>
+                            <select id="numShareholders" onchange="generateShareholderFields()">
+                                <option value="2">2 Shareholders (Minimum)</option>
+                                <option value="3">3 Shareholders</option>
+                                <option value="4">4 Shareholders</option>
+                                <option value="5">5 Shareholders</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="directorFields">
+                        <!-- Directors fields will be generated here -->
+                    </div>
+                    
+                    <div id="shareholderFields" style="margin-top: 30px;">
+                        <!-- Shareholders fields will be generated here -->
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h4>📋 Required Documents per Director/Shareholder</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>PAN Card copy</li>
+                        <li>Aadhaar Card copy</li>
+                        <li>Passport size photograph</li>
+                        <li>Address proof (Utility bill/Bank statement)</li>
+                        <li>Bank statement (last 3 months)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Step 4: Compliance Requirements -->
+            <div id="content4" class="step-content">
+                <div class="form-section">
+                    <h3>📋 Compliance & Registrations</h3>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bankAccount" onchange="updateCosts()" checked>
+                            <label for="bankAccount">
+                                <strong>Corporate Bank Account Opening</strong><br>
+                                <small>Essential for business operations (₹1,000 - ₹5,000 charges)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="professionalTax" onchange="updateCosts()">
+                            <label for="professionalTax">
+                                <strong>Professional Tax Registration</strong><br>
+                                <small>Required in some states like Maharashtra, Karnataka (₹500 - ₹2,500)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="esiPf" onchange="updateCosts()">
+                            <label for="esiPf">
+                                <strong>ESI & PF Registration</strong><br>
+                                <small>Mandatory if employees > threshold (₹0 - Free)</small>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="shopEstablishment" onchange="updateCosts()">
+                            <label for="shopEstablishment">
+                                <strong>Shop & Establishment License</strong><br>
+                                <small>Required for business premises (₹1,000 - ₹5,000)</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline">
+                        <h4 style="margin-bottom: 15px; color: #2d3748;">📅 Incorporation Timeline</h4>
+                        <div class="timeline-item">
+                            <div class="timeline-step">1</div>
+                            <div class="timeline-content">
+                                <h4>Name Approval (1-2 days)</h4>
+                                <p>Submit name application to RoC. Get approval or rejection.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-step">2</div>
+                            <div class="timeline-content">
+                                <h4>DSC & DIN Application (2-3 days)</h4>
+                                <p>Apply for Digital Signature Certificate and Director Identification Number.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-step">3</div>
+                            <div class="timeline-content">
+                                <h4>Document Preparation (1-2 days)</h4>
+                                <p>Prepare MoA, AoA, and other incorporation documents.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-step">4</div>
+                            <div class="timeline-content">
+                                <h4>Filing with RoC (3-7 days)</h4>
+                                <p>Submit incorporation application with required documents and fees.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-step">5</div>
+                            <div class="timeline-content">
+                                <h4>Certificate of Incorporation (1-2 days)</h4>
+                                <p>Receive CIN and incorporation certificate from MCA.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 5: Summary & Cost Breakdown -->
+            <div id="content5" class="step-content">
+                <div class="form-section">
+                    <h3>📊 Incorporation Summary & Costs</h3>
+                    
+                    <div class="cost-calculator">
+                        <h4 style="color: #38a169; margin-bottom: 20px; text-align: center;">💰 Total Cost Breakdown</h4>
+                        
+                        <div class="cost-breakdown" id="costBreakdown">
+                            <!-- Cost items will be populated here -->
+                        </div>
+                        
+                        <div class="total-cost">
+                            <div class="total-amount" id="totalCost">₹25,000</div>
+                            <p>Total Incorporation Cost (including all fees)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-checklist">
+                        <h4>📋 Document Checklist</h4>
+                        <div id="documentList">
+                            <!-- Document list will be populated -->
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h4>🎯 Next Steps After Incorporation</h4>
+                        <ol style="margin-left: 20px; margin-top: 10px;">
+                            <li>Open corporate bank account</li>
+                            <li>Register for GST (if applicable)</li>
+                            <li>Get professional tax registration</li>
+                            <li>Apply for necessary licenses</li>
+                            <li>Set up accounting system</li>
+                            <li>Start statutory compliance (ROC filings)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next Step</button>
+                <button class="btn btn-primary" id="generateBtn" onclick="generateIncorporationPlan()" style="display: none;">Generate Incorporation Plan</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 1;
+        let incorporationData = {};
+        
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < 5) {
+                    hideStep(currentStep);
+                    currentStep++;
+                    showStep(currentStep);
+                    updateProgressBar();
+                    updateButtons();
+                }
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 1) {
+                hideStep(currentStep);
+                currentStep--;
+                showStep(currentStep);
+                updateProgressBar();
+                updateButtons();
+            }
+        }
+        
+        function showStep(step) {
+            document.getElementById('content' + step).classList.add('active');
+            document.getElementById('step' + step).classList.add('active');
+            
+            // Mark previous steps as completed
+            for (let i = 1; i < step; i++) {
+                document.getElementById('step' + i).classList.add('completed');
+                document.getElementById('step' + i).classList.remove('active');
+            }
+            
+            // Special handling for step 3
+            if (step === 3) {
+                generateDirectorFields();
+                generateShareholderFields();
+            }
+        }
+        
+        function hideStep(step) {
+            document.getElementById('content' + step).classList.remove('active');
+        }
+        
+        function updateProgressBar() {
+            const progress = ((currentStep - 1) / 4) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+            
+            if (currentStep === 5) {
+                nextBtn.style.display = 'none';
+                generateBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                generateBtn.style.display = 'none';
+            }
+        }
+        
+        function validateCurrentStep() {
+            const requiredFields = {
+                1: ['companyName', 'businessActivity', 'state'],
+                2: ['companyType', 'authCapital', 'paidCapital'],
+                3: ['numDirectors', 'numShareholders'],
+                4: [],
+                5: []
+            };
+            
+            const fields = requiredFields[currentStep] || [];
+            for (let field of fields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    alert('Please fill all required fields before proceeding.');
+                    element.focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        function generateDirectorFields() {
+            const numDirectors = parseInt(document.getElementById('numDirectors').value);
+            const container = document.getElementById('directorFields');
+            
+            let html = '<h4 style="color: #2d3748; margin: 20px 0;">Directors Information</h4>';
+            
+            for (let i = 1; i <= numDirectors; i++) {
+                html += `
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <h5 style="color: #4a5568; margin-bottom: 15px;">Director ${i}</h5>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="director${i}Name" placeholder="As per PAN card">
+                            </div>
+                            <div class="form-group">
+                                <label>PAN Number *</label>
+                                <input type="text" id="director${i}Pan" placeholder="ABCDE1234F">
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="director${i}Email" placeholder="director@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile *</label>
+                                <input type="tel" id="director${i}Mobile" placeholder="+91 9876543210">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function generateShareholderFields() {
+            const numShareholders = parseInt(document.getElementById('numShareholders').value);
+            const container = document.getElementById('shareholderFields');
+            
+            let html = '<h4 style="color: #2d3748; margin: 20px 0;">Shareholders & Equity Distribution</h4>';
+            
+            for (let i = 1; i <= numShareholders; i++) {
+                html += `
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <h5 style="color: #4a5568; margin-bottom: 15px;">Shareholder ${i}</h5>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Name *</label>
+                                <input type="text" id="shareholder${i}Name" placeholder="Shareholder name">
+                            </div>
+                            <div class="form-group">
+                                <label>Share Percentage *</label>
+                                <input type="number" id="shareholder${i}Percent" placeholder="50" min="1" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Investment Amount (₹) *</label>
+                                <input type="number" id="shareholder${i}Amount" placeholder="50000" min="1000">
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select id="shareholder${i}Role">
+                                    <option value="founder">Founder</option>
+                                    <option value="co-founder">Co-Founder</option>
+                                    <option value="investor">Investor</option>
+                                    <option value="employee">Employee</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function updateCosts() {
+            const costs = {
+                incorporation: 15000,
+                stampDuty: 0,
+                dsc: 2000,
+                additionalServices: 0
+            };
+            
+            // Calculate stamp duty based on authorized capital and state
+            const authCapital = parseInt(document.getElementById('authCapital').value) || 1000000;
+            const state = document.getElementById('state').value;
+            
+            const stampDutyRates = {
+                'maharashtra': 0.003,
+                'delhi': 0.003,
+                'karnataka': 0.001,
+                'tamilnadu': 0.002,
+                'gujarat': 0.001,
+                'rajasthan': 0.002,
+                'westbengal': 0.003,
+                'other': 0.002
+            };
+            
+            costs.stampDuty = Math.max(1000, authCapital * (stampDutyRates[state] || 0.002));
+            
+            // Add additional services
+            if (document.getElementById('trademarkReg').checked) {
+                costs.additionalServices += 10000;
+            }
+            if (document.getElementById('bankAccount').checked) {
+                costs.additionalServices += 2500;
+            }
+            if (document.getElementById('professionalTax').checked) {
+                costs.additionalServices += 1500;
+            }
+            if (document.getElementById('shopEstablishment').checked) {
+                costs.additionalServices += 3000;
+            }
+            
+            updateCostDisplay(costs);
+        }
+        
+        function updateCostDisplay(costs) {
+            const total = Object.values(costs).reduce((sum, cost) => sum + cost, 0);
+            
+            const breakdown = document.getElementById('costBreakdown');
+            breakdown.innerHTML = `
+                <div class="cost-item">
+                    <div class="cost-amount">₹${costs.incorporation.toLocaleString()}</div>
+                    <div class="cost-label">Incorporation Fees</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">₹${costs.stampDuty.toLocaleString()}</div>
+                    <div class="cost-label">Stamp Duty</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">₹${costs.dsc.toLocaleString()}</div>
+                    <div class="cost-label">DSC & DIN</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">₹${costs.additionalServices.toLocaleString()}</div>
+                    <div class="cost-label">Additional Services</div>
+                </div>
+            `;
+            
+            document.getElementById('totalCost').textContent = `₹${total.toLocaleString()}`;
+        }
+        
+        function updateSummary() {
+            // Update summary data
+            incorporationData.companyName = document.getElementById('companyName').value;
+            incorporationData.businessActivity = document.getElementById('businessActivity').value;
+            incorporationData.state = document.getElementById('state').value;
+            incorporationData.companyType = document.getElementById('companyType').value;
+        }
+        
+        function generateIncorporationPlan() {
+            // Collect all data
+            updateSummary();
+            
+            // Generate document list
+            const docList = document.getElementById('documentList');
+            docList.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <h5>Directors Documents:</h5>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>PAN Card copies</li>
+                            <li>Aadhaar Card copies</li>
+                            <li>Passport photographs</li>
+                            <li>Address proofs</li>
+                            <li>Bank statements</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>Company Documents:</h5>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Registered office proof</li>
+                            <li>NOC from landlord</li>
+                            <li>Utility bills</li>
+                            <li>Rent agreement</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Generate downloadable plan
+            const planWindow = window.open('', '_blank');
+            const planHTML = generatePlanHTML();
+            planWindow.document.write(planHTML);
+            planWindow.document.close();
+        }
+        
+        function generatePlanHTML() {
+            const companyName = incorporationData.companyName || 'Your Company';
+            const authCapital = document.getElementById('authCapital').value;
+            const state = document.getElementById('state').value;
+            
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${companyName} - Incorporation Plan</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 40px; }
+                        h1 { color: #667eea; text-align: center; }
+                        h2 { color: #2d3748; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+                        .summary { background: #f7fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                        .cost-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        .cost-table th, .cost-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+                        .cost-table th { background: #f7fafc; }
+                        .total-row { background: #667eea; color: white; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Company Incorporation Plan</h1>
+                    <h2>${companyName}</h2>
+                    
+                    <div class="summary">
+                        <h3>Company Details</h3>
+                        <p><strong>Business Activity:</strong> ${incorporationData.businessActivity}</p>
+                        <p><strong>State:</strong> ${state}</p>
+                        <p><strong>Authorized Capital:</strong> ₹${authCapital}</p>
+                        <p><strong>Company Type:</strong> ${incorporationData.companyType}</p>
+                    </div>
+                    
+                    <h2>Cost Breakdown</h2>
+                    <table class="cost-table">
+                        <tr><th>Item</th><th>Cost</th></tr>
+                        <tr><td>Incorporation Fees</td><td>₹15,000</td></tr>
+                        <tr><td>Stamp Duty</td><td>₹${Math.max(1000, parseInt(authCapital) * 0.002).toLocaleString()}</td></tr>
+                        <tr><td>DSC & DIN</td><td>₹2,000</td></tr>
+                        <tr class="total-row"><td>Total</td><td>₹${(15000 + Math.max(1000, parseInt(authCapital) * 0.002) + 2000).toLocaleString()}</td></tr>
+                    </table>
+                    
+                    <h2>Timeline</h2>
+                    <ol>
+                        <li>Name Approval: 1-2 days</li>
+                        <li>DSC & DIN: 2-3 days</li>
+                        <li>Document Preparation: 1-2 days</li>
+                        <li>RoC Filing: 3-7 days</li>
+                        <li>Certificate Issue: 1-2 days</li>
+                    </ol>
+                    
+                    <p><strong>Total Timeline: 8-16 business days</strong></p>
+                    
+                    <h2>Next Steps</h2>
+                    <ol>
+                        <li>Gather all required documents</li>
+                        <li>Apply for name approval</li>
+                        <li>Get DSC and DIN for directors</li>
+                        <li>File incorporation application</li>
+                        <li>Receive Certificate of Incorporation</li>
+                    </ol>
+                </body>
+                </html>
+            `;
+        }
+        
+        // Initialize
+        updateProgressBar();
+        updateButtons();
+        updateCosts();
+        
+        // Auto-save functionality
+        setInterval(() => {
+            const formData = {};
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                formData[element.id] = element.value;
+            });
+            localStorage.setItem('incorporationWizard', JSON.stringify(formData));
+        }, 10000);
+        
+        // Load saved data
+        window.onload = function() {
+            const savedData = localStorage.getItem('incorporationWizard');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                });
+                updateCosts();
+            }
+        };
+    </script>
+</body>
+</html>

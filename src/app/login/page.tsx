@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/Input';
 import { Text } from '@/components/ui/Typography';
 import { Alert } from '@/components/ui/Alert';
 import { createClient } from '@/lib/supabase/client';
-import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, CheckCircle, Chrome, Linkedin, Users, Shield, Sparkles } from 'lucide-react';
 
 function LoginContent() {
   const router = useRouter();
@@ -27,6 +27,7 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [showVerifiedMessage, setShowVerifiedMessage] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<'google' | 'linkedin' | null>(null);
 
   useEffect(() => {
     // Check if user just verified their email
@@ -111,6 +112,32 @@ function LoginContent() {
     }
   };
 
+  const handleSocialLogin = async (provider: 'google' | 'linkedin') => {
+    setSocialLoading(provider);
+    setLoginError('');
+    
+    try {
+      const redirectTo = searchParams.get('redirectTo') || 
+                        (typeof window !== 'undefined' ? sessionStorage.getItem('redirectAfterLogin') : null) ||
+                        '/dashboard';
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider as any,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+        },
+      });
+      
+      if (error) {
+        setLoginError(error.message);
+      }
+    } catch (error) {
+      setLoginError('Social login failed. Please try again.');
+    } finally {
+      setSocialLoading(null);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -127,8 +154,73 @@ function LoginContent() {
   return (
     <AuthLayout 
       title="Welcome Back, Founder"
-      subtitle="Continue your startup journey"
+      subtitle="Continue building your startup empire"
     >
+      {/* Quick Stats */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex items-center justify-center gap-4 text-center">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-blue-600" />
+            <div>
+              <Text size="sm" className="font-bold text-blue-800">2,500+</Text>
+              <Text size="xs" color="muted">Founders</Text>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-green-600" />
+            <div>
+              <Text size="sm" className="font-bold text-green-800">₹50L+</Text>
+              <Text size="xs" color="muted">Raised</Text>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-purple-600" />
+            <div>
+              <Text size="sm" className="font-bold text-purple-800">180+</Text>
+              <Text size="xs" color="muted">Launched</Text>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Social Login */}
+      <div className="space-y-4 mb-6">
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 p-3 border-2 hover:border-blue-500 hover:bg-blue-50 transition-all"
+            onClick={() => handleSocialLogin('google')}
+            disabled={socialLoading !== null}
+            isLoading={socialLoading === 'google'}
+          >
+            <Chrome className="w-5 h-5 text-blue-600" />
+            <span className="font-medium">Google</span>
+          </Button>
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 p-3 border-2 hover:border-blue-700 hover:bg-blue-50 transition-all"
+            onClick={() => handleSocialLogin('linkedin')}
+            disabled={socialLoading !== null}
+            isLoading={socialLoading === 'linkedin'}
+          >
+            <Linkedin className="w-5 h-5 text-blue-700" />
+            <span className="font-medium">LinkedIn</span>
+          </Button>
+        </div>
+        
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-3 bg-white text-gray-500">or continue with email</span>
+          </div>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {showVerifiedMessage && (
           <Alert variant="success" title="Email verified!" icon={<CheckCircle className="w-5 h-5" />}>
@@ -187,11 +279,11 @@ function LoginContent() {
           type="submit"
           variant="primary"
           size="lg"
-          className="w-full group"
+          className="w-full group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
           isLoading={isLoading}
-          loadingText="Signing in..."
+          loadingText="Signing you in..."
         >
-          <span>Continue Journey</span>
+          <span>Continue Your Startup Journey</span>
           <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
         

@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Pitch Deck Builder - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .deck-builder {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+        
+        .slide-navigator {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .slide-list {
+            list-style: none;
+        }
+        
+        .slide-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .slide-item.active {
+            background: #667eea;
+            color: white;
+            border-left-color: #764ba2;
+        }
+        
+        .slide-item:hover:not(.active) {
+            background: #e8e9ff;
+            border-left-color: #667eea;
+        }
+        
+        .slide-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+        
+        .slide-status.completed {
+            background: #4ade80;
+        }
+        
+        .slide-editor {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .slide-title {
+            font-size: 28px;
+            color: #333;
+        }
+        
+        .slide-tips {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .slide-tips h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .slide-tips ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .form-help {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+        
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .metric-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-success {
+            background: #4ade80;
+            color: white;
+        }
+        
+        .preview-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .preview-slide {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .preview-slide h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        .preview-content {
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .examples-section {
+            background: #fff3cd;
+            border: 2px dashed #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .examples-section h4 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        .example-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-dot.active {
+            background: #667eea;
+            transform: scale(1.3);
+        }
+        
+        .progress-dot.completed {
+            background: #4ade80;
+        }
+        
+        @media (max-width: 768px) {
+            .deck-builder {
+                grid-template-columns: 1fr;
+            }
+            
+            .slide-navigator {
+                position: static;
+            }
+            
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Investor Pitch Deck Builder</h1>
+            <p>Create a compelling 10-slide pitch deck that gets investors excited</p>
+        </div>
+        
+        <div class="deck-builder">
+            <div class="slide-navigator">
+                <h3 style="margin-bottom: 20px; color: #333;">Slide Navigation</h3>
+                <ul class="slide-list">
+                    <li class="slide-item active" onclick="showSlide(1)">
+                        <span>1. Title Slide</span>
+                        <span class="slide-status" id="status-1"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(2)">
+                        <span>2. Problem</span>
+                        <span class="slide-status" id="status-2"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(3)">
+                        <span>3. Solution</span>
+                        <span class="slide-status" id="status-3"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(4)">
+                        <span>4. Market Size</span>
+                        <span class="slide-status" id="status-4"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(5)">
+                        <span>5. Business Model</span>
+                        <span class="slide-status" id="status-5"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(6)">
+                        <span>6. Traction</span>
+                        <span class="slide-status" id="status-6"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(7)">
+                        <span>7. Competition</span>
+                        <span class="slide-status" id="status-7"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(8)">
+                        <span>8. Team</span>
+                        <span class="slide-status" id="status-8"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(9)">
+                        <span>9. Financials</span>
+                        <span class="slide-status" id="status-9"></span>
+                    </li>
+                    <li class="slide-item" onclick="showSlide(10)">
+                        <span>10. Ask & Use of Funds</span>
+                        <span class="slide-status" id="status-10"></span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="slide-editor">
+                <!-- Slide 1: Title -->
+                <div id="slide-1" class="slide-content">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Title Slide</h2>
+                        <span style="color: #667eea;">10 seconds to hook</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Title Slide</h3>
+                        <ul>
+                            <li>Your tagline should explain what you do in 6-8 words</li>
+                            <li>Make it memorable and easy to understand</li>
+                            <li>Avoid jargon - your grandmother should understand it</li>
+                            <li>Include contact info for follow-up</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" id="company-name" placeholder="e.g., TechStartup India">
+                        <p class="form-help">Your registered company name</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tagline *</label>
+                        <input type="text" id="tagline" placeholder="e.g., Uber for Healthcare in Rural India">
+                        <p class="form-help">One-line description that anyone can understand</p>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label>Your Name *</label>
+                            <input type="text" id="founder-name" placeholder="e.g., Rahul Sharma">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="text" id="founder-email" placeholder="rahul@techstartup.com">
+                        </div>
+                    </div>
+                    
+                    <div class="examples-section">
+                        <h4>✨ Great Tagline Examples</h4>
+                        <div class="example-item">
+                            <strong>Airbnb:</strong> "Book rooms with locals, rather than hotels"
+                        </div>
+                        <div class="example-item">
+                            <strong>Uber:</strong> "Push a button, get a ride"
+                        </div>
+                        <div class="example-item">
+                            <strong>Slack:</strong> "Where work happens"
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 2: Problem -->
+                <div id="slide-2" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">The Problem</h2>
+                        <span style="color: #667eea;">Make them feel the pain</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Problem Slide</h3>
+                        <ul>
+                            <li>Use data to quantify the problem size</li>
+                            <li>Make it relatable with real examples</li>
+                            <li>Show why existing solutions fail</li>
+                            <li>Create urgency - why solve this NOW?</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Core Problem Statement *</label>
+                        <textarea id="problem-statement" placeholder="e.g., 70% of India's population lacks access to quality healthcare. Rural areas have only 1 doctor per 10,000 people.">70% of India's population lacks access to quality healthcare. Rural areas have only 1 doctor per 10,000 people.</textarea>
+                        <p class="form-help">2-3 sentences that clearly define the problem</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Who Faces This Problem? *</label>
+                        <input type="text" id="problem-audience" placeholder="e.g., 600 million rural Indians">
+                        <p class="form-help">Specific target audience size and description</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current Solutions & Why They Fail</label>
+                        <textarea id="current-solutions" placeholder="e.g., Government hospitals: Overcrowded, 4-hour wait times
+Private clinics: Too expensive, ₹500+ per visit
+Telemedicine apps: Need smartphones and internet">Government hospitals: Overcrowded, 4-hour wait times
+Private clinics: Too expensive, ₹500+ per visit
+Telemedicine apps: Need smartphones and internet</textarea>
+                        <p class="form-help">List 2-3 existing solutions and their limitations</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Cost of Not Solving (Impact)</label>
+                        <input type="text" id="problem-cost" placeholder="e.g., ₹5.8 trillion lost annually due to poor health outcomes">
+                        <p class="form-help">Economic or social cost of the problem</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 3: Solution -->
+                <div id="slide-3" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Your Solution</h2>
+                        <span style="color: #667eea;">The "Aha!" moment</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Solution Slide</h3>
+                        <ul>
+                            <li>Show, don't just tell - use visuals/screenshots</li>
+                            <li>Explain your unique approach</li>
+                            <li>Focus on benefits, not features</li>
+                            <li>Keep it simple - avoid technical jargon</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Solution Overview *</label>
+                        <textarea id="solution-overview" placeholder="e.g., Mobile health clinics powered by AI diagnostics that visit rural villages weekly, providing affordable healthcare at ₹50 per consultation">Mobile health clinics powered by AI diagnostics that visit rural villages weekly, providing affordable healthcare at ₹50 per consultation</textarea>
+                        <p class="form-help">2-3 sentences explaining your solution clearly</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Key Features (Top 3) *</label>
+                        <textarea id="solution-features" placeholder="1. AI-powered diagnostic tools for 50+ common conditions
+2. Trained health workers, not expensive doctors
+3. Medicine delivery within 24 hours">1. AI-powered diagnostic tools for 50+ common conditions
+2. Trained health workers, not expensive doctors
+3. Medicine delivery within 24 hours</textarea>
+                        <p class="form-help">List your 3 most important features</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Secret Sauce (What Makes You Unique)</label>
+                        <textarea id="solution-unique" placeholder="e.g., Partnership with 1000+ village panchayats for last-mile access + Proprietary AI trained on 1M+ Indian patient records">Partnership with 1000+ village panchayats for last-mile access + Proprietary AI trained on 1M+ Indian patient records</textarea>
+                        <p class="form-help">Your unfair advantage or unique approach</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 4: Market Size -->
+                <div id="slide-4" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Market Opportunity</h2>
+                        <span style="color: #667eea;">Show the billion-dollar potential</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Market Slide</h3>
+                        <ul>
+                            <li>Use TAM → SAM → SOM framework</li>
+                            <li>Show market growth rate (CAGR)</li>
+                            <li>Bottom-up calculation is more credible</li>
+                            <li>Cite credible sources (reports, studies)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="metric-inputs">
+                        <div class="form-group">
+                            <label>TAM (Total Addressable Market) *</label>
+                            <input type="text" id="market-tam" placeholder="e.g., ₹500 billion">
+                            <p class="form-help">Total market size</p>
+                        </div>
+                        <div class="form-group">
+                            <label>SAM (Serviceable Addressable Market) *</label>
+                            <input type="text" id="market-sam" placeholder="e.g., ₹50 billion">
+                            <p class="form-help">Your reachable market</p>
+                        </div>
+                        <div class="form-group">
+                            <label>SOM (Serviceable Obtainable Market) *</label>
+                            <input type="text" id="market-som" placeholder="e.g., ₹5 billion">
+                            <p class="form-help">Realistic 5-year target</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Market Growth Rate</label>
+                        <input type="text" id="market-growth" placeholder="e.g., 25% CAGR, expected to reach ₹1 trillion by 2030">
+                        <p class="form-help">Annual growth rate and future projections</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Market Calculation Method</label>
+                        <textarea id="market-calculation" placeholder="e.g., 600M rural population × 20% addressable × ₹1000 annual healthcare spend × 10% capture = ₹12 billion">600M rural population × 20% addressable × ₹1000 annual healthcare spend × 10% capture = ₹12 billion</textarea>
+                        <p class="form-help">Show your bottom-up calculation</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 5: Business Model -->
+                <div id="slide-5" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Business Model</h2>
+                        <span style="color: #667eea;">How you make money</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Business Model Slide</h3>
+                        <ul>
+                            <li>Show multiple revenue streams if applicable</li>
+                            <li>Include pricing strategy and rationale</li>
+                            <li>Demonstrate unit economics</li>
+                            <li>Show path to profitability</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Revenue Model *</label>
+                        <textarea id="revenue-model" placeholder="1. Consultation fees: ₹50 per visit (70% of revenue)
+2. Medicine sales: 20% margin (20% of revenue)
+3. Government partnerships: ₹1000/patient/year (10% of revenue)">1. Consultation fees: ₹50 per visit (70% of revenue)
+2. Medicine sales: 20% margin (20% of revenue)
+3. Government partnerships: ₹1000/patient/year (10% of revenue)</textarea>
+                        <p class="form-help">How you charge and what percentage each contributes</p>
+                    </div>
+                    
+                    <div class="metric-inputs">
+                        <div class="form-group">
+                            <label>Customer Acquisition Cost (CAC)</label>
+                            <input type="text" id="cac" placeholder="e.g., ₹200">
+                        </div>
+                        <div class="form-group">
+                            <label>Customer Lifetime Value (CLV)</label>
+                            <input type="text" id="clv" placeholder="e.g., ₹2,000">
+                        </div>
+                        <div class="form-group">
+                            <label>Gross Margin</label>
+                            <input type="text" id="gross-margin" placeholder="e.g., 60%">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Path to Profitability</label>
+                        <input type="text" id="profitability-path" placeholder="e.g., Break-even at 10,000 monthly patients (Month 18)">
+                        <p class="form-help">When and how you'll become profitable</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 6: Traction -->
+                <div id="slide-6" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Traction & Validation</h2>
+                        <span style="color: #667eea;">Proof it's working</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Traction Slide</h3>
+                        <ul>
+                            <li>Use graphs to show growth trajectory</li>
+                            <li>Include both vanity and meaningful metrics</li>
+                            <li>Show month-over-month growth rates</li>
+                            <li>Include customer testimonials or logos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="metric-inputs">
+                        <div class="form-group">
+                            <label>Revenue/ARR</label>
+                            <input type="text" id="traction-revenue" placeholder="e.g., ₹50 lakhs ARR">
+                        </div>
+                        <div class="form-group">
+                            <label>Users/Customers</label>
+                            <input type="text" id="traction-users" placeholder="e.g., 10,000 patients">
+                        </div>
+                        <div class="form-group">
+                            <label>Growth Rate</label>
+                            <input type="text" id="traction-growth" placeholder="e.g., 30% MoM">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Key Achievements & Milestones</label>
+                        <textarea id="traction-milestones" placeholder="• Partnered with 3 state governments
+• 95% customer satisfaction score
+• 2 awards from Startup India
+• Featured in Economic Times">• Partnered with 3 state governments
+• 95% customer satisfaction score
+• 2 awards from Startup India
+• Featured in Economic Times</textarea>
+                        <p class="form-help">List 3-5 impressive achievements</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Customer Testimonial/Case Study</label>
+                        <textarea id="traction-testimonial" placeholder='"This service saved my father''s life. The doctor came to our village and diagnosed his heart condition early." - Priya, Bihar'>"This service saved my father's life. The doctor came to our village and diagnosed his heart condition early." - Priya, Bihar</textarea>
+                        <p class="form-help">One powerful customer story</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 7: Competition -->
+                <div id="slide-7" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Competition & Differentiation</h2>
+                        <span style="color: #667eea;">Why you'll win</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Competition Slide</h3>
+                        <ul>
+                            <li>Never say "we have no competition"</li>
+                            <li>Use a comparison matrix or positioning map</li>
+                            <li>Show respect for competitors</li>
+                            <li>Highlight your unique advantages</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Main Competitors (Top 3)</label>
+                        <textarea id="competitors" placeholder="1. Practo - Telemedicine focused, urban-centric, expensive
+2. 1mg - Medicine delivery, no physical presence
+3. Government PHCs - Free but overcrowded, limited hours">1. Practo - Telemedicine focused, urban-centric, expensive
+2. 1mg - Medicine delivery, no physical presence
+3. Government PHCs - Free but overcrowded, limited hours</textarea>
+                        <p class="form-help">List competitors and their focus</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Your Competitive Advantages</label>
+                        <textarea id="competitive-advantages" placeholder="✓ Physical presence in villages (vs digital-only)
+✓ Affordable ₹50 consultation (vs ₹500+)
+✓ AI diagnostics for accuracy (vs basic checkups)
+✓ Government partnerships for trust
+✓ Medicine delivery included">✓ Physical presence in villages (vs digital-only)
+✓ Affordable ₹50 consultation (vs ₹500+)
+✓ AI diagnostics for accuracy (vs basic checkups)
+✓ Government partnerships for trust
+✓ Medicine delivery included</textarea>
+                        <p class="form-help">Why customers choose you over others</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Barriers to Entry / Moat</label>
+                        <input type="text" id="moat" placeholder="e.g., Exclusive 5-year contracts with 1000+ panchayats">
+                        <p class="form-help">What prevents others from copying you</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 8: Team -->
+                <div id="slide-8" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">The Team</h2>
+                        <span style="color: #667eea;">Why you're the ones to do this</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Team Slide</h3>
+                        <ul>
+                            <li>Highlight relevant experience and achievements</li>
+                            <li>Show domain expertise and past successes</li>
+                            <li>Include key advisors if impressive</li>
+                            <li>Show complementary skills across founders</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Founder 1 - Profile</label>
+                        <textarea id="founder1" placeholder="Rahul Sharma, CEO
+• Ex-Apollo Hospitals (5 years)
+• IIT Delhi + IIM Ahmedabad
+• Built telemedicine platform to 100K users
+• Forbes 30 Under 30">Rahul Sharma, CEO
+• Ex-Apollo Hospitals (5 years)
+• IIT Delhi + IIM Ahmedabad
+• Built telemedicine platform to 100K users
+• Forbes 30 Under 30</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Founder 2 - Profile</label>
+                        <textarea id="founder2" placeholder="Priya Patel, CTO
+• Ex-Google Health (3 years)
+• IIIT Hyderabad, AI/ML specialist
+• Published 5 papers on medical AI
+• Built diagnostic AI with 95% accuracy">Priya Patel, CTO
+• Ex-Google Health (3 years)
+• IIIT Hyderabad, AI/ML specialist
+• Published 5 papers on medical AI
+• Built diagnostic AI with 95% accuracy</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Key Team Members & Advisors</label>
+                        <textarea id="team-others" placeholder="Dr. Devi Shetty - Advisor (Narayana Health founder)
+Nandan Nilekani - Advisor (Aadhaar architect)
+15 full-time employees including 3 doctors">Dr. Devi Shetty - Advisor (Narayana Health founder)
+Nandan Nilekani - Advisor (Aadhaar architect)
+15 full-time employees including 3 doctors</textarea>
+                        <p class="form-help">Include notable advisors and team size</p>
+                    </div>
+                </div>
+                
+                <!-- Slide 9: Financials -->
+                <div id="slide-9" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">Financial Projections</h2>
+                        <span style="color: #667eea;">The numbers that matter</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Financials Slide</h3>
+                        <ul>
+                            <li>Show 3-year projections (5 years is too speculative)</li>
+                            <li>Include key assumptions below projections</li>
+                            <li>Be aggressive but realistic</li>
+                            <li>Show path to profitability clearly</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current Financials</label>
+                        <textarea id="current-financials" placeholder="FY 2023-24:
+• Revenue: ₹50 lakhs
+• Gross Margin: 60%
+• Burn Rate: ₹10 lakhs/month
+• Runway: 8 months">FY 2023-24:
+• Revenue: ₹50 lakhs
+• Gross Margin: 60%
+• Burn Rate: ₹10 lakhs/month
+• Runway: 8 months</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>3-Year Revenue Projections</label>
+                        <textarea id="revenue-projections" placeholder="Year 1 (FY25): ₹2 Cr
+Year 2 (FY26): ₹10 Cr
+Year 3 (FY27): ₹50 Cr
+
+Key Assumptions:
+• 100 clinics by Year 1, 500 by Year 3
+• 50 patients/clinic/day by Year 3
+• ₹100 average revenue per patient">Year 1 (FY25): ₹2 Cr
+Year 2 (FY26): ₹10 Cr
+Year 3 (FY27): ₹50 Cr
+
+Key Assumptions:
+• 100 clinics by Year 1, 500 by Year 3
+• 50 patients/clinic/day by Year 3
+• ₹100 average revenue per patient</textarea>
+                    </div>
+                    
+                    <div class="metric-inputs">
+                        <div class="form-group">
+                            <label>Break-even Timeline</label>
+                            <input type="text" id="breakeven" placeholder="e.g., Month 18">
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Flow Positive</label>
+                            <input type="text" id="cashflow-positive" placeholder="e.g., Month 24">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 10: Ask -->
+                <div id="slide-10" class="slide-content" style="display:none;">
+                    <div class="slide-header">
+                        <h2 class="slide-title">The Ask & Use of Funds</h2>
+                        <span style="color: #667eea;">What you need to succeed</span>
+                    </div>
+                    
+                    <div class="slide-tips">
+                        <h3>💡 Pro Tips for Ask Slide</h3>
+                        <ul>
+                            <li>Be specific about the amount and terms</li>
+                            <li>Show how funds accelerate growth</li>
+                            <li>Include runway this gives you (18-24 months ideal)</li>
+                            <li>Show expected milestones with this funding</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="metric-inputs">
+                        <div class="form-group">
+                            <label>Funding Amount *</label>
+                            <input type="text" id="funding-amount" placeholder="e.g., ₹5 Crores">
+                        </div>
+                        <div class="form-group">
+                            <label>Round Type *</label>
+                            <select id="round-type">
+                                <option>Pre-Seed</option>
+                                <option>Seed</option>
+                                <option selected>Series A</option>
+                                <option>Series B</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Valuation</label>
+                            <input type="text" id="valuation" placeholder="e.g., ₹50 Cr pre-money">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Use of Funds Breakdown *</label>
+                        <textarea id="use-of-funds" placeholder="• Technology & Product: 35% (₹1.75 Cr)
+  - AI model development
+  - Mobile app enhancement
+• Operations: 40% (₹2 Cr)
+  - Launch 200 new clinics
+  - Hire 50 health workers
+• Marketing: 15% (₹75 lakhs)
+  - Digital marketing
+  - Partnership development
+• Working Capital: 10% (₹50 lakhs)">• Technology & Product: 35% (₹1.75 Cr)
+  - AI model development
+  - Mobile app enhancement
+• Operations: 40% (₹2 Cr)
+  - Launch 200 new clinics
+  - Hire 50 health workers
+• Marketing: 15% (₹75 lakhs)
+  - Digital marketing
+  - Partnership development
+• Working Capital: 10% (₹50 lakhs)</textarea>
+                        <p class="form-help">Show percentage and specific use for each category</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Milestones with This Funding</label>
+                        <textarea id="funding-milestones" placeholder="Next 18 months:
+✓ Scale to 500 clinics across 5 states
+✓ Reach 1 million patients
+✓ Achieve ₹10 Cr ARR
+✓ Launch medicine manufacturing unit
+✓ Raise Series B for pan-India expansion">Next 18 months:
+✓ Scale to 500 clinics across 5 states
+✓ Reach 1 million patients
+✓ Achieve ₹10 Cr ARR
+✓ Launch medicine manufacturing unit
+✓ Raise Series B for pan-India expansion</textarea>
+                        <p class="form-help">What you'll achieve with this investment</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Previous Funding (if any)</label>
+                        <input type="text" id="previous-funding" placeholder="e.g., Seed: ₹1 Cr from XYZ Angels (2023)">
+                        <p class="form-help">Include amount, investors, and year</p>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="previousSlide()">← Previous</button>
+                    <button class="btn btn-primary" onclick="nextSlide()">Next →</button>
+                    <button class="btn btn-success" onclick="generatePitchDeck()">Generate Complete Deck</button>
+                </div>
+                
+                <div class="progress-indicator">
+                    <span class="progress-dot active" id="dot-1"></span>
+                    <span class="progress-dot" id="dot-2"></span>
+                    <span class="progress-dot" id="dot-3"></span>
+                    <span class="progress-dot" id="dot-4"></span>
+                    <span class="progress-dot" id="dot-5"></span>
+                    <span class="progress-dot" id="dot-6"></span>
+                    <span class="progress-dot" id="dot-7"></span>
+                    <span class="progress-dot" id="dot-8"></span>
+                    <span class="progress-dot" id="dot-9"></span>
+                    <span class="progress-dot" id="dot-10"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="preview-section" id="previewSection" style="display:none;">
+            <div class="preview-header">
+                <h2>📊 Pitch Deck Preview</h2>
+                <button class="btn btn-primary" onclick="downloadPitchDeck()">Download as PDF</button>
+            </div>
+            <div class="preview-slide" id="previewContent">
+                <!-- Preview content will be generated here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+        let deckData = {};
+        
+        function showSlide(slideNumber) {
+            // Hide all slides
+            for (let i = 1; i <= totalSlides; i++) {
+                document.getElementById(`slide-${i}`).style.display = 'none';
+                document.querySelector(`.slide-item:nth-child(${i})`).classList.remove('active');
+                document.getElementById(`dot-${i}`).classList.remove('active');
+            }
+            
+            // Show selected slide
+            document.getElementById(`slide-${slideNumber}`).style.display = 'block';
+            document.querySelector(`.slide-item:nth-child(${slideNumber})`).classList.add('active');
+            document.getElementById(`dot-${slideNumber}`).classList.add('active');
+            
+            currentSlide = slideNumber;
+            saveCurrentSlide();
+        }
+        
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                saveCurrentSlide();
+                showSlide(currentSlide + 1);
+            }
+        }
+        
+        function previousSlide() {
+            if (currentSlide > 1) {
+                saveCurrentSlide();
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        function saveCurrentSlide() {
+            // Mark slide as completed if it has content
+            const hasContent = checkSlideContent(currentSlide);
+            if (hasContent) {
+                document.getElementById(`status-${currentSlide}`).classList.add('completed');
+                document.getElementById(`dot-${currentSlide}`).classList.add('completed');
+            }
+            
+            // Save data based on current slide
+            switch(currentSlide) {
+                case 1:
+                    deckData.companyName = document.getElementById('company-name').value;
+                    deckData.tagline = document.getElementById('tagline').value;
+                    deckData.founderName = document.getElementById('founder-name').value;
+                    deckData.founderEmail = document.getElementById('founder-email').value;
+                    break;
+                case 2:
+                    deckData.problemStatement = document.getElementById('problem-statement').value;
+                    deckData.problemAudience = document.getElementById('problem-audience').value;
+                    deckData.currentSolutions = document.getElementById('current-solutions').value;
+                    deckData.problemCost = document.getElementById('problem-cost').value;
+                    break;
+                case 3:
+                    deckData.solutionOverview = document.getElementById('solution-overview').value;
+                    deckData.solutionFeatures = document.getElementById('solution-features').value;
+                    deckData.solutionUnique = document.getElementById('solution-unique').value;
+                    break;
+                case 4:
+                    deckData.marketTAM = document.getElementById('market-tam').value;
+                    deckData.marketSAM = document.getElementById('market-sam').value;
+                    deckData.marketSOM = document.getElementById('market-som').value;
+                    deckData.marketGrowth = document.getElementById('market-growth').value;
+                    deckData.marketCalculation = document.getElementById('market-calculation').value;
+                    break;
+                case 5:
+                    deckData.revenueModel = document.getElementById('revenue-model').value;
+                    deckData.cac = document.getElementById('cac').value;
+                    deckData.clv = document.getElementById('clv').value;
+                    deckData.grossMargin = document.getElementById('gross-margin').value;
+                    deckData.profitabilityPath = document.getElementById('profitability-path').value;
+                    break;
+                case 6:
+                    deckData.tractionRevenue = document.getElementById('traction-revenue').value;
+                    deckData.tractionUsers = document.getElementById('traction-users').value;
+                    deckData.tractionGrowth = document.getElementById('traction-growth').value;
+                    deckData.tractionMilestones = document.getElementById('traction-milestones').value;
+                    deckData.tractionTestimonial = document.getElementById('traction-testimonial').value;
+                    break;
+                case 7:
+                    deckData.competitors = document.getElementById('competitors').value;
+                    deckData.competitiveAdvantages = document.getElementById('competitive-advantages').value;
+                    deckData.moat = document.getElementById('moat').value;
+                    break;
+                case 8:
+                    deckData.founder1 = document.getElementById('founder1').value;
+                    deckData.founder2 = document.getElementById('founder2').value;
+                    deckData.teamOthers = document.getElementById('team-others').value;
+                    break;
+                case 9:
+                    deckData.currentFinancials = document.getElementById('current-financials').value;
+                    deckData.revenueProjections = document.getElementById('revenue-projections').value;
+                    deckData.breakeven = document.getElementById('breakeven').value;
+                    deckData.cashflowPositive = document.getElementById('cashflow-positive').value;
+                    break;
+                case 10:
+                    deckData.fundingAmount = document.getElementById('funding-amount').value;
+                    deckData.roundType = document.getElementById('round-type').value;
+                    deckData.valuation = document.getElementById('valuation').value;
+                    deckData.useOfFunds = document.getElementById('use-of-funds').value;
+                    deckData.fundingMilestones = document.getElementById('funding-milestones').value;
+                    deckData.previousFunding = document.getElementById('previous-funding').value;
+                    break;
+            }
+        }
+        
+        function checkSlideContent(slideNumber) {
+            switch(slideNumber) {
+                case 1:
+                    return document.getElementById('company-name').value && 
+                           document.getElementById('tagline').value;
+                case 2:
+                    return document.getElementById('problem-statement').value;
+                case 3:
+                    return document.getElementById('solution-overview').value;
+                case 4:
+                    return document.getElementById('market-tam').value;
+                case 5:
+                    return document.getElementById('revenue-model').value;
+                case 6:
+                    return document.getElementById('traction-revenue').value || 
+                           document.getElementById('traction-users').value;
+                case 7:
+                    return document.getElementById('competitors').value;
+                case 8:
+                    return document.getElementById('founder1').value;
+                case 9:
+                    return document.getElementById('current-financials').value;
+                case 10:
+                    return document.getElementById('funding-amount').value;
+                default:
+                    return false;
+            }
+        }
+        
+        function generatePitchDeck() {
+            saveCurrentSlide();
+            
+            // Check if minimum required fields are filled
+            if (!deckData.companyName || !deckData.tagline || !deckData.fundingAmount) {
+                alert('Please complete at least the Title slide and Funding Ask before generating the deck.');
+                return;
+            }
+            
+            // Generate preview
+            const preview = `
+                <h2 style="color: #667eea; text-align: center; margin-bottom: 40px;">
+                    ${deckData.companyName || 'Your Company'} - Investor Pitch Deck
+                </h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>1. Title</h3>
+                    <p><strong>${deckData.companyName}</strong></p>
+                    <p><em>${deckData.tagline}</em></p>
+                    <p>Contact: ${deckData.founderName} - ${deckData.founderEmail}</p>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>2. Problem</h3>
+                    <p>${deckData.problemStatement || 'Problem description needed'}</p>
+                    <p><strong>Affects:</strong> ${deckData.problemAudience || 'Target audience'}</p>
+                    ${deckData.problemCost ? `<p><strong>Cost:</strong> ${deckData.problemCost}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>3. Solution</h3>
+                    <p>${deckData.solutionOverview || 'Solution description needed'}</p>
+                    ${deckData.solutionFeatures ? `<p><strong>Key Features:</strong><br>${deckData.solutionFeatures.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>4. Market Size</h3>
+                    <p><strong>TAM:</strong> ${deckData.marketTAM || 'Not specified'}</p>
+                    <p><strong>SAM:</strong> ${deckData.marketSAM || 'Not specified'}</p>
+                    <p><strong>SOM:</strong> ${deckData.marketSOM || 'Not specified'}</p>
+                    ${deckData.marketGrowth ? `<p>${deckData.marketGrowth}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>5. Business Model</h3>
+                    <p>${deckData.revenueModel ? deckData.revenueModel.replace(/\n/g, '<br>') : 'Revenue model needed'}</p>
+                    ${deckData.grossMargin ? `<p><strong>Gross Margin:</strong> ${deckData.grossMargin}</p>` : ''}
+                    ${deckData.profitabilityPath ? `<p><strong>Path to Profitability:</strong> ${deckData.profitabilityPath}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>6. Traction</h3>
+                    ${deckData.tractionRevenue ? `<p><strong>Revenue:</strong> ${deckData.tractionRevenue}</p>` : ''}
+                    ${deckData.tractionUsers ? `<p><strong>Users:</strong> ${deckData.tractionUsers}</p>` : ''}
+                    ${deckData.tractionGrowth ? `<p><strong>Growth:</strong> ${deckData.tractionGrowth}</p>` : ''}
+                    ${deckData.tractionMilestones ? `<p>${deckData.tractionMilestones.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>7. Competition</h3>
+                    ${deckData.competitors ? `<p>${deckData.competitors.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${deckData.competitiveAdvantages ? `<p><strong>Our Advantages:</strong><br>${deckData.competitiveAdvantages.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>8. Team</h3>
+                    ${deckData.founder1 ? `<p>${deckData.founder1.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${deckData.founder2 ? `<p>${deckData.founder2.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${deckData.teamOthers ? `<p>${deckData.teamOthers.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>9. Financials</h3>
+                    ${deckData.currentFinancials ? `<p>${deckData.currentFinancials.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${deckData.revenueProjections ? `<p><strong>Projections:</strong><br>${deckData.revenueProjections.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3>10. The Ask</h3>
+                    <p><strong>Raising:</strong> ${deckData.fundingAmount} (${deckData.roundType})</p>
+                    ${deckData.valuation ? `<p><strong>Valuation:</strong> ${deckData.valuation}</p>` : ''}
+                    ${deckData.useOfFunds ? `<p><strong>Use of Funds:</strong><br>${deckData.useOfFunds.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${deckData.fundingMilestones ? `<p><strong>Milestones:</strong><br>${deckData.fundingMilestones.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+            `;
+            
+            document.getElementById('previewContent').innerHTML = preview;
+            document.getElementById('previewSection').style.display = 'block';
+            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function downloadPitchDeck() {
+            // Create a downloadable version
+            const content = document.getElementById('previewContent').innerHTML;
+            const blob = new Blob([`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${deckData.companyName} - Pitch Deck</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; }
+                        h2 { color: #667eea; }
+                        h3 { color: #333; margin-top: 30px; }
+                        p { line-height: 1.6; }
+                        strong { color: #444; }
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `], { type: 'text/html' });
+            
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${deckData.companyName || 'pitch-deck'}-investor-deck.html`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Auto-save to localStorage
+        function autoSave() {
+            saveCurrentSlide();
+            localStorage.setItem('pitchDeckData', JSON.stringify(deckData));
+        }
+        
+        // Load saved data on page load
+        window.onload = function() {
+            const saved = localStorage.getItem('pitchDeckData');
+            if (saved) {
+                deckData = JSON.parse(saved);
+                // Restore form values
+                if (deckData.companyName) document.getElementById('company-name').value = deckData.companyName;
+                if (deckData.tagline) document.getElementById('tagline').value = deckData.tagline;
+                // ... restore other fields as needed
+            }
+        }
+        
+        // Auto-save every 30 seconds
+        setInterval(autoSave, 30000);
+    </script>
+</body>
+</html>

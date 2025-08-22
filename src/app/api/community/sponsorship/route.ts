@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const { data: orders, error } = await query;
 
     if (error) {
-      console.error('Error fetching sponsorship orders:', error);
+      logger.error('Error fetching sponsorship orders:', error);
       return NextResponse.json(
         { error: 'Failed to fetch sponsorship orders' },
         { status: 500 }
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Sponsorship orders API error:', error);
+    logger.error('Sponsorship orders API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -150,7 +151,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (orderError) {
-      console.error('Error creating sponsorship order:', orderError);
+      logger.error('Error creating sponsorship order:', orderError);
       return NextResponse.json(
         { error: 'Failed to create sponsorship order' },
         { status: 500 }
@@ -179,7 +180,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create sponsorship order error:', error);
+    logger.error('Create sponsorship order error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Compliance Checklist - P1 Course</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { color: #2c3e50; margin: 0; }
+        .header p { color: #7f8c8d; margin: 5px 0; }
+        .progress-bar { background: #ecf0f1; height: 20px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71); transition: width 0.3s ease; }
+        .progress-text { text-align: center; margin-top: 10px; font-weight: bold; color: #2c3e50; }
+        .section { background: white; padding: 25px; margin: 20px 0; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h3 { margin: 0 0 20px 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .priority { padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .critical { background: #e74c3c; color: white; }
+        .high { background: #f39c12; color: white; }
+        .medium { background: #3498db; color: white; }
+        .low { background: #95a5a6; color: white; }
+        .checklist-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px; border: 1px solid #ecf0f1; border-radius: 8px; margin: 10px 0; transition: all 0.3s ease; }
+        .checklist-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .checklist-item.completed { background: #d5f4e6; border-color: #27ae60; }
+        .checklist-item input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
+        .item-content { flex: 1; }
+        .item-title { font-weight: 600; color: #2c3e50; margin-bottom: 5px; }
+        .item-description { color: #7f8c8d; font-size: 14px; margin-bottom: 10px; }
+        .item-details { display: flex; gap: 15px; font-size: 12px; }
+        .detail-item { display: flex; align-items: center; gap: 5px; color: #7f8c8d; }
+        .due-date { color: #e74c3c; font-weight: bold; }
+        .due-date.safe { color: #27ae60; }
+        .resources { background: #eef3fc; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .resources h5 { margin: 0 0 10px 0; color: #2c3e50; }
+        .resources ul { margin: 0; padding-left: 20px; }
+        .resources a { color: #3498db; text-decoration: none; }
+        .resources a:hover { text-decoration: underline; }
+        .summary { position: sticky; top: 20px; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .summary h4 { margin: 0 0 15px 0; color: #2c3e50; }
+        .stat { display: flex; justify-content: space-between; margin: 10px 0; }
+        .export-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        .export-btn:hover { background: #2980b9; }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .summary { position: static; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Legal Compliance Checklist</h1>
+            <p>The Indian Startup - P1 Course Template</p>
+            <p style="color: #3498db; font-weight: bold;">Complete Indian Startup Legal & Regulatory Compliance Framework</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0% Complete (0 of 0 items)</div>
+            
+            <div>
+                <button class="export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                <button class="export-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                <button class="export-btn" onclick="resetAll()">🔄 Reset All</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+            <div>
+                <div class="section">
+                    <h3>
+                        🏢 Company Incorporation & Structure
+                        <span class="priority critical">Critical</span>
+                    </h3>
+                    
+                    <div class="checklist-item" data-priority="critical">
+                        <input type="checkbox" id="incorporation">
+                        <div class="item-content">
+                            <div class="item-title">Company Incorporation Certificate</div>
+                            <div class="item-description">Obtain Certificate of Incorporation from MCA (Ministry of Corporate Affairs)</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Immediate</span></div>
+                                <div class="detail-item">💰 ₹15,000-₹30,000</div>
+                                <div class="detail-item">📍 MCA Portal</div>
+                            </div>
+                            <div class="resources">
+                                <h5>Resources & Links:</h5>
+                                <ul>
+                                    <li><a href="https://www.mca.gov.in" target="_blank">MCA Official Website</a></li>
+                                    <li><a href="https://www.mca.gov.in/MinistryV2/spiceplus.html" target="_blank">SPICe+ Form Guide</a></li>
+                                    <li>Required: PAN, Aadhaar, Digital Signature Certificate</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="critical">
+                        <input type="checkbox" id="pan-tan">
+                        <div class="item-content">
+                            <div class="item-title">PAN & TAN Registration</div>
+                            <div class="item-description">Company PAN for tax purposes, TAN for TDS deduction</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Within 7 days</span></div>
+                                <div class="detail-item">💰 ₹500-₹1,000</div>
+                                <div class="detail-item">📍 Income Tax Portal</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="high">
+                        <input type="checkbox" id="bank-account">
+                        <div class="item-content">
+                            <div class="item-title">Corporate Bank Account</div>
+                            <div class="item-description">Open current account in company name for business transactions</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Within 14 days</span></div>
+                                <div class="detail-item">💰 ₹10,000 minimum</div>
+                                <div class="detail-item">📍 Bank Branch</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>
+                        📊 Tax & GST Registration
+                        <span class="priority critical">Critical</span>
+                    </h3>
+                    
+                    <div class="checklist-item" data-priority="critical">
+                        <input type="checkbox" id="gst-registration">
+                        <div class="item-content">
+                            <div class="item-title">GST Registration</div>
+                            <div class="item-description">Mandatory if turnover >₹20 lakhs (₹10L for special states)</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Before first sale</span></div>
+                                <div class="detail-item">💰 Free</div>
+                                <div class="detail-item">📍 GST Portal</div>
+                            </div>
+                            <div class="resources">
+                                <h5>Resources:</h5>
+                                <ul>
+                                    <li><a href="https://www.gst.gov.in" target="_blank">GST Portal</a></li>
+                                    <li>GST REG-01 Form</li>
+                                    <li>Required: Incorporation Certificate, Bank Statement, Rent Agreement</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="high">
+                        <input type="checkbox" id="gst-monthly-returns">
+                        <div class="item-content">
+                            <div class="item-title">GST Monthly Returns Setup</div>
+                            <div class="item-description">GSTR-1 (outward supplies) and GSTR-3B (summary return)</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Monthly by 11th</span></div>
+                                <div class="detail-item">💰 ₹10,000/month late fee</div>
+                                <div class="detail-item">📍 Recurring</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>
+                        👥 Employment & Labor Laws
+                        <span class="priority high">High</span>
+                    </h3>
+                    
+                    <div class="checklist-item" data-priority="high">
+                        <input type="checkbox" id="pf-esi">
+                        <div class="item-content">
+                            <div class="item-title">PF & ESI Registration</div>
+                            <div class="item-description">Mandatory if employees >20 (PF) or >10 (ESI)</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Before hiring</span></div>
+                                <div class="detail-item">💰 12% employee + 12% employer (PF)</div>
+                                <div class="detail-item">📍 EPFO/ESIC Portal</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="medium">
+                        <input type="checkbox" id="shop-establishment">
+                        <div class="item-content">
+                            <div class="item-title">Shop & Establishment License</div>
+                            <div class="item-description">State-specific license for commercial establishment</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Within 30 days</span></div>
+                                <div class="detail-item">💰 ₹2,000-₹5,000</div>
+                                <div class="detail-item">📍 State Portal</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="medium">
+                        <input type="checkbox" id="professional-tax">
+                        <div class="item-content">
+                            <div class="item-title">Professional Tax Registration</div>
+                            <div class="item-description">State tax on professions/trades/callings/employment</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Within 30 days</span></div>
+                                <div class="detail-item">💰 ₹200-₹2,500/month</div>
+                                <div class="detail-item">📍 State Tax Department</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>
+                        🛡️ Intellectual Property & Data Protection
+                        <span class="priority medium">Medium</span>
+                    </h3>
+                    
+                    <div class="checklist-item" data-priority="medium">
+                        <input type="checkbox" id="trademark">
+                        <div class="item-content">
+                            <div class="item-title">Trademark Registration</div>
+                            <div class="item-description">Protect brand name, logo, and taglines</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Within 3 months</span></div>
+                                <div class="detail-item">💰 ₹4,500 per class</div>
+                                <div class="detail-item">📍 IP India Portal</div>
+                            </div>
+                            <div class="resources">
+                                <h5>Resources:</h5>
+                                <ul>
+                                    <li><a href="https://ipindia.gov.in" target="_blank">IP India Portal</a></li>
+                                    <li>TM-A Form for application</li>
+                                    <li>Choose appropriate classes (1-45)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="medium">
+                        <input type="checkbox" id="privacy-policy">
+                        <div class="item-content">
+                            <div class="item-title">Privacy Policy & Terms of Service</div>
+                            <div class="item-description">GDPR compliance and user data protection</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Before launch</span></div>
+                                <div class="detail-item">💰 ₹10,000-₹25,000 (legal)</div>
+                                <div class="detail-item">📍 Website/App</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="low">
+                        <input type="checkbox" id="copyright">
+                        <div class="item-content">
+                            <div class="item-title">Copyright Registration</div>
+                            <div class="item-description">Protect original content, software, creative works</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Within 6 months</span></div>
+                                <div class="detail-item">💰 ₹500 per work</div>
+                                <div class="detail-item">📍 Copyright Office</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>
+                        🌟 Startup-Specific Benefits
+                        <span class="priority medium">Medium</span>
+                    </h3>
+                    
+                    <div class="checklist-item" data-priority="medium">
+                        <input type="checkbox" id="dpiit-registration">
+                        <div class="item-content">
+                            <div class="item-title">DPIIT Startup Recognition</div>
+                            <div class="item-description">Government recognition for tax benefits and funding access</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Within 6 months</span></div>
+                                <div class="detail-item">💰 Free</div>
+                                <div class="detail-item">📍 StartupIndia Portal</div>
+                            </div>
+                            <div class="resources">
+                                <h5>Benefits:</h5>
+                                <ul>
+                                    <li>80IAC: 100% tax exemption for 3 years</li>
+                                    <li>Fast-track patent examination</li>
+                                    <li>Access to government schemes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-priority="low">
+                        <input type="checkbox" id="startup-india">
+                        <div class="item-content">
+                            <div class="item-title">Startup India Portal Registration</div>
+                            <div class="item-description">Access to networking, funding, and mentorship opportunities</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date safe">Anytime</span></div>
+                                <div class="detail-item">💰 Free</div>
+                                <div class="detail-item">📍 StartupIndia.gov.in</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>
+                        🔄 Ongoing Compliance
+                        <span class="priority high">High</span>
+                    </h3>
+                    
+                    <div class="checklist-item" data-priority="high">
+                        <input type="checkbox" id="annual-compliance">
+                        <div class="item-content">
+                            <div class="item-title">Annual Compliance Calendar</div>
+                            <div class="item-description">Set up reminders for all recurring compliance requirements</div>
+                            <div class="item-details">
+                                <div class="detail-item">⏰ <span class="due-date">Immediate setup</span></div>
+                                <div class="detail-item">💰 ₹25,000-₹50,000/year</div>
+                                <div class="detail-item">📍 CA/Legal advisor</div>
+                            </div>
+                            <div class="resources">
+                                <h5>Key Annual Dates:</h5>
+                                <ul>
+                                    <li>March 31: Financial Year End</li>
+                                    <li>May 30: Annual Return filing (AOC-4)</li>
+                                    <li>September 30: Annual Return filing (MGT-7)</li>
+                                    <li>December 31: Income Tax Return filing</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="summary">
+                    <h4>📊 Compliance Summary</h4>
+                    <div class="stat">
+                        <span>Total Items:</span>
+                        <span id="totalItems">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>Completed:</span>
+                        <span id="completedItems">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>Critical Pending:</span>
+                        <span id="criticalPending">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>High Priority:</span>
+                        <span id="highPending">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>Estimated Cost:</span>
+                        <span id="estimatedCost">₹0</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 20px;">🎯 Next Actions</h4>
+                    <div id="nextActions">
+                        <div style="color: #7f8c8d; font-style: italic;">Complete items to see recommendations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const total = checkboxes.length;
+            let completed = 0;
+            let criticalPending = 0;
+            let highPending = 0;
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    completed++;
+                    checkbox.closest('.checklist-item').classList.add('completed');
+                } else {
+                    checkbox.closest('.checklist-item').classList.remove('completed');
+                    const priority = checkbox.closest('.checklist-item').dataset.priority;
+                    if (priority === 'critical') criticalPending++;
+                    if (priority === 'high') highPending++;
+                }
+                
+                // Save state
+                localStorage.setItem('compliance_' + checkbox.id, checkbox.checked);
+            });
+            
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${percentage}% Complete (${completed} of ${total} items)`;
+            document.getElementById('totalItems').textContent = total;
+            document.getElementById('completedItems').textContent = completed;
+            document.getElementById('criticalPending').textContent = criticalPending;
+            document.getElementById('highPending').textContent = highPending;
+            
+            // Update next actions
+            updateNextActions(criticalPending, highPending);
+        }
+        
+        function updateNextActions(critical, high) {
+            let actions = [];
+            
+            if (critical > 0) {
+                actions.push(`🚨 Complete ${critical} critical items immediately`);
+            }
+            if (high > 0) {
+                actions.push(`⚡ Address ${high} high priority items`);
+            }
+            if (critical === 0 && high === 0) {
+                actions.push(`✅ Great! Focus on medium/low priority items`);
+            }
+            
+            actions.push(`💡 Consider hiring a CA for ongoing compliance`);
+            actions.push(`📅 Set up compliance calendar reminders`);
+            
+            document.getElementById('nextActions').innerHTML = actions.map(action => 
+                `<div style="margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 5px; font-size: 12px;">${action}</div>`
+            ).join('');
+        }
+        
+        function exportToPDF() {
+            window.print();
+        }
+        
+        function exportToCSV() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let csv = 'Item,Status,Priority,Description\n';
+            
+            checkboxes.forEach(checkbox => {
+                const item = checkbox.closest('.checklist-item');
+                const title = item.querySelector('.item-title').textContent;
+                const description = item.querySelector('.item-description').textContent;
+                const priority = item.dataset.priority;
+                const status = checkbox.checked ? 'Completed' : 'Pending';
+                
+                csv += `"${title}","${status}","${priority}","${description}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'legal-compliance-checklist.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function resetAll() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                    localStorage.removeItem('compliance_' + checkbox.id);
+                });
+                updateProgress();
+            }
+        }
+        
+        // Load saved state
+        window.addEventListener('load', function() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const saved = localStorage.getItem('compliance_' + checkbox.id);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                }
+            });
+            updateProgress();
+        });
+        
+        // Add event listeners
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                updateProgress();
+            }
+        });
+        
+        // Initial update
+        updateProgress();
+    </script>
+</body>
+</html>

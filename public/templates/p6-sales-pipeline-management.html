@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P6 Sales Pipeline Management System | The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 150px;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #1e3c72;
+            border-bottom: 3px solid #1e3c72;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            color: #1e3c72;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .pipeline-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pipeline-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .pipeline-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .pipeline-card p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .lead-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .leads-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .table-header {
+            background: #1e3c72;
+            color: white;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 100px;
+            gap: 15px;
+            font-weight: 600;
+        }
+
+        .table-row {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 100px;
+            gap: 15px;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-lead { background: #e3f2fd; color: #1976d2; }
+        .status-qualified { background: #f3e5f5; color: #7b1fa2; }
+        .status-proposal { background: #fff3e0; color: #f57c00; }
+        .status-negotiation { background: #ffebee; color: #d32f2f; }
+        .status-closed-won { background: #e8f5e8; color: #388e3c; }
+        .status-closed-lost { background: #fafafa; color: #757575; }
+
+        .action-btn {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #2a5298;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .pipeline-kanban {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kanban-column {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 400px;
+        }
+
+        .kanban-header {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .kanban-lead { background: #1976d2; }
+        .kanban-qualified { background: #7b1fa2; }
+        .kanban-proposal { background: #f57c00; }
+        .kanban-negotiation { background: #d32f2f; }
+        .kanban-won { background: #388e3c; }
+        .kanban-lost { background: #757575; }
+
+        .kanban-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: move;
+        }
+
+        .kanban-card h4 {
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+
+        .kanban-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .analytics-card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .tool-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .tool-card:hover {
+            border-color: #1e3c72;
+        }
+
+        .tool-card h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .export-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline-overview {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .pipeline-kanban {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Sales Pipeline Management System</h1>
+            <p>Complete CRM and Pipeline Management for Indian Startups</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="showTab('leads')">👥 Lead Management</button>
+            <button class="nav-tab" onclick="showTab('pipeline')">⚡ Pipeline View</button>
+            <button class="nav-tab" onclick="showTab('analytics')">📈 Analytics</button>
+            <button class="nav-tab" onclick="showTab('tools')">🛠️ Sales Tools</button>
+            <button class="nav-tab" onclick="showTab('automation')">🤖 Automation</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="section-header">
+                <h2>Sales Pipeline Dashboard</h2>
+                <p>Real-time overview of your sales performance and pipeline health</p>
+            </div>
+
+            <div class="pipeline-overview">
+                <div class="pipeline-card">
+                    <h3 id="totalLeads">247</h3>
+                    <p>Total Leads</p>
+                </div>
+                <div class="pipeline-card">
+                    <h3 id="qualifiedLeads">89</h3>
+                    <p>Qualified Leads</p>
+                </div>
+                <div class="pipeline-card">
+                    <h3 id="activePipeline">₹45.2L</h3>
+                    <p>Active Pipeline</p>
+                </div>
+                <div class="pipeline-card">
+                    <h3 id="closedDeals">₹12.8L</h3>
+                    <p>Closed This Month</p>
+                </div>
+                <div class="pipeline-card">
+                    <h3 id="conversionRate">18.5%</h3>
+                    <p>Conversion Rate</p>
+                </div>
+                <div class="pipeline-card">
+                    <h3 id="avgDealSize">₹1.8L</h3>
+                    <p>Avg Deal Size</p>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Sales Velocity Trend</h3>
+                    <div class="chart-placeholder">Interactive Chart: Deal Velocity Over Time</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Pipeline Distribution</h3>
+                    <div class="chart-placeholder">Interactive Chart: Deals by Stage</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Lead Sources Performance</h3>
+                    <div class="chart-placeholder">Interactive Chart: ROI by Channel</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Sales Team Performance</h3>
+                    <div class="chart-placeholder">Interactive Chart: Individual Performance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lead Management Tab -->
+        <div id="leads" class="tab-content">
+            <div class="section-header">
+                <h2>Lead Management</h2>
+                <p>Capture, qualify, and nurture your leads effectively</p>
+            </div>
+
+            <div class="lead-form">
+                <h3 style="margin-bottom: 20px; color: #1e3c72;">Add New Lead</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" id="companyName" placeholder="Enter company name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person *</label>
+                        <input type="text" id="contactPerson" placeholder="Enter contact name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" placeholder="Enter email address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="phone" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Lead Source</label>
+                        <select id="leadSource">
+                            <option value="">Select source</option>
+                            <option value="website">Website</option>
+                            <option value="referral">Referral</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="cold-email">Cold Email</option>
+                            <option value="social-media">Social Media</option>
+                            <option value="event">Event/Conference</option>
+                            <option value="advertisement">Advertisement</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Deal Value (₹)</label>
+                        <input type="number" id="dealValue" placeholder="Estimated deal value">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="notes" rows="3" placeholder="Additional notes about this lead"></textarea>
+                </div>
+                <button class="btn" onclick="addLead()">Add Lead</button>
+            </div>
+
+            <div class="leads-table">
+                <div class="table-header">
+                    <div>Company</div>
+                    <div>Contact</div>
+                    <div>Source</div>
+                    <div>Value</div>
+                    <div>Status</div>
+                    <div>Action</div>
+                </div>
+                <div id="leadsTableBody">
+                    <!-- Sample data -->
+                    <div class="table-row">
+                        <div>TechnoSoft Solutions</div>
+                        <div>Rahul Sharma<br><small>rahul@technosoft.in</small></div>
+                        <div>LinkedIn</div>
+                        <div>₹2,50,000</div>
+                        <div><span class="status-badge status-qualified">Qualified</span></div>
+                        <div><button class="action-btn" onclick="editLead(1)">Edit</button></div>
+                    </div>
+                    <div class="table-row">
+                        <div>GreenTech Industries</div>
+                        <div>Priya Patel<br><small>priya@greentech.co.in</small></div>
+                        <div>Referral</div>
+                        <div>₹4,75,000</div>
+                        <div><span class="status-badge status-proposal">Proposal</span></div>
+                        <div><button class="action-btn" onclick="editLead(2)">Edit</button></div>
+                    </div>
+                    <div class="table-row">
+                        <div>Digital Marketing Hub</div>
+                        <div>Amit Kumar<br><small>amit@dmhub.in</small></div>
+                        <div>Website</div>
+                        <div>₹1,80,000</div>
+                        <div><span class="status-badge status-lead">New Lead</span></div>
+                        <div><button class="action-btn" onclick="editLead(3)">Edit</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline View Tab -->
+        <div id="pipeline" class="tab-content">
+            <div class="section-header">
+                <h2>Sales Pipeline Kanban</h2>
+                <p>Visual pipeline management with drag-and-drop functionality</p>
+            </div>
+
+            <div class="pipeline-kanban">
+                <div class="kanban-column">
+                    <div class="kanban-header kanban-lead">New Leads (24)</div>
+                    <div class="kanban-card">
+                        <h4>TechCorp Solutions</h4>
+                        <p>Rajesh Singh • rajesh@techcorp.in</p>
+                        <div class="card-value">₹3,20,000</div>
+                    </div>
+                    <div class="kanban-card">
+                        <h4>Digital Dynamics</h4>
+                        <p>Sneha Agarwal • sneha@digitaldynamics.co.in</p>
+                        <div class="card-value">₹1,95,000</div>
+                    </div>
+                    <div class="kanban-card">
+                        <h4>InnovateTech</h4>
+                        <p>Arjun Mehta • arjun@innovatetech.in</p>
+                        <div class="card-value">₹2,75,000</div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header kanban-qualified">Qualified (18)</div>
+                    <div class="kanban-card">
+                        <h4>SmartSolutions Ltd</h4>
+                        <p>Kavita Sharma • kavita@smartsolutions.in</p>
+                        <div class="card-value">₹4,50,000</div>
+                    </div>
+                    <div class="kanban-card">
+                        <h4>NextGen Systems</h4>
+                        <p>Ravi Kumar • ravi@nextgen.co.in</p>
+                        <div class="card-value">₹2,80,000</div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header kanban-proposal">Proposal Sent (12)</div>
+                    <div class="kanban-card">
+                        <h4>EcoTech Industries</h4>
+                        <p>Meera Joshi • meera@ecotech.in</p>
+                        <div class="card-value">₹6,25,000</div>
+                    </div>
+                    <div class="kanban-card">
+                        <h4>CloudFirst Technologies</h4>
+                        <p>Vikram Rao • vikram@cloudfirst.co.in</p>
+                        <div class="card-value">₹3,90,000</div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header kanban-negotiation">Negotiation (8)</div>
+                    <div class="kanban-card">
+                        <h4>FinTech Solutions</h4>
+                        <p>Anita Gupta • anita@fintech.in</p>
+                        <div class="card-value">₹8,75,000</div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header kanban-won">Closed Won (15)</div>
+                    <div class="kanban-card">
+                        <h4>DataDriven Analytics</h4>
+                        <p>Suresh Patel • suresh@datadriven.in</p>
+                        <div class="card-value">₹5,20,000</div>
+                    </div>
+                    <div class="kanban-card">
+                        <h4>AI Innovations</h4>
+                        <p>Deepa Shah • deepa@aiinnovations.co.in</p>
+                        <div class="card-value">₹4,10,000</div>
+                    </div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header kanban-lost">Closed Lost (9)</div>
+                    <div class="kanban-card">
+                        <h4>Budget Constraints</h4>
+                        <p>CompetitorChoice Solutions</p>
+                        <div class="card-value">₹2,95,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="section-header">
+                <h2>Sales Analytics & Insights</h2>
+                <p>Data-driven insights to optimize your sales performance</p>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Monthly Sales Performance</h3>
+                    <div class="chart-placeholder">Line Chart: Monthly Revenue Trend</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Lead Conversion Funnel</h3>
+                    <div class="chart-placeholder">Funnel Chart: Lead to Customer Journey</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Sales Cycle Analysis</h3>
+                    <div class="chart-placeholder">Bar Chart: Average Days by Stage</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Lead Source ROI</h3>
+                    <div class="chart-placeholder">Pie Chart: Revenue by Source</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Deal Size Distribution</h3>
+                    <div class="chart-placeholder">Histogram: Deal Value Ranges</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Win/Loss Analysis</h3>
+                    <div class="chart-placeholder">Donut Chart: Win/Loss Reasons</div>
+                </div>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>🎯 Sales Forecasting</h3>
+                    <p>Predict next quarter revenue based on current pipeline and historical data</p>
+                    <button class="btn" onclick="generateForecast()">Generate Forecast</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📊 Performance Benchmarking</h3>
+                    <p>Compare your metrics against industry standards and best practices</p>
+                    <button class="btn" onclick="showBenchmarks()">View Benchmarks</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Tools Tab -->
+        <div id="tools" class="tab-content">
+            <div class="section-header">
+                <h2>Sales Tools & Resources</h2>
+                <p>Comprehensive toolkit to boost your sales effectiveness</p>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>📞 Call Scripts Generator</h3>
+                    <p>Generate personalized cold calling scripts based on prospect profile and industry</p>
+                    <button class="btn" onclick="generateCallScript()">Create Script</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📧 Email Templates</h3>
+                    <p>Professional email templates for prospecting, follow-ups, and proposals</p>
+                    <button class="btn" onclick="showEmailTemplates()">Browse Templates</button>
+                </div>
+                <div class="tool-card">
+                    <h3>💰 Pricing Calculator</h3>
+                    <p>Dynamic pricing calculator with discount scenarios and ROI projections</p>
+                    <button class="btn" onclick="openPricingCalculator()">Calculate Pricing</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📋 Proposal Builder</h3>
+                    <p>Create professional proposals with templates and automated calculations</p>
+                    <button class="btn" onclick="createProposal()">Build Proposal</button>
+                </div>
+                <div class="tool-card">
+                    <h3>🎯 Lead Scoring</h3>
+                    <p>AI-powered lead scoring based on engagement, fit, and buying signals</p>
+                    <button class="btn" onclick="scoreLeads()">Score Leads</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📈 ROI Calculator</h3>
+                    <p>Calculate customer lifetime value and return on investment for prospects</p>
+                    <button class="btn" onclick="calculateROI()">Calculate ROI</button>
+                </div>
+                <div class="tool-card">
+                    <h3>🗓️ Meeting Scheduler</h3>
+                    <p>Automated meeting scheduling with calendar integration and reminders</p>
+                    <button class="btn" onclick="scheduleMeeting()">Schedule Meeting</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📊 Competitor Analysis</h3>
+                    <p>Track competitor pricing, features, and positioning for better selling</p>
+                    <button class="btn" onclick="analyzeCompetitors()">Analyze Market</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automation Tab -->
+        <div id="automation" class="tab-content">
+            <div class="section-header">
+                <h2>Sales Automation</h2>
+                <p>Automate repetitive tasks and focus on high-value activities</p>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>🤖 Lead Nurturing Sequences</h3>
+                    <p>Automated email sequences based on lead behavior and engagement level</p>
+                    <button class="btn" onclick="setupNurturing()">Setup Automation</button>
+                </div>
+                <div class="tool-card">
+                    <h3>⚡ Follow-up Reminders</h3>
+                    <p>Smart reminders for calls, emails, and meetings based on sales stage</p>
+                    <button class="btn" onclick="configureReminders()">Configure Alerts</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📱 WhatsApp Integration</h3>
+                    <p>Automated WhatsApp messaging for Indian market outreach and follow-ups</p>
+                    <button class="btn" onclick="setupWhatsApp()">Connect WhatsApp</button>
+                </div>
+                <div class="tool-card">
+                    <h3>📊 Daily Reports</h3>
+                    <p>Automated daily, weekly, and monthly sales reports delivered to your inbox</p>
+                    <button class="btn" onclick="setupReports()">Setup Reports</button>
+                </div>
+                <div class="tool-card">
+                    <h3>🎯 Lead Assignment</h3>
+                    <p>Automatically assign leads to sales reps based on territory and expertise</p>
+                    <button class="btn" onclick="configureAssignment()">Configure Rules</button>
+                </div>
+                <div class="tool-card">
+                    <h3>💬 Chatbot Integration</h3>
+                    <p>Website chatbot for lead qualification and appointment booking</p>
+                    <button class="btn" onclick="setupChatbot()">Deploy Chatbot</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <h3 style="margin-bottom: 15px; color: #1e3c72;">Export & Integration</h3>
+            <p style="margin-bottom: 20px; color: #6c757d;">Export your pipeline data or integrate with popular CRM systems</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn" onclick="exportPipeline()">📊 Export to Excel</button>
+                <button class="btn" onclick="exportPDF()">📄 Generate PDF Report</button>
+                <button class="btn btn-secondary" onclick="integrateCRM()">🔗 CRM Integration</button>
+                <button class="btn btn-secondary" onclick="saveData()">💾 Save Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample lead data
+        let leads = [
+            {
+                id: 1,
+                company: "TechnoSoft Solutions",
+                contact: "Rahul Sharma",
+                email: "rahul@technosoft.in",
+                phone: "+91-9876543210",
+                source: "LinkedIn",
+                value: 250000,
+                status: "qualified",
+                notes: "Interested in enterprise software solution",
+                dateAdded: new Date("2024-01-15")
+            },
+            {
+                id: 2,
+                company: "GreenTech Industries",
+                contact: "Priya Patel",
+                email: "priya@greentech.co.in",
+                phone: "+91-9887766554",
+                source: "Referral",
+                value: 475000,
+                status: "proposal",
+                notes: "Proposal sent, following up next week",
+                dateAdded: new Date("2024-01-10")
+            },
+            {
+                id: 3,
+                company: "Digital Marketing Hub",
+                contact: "Amit Kumar",
+                email: "amit@dmhub.in",
+                phone: "+91-9955443322",
+                source: "Website",
+                value: 180000,
+                status: "lead",
+                notes: "Downloaded whitepaper, needs qualification call",
+                dateAdded: new Date("2024-01-20")
+            }
+        ];
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all nav tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+        }
+
+        // Add new lead
+        function addLead() {
+            const company = document.getElementById('companyName').value;
+            const contact = document.getElementById('contactPerson').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const source = document.getElementById('leadSource').value;
+            const value = document.getElementById('dealValue').value;
+            const notes = document.getElementById('notes').value;
+
+            if (!company || !contact || !email) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const newLead = {
+                id: leads.length + 1,
+                company: company,
+                contact: contact,
+                email: email,
+                phone: phone,
+                source: source,
+                value: parseInt(value) || 0,
+                status: "lead",
+                notes: notes,
+                dateAdded: new Date()
+            };
+
+            leads.push(newLead);
+            updateLeadsTable();
+            updateDashboard();
+            
+            // Clear form
+            document.getElementById('companyName').value = '';
+            document.getElementById('contactPerson').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('leadSource').value = '';
+            document.getElementById('dealValue').value = '';
+            document.getElementById('notes').value = '';
+
+            alert('Lead added successfully!');
+        }
+
+        // Update leads table
+        function updateLeadsTable() {
+            const tbody = document.getElementById('leadsTableBody');
+            tbody.innerHTML = '';
+
+            leads.forEach(lead => {
+                const statusClass = `status-${lead.status.replace('_', '-')}`;
+                const statusText = lead.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                const row = `
+                    <div class="table-row">
+                        <div>${lead.company}</div>
+                        <div>${lead.contact}<br><small>${lead.email}</small></div>
+                        <div>${lead.source || 'Unknown'}</div>
+                        <div>₹${lead.value.toLocaleString('en-IN')}</div>
+                        <div><span class="status-badge ${statusClass}">${statusText}</span></div>
+                        <div><button class="action-btn" onclick="editLead(${lead.id})">Edit</button></div>
+                    </div>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Update dashboard metrics
+        function updateDashboard() {
+            const totalLeads = leads.length;
+            const qualifiedLeads = leads.filter(lead => lead.status !== 'lead').length;
+            const activePipeline = leads.filter(lead => !['closed-won', 'closed-lost'].includes(lead.status))
+                                        .reduce((sum, lead) => sum + lead.value, 0);
+            const closedDeals = leads.filter(lead => lead.status === 'closed-won')
+                                   .reduce((sum, lead) => sum + lead.value, 0);
+            const conversionRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : 0;
+            const avgDealSize = totalLeads > 0 ? (activePipeline / totalLeads) : 0;
+
+            document.getElementById('totalLeads').textContent = totalLeads;
+            document.getElementById('qualifiedLeads').textContent = qualifiedLeads;
+            document.getElementById('activePipeline').textContent = `₹${(activePipeline / 100000).toFixed(1)}L`;
+            document.getElementById('closedDeals').textContent = `₹${(closedDeals / 100000).toFixed(1)}L`;
+            document.getElementById('conversionRate').textContent = `${conversionRate}%`;
+            document.getElementById('avgDealSize').textContent = `₹${(avgDealSize / 100000).toFixed(1)}L`;
+        }
+
+        // Edit lead function
+        function editLead(leadId) {
+            const lead = leads.find(l => l.id === leadId);
+            if (lead) {
+                // Populate form with lead data
+                document.getElementById('companyName').value = lead.company;
+                document.getElementById('contactPerson').value = lead.contact;
+                document.getElementById('email').value = lead.email;
+                document.getElementById('phone').value = lead.phone || '';
+                document.getElementById('leadSource').value = lead.source || '';
+                document.getElementById('dealValue').value = lead.value || '';
+                document.getElementById('notes').value = lead.notes || '';
+                
+                // Switch to leads tab
+                showTab('leads');
+                
+                // Remove lead from array (will be re-added when form is submitted)
+                leads = leads.filter(l => l.id !== leadId);
+                updateLeadsTable();
+                updateDashboard();
+            }
+        }
+
+        // Tool functions
+        function generateForecast() {
+            alert('🎯 Sales Forecast Generated!\n\nBased on current pipeline:\n• Q1 Projection: ₹25.4L\n• Confidence: 78%\n• Top Opportunities: 12 deals\n• Risk Factors: 3 deals at risk');
+        }
+
+        function showBenchmarks() {
+            alert('📊 Industry Benchmarks:\n\n• Average Sales Cycle: 45 days (You: 38 days ✅)\n• Conversion Rate: 15% (You: 18.5% ✅)\n• Deal Size: ₹1.2L (You: ₹1.8L ✅)\n• Pipeline Velocity: Good performance!');
+        }
+
+        function generateCallScript() {
+            alert('📞 Call Script Generated!\n\nPersonalized script for TechCorp Solutions:\n"Hi Rajesh, I noticed your company is expanding into digital transformation. We\'ve helped similar companies like [competitor] achieve 40% efficiency gains..."');
+        }
+
+        function showEmailTemplates() {
+            alert('📧 Email Templates Available:\n\n1. Cold Outreach\n2. Follow-up Sequences\n3. Proposal Introduction\n4. Meeting Confirmation\n5. Thank You & Next Steps\n6. Re-engagement Campaign');
+        }
+
+        function openPricingCalculator() {
+            alert('💰 Pricing Calculator:\n\nBase Price: ₹2,00,000\nDiscount (10%): -₹20,000\nImplementation: ₹50,000\nTotal: ₹2,30,000\n\nCustomer ROI: 240% in 12 months');
+        }
+
+        function createProposal() {
+            alert('📋 Proposal Builder:\n\nSelect Template:\n1. Software Implementation\n2. Consulting Services\n3. Training & Support\n4. Custom Solution\n\nAutomated sections will include pricing, timeline, and deliverables.');
+        }
+
+        function scoreLeads() {
+            alert('🎯 Lead Scoring Complete!\n\nHigh Priority (90+ points):\n• GreenTech Industries (95)\n• TechnoSoft Solutions (88)\n\nMedium Priority (70-89):\n• Digital Marketing Hub (75)\n\nLow Priority (<70):\n• 3 other leads');
+        }
+
+        function calculateROI() {
+            alert('📈 ROI Analysis:\n\nCustomer Investment: ₹2,30,000\nExpected Annual Savings: ₹8,50,000\nROI: 270% in Year 1\nPayback Period: 3.2 months\nNPV (3 years): ₹18,40,000');
+        }
+
+        // Export functions
+        function exportPipeline() {
+            const csvContent = leads.map(lead => 
+                `${lead.company},${lead.contact},${lead.email},${lead.source},${lead.value},${lead.status}`
+            ).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'sales_pipeline.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function exportPDF() {
+            alert('📄 PDF Report Generated!\n\nReport includes:\n• Pipeline summary\n• Lead analysis\n• Performance metrics\n• Forecasting data\n\nDownloading...');
+        }
+
+        function saveData() {
+            localStorage.setItem('pipelineData', JSON.stringify(leads));
+            alert('💾 Data saved successfully to local storage!');
+        }
+
+        // Load saved data on page load
+        function loadData() {
+            const savedData = localStorage.getItem('pipelineData');
+            if (savedData) {
+                leads = JSON.parse(savedData);
+                updateLeadsTable();
+                updateDashboard();
+            }
+        }
+
+        // Initialize the system
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateLeadsTable();
+            updateDashboard();
+        });
+
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+    </script>
+</body>
+</html>

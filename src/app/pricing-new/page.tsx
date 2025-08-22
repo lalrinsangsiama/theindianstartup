@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
@@ -335,7 +336,7 @@ export default function PricingPage() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      console.error('Purchase error:', error);
+      logger.error('Purchase error:', error);
       alert('Payment failed. Please try again.');
     } finally {
       setIsLoading(null);
@@ -436,7 +437,7 @@ export default function PricingPage() {
               
               <div className="grid md:grid-cols-2 gap-8 mb-8">
                 <div>
-                  <Heading as="h4" variant="h6" className="mb-4">What&apos;s Included</Heading>
+                  <Heading as="h4" variant="h6" className="mb-4">What's Included</Heading>
                   <ul className="space-y-2">
                     {allAccessBundle.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
@@ -448,7 +449,7 @@ export default function PricingPage() {
                 </div>
                 
                 <div>
-                  <Heading as="h4" variant="h6" className="mb-4">You&apos;ll Achieve</Heading>
+                  <Heading as="h4" variant="h6" className="mb-4">You'll Achieve</Heading>
                   <ul className="space-y-2">
                     {allAccessBundle.outcomes.map((outcome, index) => (
                       <li key={index} className="flex items-center gap-2">
@@ -579,7 +580,7 @@ export default function PricingPage() {
               <div className="p-6">
                 <Heading as="h4" variant="h6" className="mb-2">Can I upgrade to All-Access later?</Heading>
                 <Text color="muted">
-                  Yes! You can upgrade anytime and we&apos;ll credit the amount you&apos;ve already paid towards the bundle price.
+                  Yes! You can upgrade anytime and we'll credit the amount you've already paid towards the bundle price.
                 </Text>
               </div>
             </Card>
@@ -588,7 +589,7 @@ export default function PricingPage() {
               <div className="p-6">
                 <Heading as="h4" variant="h6" className="mb-2">Do you offer refunds?</Heading>
                 <Text color="muted">
-                  We offer a 7-day money-back guarantee if you&apos;re not satisfied with the content quality.
+                  We offer a 7-day money-back guarantee if you're not satisfied with the content quality.
                 </Text>
               </div>
             </Card>

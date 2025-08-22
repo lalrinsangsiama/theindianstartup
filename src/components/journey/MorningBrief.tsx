@@ -76,7 +76,7 @@ export function MorningBrief({
               <Target className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
               <div>
                 <Text size="sm" weight="medium" className="text-orange-900 mb-1">
-                  Today&apos;s Focus
+                  Today's Focus
                 </Text>
                 <Text size="sm" className="text-orange-800">
                   {focus}

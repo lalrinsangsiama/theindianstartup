@@ -1,3 +1,5 @@
+import { logger as appLogger } from '@/lib/logger';
+
 /**
  * Production monitoring and logging utilities
  */
@@ -68,16 +70,16 @@ class Logger {
     // Console logging
     switch (event.level) {
       case 'error':
-        console.error('[ERROR]', logData);
+        appLogger.error('[ERROR]', new Error(logData.message), logData.metadata);
         break;
       case 'warn':
-        console.warn('[WARN]', logData);
+        appLogger.warn('[WARN]', logData.metadata);
         break;
       case 'info':
-        console.info('[INFO]', logData);
+        appLogger.info('[INFO]', logData.metadata);
         break;
       case 'debug':
-        console.debug('[DEBUG]', logData);
+        appLogger.debug('[DEBUG]', logData.metadata);
         break;
     }
 
@@ -98,7 +100,7 @@ class Logger {
         });
       }
     } catch (error) {
-      console.error('Failed to send log to monitoring service:', error);
+      appLogger.error('Failed to send log to monitoring service:', error as Error);
     }
   }
 }
@@ -125,7 +127,7 @@ class Metrics {
     };
 
     if (this.isDevelopment) {
-      console.debug('[METRIC]', metricData);
+      appLogger.debug('[METRIC]', metricData);
     }
 
     // In production, send to monitoring service
@@ -145,7 +147,7 @@ class Metrics {
         });
       }
     } catch (error) {
-      console.error('Failed to send metric to monitoring service:', error);
+      appLogger.error('Failed to send metric to monitoring service:', error as Error);
     }
   }
 }
@@ -163,14 +165,14 @@ export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<
       const duration = Date.now() - startTime;
       
       metrics.timing(metricName, duration, { status: 'success' });
-      logger.debug(`${metricName} completed in ${duration}ms`);
+      monitoringLogger.debug(`${metricName} completed in ${duration}ms`);
       
       return result;
     } catch (error) {
       const duration = Date.now() - startTime;
       
       metrics.timing(metricName, duration, { status: 'error' });
-      logger.error(`${metricName} failed after ${duration}ms`, error as Error);
+      monitoringLogger.error(`${metricName} failed after ${duration}ms`, error as Error);
       
       throw error;
     }
@@ -179,7 +181,7 @@ export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<
 
 // Error tracking
 export function trackError(error: Error, context?: Record<string, any>, userId?: string) {
-  logger.error('Unhandled error', error, context, userId);
+  monitoringLogger.error('Unhandled error', error, context, userId);
   
   // In production, send to error tracking service
   if (process.env.NODE_ENV === 'production') {
@@ -191,43 +193,43 @@ export function trackError(error: Error, context?: Record<string, any>, userId?:
 export const BusinessMetrics = {
   userSignup: (userId: string) => {
     metrics.counter('user.signup', 1, { type: 'new_user' });
-    logger.info('User signed up', { userId });
+    monitoringLogger.info('User signed up', { userId });
   },
 
   userLogin: (userId: string) => {
     metrics.counter('user.login', 1);
-    logger.info('User logged in', { userId });
+    monitoringLogger.info('User logged in', { userId });
   },
 
   lessonCompleted: (userId: string, day: number) => {
     metrics.counter('lesson.completed', 1, { day: day.toString() });
-    logger.info('Lesson completed', { userId, day });
+    monitoringLogger.info('Lesson completed', { userId, day });
   },
 
   paymentAttempt: (userId: string, amount: number) => {
     metrics.counter('payment.attempt', 1);
     metrics.gauge('payment.amount', amount);
-    logger.info('Payment attempted', { userId, amount });
+    monitoringLogger.info('Payment attempted', { userId, amount });
   },
 
   paymentSuccess: (userId: string, amount: number) => {
     metrics.counter('payment.success', 1);
-    logger.info('Payment successful', { userId, amount });
+    monitoringLogger.info('Payment successful', { userId, amount });
   },
 
   paymentFailure: (userId: string, amount: number, reason: string) => {
     metrics.counter('payment.failure', 1, { reason });
-    logger.warn('Payment failed', { userId, amount, reason });
+    monitoringLogger.warn('Payment failed', { userId, amount, reason });
   },
 
   apiError: (endpoint: string, statusCode: number, error: string) => {
     metrics.counter('api.error', 1, { endpoint, status_code: statusCode.toString() });
-    logger.error('API error', new Error(error), { endpoint, statusCode });
+    monitoringLogger.error('API error', new Error(error), { endpoint, statusCode });
   },
 };
 
 // Export singleton instances
-export const logger = new Logger();
+export const monitoringLogger = new Logger();
 export const metrics = new Metrics();
 
 // Health check utilities

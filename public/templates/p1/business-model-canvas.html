@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Model Canvas Template - P1 Course</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #2c3e50; margin: 0; }
+        .header p { color: #7f8c8d; margin: 5px 0; }
+        .canvas { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 10px; max-width: 1200px; margin: 0 auto; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-height: 180px; }
+        .section h3 { margin: 0 0 15px 0; color: #2c3e50; font-size: 16px; border-bottom: 2px solid #3498db; padding-bottom: 8px; }
+        .section textarea { width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: inherit; resize: vertical; }
+        .section .example { color: #7f8c8d; font-size: 12px; margin-bottom: 10px; font-style: italic; }
+        .key-partners { grid-column: 1; grid-row: 1 / 3; }
+        .key-activities { grid-column: 2; grid-row: 1; }
+        .value-propositions { grid-column: 3; grid-row: 1 / 3; background: #e8f8f5; }
+        .customer-relationships { grid-column: 4; grid-row: 1; }
+        .customer-segments { grid-column: 5; grid-row: 1 / 3; }
+        .key-resources { grid-column: 2; grid-row: 2; }
+        .channels { grid-column: 4; grid-row: 2; }
+        .cost-structure { grid-column: 1 / 4; grid-row: 3; }
+        .revenue-streams { grid-column: 4 / 6; grid-row: 3; }
+        .print-btn { position: fixed; top: 20px; right: 20px; background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        @media print { .print-btn { display: none; } body { background: white; } }
+        @media (max-width: 768px) {
+            .canvas { grid-template-columns: 1fr; grid-template-rows: repeat(9, auto); }
+            .key-partners, .value-propositions, .customer-segments { grid-column: 1; }
+            .key-partners, .key-activities, .value-propositions, .customer-relationships, .customer-segments, .key-resources, .channels { grid-row: auto; }
+            .cost-structure, .revenue-streams { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">Print/Save as PDF</button>
+    
+    <div class="header">
+        <h1>Business Model Canvas</h1>
+        <p>The Indian Startup - P1 Course Template</p>
+        <p style="color: #3498db; font-weight: bold;">Complete all 9 building blocks to design your business model</p>
+    </div>
+
+    <div class="canvas">
+        <div class="section key-partners">
+            <h3>Key Partners</h3>
+            <div class="example">Suppliers, strategic alliances, joint ventures</div>
+            <textarea placeholder="Who are your key partners and suppliers? What key activities do partners perform? What key resources are you acquiring from partners?
+
+Example:
+• Technology platform providers
+• Payment gateway partners
+• Content creators/influencers
+• Distribution partners
+• Strategic investors"></textarea>
+        </div>
+
+        <div class="section key-activities">
+            <h3>Key Activities</h3>
+            <div class="example">Most important activities to make your business work</div>
+            <textarea placeholder="What key activities does your value proposition require? What activities are most important in distribution channels, customer relationships, revenue streams?
+
+Example:
+• Product development
+• Marketing and customer acquisition  
+• Customer support and success
+• Data analysis and optimization
+• Partnership management"></textarea>
+        </div>
+
+        <div class="section value-propositions">
+            <h3>Value Propositions</h3>
+            <div class="example">Products/services that create value for customer segments</div>
+            <textarea placeholder="What value do you deliver to customers? Which customer problems are you solving? What need are you satisfying?
+
+Example:
+• Saves 10+ hours per week on manual tasks
+• Reduces customer acquisition costs by 40%
+• Provides 24/7 automated customer support
+• India-specific compliance automation
+• Simplified workflow for non-technical users"></textarea>
+        </div>
+
+        <div class="section customer-relationships">
+            <h3>Customer Relationships</h3>
+            <div class="example">How you interact with customers</div>
+            <textarea placeholder="What type of relationship does each customer segment expect? How costly are they? How are they integrated with the rest of your business model?
+
+Example:
+• Self-service onboarding
+• Dedicated customer success manager
+• Community support forums
+• Automated email nurture sequences
+• Personal assistance for enterprise clients"></textarea>
+        </div>
+
+        <div class="section customer-segments">
+            <h3>Customer Segments</h3>
+            <div class="example">Groups of people/organizations you aim to reach and serve</div>
+            <textarea placeholder="For whom are you creating value? Who are your most important customers? What are their demographics, behaviors, needs?
+
+Example:
+Primary: Small business owners (10-50 employees)
+- Age: 28-45, tech-comfortable
+- Location: Tier 1/2 cities
+- Revenue: ₹50L-₹5Cr annual
+- Pain: Manual processes, compliance complexity
+
+Secondary: Freelancers and consultants"></textarea>
+        </div>
+
+        <div class="section key-resources">
+            <h3>Key Resources</h3>
+            <div class="example">Most important assets required to make business work</div>
+            <textarea placeholder="What key resources does your value proposition require? What resources do distribution channels, customer relationships, revenue streams need?
+
+Example:
+• Technology platform and infrastructure
+• Proprietary algorithms and IP
+• Expert team (developers, marketers)
+• Brand reputation and customer trust
+• Financial resources and funding"></textarea>
+        </div>
+
+        <div class="section channels">
+            <h3>Channels</h3>
+            <div class="example">How you communicate and reach customer segments</div>
+            <textarea placeholder="Through which channels do customers want to be reached? How are you reaching them now? How are your channels integrated? Which work best?
+
+Example:
+Awareness: Content marketing, SEO, social media
+Evaluation: Free trial, demo videos, case studies  
+Purchase: Self-serve website, sales calls
+Delivery: Cloud platform, mobile app
+Support: In-app chat, knowledge base, email"></textarea>
+        </div>
+
+        <div class="section cost-structure">
+            <h3>Cost Structure</h3>
+            <div class="example">Most important costs inherent in your business model</div>
+            <textarea placeholder="What are the most important costs in your business model? Which key resources/activities are most expensive? Is your business cost-driven or value-driven?
+
+Example:
+Fixed Costs:
+• Team salaries: ₹15L/month
+• Infrastructure: ₹2L/month
+• Office & operations: ₹3L/month
+
+Variable Costs:
+• Customer acquisition: ₹500/customer
+• Transaction processing: 2.5% of revenue
+• Third-party integrations: ₹50/user/month"></textarea>
+        </div>
+
+        <div class="section revenue-streams">
+            <h3>Revenue Streams</h3>
+            <div class="example">Cash generated from each customer segment</div>
+            <textarea placeholder="For what value are customers really willing to pay? What do they currently pay? How would they prefer to pay? How much does each revenue stream contribute?
+
+Example:
+• SaaS Subscription: ₹999/month per business
+• Setup/Onboarding Fee: ₹5,000 one-time
+• Transaction Fee: 1% of processed payments
+• Premium Support: ₹299/month additional
+• Custom Integration: ₹25,000 per project
+
+Target: ₹10L MRR within 12 months"></textarea>
+        </div>
+    </div>
+
+    <script>
+        // Auto-save to localStorage
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'TEXTAREA') {
+                localStorage.setItem('bmc_' + e.target.closest('.section').className.split(' ')[1], e.target.value);
+            }
+        });
+
+        // Load saved data
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.section').forEach(function(section) {
+                const className = section.className.split(' ')[1];
+                const savedValue = localStorage.getItem('bmc_' + className);
+                if (savedValue) {
+                    const textarea = section.querySelector('textarea');
+                    if (textarea) textarea.value = savedValue;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

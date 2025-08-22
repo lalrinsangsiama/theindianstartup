@@ -1,5 +1,6 @@
 import posthog from 'posthog-js';
 
+import { logger } from '@/lib/logger';
 // PostHog configuration for The Indian Startup
 export const initPostHog = () => {
   if (typeof window !== 'undefined') {
@@ -22,12 +23,12 @@ export const initPostHog = () => {
         // Custom configuration for Indian startup platform
         loaded: (posthog) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log('PostHog loaded successfully');
+            logger.info('PostHog loaded successfully');
           }
         },
       });
     } else if (process.env.NODE_ENV === 'development') {
-      console.warn('PostHog API key not found. Add NEXT_PUBLIC_POSTHOG_KEY to your environment variables.');
+      logger.warn('PostHog API key not found. Add NEXT_PUBLIC_POSTHOG_KEY to your environment variables.');
     }
   }
 };

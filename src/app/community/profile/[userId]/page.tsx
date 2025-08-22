@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -145,7 +146,7 @@ export default function FounderProfilePage() {
       setRecentActivity(mockActivity);
       setIsOwnProfile(userId === 'current-user-id'); // In real app, check against current user
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      logger.error('Error fetching profile:', error);
     } finally {
       setLoading(false);
     }
@@ -225,7 +226,7 @@ export default function FounderProfilePage() {
                   Profile Not Found
                 </Heading>
                 <Text color="muted" className="mb-6">
-                  The founder profile you&apos;re looking for doesn&apos;t exist or has been removed.
+                  The founder profile you're looking for doesn't exist or has been removed.
                 </Text>
                 <Button variant="primary" onClick={() => router.push('/community')}>
                   Back to Community

@@ -12,7 +12,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { createClient } from '@/lib/supabase/client';
-import { Mail, Lock, User, Phone, Check, ShoppingCart, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, Phone, Check, ShoppingCart, Sparkles, Chrome, Linkedin, ArrowRight, Shield, Users } from 'lucide-react';
 
 interface CartItem {
   product: {
@@ -41,6 +41,7 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState('');
+  const [socialLoading, setSocialLoading] = useState<'google' | 'linkedin' | null>(null);
 
   // Load cart from localStorage
   useEffect(() => {
@@ -148,6 +149,32 @@ export default function SignupPage() {
     }
   };
 
+  const handleSocialSignup = async (provider: 'google' | 'linkedin') => {
+    setSocialLoading(provider);
+    setSignupError('');
+    
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider as any,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            cart: cart.length > 0 ? JSON.stringify(cart) : undefined,
+            hasEarlyBird: hasEarlyBird ? 'true' : undefined,
+          }
+        },
+      });
+      
+      if (error) {
+        setSignupError(error.message);
+      }
+    } catch (error) {
+      setSignupError('Social signup failed. Please try again.');
+    } finally {
+      setSocialLoading(null);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -163,8 +190,8 @@ export default function SignupPage() {
 
   return (
     <AuthLayout 
-      title="Start Your 30-Day Journey"
-      subtitle="Join thousands of Indian founders launching their startups"
+      title="Join India's Fastest Growing Founder Community"
+      subtitle="Transform your startup idea into reality with structured, proven playbooks"
     >
       {/* Show cart if present */}
       {cart.length > 0 && (
@@ -213,6 +240,71 @@ export default function SignupPage() {
           })()}
         </Card>
       )}
+
+      {/* Trust Signal */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-4 mb-6">
+        <div className="flex items-center justify-center gap-6 text-center">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-green-600" />
+            <div>
+              <Text className="font-bold text-green-800">2,500+</Text>
+              <Text size="xs" color="muted">Active Founders</Text>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-blue-600" />
+            <div>
+              <Text className="font-bold text-blue-800">₹50L+</Text>
+              <Text size="xs" color="muted">Funding Raised</Text>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-purple-600" />
+            <div>
+              <Text className="font-bold text-purple-800">180+</Text>
+              <Text size="xs" color="muted">Launched Startups</Text>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Social Login Options */}
+      <div className="space-y-4 mb-6">
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 p-3 border-2 hover:border-blue-500 hover:bg-blue-50 transition-all"
+            onClick={() => handleSocialSignup('google')}
+            disabled={socialLoading !== null}
+            isLoading={socialLoading === 'google'}
+          >
+            <Chrome className="w-5 h-5 text-blue-600" />
+            <span className="font-medium">Google</span>
+          </Button>
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 p-3 border-2 hover:border-blue-700 hover:bg-blue-50 transition-all"
+            onClick={() => handleSocialSignup('linkedin')}
+            disabled={socialLoading !== null}
+            isLoading={socialLoading === 'linkedin'}
+          >
+            <Linkedin className="w-5 h-5 text-blue-700" />
+            <span className="font-medium">LinkedIn</span>
+          </Button>
+        </div>
+        
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-3 bg-white text-gray-500">or continue with email</span>
+          </div>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {signupError && (
@@ -338,24 +430,30 @@ export default function SignupPage() {
           type="submit"
           variant="primary"
           size="lg"
-          className="w-full"
+          className="w-full group bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-700 hover:via-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
           isLoading={isLoading}
-          loadingText="Creating account..."
+          loadingText="Creating your founder account..."
         >
-          Start Your Journey
+          <span>Join 2,500+ Successful Founders</span>
+          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
         
-        {/* Launch Offer */}
-        <div className="border-2 border-black bg-gray-50 p-4 text-center">
-          <Text size="sm" className="font-heading font-semibold uppercase tracking-wider">
-            🚀 Launch Offer
+        {/* Success Guarantee */}
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-orange-300 p-4 text-center rounded-lg">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Shield className="w-5 h-5 text-orange-600" />
+            <Text className="font-heading font-bold text-orange-800 uppercase tracking-wider">
+              30-Day Success Guarantee
+            </Text>
+          </div>
+          <Text size="sm" color="muted" className="mb-2">
+            If you don't see real progress in your startup within 30 days, we'll refund every rupee.
           </Text>
-          <Text size="lg" className="font-bold mt-1">
-            ₹999 for first 100 founders
-          </Text>
-          <Text size="sm" color="muted" className="mt-1">
-            Regular price: ₹2,499
-          </Text>
+          <div className="flex items-center justify-center gap-4 text-xs font-medium text-orange-700">
+            <span>✓ Full refund policy</span>
+            <span>✓ No questions asked</span>
+            <span>✓ Founder-first approach</span>
+          </div>
         </div>
         
         <div className="text-center">

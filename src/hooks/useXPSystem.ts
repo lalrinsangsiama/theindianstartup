@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { XPEventType, prepareXPAnimation } from '@/lib/xp';
 import { BadgeId } from '@/lib/badges';
 
@@ -125,7 +126,7 @@ export const useXPSystem = () => {
 
       return data;
     } catch (error) {
-      console.error('Error awarding XP:', error);
+      logger.error('Error awarding XP:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -146,7 +147,7 @@ export const useXPSystem = () => {
       const data: XPHistoryResponse = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching XP history:', error);
+      logger.error('Error fetching XP history:', error);
       throw error;
     } finally {
       setLoading(false);

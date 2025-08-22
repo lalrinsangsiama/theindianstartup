@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { checkStreakBonus, checkMilestoneBonus } from '@/lib/xp';
 
@@ -144,7 +145,7 @@ export async function POST(
       .eq('id', user.id);
 
     if (updateError) {
-      console.error('Error updating user progress:', updateError);
+      logger.error('Error updating user progress:', updateError);
       return NextResponse.json(
         { error: 'Failed to update user progress' },
         { status: 500 }
@@ -215,7 +216,7 @@ export async function POST(
           xpResults.push(result);
         }
       } catch (error) {
-        console.error('Error awarding XP:', error);
+        logger.error('Error awarding XP:', error);
       }
     }
 
@@ -247,7 +248,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Complete day error:', error);
+    logger.error('Complete day error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

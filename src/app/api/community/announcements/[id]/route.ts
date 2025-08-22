@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -118,7 +119,7 @@ export async function GET(
     return NextResponse.json({ announcement: transformedAnnouncement });
 
   } catch (error) {
-    console.error('Get announcement error:', error);
+    logger.error('Get announcement error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -198,7 +199,7 @@ export async function PATCH(
       .single();
 
     if (updateError) {
-      console.error('Error updating announcement:', updateError);
+      logger.error('Error updating announcement:', updateError);
       return NextResponse.json(
         { error: 'Failed to update announcement' },
         { status: 500 }
@@ -212,7 +213,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Update announcement error:', error);
+    logger.error('Update announcement error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -272,7 +273,7 @@ export async function DELETE(
       .eq('id', id);
 
     if (deleteError) {
-      console.error('Error deleting announcement:', deleteError);
+      logger.error('Error deleting announcement:', deleteError);
       return NextResponse.json(
         { error: 'Failed to delete announcement' },
         { status: 500 }
@@ -285,7 +286,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('Delete announcement error:', error);
+    logger.error('Delete announcement error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

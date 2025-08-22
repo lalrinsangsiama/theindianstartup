@@ -2,19 +2,24 @@ import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { AuthProvider } from '@/contexts/AuthContext';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
-import { ErrorBoundary } from '@/components/providers/ErrorBoundary';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
+import { MobileNav } from '@/components/navigation/MobileNav';
 import "./globals.css";
 
 const inter = Inter({ 
   subsets: ["latin"],
   variable: "--font-inter",
+  display: 'swap', // Performance: use fallback font while loading
+  preload: true,
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-ibm-plex-mono",
+  display: 'swap', // Performance: use fallback font while loading
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -112,10 +117,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable}`}>
       <body className="font-sans antialiased bg-white text-gray-900">
-        <ErrorBoundary showErrorDetails={process.env.NODE_ENV === 'development'}>
+        <ErrorBoundary level="page" showDetails={process.env.NODE_ENV === 'development'}>
           <AuthProvider>
             <PostHogProvider>
-              {children}
+              <MobileNav />
+              <div className="lg:ml-0 pb-16 lg:pb-0">
+                {children}
+              </div>
               <FeedbackWidget />
             </PostHogProvider>
           </AuthProvider>

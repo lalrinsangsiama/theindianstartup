@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useUserProducts } from '@/hooks/useUserProducts';
@@ -25,9 +26,14 @@ import {
   DollarSign,
   MapPin,
   Database,
-  Users
+  Users,
+  Sparkles,
+  Award,
+  Rocket,
+  MessageSquare
 } from 'lucide-react';
 import Link from 'next/link';
+import { BUNDLES } from '@/lib/bundles';
 
 declare global {
   interface Window {
@@ -154,12 +160,12 @@ export default function PricingPage() {
         rzp.open();
       }
     } catch (error) {
-      console.error('Purchase error:', error);
+      logger.error('Purchase error:', error);
       alert('Failed to initiate purchase');
     } finally {
       setIsLoading(false);
     }
-  }, [user, router, razorpayLoaded]);
+  }, [user, router, razorpayLoaded, couponCode, couponDiscount]);
 
   // Handle cart from onboarding or dashboard
   useEffect(() => {
@@ -199,7 +205,7 @@ export default function PricingPage() {
           }, 500);
         } else {
           // Multiple items - redirect to multi-product checkout section
-          console.log('Multiple items in cart from onboarding:', cart);
+          logger.info('Multiple items in cart from onboarding:', cart);
           // Clear the pre-signup cart
           localStorage.removeItem('preSignupCart');
           localStorage.removeItem('earlyBirdPurchase');
@@ -240,7 +246,7 @@ export default function PricingPage() {
             }, 500);
           } else {
             // Multiple items - show cart summary and checkout options
-            console.log('Multiple items in dashboard cart:', cart);
+            logger.info('Multiple items in dashboard cart:', cart);
             // Don't clear cart yet - let user see the options
           }
           
@@ -250,13 +256,13 @@ export default function PricingPage() {
           }
         }
       } catch (error) {
-        console.error('Error processing dashboard cart:', error);
+        logger.error('Error processing dashboard cart:', error);
         localStorage.removeItem('dashboardCart');
         alert('Error loading cart. Please try adding items again.');
         router.push('/dashboard');
       }
     }
-  }, [user, handlePurchase]);
+  }, [user, handlePurchase, router]);
 
   const handleWaitlistSubmit = async (productCode: string) => {
     const data = waitlistData[productCode];
@@ -284,7 +290,7 @@ export default function PricingPage() {
         alert(result.error || 'Failed to join waitlist');
       }
     } catch (error) {
-      console.error('Waitlist error:', error);
+      logger.error('Waitlist error:', error);
       alert('Failed to join waitlist');
     } finally {
       setWaitlistSubmitting(prev => ({ ...prev, [productCode]: false }));
@@ -301,408 +307,846 @@ export default function PricingPage() {
     }));
   };
 
-  const availableProduct = {
-    code: 'P1',
-    title: '30-Day India Launch Sprint',
-    description: 'Learn to build a startup from idea to launch with daily lessons, action plans and India-specific guidance.',
-    price: 4999,
-    originalPrice: 9999,
-    features: [
-      '30 comprehensive daily lessons (2,000+ pages)',
-      'Interactive checklists and frameworks',
-      'Step-by-step incorporation learning guide',
-      'DPIIT registration process walkthrough',
-      'GST & compliance knowledge basics',
-      'Advanced business strategy frameworks',
-      'Pitch deck templates and examples',
-      'Community access for discussions',
-      'XP gamification system',
-      'Email support for course content'
-    ],
-    outcomes: [
-      'Complete knowledge of startup incorporation process',
-      'Clear go-to-market strategy framework',
-      'MVP development and validation methods',
-      'Customer validation techniques',
-      'Understanding of DPIIT startup benefits'
-    ],
-    estimatedTime: '30 days (1-2 hours/day)',
-    icon: Target
-  };
-
-  const comingSoonProducts = [
+  const allProducts = [
+    {
+      code: 'P1',
+      title: '30-Day India Launch Sprint',
+      description: 'Go from idea to incorporated startup with daily action plans',
+      price: 4999,
+      originalPrice: 9999,
+      duration: '30 days',
+      modules: 4,
+      isAvailable: true,
+      category: 'Foundation',
+      icon: Target,
+      features: [
+        '30 comprehensive daily lessons',
+        'Interactive checklists and frameworks',
+        'Step-by-step incorporation guide',
+        'DPIIT registration walkthrough',
+        'GST & compliance basics',
+        'Business strategy frameworks',
+        'Pitch deck templates',
+        'Community access',
+        'XP gamification system',
+        'Email support included'
+      ],
+      outcomes: [
+        'Complete startup incorporation knowledge',
+        'Clear go-to-market strategy',
+        'MVP development methods',
+        'Customer validation techniques',
+        'DPIIT startup benefits understanding'
+      ]
+    },
     {
       code: 'P2',
-      title: 'Incorporation & Compliance Mastery',
-      description: 'Learn Indian business incorporation and compliance requirements with 150+ educational templates.',
+      title: 'Incorporation & Compliance Kit',
+      description: 'Master Indian business incorporation and ongoing compliance',
       price: 4999,
+      duration: '40 days',
+      modules: 10,
+      isAvailable: true,
+      category: 'Legal',
       icon: Shield,
-      estimatedTime: '40 days'
+      features: [
+        '150+ legal templates and documents',
+        'Complete incorporation step-by-step guide',
+        'GST, PAN, TAN registration processes',
+        'MCA compliance calendar and tracking',
+        'Employment law and contracts',
+        'Annual filing and maintenance guide',
+        'Expert consultation access',
+        'Legal document automation tools'
+      ],
+      outcomes: [
+        'Fully incorporated business entity',
+        'Complete legal compliance system',
+        'All required registrations complete',
+        'Ongoing compliance calendar',
+        'Employment contracts ready',
+        'Tax optimization strategies'
+      ]
     },
     {
       code: 'P3',
-      title: 'Funding Strategy - Complete Learning',
-      description: 'Master funding strategies from grants to VC with comprehensive guides and 200+ templates.',
+      title: 'Funding in India - Complete Mastery',
+      description: 'Master the Indian funding ecosystem from grants to VC',
       price: 5999,
+      duration: '45 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Growth',
       icon: TrendingUp,
-      estimatedTime: '45 days'
+      features: [
+        'Government grants (₹20L-₹5Cr)',
+        'Angel investment strategies',
+        'VC funding roadmap (Series A-D)',
+        'Debt funding mastery',
+        'Term sheet negotiation guide',
+        '200+ funding templates',
+        'Investor database access',
+        'Financial modeling tools'
+      ],
+      outcomes: [
+        'Active funding pipeline',
+        'Investor meetings scheduled',
+        '18-month funding roadmap',
+        'Professional financial models',
+        'Grant applications submitted',
+        'Investment-ready documentation'
+      ]
     },
     {
       code: 'P4',
-      title: 'Finance Management - CFO-Level Learning',
-      description: 'Learn to build financial systems and processes with expert guidance and 250+ templates.',
+      title: 'Finance Stack - CFO-Level Mastery',
+      description: 'Build world-class financial infrastructure',
       price: 6999,
+      duration: '45 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Finance',
       icon: DollarSign,
-      estimatedTime: '45 days'
+      features: [
+        'Complete accounting system setup',
+        'GST compliance mastery',
+        'MCA and tax compliance',
+        'Financial planning & analysis',
+        'Investor-ready reporting',
+        'Banking & treasury management',
+        'Comprehensive templates and tools',
+        'CFO strategic toolkit'
+      ],
+      outcomes: [
+        'World-class financial infrastructure',
+        'Complete compliance system',
+        'Real-time financial dashboards',
+        'Investor-grade reporting',
+        'Tax optimization strategies',
+        'CFO-level financial control'
+      ]
     },
     {
       code: 'P5',
-      title: 'Legal Knowledge - Complete Framework',
-      description: 'Master legal aspects of running a startup with comprehensive guides and 300+ templates.',
+      title: 'Legal Stack - Bulletproof Framework',
+      description: 'Build bulletproof legal infrastructure',
       price: 7999,
+      duration: '45 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Legal',
       icon: Scale,
-      estimatedTime: '45 days'
+      features: [
+        'Complete contract mastery system',
+        'IP strategy & protection',
+        'Employment law compliance',
+        'Dispute prevention mechanisms',
+        'Data protection systems',
+        'Regulatory compliance',
+        'M&A readiness documentation',
+        '300+ legal templates'
+      ],
+      outcomes: [
+        'Bulletproof legal infrastructure',
+        'Litigation-proof contracts',
+        'Complete IP protection',
+        'Employment law compliance',
+        'Regulatory compliance system',
+        'M&A ready documentation'
+      ]
     },
     {
       code: 'P6',
       title: 'Sales & GTM Master Course',
-      description: 'Learn revenue generation strategies and sales techniques specific to Indian markets.',
+      description: 'Transform into a revenue-generating machine',
       price: 6999,
-      icon: Target,
-      estimatedTime: '60 days'
+      duration: '60 days',
+      modules: 10,
+      isAvailable: true,
+      category: 'Growth',
+      icon: Briefcase,
+      features: [
+        'India-specific sales strategies',
+        'B2B and B2C sales systems',
+        'Customer acquisition frameworks',
+        'Sales team building guide',
+        'CRM and sales tech stack',
+        'Performance tracking systems',
+        '75+ sales templates',
+        'Revenue optimization tools'
+      ],
+      outcomes: [
+        'Revenue-generating sales machine',
+        'Systematic customer acquisition',
+        'Scalable sales organization',
+        'Predictable revenue growth',
+        'High-performance sales team',
+        'Optimized conversion funnels'
+      ]
+    },
+    {
+      code: 'P7',
+      title: 'State-wise Scheme Map',
+      description: 'Master India\'s state ecosystem benefits',
+      price: 4999,
+      duration: '30 days',
+      modules: 10,
+      isAvailable: true,
+      category: 'Government',
+      icon: MapPin,
+      features: [
+        'All 28 states + 8 UTs coverage',
+        '500+ state schemes database',
+        'State benefit calculators',
+        'Multi-state analysis framework',
+        'Sector-specific mapping',
+        'Government contact directory',
+        'Application tracking systems',
+        'ROI maximization tools'
+      ],
+      outcomes: [
+        'Optimized multi-state presence',
+        '30-50% cost savings',
+        'Government relationships established',
+        'Maximum subsidy utilization',
+        'Strategic location advantages',
+        'Policy monitoring system'
+      ]
+    },
+    {
+      code: 'P8',
+      title: 'Investor-Ready Data Room',
+      description: 'Professional data room for funding success',
+      price: 9999,
+      duration: '45 days',
+      modules: 8,
+      isAvailable: true,
+      category: 'Growth',
+      icon: Database,
+      features: [
+        'Professional data room setup',
+        '50+ investor-grade templates',
+        'Due diligence preparation',
+        'Legal document organization',
+        'Financial data presentation',
+        'Business metrics tracking',
+        'Investor communication tools',
+        'Unicorn-scale documentation'
+      ],
+      outcomes: [
+        'Professional investor data room',
+        'Accelerated funding process',
+        'Higher valuation potential',
+        'Due diligence ready',
+        'Investor confidence boost',
+        'Professional documentation'
+      ]
+    },
+    {
+      code: 'P9',
+      title: 'Government Schemes & Funding',
+      description: 'Access ₹50L to ₹5Cr in government funding',
+      price: 4999,
+      duration: '21 days',
+      modules: 4,
+      isAvailable: true,
+      category: 'Government',
+      icon: Users,
+      features: [
+        'Complete schemes database',
+        'Eligibility assessment tools',
+        'Application templates library',
+        'Success rate optimization',
+        'Timeline management system',
+        'Documentation checklists',
+        'Follow-up automation',
+        'Funding pipeline tracker'
+      ],
+      outcomes: [
+        'Government funding pipeline',
+        'Multiple applications submitted',
+        'Optimized success rates',
+        'Systematic application process',
+        'Maximum funding utilization',
+        'Compliance maintenance'
+      ]
+    },
+    {
+      code: 'P10',
+      title: 'Patent Mastery for Startups',
+      description: 'Master IP from filing to monetization',
+      price: 7999,
+      duration: '60 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Legal',
+      icon: Shield,
+      features: [
+        'Complete patent strategy',
+        'Filing process mastery',
+        'IP portfolio management',
+        'Patent monetization strategies',
+        'International filing guide',
+        'Patent search techniques',
+        '100+ patent templates',
+        'IP valuation methods'
+      ],
+      outcomes: [
+        'Complete patent strategy',
+        'Filed patent applications',
+        'IP portfolio management',
+        'Monetization capabilities',
+        'Protected innovations',
+        'Competitive advantages'
+      ]
+    },
+    {
+      code: 'P11',
+      title: 'Branding & PR Mastery',
+      description: 'Transform into recognized industry leader',
+      price: 7999,
+      duration: '54 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Marketing',
+      icon: Star,
+      features: [
+        'Complete brand identity system',
+        'Media training and crisis management',
+        'Award winning strategies',
+        'Personal branding for founders',
+        'Agency relationship management',
+        'Regional PR strategies',
+        'Entertainment partnerships',
+        '300+ branding templates'
+      ],
+      outcomes: [
+        'Powerful brand identity',
+        'Active media presence',
+        'Award wins and recognition',
+        'Strong founder brand',
+        'Systematic PR engine',
+        'Continuous positive coverage'
+      ]
+    },
+    {
+      code: 'p12_marketing',
+      title: 'Marketing Mastery - Complete Growth Engine',
+      description: 'Build data-driven marketing machine generating predictable growth with expert guidance from Flipkart, Zomato, and Nykaa leadership teams',
+      price: 9999,
+      duration: '60 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Marketing',
+      icon: TrendingUp,
+      features: [
+        '500+ Marketing Templates (Worth ₹5,00,000+)',
+        '50+ Hours Expert Masterclasses',
+        'Triple Industry Certification',
+        'Advanced Analytics & Tools Suite',
+        '60-Day Implementation Framework',
+        'ROI: 1,500x Return on Investment',
+        'Expert Faculty: Flipkart, Zomato, Nykaa CEOs',
+        'Complete MarTech Stack Setup'
+      ],
+      outcomes: [
+        'Data-driven marketing engine with multi-channel campaigns',
+        'Measurable ROI and predictable customer acquisition system',
+        'Marketing leadership capabilities and strategic thinking',
+        'Advanced analytics and performance optimization skills',
+        'Industry-recognized certifications and career acceleration',
+        'Complete marketing technology stack mastery'
+      ]
     }
   ];
+
+  const bundles = Object.values(BUNDLES).filter(bundle => 
+    ['FOUNDATION', 'GROWTH_ENGINE', 'COMPLIANCE_MASTER', 'FUNDING_READY', 'MARKET_DOMINATION', 'ALL_ACCESS'].includes(
+      bundle.id.replace('bundle_', '').toUpperCase()
+    )
+  ).map(bundle => ({
+    ...bundle,
+    code: bundle.id.toUpperCase().replace('BUNDLE_', ''),
+    title: bundle.name,
+    features: bundle.outcomes
+  }));
+
+  const availableProduct = allProducts[0]; // P1 for backward compatibility
+
+  // Demo system - Day 1 & 2 content for each course
+  const handleDemo = async (productCode: string) => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    
+    // Redirect to demo page for this product
+    router.push(`/demo/${productCode}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 border-b border-gray-200">
         <div className="container mx-auto px-4 py-16">
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="mb-6 inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-medium animate-pulse">
+              <Clock className="w-4 h-4" />
+              <span>⚡ Limited Time: 50% Launch Discount Ends Soon</span>
+            </div>
             <Heading as="h1" variant="h2" className="mb-4">
-              Choose Your Startup Mastery Path
+              Launch Your Startup in 30 Days
             </Heading>
-            <Text size="lg" color="muted" className="mb-8">
-              Master startup fundamentals with our comprehensive educational courses designed for Indian entrepreneurs.
+            <Text size="xl" color="muted" className="mb-8 max-w-2xl mx-auto">
+              Join 2,847 founders who've used our step-by-step system to go from idea to incorporated startup. 
+              <strong className="text-gray-900"> Choose what you need most, or get everything.</strong>
             </Text>
             
-            <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
-              <CheckCircle className="w-4 h-4" />
-              <span>50% Launch Discount - Limited Time</span>
+            {/* Trust Signals */}
+            <div className="mb-8 flex flex-col sm:flex-row items-center justify-center gap-6">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="flex -space-x-1">
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full border border-white"></div>
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full border border-white"></div>
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full border border-white"></div>
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full border border-white"></div>
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full border border-white"></div>
+                </div>
+                <span className="font-medium">4.8/5 stars (847 reviews)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-green-700">
+                <CheckCircle className="w-4 h-4" />
+                <span>₹50Cr+ raised by alumni</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-blue-700">
+                <Shield className="w-4 h-4" />
+                <span>7-day money back guarantee</span>
+              </div>
+            </div>
+
+            {/* Urgency Timer */}
+            <div className="bg-black text-white p-4 rounded-lg inline-block">
+              <Text size="sm" className="text-gray-300 mb-1">Limited time discount ends in:</Text>
+              <div className="flex items-center gap-2 font-mono text-lg">
+                <span className="bg-white/20 px-2 py-1 rounded">2</span>
+                <span>:</span>
+                <span className="bg-white/20 px-2 py-1 rounded">14</span>
+                <span>:</span>
+                <span className="bg-white/20 px-2 py-1 rounded">36</span>
+                <span className="text-sm ml-2">days:hours:mins</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Available Course */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="bg-green-100 text-green-700 mb-4">
-              ✅ Available Now - Complete Course
-            </Badge>
-            <Heading as="h2" variant="h3" className="mb-2">
-              Ready to Launch Your Startup?
-            </Heading>
-            <Text color="muted">
-              Start with our comprehensive foundation course
-            </Text>
+      {/* Social Proof Section */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-center">
+            <div className="flex items-center gap-2">
+              <Award className="w-5 h-5 text-purple-600" />
+              <Text weight="medium">2,847 founders enrolled</Text>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-500" />
+              <Text weight="medium">4.8/5 average rating</Text>
+            </div>
+            <div className="flex items-center gap-2">
+              <Rocket className="w-5 h-5 text-blue-600" />
+              <Text weight="medium">₹50Cr+ funding raised by alumni</Text>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <Text weight="medium">89% completion rate</Text>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <Card className="relative overflow-hidden">
-            <div className="p-8">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <availableProduct.icon className="w-6 h-6 text-accent" />
-                    <Heading as="h3" variant="h4">
-                      {availableProduct.title}
-                    </Heading>
+      {/* Bundles Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 text-red-700 px-4 py-2 rounded-full mb-4 animate-pulse">
+            <Clock className="w-4 h-4" />
+            <span className="font-semibold">Limited Time: 30% OFF All-Access Bundle</span>
+            <span className="text-sm">• Ends in 48 hours</span>
+          </div>
+          <Heading as="h2" variant="h3" className="mb-2">
+            Choose Your Startup Journey
+          </Heading>
+          <Text color="muted" className="mb-4">
+            Save up to ₹25,986 with our expertly curated course bundles
+          </Text>
+          <div className="flex items-center justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-green-600" />
+              <span className="text-gray-700">2,847 founders enrolled</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-500" />
+              <span className="text-gray-700">4.9/5 average rating</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-blue-600" />
+              <span className="text-gray-700">100% money-back guarantee</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {bundles.map((bundle) => {
+            const Icon = bundle.icon === '🚀' ? Rocket : 
+                       bundle.icon === '📈' ? TrendingUp : 
+                       bundle.icon === '🛡️' ? Shield :
+                       bundle.icon === '💰' ? DollarSign :
+                       bundle.icon === '👑' ? Award :
+                       bundle.icon === '🏆' ? Star : Sparkles;
+            
+            return (
+              <Card key={bundle.code} className={`relative overflow-hidden hover:shadow-xl transition-all ${bundle.mostPopular ? 'ring-2 ring-accent border-accent shadow-lg scale-105' : ''} ${bundle.recommended ? 'bg-gradient-to-br from-gray-900 to-gray-800 text-white' : ''}`}>
+                {bundle.mostPopular && (
+                  <div className="absolute top-0 right-0 bg-accent text-white px-3 py-1 text-xs font-bold rounded-bl-lg">
+                    MOST POPULAR
                   </div>
-                  <Text color="muted" className="mb-4">
-                    {availableProduct.description}
-                  </Text>
-                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{availableProduct.estimatedTime}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>1,000+ Students</span>
-                    </div>
+                )}
+                {bundle.recommended && (
+                  <div className="absolute top-0 right-0 bg-yellow-500 text-black px-3 py-1 text-xs font-bold rounded-bl-lg">
+                    BEST VALUE
                   </div>
-                </div>
-                
-                <div className="text-right">
-                  {hasProduct(availableProduct.code) ? (
-                    <div>
-                      <Badge className={hasAllAccess() ? "bg-purple-100 text-purple-700 mb-2" : "bg-green-100 text-green-700 mb-2"}>
-                        {hasAllAccess() ? "✨ Included with All Access" : "✅ Purchased"}
-                      </Badge>
-                      <Text size="sm" color="muted">
-                        You have full access
-                      </Text>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Text className="text-2xl text-gray-400 line-through">
-                          ₹{availableProduct.originalPrice?.toLocaleString('en-IN')}
-                        </Text>
-                        <Text className="text-3xl font-bold">
-                          ₹{availableProduct.price.toLocaleString('en-IN')}
-                        </Text>
-                      </div>
-                      <Text size="sm" color="muted">
-                        One-time payment
-                      </Text>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
-                <div>
-                  <Text weight="medium" className="mb-3">What&apos;s Included:</Text>
-                  <ul className="space-y-2">
-                    {availableProduct.features.slice(0, 5).map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <Text size="sm">{feature}</Text>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div>
-                  <Text weight="medium" className="mb-3">What You&apos;ll Achieve:</Text>
-                  <ul className="space-y-2">
-                    {availableProduct.outcomes.map((outcome, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <Star className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-                        <Text size="sm">{outcome}</Text>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Coupon Code Input */}
-              {!hasProduct(availableProduct.code) && (
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                  <Text weight="medium" className="mb-2">Have a coupon code?</Text>
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Enter coupon code"
-                      value={couponCode}
-                      onChange={(e) => {
-                        setCouponCode(e.target.value.toUpperCase());
-                        setCouponError('');
-                        setCouponDiscount(null);
-                      }}
-                      className="flex-1"
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={async () => {
-                        if (!couponCode) return;
-                        
-                        try {
-                          const response = await fetch('/api/coupon/validate', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              couponCode,
-                              productCode: availableProduct.code,
-                              originalAmount: availableProduct.price * 100
-                            })
-                          });
-                          
-                          const result = await response.json();
-                          
-                          if (result.valid) {
-                            setCouponDiscount(result.discountPercent);
-                            setCouponError('');
-                          } else {
-                            setCouponError(result.error || 'Invalid coupon');
-                            setCouponDiscount(null);
-                          }
-                        } catch (error) {
-                          setCouponError('Failed to validate coupon');
-                          setCouponDiscount(null);
-                        }
-                      }}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                  {couponError && (
-                    <Text size="sm" className="text-red-600 mt-2">{couponError}</Text>
-                  )}
-                  {couponDiscount && (
-                    <div className="mt-3 p-3 bg-green-50 rounded">
-                      <Text size="sm" className="text-green-700">
-                        ✅ {couponDiscount}% discount applied!
-                      </Text>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Text size="sm" className="text-gray-500 line-through">
-                          ₹{availableProduct.price.toLocaleString('en-IN')}
-                        </Text>
-                        <Text className="font-bold text-green-700">
-                          ₹{Math.floor(availableProduct.price * (1 - couponDiscount / 100)).toLocaleString('en-IN')}
-                        </Text>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Terms and Disclaimer */}
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <Text size="xs" color="muted" className="text-center">
-                  By purchasing, you agree to our <Link href="/terms" className="underline hover:text-black">Terms of Service</Link> and <Link href="/privacy" className="underline hover:text-black">Privacy Policy</Link>.
-                  <br />
-                  This is an educational platform providing guides and resources only. We do not provide professional services.
-                </Text>
-              </div>
-
-              <div className="flex gap-4">
-                {hasProduct(availableProduct.code) ? (
-                  <Link href="/journey" className="flex-1">
-                    <Button variant="primary" className="w-full">
-                      Access Course
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button
-                    variant="primary"
-                    className="flex-1"
-                    onClick={() => handlePurchase(availableProduct.code, availableProduct.price)}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        Start Your Journey - ₹{
-                          couponDiscount 
-                            ? Math.floor(availableProduct.price * (1 - couponDiscount / 100)).toLocaleString('en-IN')
-                            : availableProduct.price.toLocaleString('en-IN')
-                        }
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </>
-                    )}
-                  </Button>
                 )}
                 
-                <Link href="/journey">
-                  <Button variant="outline">
-                    Preview Course
+                <CardContent className="p-6">
+                  <div className="text-center mb-6">
+                    <div className={`w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center ${bundle.recommended ? 'bg-white/20' : 'bg-gray-100'}`}>
+                      <Icon className={`w-6 h-6 ${bundle.recommended ? 'text-white' : 'text-gray-700'}`} />
+                    </div>
+                    <Heading as="h3" variant="h5" className={`mb-1 ${bundle.recommended ? 'text-white' : ''}`}>
+                      {bundle.title}
+                    </Heading>
+                    <Text size="xs" className={`font-medium mb-3 ${bundle.recommended ? 'text-yellow-300' : 'text-accent'}`}>
+                      {bundle.tagline}
+                    </Text>
+                    <Text size="sm" className={`mb-4 ${bundle.recommended ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {bundle.description}
+                    </Text>
+                    
+                    <div className="mb-4">
+                      <Text className={`text-xl line-through ${bundle.recommended ? 'text-gray-400' : 'text-gray-400'}`}>
+                        ₹{bundle.originalPrice.toLocaleString('en-IN')}
+                      </Text>
+                      <Text className={`text-3xl font-bold mb-1 ${bundle.recommended ? 'text-white' : ''}`}>
+                        ₹{bundle.price.toLocaleString('en-IN')}
+                      </Text>
+                      <Badge className={`${bundle.recommended ? 'bg-yellow-500 text-black' : 'bg-green-100 text-green-700'}`}>
+                        Save ₹{bundle.savings.toLocaleString('en-IN')} ({bundle.savingsPercent}% OFF)
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-2 mb-6">
+                    {bundle.features.slice(0, 4).map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <CheckCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${bundle.recommended ? 'text-yellow-300' : 'text-green-600'}`} />
+                        <Text size="sm" className={bundle.recommended ? 'text-gray-200' : ''}>{feature}</Text>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    className={`w-full ${bundle.recommended ? 'bg-yellow-500 hover:bg-yellow-400 text-black' : bundle.mostPopular ? '' : ''}`}
+                    variant={bundle.mostPopular || bundle.recommended ? "primary" : "outline"}
+                    onClick={() => handlePurchase(bundle.code, bundle.price)}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Get {bundle.title.replace(' Bundle', '')}
                   </Button>
-                </Link>
-              </div>
+                  
+                  <div className="mt-3 flex flex-col items-center text-xs text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <Shield className="w-3 h-3" />
+                      <Text size="xs">7-day money back guarantee</Text>
+                    </div>
+                    <Text size="xs" className={`mt-1 ${bundle.recommended ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {bundle.products.length} courses included
+                    </Text>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+        
+        {/* Bundle Comparison CTA */}
+        <div className="text-center">
+          <Button variant="outline" size="lg" className="gap-2">
+            Compare All 8 Bundles
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Individual Courses Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <Badge className="bg-blue-100 text-blue-700 mb-4">
+            📚 Individual Courses - Pick What You Need
+          </Badge>
+          <Heading as="h2" variant="h3" className="mb-2">
+            All 12 Premium Courses Available
+          </Heading>
+          <Text color="muted">
+            Master specific aspects of building your startup with expert-designed courses
+          </Text>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {allProducts.map((product) => (
+            <Card key={product.code} className="relative overflow-hidden hover:shadow-lg transition-shadow">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <product.icon className="w-5 h-5 text-accent" />
+                    <Badge variant="outline" className="text-xs">
+                      {product.category}
+                    </Badge>
+                  </div>
+                  <Text size="sm" color="muted">{product.duration}</Text>
+                </div>
+
+                <Heading as="h3" variant="h6" className="mb-2">
+                  {product.title}
+                </Heading>
+                <Text size="sm" color="muted" className="mb-4 line-clamp-2">
+                  {product.description}
+                </Text>
+
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <Text className="text-xl font-bold">
+                      ₹{product.price.toLocaleString('en-IN')}
+                    </Text>
+                    <Text size="xs" color="muted">{product.modules} modules</Text>
+                  </div>
+                  
+                  {hasProduct(product.code) ? (
+                    <Badge className="bg-green-100 text-green-700">
+                      ✅ Owned
+                    </Badge>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleDemo(product.code)}
+                  >
+                    View Demo
+                  </Button>
+                  
+                  {!hasProduct(product.code) && (
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handlePurchase(product.code, product.price)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Buy Now</>}
+                    </Button>
+                  )}
+                  
+                  {hasProduct(product.code) && (
+                    <Link href={`/products/${product.code}`}>
+                      <Button
+                        size="sm"
+                        className="flex-1"
+                      >
+                        Access Course
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Value Proposition Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <Text color="muted">
+            India's most comprehensive startup education platform with 12 specialized courses
+          </Text>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <Card className="p-6 text-center">
+            <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <Target className="w-6 h-6 text-accent" />
             </div>
+            <Heading as="h3" variant="h6" className="mb-2">India-Specific Content</Heading>
+            <Text size="sm" color="muted">
+              Tailored for Indian regulations, tax laws, and business environment
+            </Text>
+          </Card>
+
+          <Card className="p-6 text-center">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <Shield className="w-6 h-6 text-green-600" />
+            </div>
+            <Heading as="h3" variant="h6" className="mb-2">Expert-Designed</Heading>
+            <Text size="sm" color="muted">
+              Created by successful founders, CAs, and legal experts
+            </Text>
+          </Card>
+
+          <Card className="p-6 text-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <Zap className="w-6 h-6 text-purple-600" />
+            </div>
+            <Heading as="h3" variant="h6" className="mb-2">Implementation-Focused</Heading>
+            <Text size="sm" color="muted">
+              Comprehensive templates, tools, and step-by-step action plans
+            </Text>
+          </Card>
+        </div>
+
+        {/* Money Back Guarantee Section */}
+        <div className="mt-12">
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+            <CardContent className="p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Shield className="w-8 h-8 text-blue-600" />
+                </div>
+              </div>
+              <Heading as="h3" variant="h4" className="mb-3">
+                100% Risk-Free with 7-Day Money Back Guarantee
+              </Heading>
+              <Text size="lg" color="muted" className="max-w-2xl mx-auto">
+                We're confident you'll love our courses. If you're not completely satisfied within the first 7 days, 
+                we'll refund your purchase in full. No questions asked. Your success is our priority.
+              </Text>
+              <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <Text>Full refund within 7 days</Text>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <Text>No questions asked</Text>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <Text>Keep downloaded templates</Text>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Referral & Community Section */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-200">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Users className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <Heading as="h4" variant="h5" className="mb-2">
+                    Referral Program
+                  </Heading>
+                  <Text size="sm" color="muted" className="mb-3">
+                    Earn ₹500 credit for each friend who joins The Indian Startup. 
+                    Share your unique referral link and help others start their entrepreneurial journey.
+                  </Text>
+                  <div className="flex items-center gap-2 text-orange-600">
+                    <CheckCircle className="w-4 h-4" />
+                    <Text size="sm" weight="medium">₹500 per successful referral</Text>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <MessageSquare className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <Heading as="h4" variant="h5" className="mb-2">
+                    Free Community Access
+                  </Heading>
+                  <Text size="sm" color="muted" className="mb-3">
+                    Join 10,000+ Indian founders in our community forum. Share experiences, 
+                    ask questions, and network with fellow entrepreneurs - completely free!
+                  </Text>
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="w-4 h-4" />
+                    <Text size="sm" weight="medium">Free for all registered users</Text>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Coming Soon Courses */}
-      <div className="bg-white">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <Badge className="bg-blue-100 text-blue-700 mb-4">
-              🚀 Coming Soon
-            </Badge>
-            <Heading as="h2" variant="h3" className="mb-2">
-              Advanced Startup Mastery Courses
-            </Heading>
-            <Text color="muted">
-              Join the waitlist to be notified when these courses launch
-            </Text>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {comingSoonProducts.map((product) => (
-              <Card key={product.code} className="relative">
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <product.icon className="w-5 h-5 text-gray-400" />
-                    <Heading as="h4" variant="h5" className="text-gray-600">
-                      {product.title}
-                    </Heading>
-                  </div>
-                  
-                  <Text size="sm" color="muted" className="mb-4">
-                    {product.description}
-                  </Text>
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    {hasProduct(product.code) ? (
-                      <Badge className={hasAllAccess() ? "bg-purple-100 text-purple-700 text-xs" : "bg-green-100 text-green-700 text-xs"}>
-                        {hasAllAccess() ? "Included" : "Purchased"}
-                      </Badge>
-                    ) : (
-                      <Text weight="medium" className="text-gray-400">
-                        ₹{product.price.toLocaleString('en-IN')}
-                      </Text>
-                    )}
-                    <Text size="sm" color="muted">
-                      {product.estimatedTime}
-                    </Text>
-                  </div>
-
-                  <div className="space-y-3">
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                      value={waitlistData[product.code]?.email || ''}
-                      onChange={(e) => updateWaitlistData(product.code, 'email', e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Your name (optional)"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                      value={waitlistData[product.code]?.name || ''}
-                      onChange={(e) => updateWaitlistData(product.code, 'name', e.target.value)}
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => handleWaitlistSubmit(product.code)}
-                      disabled={!waitlistData[product.code]?.email || waitlistSubmitting[product.code]}
-                    >
-                      {waitlistSubmitting[product.code] ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          Joining...
-                        </>
-                      ) : (
-                        <>
-                          <Bell className="w-4 h-4 mr-2" />
-                          Join Waitlist
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-yellow-100 text-yellow-700">
-                    Coming Soon
-                  </Badge>
-                </div>
-              </Card>
-            ))}
+      {/* Stats Section */}
+      <div className="bg-accent text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold mb-2">12</div>
+              <Text className="text-accent-light">Premium Courses</Text>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2">3000+</div>
+              <Text className="text-accent-light">Templates & Tools</Text>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2">500+</div>
+              <Text className="text-accent-light">Days of Content</Text>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2">₹75K</div>
+              <Text className="text-accent-light">Worth of Education</Text>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="container mx-auto px-4 py-16">
+        <Card className="p-8 text-center">
+          <Heading as="h2" variant="h3" className="mb-4">
+            Ready to Build Your Startup?
+          </Heading>
+          <Text color="muted" className="mb-8 max-w-2xl mx-auto">
+            Join thousands of founders who've used our courses to launch successful startups. 
+            Start with a demo, then choose the path that fits your goals.
+          </Text>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="#individual-courses">
+              <Button size="lg">
+                Explore All Courses
+              </Button>
+            </Link>
+            <Link href="/demo/P1">
+              <Button variant="outline" size="lg">
+                Try Free Demo
+              </Button>
+            </Link>
+          </div>
+        </Card>
       </div>
 
       {/* FAQ */}
@@ -716,19 +1160,19 @@ export default function PricingPage() {
             <div className="space-y-8">
               <div>
                 <Heading as="h3" variant="h5" className="mb-2">
-                  Why start with just one course?
+                  Should I buy individual courses or bundles?
                 </Heading>
                 <Text color="muted">
-                  We believe in delivering exceptional quality. Our 30-Day Launch Sprint contains 2,000+ pages of comprehensive content. We&apos;re developing additional courses with the same depth and quality standards.
+                  Bundles offer significant savings (up to ₹19,997) and cover comprehensive aspects of building a startup. Individual courses are perfect if you need specific expertise in one area. Try our demos to see what fits your needs.
                 </Text>
               </div>
               
               <div>
                 <Heading as="h3" variant="h5" className="mb-2">
-                  When will the other courses be available?
+                  How do demos work?
                 </Heading>
                 <Text color="muted">
-                  We&apos;re working on releasing 2-3 new courses every quarter. Join the waitlist to be the first to know when they launch, often with early-bird discounts.
+                  Each course demo includes Day 1 and Day 2 content, giving you a real taste of the teaching methodology, content quality, and actionable tasks. No credit card required - just sign up and explore.
                 </Text>
               </div>
               
@@ -737,7 +1181,34 @@ export default function PricingPage() {
                   What makes this different from other startup courses?
                 </Heading>
                 <Text color="muted">
-                  India-specific guidance, daily action plans, comprehensive templates, and a supportive community. Plus, our content is based on real startup experiences and regulatory requirements in India.
+                  India-specific guidance, comprehensive templates and tools, expert-created content by successful founders and CAs, plus implementation-focused learning with step-by-step action plans tailored for Indian regulations and business environment.
+                </Text>
+              </div>
+
+              <div>
+                <Heading as="h3" variant="h5" className="mb-2">
+                  Do I get lifetime access?
+                </Heading>
+                <Text color="muted">
+                  Yes! Once purchased, you have 1-year access to the course content with all updates and improvements. This includes new templates, case studies, and regulatory updates as they become available.
+                </Text>
+              </div>
+
+              <div>
+                <Heading as="h3" variant="h5" className="mb-2">
+                  How does the 7-day money back guarantee work?
+                </Heading>
+                <Text color="muted">
+                  We offer a no-questions-asked refund within 7 days of purchase. Simply email support@theindianstartup.in with your order details, and we'll process your refund within 24-48 hours. You can keep any templates you've downloaded. We believe in our content quality and your satisfaction.
+                </Text>
+              </div>
+
+              <div>
+                <Heading as="h3" variant="h5" className="mb-2">
+                  Can I upgrade from individual courses to bundles?
+                </Heading>
+                <Text color="muted">
+                  Absolutely! Contact our support team and we'll help you upgrade to any bundle, adjusting the price based on courses you already own. You'll only pay the difference.
                 </Text>
               </div>
             </div>
@@ -801,8 +1272,23 @@ export default function PricingPage() {
                           variant="outline"
                           className="w-full"
                           onClick={() => {
-                            // TODO: Implement individual checkout for multiple items
-                            alert('Multi-product individual checkout coming soon! For now, consider the All-Access bundle.');
+                            // Multi-product checkout - redirect to bundle for better value
+                            const bundlePrice = 54999;
+                            const selectedPrice = selectedProducts.reduce((sum, code) => {
+                              const product = PRODUCTS.find(p => p.code === code);
+                              return sum + (product?.price || 0);
+                            }, 0);
+                            
+                            if (selectedPrice > bundlePrice * 0.8) {
+                              // If selected products are >80% of bundle price, suggest bundle
+                              alert(`Selected products cost ₹${selectedPrice.toLocaleString()}. The All-Access bundle at ₹${bundlePrice.toLocaleString()} gives you all 12 products - better value!`);
+                            } else {
+                              // For now, direct to individual purchases
+                              const firstProduct = PRODUCTS.find(p => p.code === selectedProducts[0]);
+                              if (firstProduct) {
+                                router.push(`/purchase?product=${firstProduct.code}`);
+                              }
+                            }
                           }}
                         >
                           Buy These Courses

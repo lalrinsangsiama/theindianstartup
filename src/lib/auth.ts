@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-
+import { NextRequest } from 'next/server';
+import { logger } from '@/lib/logger';
 // Admin email addresses from environment variable
 // Format: ADMIN_EMAILS="email1@example.com,email2@example.com"
 const ADMIN_EMAILS = process.env.ADMIN_EMAILS
@@ -22,6 +23,17 @@ export async function getUser() {
     .single();
     
   return profile;
+}
+
+export async function getUserFromRequest(request: NextRequest) {
+  const supabase = createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error || !user) {
+    return null;
+  }
+  
+  return user;
 }
 
 export async function isAdmin() {
@@ -68,7 +80,7 @@ export async function hasProductAccess(userId: string, productCode: string) {
       .gt('expiresAt', new Date().toISOString());
     
     if (error) {
-      console.error('Error checking product access:', error);
+      logger.error('Error checking product access:', error);
       return false;
     }
     
@@ -92,7 +104,7 @@ export async function hasProductAccess(userId: string, productCode: string) {
       return false;
     });
   } catch (error) {
-    console.error('Error checking product access:', error);
+    logger.error('Error checking product access:', error);
     return false;
   }
 }
@@ -107,6 +119,21 @@ export async function requireProductAccess(productCode: string) {
   
   return user;
 }
+
+// NextAuth compatibility - for legacy routes that still use getServerSession
+export const authOptions = {
+  providers: [],
+  callbacks: {
+    session: async ({ session, token }: any) => {
+      // This is a placeholder - actual auth is handled by Supabase
+      // Use token if needed for future implementation
+      if (token) {
+        session.token = token;
+      }
+      return session;
+    }
+  }
+};
 
 // Backwards compatibility
 export async function hasActiveAccess(userId: string, productType: string = 'P1') {

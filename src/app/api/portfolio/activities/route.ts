@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ activities: activitiesWithProgress });
 
   } catch (error) {
-    console.error('Activities API error:', error);
+    logger.error('Activities API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -155,8 +156,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Validate data against schema
-    // For now, we'll skip validation and implement it later
+    // Validate data against schema
+    const { validatePortfolioActivity } = await import('@/lib/portfolio-validation');
+    const validation = validatePortfolioActivity(body);
+    
+    if (!validation.isValid) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid activity data', 
+          details: validation.errors 
+        },
+        { status: 400 }
+      );
+    }
 
     // Check if user already has this activity
     const { data: existingActivity } = await supabase
@@ -236,7 +248,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Activity create/update error:', error);
+    logger.error('Activity create/update error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

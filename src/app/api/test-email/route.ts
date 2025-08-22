@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { sendEmail } from '@/lib/email';
 
 // Force dynamic rendering
@@ -44,7 +45,7 @@ export async function GET() {
       }, { status: 500 });
     }
   } catch (error) {
-    console.error('Test email error:', error);
+    logger.error('Test email error:', error);
     return NextResponse.json({ 
       success: false,
       error: 'Email test failed',

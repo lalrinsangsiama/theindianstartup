@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -59,7 +60,7 @@ export async function POST(
       });
 
     if (clickError) {
-      console.error('Error recording click:', clickError);
+      logger.error('Error recording click:', clickError);
       // Don't fail the request if click tracking fails
     }
 
@@ -71,7 +72,7 @@ export async function POST(
       .eq('id', id);
 
     if (updateError) {
-      console.error('Error updating clicks count:', updateError);
+      logger.error('Error updating clicks count:', updateError);
       // Don't fail the request if count update fails
     }
 
@@ -92,7 +93,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Track click error:', error);
+    logger.error('Track click error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Privacy Policy - Comprehensive</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .section { margin: 25px 0; }
+        .clause { margin: 15px 0; }
+        .fill-in { border-bottom: 1px solid #000; min-width: 150px; }
+        h1 { font-size: 18px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 16px; margin-top: 30px; color: #333; }
+        h3 { font-size: 14px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        .policy-box { border: 2px solid #000; padding: 15px; margin: 15px 0; background-color: #f9f9f9; }
+        .important { background-color: #ffffcc; padding: 10px; border-left: 4px solid #ff0000; margin: 15px 0; }
+        .checkbox { display: inline-block; width: 15px; height: 15px; border: 1px solid #000; margin-right: 5px; }
+        .contact-info { background-color: #e6f3ff; padding: 15px; border: 1px solid #0066cc; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PRIVACY POLICY</h1>
+        <h2>Comprehensive Data Protection and Privacy Framework</h2>
+        <p><strong>Company:</strong> <span class="fill-in">_________________________</span></p>
+        <p><strong>Website:</strong> <span class="fill-in">_________________________</span></p>
+        <p><strong>Effective Date:</strong> <span class="fill-in">_________________</span></p>
+        <p><strong>Last Updated:</strong> <span class="fill-in">_________________</span></p>
+    </div>
+
+    <div class="policy-box">
+        <h2>QUICK OVERVIEW</h2>
+        <p>This Privacy Policy explains how <span class="fill-in">[Company Name]</span> ("we," "us," or "our") collects, uses, processes, and protects your personal information when you use our website, mobile applications, and services.</p>
+        
+        <p><strong>Key Points:</strong></p>
+        <p>• We collect personal information you provide and usage data</p>
+        <p>• We use this information to provide and improve our services</p>
+        <p>• We do not sell your personal information to third parties</p>
+        <p>• You have rights to access, update, and delete your information</p>
+        <p>• We implement security measures to protect your data</p>
+    </div>
+
+    <div class="section">
+        <h2>1. INFORMATION WE COLLECT</h2>
+        
+        <div class="clause">
+            <h3>1.1 Personal Information You Provide</h3>
+            <p><strong>Account Registration Information:</strong></p>
+            <p>• Full name and contact details</p>
+            <p>• Email address and phone number</p>
+            <p>• Username and password</p>
+            <p>• Profile picture and bio</p>
+            <p>• Date of birth and gender (if provided)</p>
+            
+            <p><strong>Business Information:</strong></p>
+            <p>• Company name and description</p>
+            <p>• Business address and contact information</p>
+            <p>• Tax identification numbers</p>
+            <p>• Business registration details</p>
+            
+            <p><strong>Payment Information:</strong></p>
+            <p>• Credit/debit card details</p>
+            <p>• Banking information</p>
+            <p>• Billing address</p>
+            <p>• Transaction history</p>
+        </div>
+
+        <div class="clause">
+            <h3>1.2 Information We Collect Automatically</h3>
+            <p><strong>Technical Information:</strong></p>
+            <p>• IP address and device identifiers</p>
+            <p>• Browser type and version</p>
+            <p>• Operating system and device information</p>
+            <p>• Screen resolution and language preferences</p>
+            
+            <p><strong>Usage Information:</strong></p>
+            <p>• Pages visited and time spent</p>
+            <p>• Click patterns and navigation paths</p>
+            <p>• Features used and interaction data</p>
+            <p>• Search queries and preferences</p>
+            
+            <p><strong>Location Information:</strong></p>
+            <p>• Approximate location from IP address</p>
+            <p>• Precise location (with permission)</p>
+            <p>• Location-based preferences</p>
+        </div>
+
+        <div class="clause">
+            <h3>1.3 Information from Third Parties</h3>
+            <p><strong>Social Media Integration:</strong></p>
+            <p>• Profile information from social media platforms</p>
+            <p>• Contact lists (with permission)</p>
+            <p>• Social media activity related to our services</p>
+            
+            <p><strong>Business Partners:</strong></p>
+            <p>• Lead generation services</p>
+            <p>• Marketing partners</p>
+            <p>• Payment processors</p>
+            <p>• Analytics providers</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. HOW WE USE YOUR INFORMATION</h2>
+        
+        <div class="clause">
+            <h3>2.1 Primary Uses</h3>
+            <table>
+                <tr>
+                    <th>Purpose</th>
+                    <th>Legal Basis</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Service Provision</td>
+                    <td>Contract Performance</td>
+                    <td>Providing and maintaining our core services</td>
+                </tr>
+                <tr>
+                    <td>Account Management</td>
+                    <td>Contract Performance</td>
+                    <td>Creating, managing, and authenticating accounts</td>
+                </tr>
+                <tr>
+                    <td>Customer Support</td>
+                    <td>Contract Performance</td>
+                    <td>Responding to inquiries and providing assistance</td>
+                </tr>
+                <tr>
+                    <td>Payment Processing</td>
+                    <td>Contract Performance</td>
+                    <td>Processing payments and managing billing</td>
+                </tr>
+                <tr>
+                    <td>Communication</td>
+                    <td>Legitimate Interest</td>
+                    <td>Sending service updates and important notices</td>
+                </tr>
+                <tr>
+                    <td>Personalization</td>
+                    <td>Legitimate Interest</td>
+                    <td>Customizing user experience and content</td>
+                </tr>
+                <tr>
+                    <td>Marketing</td>
+                    <td>Consent/Legitimate Interest</td>
+                    <td>Sending promotional materials (with opt-out)</td>
+                </tr>
+                <tr>
+                    <td>Analytics</td>
+                    <td>Legitimate Interest</td>
+                    <td>Understanding usage patterns and improving services</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="clause">
+            <h3>2.2 Marketing and Communications</h3>
+            <p><strong>Email Marketing:</strong></p>
+            <p>• Newsletter subscriptions (with consent)</p>
+            <p>• Product updates and announcements</p>
+            <p>• Special offers and promotions</p>
+            <p>• Educational content and resources</p>
+            
+            <p><strong>Opt-Out Rights:</strong></p>
+            <p>• Unsubscribe links in all marketing emails</p>
+            <p>• Account settings for communication preferences</p>
+            <p>• Contact us to opt-out of all marketing</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.3 Legal and Compliance</h3>
+            <p>We may use your information to:</p>
+            <p>• Comply with legal obligations and court orders</p>
+            <p>• Investigate and prevent fraud or abuse</p>
+            <p>• Enforce our terms of service and policies</p>
+            <p>• Protect rights, property, and safety</p>
+            <p>• Respond to regulatory requests</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. INFORMATION SHARING AND DISCLOSURE</h2>
+        
+        <div class="clause">
+            <h3>3.1 When We Share Information</h3>
+            <div class="important">
+                <p><strong>WE DO NOT SELL YOUR PERSONAL INFORMATION</strong></p>
+                <p>We may share your information in the following limited circumstances:</p>
+            </div>
+
+            <p><strong>Service Providers:</strong></p>
+            <p>• Cloud hosting and infrastructure providers</p>
+            <p>• Payment processing companies</p>
+            <p>• Customer support platforms</p>
+            <p>• Marketing and analytics services</p>
+            <p>• Security and fraud prevention services</p>
+            
+            <p><strong>Business Transfers:</strong></p>
+            <p>• Mergers, acquisitions, or sale of assets</p>
+            <p>• Bankruptcy or reorganization proceedings</p>
+            <p>• Due diligence for potential transactions</p>
+            
+            <p><strong>Legal Requirements:</strong></p>
+            <p>• Court orders, subpoenas, or legal process</p>
+            <p>• Law enforcement investigations</p>
+            <p>• Regulatory compliance requirements</p>
+            <p>• Protection of rights and safety</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.2 International Transfers</h3>
+            <p>Your information may be transferred to and processed in countries other than your country of residence, including:</p>
+            <p>• Countries with adequate data protection laws</p>
+            <p>• Countries with appropriate safeguards in place</p>
+            <p>• Transfers based on your consent</p>
+            
+            <p><strong>Safeguards for International Transfers:</strong></p>
+            <p>• Standard Contractual Clauses (SCCs)</p>
+            <p>• Adequacy decisions by data protection authorities</p>
+            <p>• Certification programs and codes of conduct</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. DATA RETENTION</h2>
+        
+        <div class="clause">
+            <h3>4.1 Retention Periods</h3>
+            <table>
+                <tr>
+                    <th>Data Category</th>
+                    <th>Retention Period</th>
+                    <th>Basis for Retention</th>
+                </tr>
+                <tr>
+                    <td>Account Information</td>
+                    <td>Duration of account + <span class="fill-in">___</span> years</td>
+                    <td>Service provision and legal obligations</td>
+                </tr>
+                <tr>
+                    <td>Transaction Records</td>
+                    <td><span class="fill-in">___</span> years after transaction</td>
+                    <td>Financial record-keeping requirements</td>
+                </tr>
+                <tr>
+                    <td>Communication Records</td>
+                    <td><span class="fill-in">___</span> years</td>
+                    <td>Customer service and dispute resolution</td>
+                </tr>
+                <tr>
+                    <td>Marketing Data</td>
+                    <td>Until opt-out + <span class="fill-in">___</span> years</td>
+                    <td>Marketing compliance and suppression</td>
+                </tr>
+                <tr>
+                    <td>Technical Logs</td>
+                    <td><span class="fill-in">___</span> months</td>
+                    <td>Security and system maintenance</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="clause">
+            <h3>4.2 Data Deletion</h3>
+            <p><strong>Automatic Deletion:</strong></p>
+            <p>• Data is automatically deleted after retention periods</p>
+            <p>• Inactive accounts may be deleted after <span class="fill-in">___</span> years</p>
+            <p>• Marketing data deleted upon opt-out</p>
+            
+            <p><strong>Secure Deletion Process:</strong></p>
+            <p>• Overwriting data with random information</p>
+            <p>• Physical destruction of storage media</p>
+            <p>• Cryptographic erasure of encrypted data</p>
+            <p>• Verification of complete deletion</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. YOUR RIGHTS AND CHOICES</h2>
+        
+        <div class="clause">
+            <h3>5.1 Data Subject Rights</h3>
+            <p><strong>Right of Access:</strong></p>
+            <p>• Request a copy of your personal information</p>
+            <p>• Information about how your data is processed</p>
+            <p>• Details about data sharing and transfers</p>
+            
+            <p><strong>Right to Rectification:</strong></p>
+            <p>• Correct inaccurate or incomplete information</p>
+            <p>• Update your account information</p>
+            <p>• Add missing information</p>
+            
+            <p><strong>Right to Erasure ("Right to be Forgotten"):</strong></p>
+            <p>• Delete your account and associated data</p>
+            <p>• Remove specific pieces of information</p>
+            <p>• Subject to legal retention requirements</p>
+            
+            <p><strong>Right to Restrict Processing:</strong></p>
+            <p>• Limit how we use your information</p>
+            <p>• Suspend processing while disputes are resolved</p>
+            <p>• Object to certain types of processing</p>
+            
+            <p><strong>Right to Data Portability:</strong></p>
+            <p>• Receive your data in a machine-readable format</p>
+            <p>• Transfer your data to another service provider</p>
+            <p>• Export your account information</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.2 How to Exercise Your Rights</h3>
+            <div class="contact-info">
+                <p><strong>CONTACT INFORMATION FOR DATA RIGHTS REQUESTS:</strong></p>
+                <p>• <strong>Email:</strong> privacy@<span class="fill-in">[company-domain]</span></p>
+                <p>• <strong>Phone:</strong> <span class="fill-in">_______________</span></p>
+                <p>• <strong>Postal Address:</strong></p>
+                <p>&nbsp;&nbsp;<span class="fill-in">_________________________</span></p>
+                <p>&nbsp;&nbsp;<span class="fill-in">_________________________</span></p>
+                <p>• <strong>Response Time:</strong> Within 30 days of verification</p>
+            </div>
+            
+            <p><strong>Verification Process:</strong></p>
+            <p>• We may request additional information to verify your identity</p>
+            <p>• Reasonable identification documents may be required</p>
+            <p>• Authorized agents must provide proof of authorization</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. SECURITY MEASURES</h2>
+        
+        <div class="clause">
+            <h3>6.1 Technical Safeguards</h3>
+            <p><strong>Encryption:</strong></p>
+            <p>• Data in transit protected by TLS/SSL encryption</p>
+            <p>• Data at rest encrypted using industry standards</p>
+            <p>• Database encryption and key management</p>
+            
+            <p><strong>Access Controls:</strong></p>
+            <p>• Multi-factor authentication for employees</p>
+            <p>• Role-based access permissions</p>
+            <p>• Regular access reviews and revocations</p>
+            <p>• Privileged access monitoring</p>
+            
+            <p><strong>Network Security:</strong></p>
+            <p>• Firewalls and intrusion detection systems</p>
+            <p>• Regular security updates and patches</p>
+            <p>• Vulnerability scanning and assessments</p>
+            <p>• Network segmentation and isolation</p>
+        </div>
+
+        <div class="clause">
+            <h3>6.2 Organizational Measures</h3>
+            <p><strong>Employee Training:</strong></p>
+            <p>• Regular privacy and security training</p>
+            <p>• Confidentiality agreements with all staff</p>
+            <p>• Background checks for sensitive positions</p>
+            <p>• Incident response training</p>
+            
+            <p><strong>Policies and Procedures:</strong></p>
+            <p>• Data protection impact assessments</p>
+            <p>• Privacy by design implementation</p>
+            <p>• Regular policy reviews and updates</p>
+            <p>• Vendor management and due diligence</p>
+        </div>
+
+        <div class="clause">
+            <h3>6.3 Incident Response</h3>
+            <p><strong>Data Breach Response Plan:</strong></p>
+            <p>• Immediate containment and assessment</p>
+            <p>• Notification to authorities within 72 hours (where required)</p>
+            <p>• User notification for high-risk breaches</p>
+            <p>• Post-incident review and improvements</p>
+            
+            <p><strong>Security Monitoring:</strong></p>
+            <p>• 24/7 security operations center</p>
+            <p>• Automated threat detection and response</p>
+            <p>• Regular security audits and penetration testing</p>
+            <p>• Continuous monitoring and alerting</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7. COOKIES AND TRACKING TECHNOLOGIES</h2>
+        
+        <div class="clause">
+            <h3>7.1 Types of Cookies We Use</h3>
+            <table>
+                <tr>
+                    <th>Cookie Type</th>
+                    <th>Purpose</th>
+                    <th>Duration</th>
+                    <th>Opt-Out</th>
+                </tr>
+                <tr>
+                    <td>Essential/Functional</td>
+                    <td>Core website functionality</td>
+                    <td>Session/1 year</td>
+                    <td>Not available</td>
+                </tr>
+                <tr>
+                    <td>Analytics</td>
+                    <td>Usage statistics and performance</td>
+                    <td>2 years</td>
+                    <td>Available</td>
+                </tr>
+                <tr>
+                    <td>Marketing</td>
+                    <td>Advertising and personalization</td>
+                    <td>1 year</td>
+                    <td>Available</td>
+                </tr>
+                <tr>
+                    <td>Preferences</td>
+                    <td>Remember user settings</td>
+                    <td>1 year</td>
+                    <td>Available</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="clause">
+            <h3>7.2 Cookie Management</h3>
+            <p><strong>Browser Controls:</strong></p>
+            <p>• Most browsers allow you to view, manage, and delete cookies</p>
+            <p>• You can set preferences for accepting/rejecting cookies</p>
+            <p>• Incognito/private browsing modes limit cookie storage</p>
+            
+            <p><strong>Our Cookie Preferences:</strong></p>
+            <p>• Cookie banner with granular consent options</p>
+            <p>• Cookie preference center in account settings</p>
+            <p>• Regular cookie consent reviews</p>
+        </div>
+
+        <div class="clause">
+            <h3>7.3 Third-Party Tracking</h3>
+            <p><strong>Analytics Partners:</strong></p>
+            <p>• Google Analytics (with IP anonymization)</p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            
+            <p><strong>Marketing Partners:</strong></p>
+            <p>• Facebook Pixel</p>
+            <p>• Google Ads</p>
+            <p>• <span class="fill-in">_________________________</span></p>
+            
+            <p><strong>Opt-Out Options:</strong></p>
+            <p>• Network Advertising Initiative opt-out</p>
+            <p>• Digital Advertising Alliance opt-out</p>
+            <p>• Individual partner opt-out mechanisms</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. CHILDREN'S PRIVACY</h2>
+        
+        <div class="clause">
+            <h3>8.1 Age Restrictions</h3>
+            <div class="important">
+                <p><strong>MINIMUM AGE REQUIREMENT:</strong></p>
+                <p>Our services are not intended for children under <span class="fill-in">___</span> years of age. We do not knowingly collect personal information from children under this age.</p>
+            </div>
+            
+            <p><strong>Parental Consent:</strong></p>
+            <p>• Children between <span class="fill-in">___</span> and <span class="fill-in">___</span> require parental consent</p>
+            <p>• Verifiable parental consent mechanisms in place</p>
+            <p>• Parents can review, modify, or delete child's information</p>
+        </div>
+
+        <div class="clause">
+            <h3>8.2 If We Discover Child Information</h3>
+            <p>If we become aware that we have collected information from a child without proper consent:</p>
+            <p>• We will immediately stop processing the information</p>
+            <p>• The information will be deleted from our systems</p>
+            <p>• Parents will be notified of the collection and deletion</p>
+            <p>• Account access will be terminated</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>9. UPDATES TO THIS POLICY</h2>
+        
+        <div class="clause">
+            <h3>9.1 Policy Changes</h3>
+            <p>We may update this Privacy Policy from time to time. When we make changes:</p>
+            <p>• We will post the updated policy on our website</p>
+            <p>• The "Last Updated" date will be revised</p>
+            <p>• Material changes will be highlighted</p>
+            <p>• Users will be notified of significant changes</p>
+            
+            <p><strong>Notification Methods:</strong></p>
+            <p>• Email notification to registered users</p>
+            <p>• Prominent notice on our website</p>
+            <p>• In-app notifications (where applicable)</p>
+            <p>• Social media announcements</p>
+        </div>
+
+        <div class="clause">
+            <h3>9.2 Continued Use</h3>
+            <p>Your continued use of our services after policy changes constitutes acceptance of the updated terms. If you do not agree with changes, please discontinue use and contact us about account deletion.</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #000; padding-top: 20px;">
+        <h2>10. CONTACT INFORMATION</h2>
+        
+        <div class="contact-info">
+            <p><strong>DATA PROTECTION OFFICER / PRIVACY TEAM:</strong></p>
+            <p><strong>Company:</strong> <span class="fill-in">[Company Name]</span></p>
+            <p><strong>Address:</strong></p>
+            <p><span class="fill-in">_________________________</span></p>
+            <p><span class="fill-in">_________________________</span></p>
+            <p><span class="fill-in">_________________________</span></p>
+            
+            <p><strong>Email:</strong> privacy@<span class="fill-in">[company-domain]</span></p>
+            <p><strong>Phone:</strong> <span class="fill-in">_______________</span></p>
+            <p><strong>Response Time:</strong> Within 5 business days for initial response</p>
+        </div>
+        
+        <p><strong>REGULATORY AUTHORITIES:</strong></p>
+        <p>If you believe we have not adequately addressed your privacy concerns, you may contact relevant data protection authorities in your jurisdiction.</p>
+        
+        <br>
+        <p><strong>IMPORTANT NOTICE:</strong></p>
+        <p>This Privacy Policy is designed to comply with major privacy regulations including GDPR, CCPA, and Indian data protection laws. Customize this template based on your specific services, data practices, and applicable legal requirements.</p>
+        
+        <p><strong>Template Source:</strong> The Indian Startup - P5 Legal Stack<br>
+        <strong>Version:</strong> 2.0 | <strong>Last Updated:</strong> December 2024<br>
+        <strong>Jurisdiction:</strong> Multi-jurisdictional | <strong>Review Required:</strong> Privacy lawyer essential</p>
+    </div>
+</body>
+</html>

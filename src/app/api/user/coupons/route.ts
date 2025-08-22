@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
       .order('createdAt', { ascending: false });
 
     if (error) {
-      console.error('Error fetching coupons:', error);
+      logger.error('Error fetching coupons:', error);
       return NextResponse.json(
         { error: 'Failed to fetch coupons' },
         { status: 500 }
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Coupons fetch error:', error);
+    logger.error('Coupons fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch coupons' },
       { status: 500 }

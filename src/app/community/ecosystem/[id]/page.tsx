@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -108,7 +109,7 @@ export default function ListingDetailsPage() {
       const mockListing: EcosystemListing = {
         id: listingId,
         name: 'T-Hub Hyderabad',
-        description: 'T-Hub is India&apos;s largest startup incubator and innovation hub, supporting tech startups with mentoring, funding, and market access. Founded by the Government of Telangana, T-Hub has supported over 1,800+ startups and facilitated funding worth $300M+.',
+        description: "T-Hub is India's largest startup incubator and innovation hub, supporting tech startups with mentoring, funding, and market access. Founded by the Government of Telangana, T-Hub has supported over 1,800+ startups and facilitated funding worth $300M+.",
         category: 'incubator',
         subCategory: 'government_incubator',
         logoUrl: '/logos/t-hub.png',
@@ -190,7 +191,7 @@ export default function ListingDetailsPage() {
       // Increment view count (in real app)
       
     } catch (error) {
-      console.error('Error fetching listing details:', error);
+      logger.error('Error fetching listing details:', error);
     } finally {
       setLoading(false);
     }
@@ -266,7 +267,7 @@ export default function ListingDetailsPage() {
                   Listing Not Found
                 </Heading>
                 <Text color="muted" className="mb-6">
-                  The listing you&apos;re looking for doesn&apos;t exist or has been removed.
+                  The listing you're looking for doesn't exist or has been removed.
                 </Text>
                 <Button variant="primary" onClick={() => router.push('/community/ecosystem')}>
                   Back to Directory

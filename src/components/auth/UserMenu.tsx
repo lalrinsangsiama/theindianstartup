@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { logger } from '@/lib/logger';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -42,7 +43,7 @@ export function UserMenu() {
         const data = await response.json();
         setUserProfile(data.user);
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        logger.error('Failed to fetch profile:', error);
       }
     };
 
@@ -99,7 +100,7 @@ export function UserMenu() {
       await signOut();
       router.push('/');
     } catch (error) {
-      console.error('Error signing out:', error);
+      logger.error('Error signing out:', error);
     } finally {
       setIsLoggingOut(false);
       setIsOpen(false);

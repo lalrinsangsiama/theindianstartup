@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -121,7 +122,7 @@ export default function MarketResearchPage() {
         });
       }
     } catch (err) {
-      console.error('Error fetching portfolio:', err);
+      logger.error('Error fetching portfolio:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
@@ -160,7 +161,7 @@ export default function MarketResearchPage() {
 
       setLastSaved(new Date());
     } catch (err) {
-      console.error('Error saving portfolio:', err);
+      logger.error('Error saving portfolio:', err);
       setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
@@ -626,7 +627,7 @@ export default function MarketResearchPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Excellent! You&apos;ve completed the Market Research section. Ready to define your Business Model?
+                  Excellent! You've completed the Market Research section. Ready to define your Business Model?
                 </Text>
               </CardContent>
             </Card>

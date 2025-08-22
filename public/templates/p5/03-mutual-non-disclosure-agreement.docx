@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Mutual Non-Disclosure Agreement</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .parties { border: 1px solid #000; padding: 15px; margin: 20px 0; }
+        .section { margin: 25px 0; }
+        .clause { margin: 15px 0; }
+        .signature-block { margin-top: 40px; border-top: 1px solid #000; padding-top: 20px; }
+        .fill-in { border-bottom: 1px solid #000; min-width: 200px; }
+        h1 { font-size: 18px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 16px; margin-top: 30px; }
+        h3 { font-size: 14px; margin-top: 20px; }
+        .checkbox { display: inline-block; width: 15px; height: 15px; border: 1px solid #000; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 10px; vertical-align: top; }
+        .highlight { background-color: #f0f0f0; padding: 10px; border-left: 4px solid #000; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MUTUAL NON-DISCLOSURE AGREEMENT</h1>
+        <h2>Comprehensive Confidentiality Agreement</h2>
+        <p><strong>Bilateral Confidentiality Protection for Business Discussions</strong></p>
+    </div>
+
+    <div class="parties">
+        <p><strong>MUTUAL NON-DISCLOSURE AGREEMENT</strong></p>
+        <p>This Mutual Non-Disclosure Agreement ("Agreement") is entered into on <span class="fill-in">_______</span> day of <span class="fill-in">_______</span>, 2024, between:</p>
+        
+        <p><strong>PARTY 1:</strong></p>
+        <p>[Company/Individual Name] <span class="fill-in">_________________________</span></p>
+        <p>Address: <span class="fill-in">____________________</span></p>
+        <p><span class="fill-in">_____________________________</span></p>
+        <p>Email: <span class="fill-in">______________________</span></p>
+        <p>("Party 1" or "First Party")</p>
+
+        <p><strong>PARTY 2:</strong></p>
+        <p>[Company/Individual Name] <span class="fill-in">_________________________</span></p>
+        <p>Address: <span class="fill-in">____________________</span></p>
+        <p><span class="fill-in">_____________________________</span></p>
+        <p>Email: <span class="fill-in">______________________</span></p>
+        <p>("Party 2" or "Second Party")</p>
+        
+        <p>(Each a "Party" and collectively the "Parties")</p>
+    </div>
+
+    <div class="section">
+        <h2>1. PURPOSE AND BACKGROUND</h2>
+        
+        <div class="clause">
+            <h3>1.1 Business Purpose</h3>
+            <p>The Parties wish to explore a potential business relationship concerning:</p>
+            <p><span class="checkbox">☐</span> Strategic partnership or collaboration</p>
+            <p><span class="checkbox">☐</span> Joint venture or business combination</p>
+            <p><span class="checkbox">☐</span> Investment or acquisition opportunity</p>
+            <p><span class="checkbox">☐</span> Technology licensing or development</p>
+            <p><span class="checkbox">☐</span> Service provider evaluation</p>
+            <p><span class="checkbox">☐</span> Product development collaboration</p>
+            <p><span class="checkbox">☐</span> Market expansion opportunity</p>
+            <p><span class="checkbox">☐</span> Other: <span class="fill-in">_________________________</span></p>
+        </div>
+
+        <div class="clause">
+            <h3>1.2 Mutual Protection</h3>
+            <p>Both Parties acknowledge that they may disclose and receive confidential information, and this Agreement provides mutual protection for both Parties' confidential information.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. DEFINITION OF CONFIDENTIAL INFORMATION</h2>
+        
+        <div class="clause">
+            <h3>2.1 Confidential Information Includes</h3>
+            <p>For purposes of this Agreement, "Confidential Information" means any and all non-public, proprietary, or confidential information disclosed by one Party ("Disclosing Party") to the other Party ("Receiving Party"), including:</p>
+
+            <div class="highlight">
+                <p><strong>Business Information:</strong></p>
+                <p>• Business plans, strategies, and objectives</p>
+                <p>• Financial information, budgets, and projections</p>
+                <p>• Customer lists, customer data, and relationships</p>
+                <p>• Vendor, supplier, and partner information</p>
+                <p>• Market research, competitive analysis, and plans</p>
+                <p>• Pricing information, cost structures, and margins</p>
+                <p>• Business processes, procedures, and methodologies</p>
+            </div>
+
+            <div class="highlight">
+                <p><strong>Technical Information:</strong></p>
+                <p>• Technical specifications, designs, and drawings</p>
+                <p>• Software code, algorithms, and development tools</p>
+                <p>• Patents, patent applications, and inventions</p>
+                <p>• Trade secrets, know-how, and proprietary processes</p>
+                <p>• Research and development information</p>
+                <p>• Product roadmaps and development plans</p>
+                <p>• Quality control and testing procedures</p>
+            </div>
+
+            <div class="highlight">
+                <p><strong>Legal and Commercial Information:</strong></p>
+                <p>• Contracts, agreements, and business terms</p>
+                <p>• Legal strategies, litigation matters, regulatory issues</p>
+                <p>• Intellectual property portfolios and strategies</p>
+                <p>• Corporate structure and ownership information</p>
+                <p>• M&A plans or discussions</p>
+                <p>• Investment information and funding strategies</p>
+            </div>
+        </div>
+
+        <div class="clause">
+            <h3>2.2 Forms of Information</h3>
+            <p>Confidential Information includes information disclosed:</p>
+            <p>• In written or electronic documents</p>
+            <p>• Orally in meetings, presentations, or conversations</p>
+            <p>• Through visual observation or inspection</p>
+            <p>• In electronic files, databases, or systems</p>
+            <p>• Through prototypes, samples, or demonstrations</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.3 Marking and Identification</h3>
+            <p>Confidential Information may be marked as "Confidential," "Proprietary," or similar designation, but the absence of such marking does not exclude information from protection if it would reasonably be considered confidential under the circumstances.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. OBLIGATIONS OF RECEIVING PARTY</h2>
+        
+        <div class="clause">
+            <h3>3.1 Confidentiality Obligations</h3>
+            <p>Each Receiving Party agrees to:</p>
+            <p>• Hold all Confidential Information in strict confidence</p>
+            <p>• Use reasonable care to protect Confidential Information (but in no event less than the care used for own confidential information)</p>
+            <p>• Not disclose Confidential Information to any third parties without prior written consent</p>
+            <p>• Use Confidential Information solely for evaluating the potential business relationship</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.2 Access Restrictions</h3>
+            <p>The Receiving Party shall:</p>
+            <p>• Limit access to employees, advisors, and representatives who:</p>
+            <p>&nbsp;&nbsp;- Have a legitimate need to know for the authorized purpose</p>
+            <p>&nbsp;&nbsp;- Are bound by confidentiality obligations at least as restrictive as those herein</p>
+            <p>&nbsp;&nbsp;- Have been informed of the confidential nature of the information</p>
+            <p>• Maintain a list of individuals with access to Confidential Information</p>
+            <p>• Remain liable for any breach by such individuals</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.3 Security Measures</h3>
+            <p>The Receiving Party shall implement reasonable security measures:</p>
+            <p>• Secure storage in locked facilities or password-protected systems</p>
+            <p>• Encryption of electronic communications and storage</p>
+            <p>• Access controls and user authentication systems</p>
+            <p>• Regular security training for personnel with access</p>
+            <p>• Physical security measures for documents and materials</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.4 No Reverse Engineering</h3>
+            <p>The Receiving Party shall not reverse engineer, disassemble, decompile, or otherwise attempt to derive source code, underlying ideas, or confidential processes from any Confidential Information.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. EXCEPTIONS TO CONFIDENTIALITY</h2>
+        
+        <div class="clause">
+            <h3>4.1 Public Domain Information</h3>
+            <p>The obligations of confidentiality shall not apply to information that:</p>
+            <p>• Is or becomes generally available to the public through no breach by Receiving Party</p>
+            <p>• Was rightfully known by Receiving Party prior to disclosure</p>
+            <p>• Is rightfully received from a third party without breach of confidentiality</p>
+            <p>• Is independently developed without use of Confidential Information</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.2 Required Disclosure</h3>
+            <p>The Receiving Party may disclose Confidential Information if required by:</p>
+            <p>• Valid court order or legal process</p>
+            <p>• Government or regulatory authority with proper jurisdiction</p>
+            <p>• Securities laws or stock exchange requirements</p>
+            <p>• Other applicable legal or regulatory requirements</p>
+
+            <div class="highlight">
+                <p><strong>Conditions for Required Disclosure:</strong></p>
+                <p>• Provide prompt written notice to Disclosing Party (unless prohibited by law)</p>
+                <p>• Cooperate with Disclosing Party's efforts to seek protective relief</p>
+                <p>• Limit disclosure to minimum required by legal obligation</p>
+                <p>• Request confidential treatment where possible</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. RETURN OF MATERIALS</h2>
+        
+        <div class="clause">
+            <h3>5.1 Return or Destruction</h3>
+            <p>Upon termination of this Agreement or upon written request, the Receiving Party shall promptly:</p>
+            <p>• Return all documents, materials, and tangible items containing Confidential Information</p>
+            <p>• Delete all electronic copies from computers, servers, and storage systems</p>
+            <p>• Destroy all notes, analyses, and materials prepared using Confidential Information</p>
+            <p>• Certify in writing the completion of such return and destruction</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.2 Continuing Obligations</h3>
+            <p>Confidentiality obligations continue to apply to any retained Confidential Information as required by legal or regulatory requirements.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. REMEDIES AND ENFORCEMENT</h2>
+        
+        <div class="clause">
+            <h3>6.1 Irreparable Harm</h3>
+            <p>Each Party acknowledges that breach would cause irreparable harm for which monetary damages would be inadequate. The non-breaching Party shall be entitled to:</p>
+            <p>• Immediate injunctive relief and specific performance</p>
+            <p>• Such other equitable remedies as may be appropriate</p>
+            <p>• Such relief without posting bond or proving actual damages</p>
+        </div>
+
+        <div class="clause">
+            <h3>6.2 Monetary Damages</h3>
+            <p>In addition to equitable relief, the non-breaching Party may seek:</p>
+            <p>• Actual damages caused by the breach</p>
+            <p>• Reasonable attorneys' fees and costs of enforcement</p>
+            <p>• Such other damages as may be available at law or equity</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7. TERM AND TERMINATION</h2>
+        
+        <div class="clause">
+            <h3>7.1 Effective Period</h3>
+            <p>This Agreement shall remain in effect for <span class="fill-in">_____</span> years unless:</p>
+            <p>• Terminated earlier by mutual written consent</p>
+            <p>• Terminated by either Party with <span class="fill-in">_____</span> days written notice</p>
+            <p>• Superseded by a definitive agreement between the Parties</p>
+        </div>
+
+        <div class="clause">
+            <h3>7.2 Survival of Obligations</h3>
+            <p>The following obligations shall survive termination:</p>
+            <p>• Confidentiality obligations (for <span class="fill-in">_____</span> years after termination)</p>
+            <p>• Return of materials and information</p>
+            <p>• Remedies and enforcement provisions</p>
+            <p>• General provisions regarding governing law and dispute resolution</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. GENERAL PROVISIONS</h2>
+        
+        <div class="clause">
+            <h3>8.1 Governing Law and Jurisdiction</h3>
+            <p>This Agreement shall be governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts located in <span class="fill-in">[City]</span>, India.</p>
+        </div>
+
+        <div class="clause">
+            <h3>8.2 Entire Agreement</h3>
+            <p>This Agreement constitutes the entire agreement between the Parties concerning confidentiality and supersedes all prior discussions and agreements relating to the subject matter.</p>
+        </div>
+
+        <div class="clause">
+            <h3>8.3 Amendment and Assignment</h3>
+            <p>This Agreement may be amended only by written agreement signed by both Parties. Neither Party may assign this Agreement without the prior written consent of the other Party.</p>
+        </div>
+    </div>
+
+    <div class="signature-block">
+        <h2>EXECUTION</h2>
+        <p>IN WITNESS WHEREOF, the Parties have executed this Mutual Non-Disclosure Agreement as of the date first written above.</p>
+        
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <p><strong>PARTY 1:</strong></p>
+                    <br><br><br>
+                    <p>_____________________________</p>
+                    <p>Signature</p>
+                    <p>_____________________________</p>
+                    <p>Print Name and Title</p>
+                    <p>_____________________________</p>
+                    <p>Date</p>
+                </td>
+                <td width="50%">
+                    <p><strong>PARTY 2:</strong></p>
+                    <br><br><br>
+                    <p>_____________________________</p>
+                    <p>Signature</p>
+                    <p>_____________________________</p>
+                    <p>Print Name and Title</p>
+                    <p>_____________________________</p>
+                    <p>Date</p>
+                </td>
+            </tr>
+        </table>
+
+        <br><br>
+        <p><strong>WITNESSES:</strong></p>
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <p>Witness 1:</p>
+                    <p>Signature: ____________________</p>
+                    <p>Name: _______________________</p>
+                    <p>Date: _______________________</p>
+                </td>
+                <td width="50%">
+                    <p>Witness 2:</p>
+                    <p>Signature: ____________________</p>
+                    <p>Name: _______________________</p>
+                    <p>Date: _______________________</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #000; padding-top: 20px;">
+        <p><strong>IMPORTANT LEGAL NOTICE:</strong></p>
+        <p>This Mutual NDA template provides comprehensive protection but should be customized for specific situations. Consider consulting legal counsel for high-value transactions or complex business relationships.</p>
+        
+        <p><strong>Template Source:</strong> The Indian Startup - P5 Legal Stack<br>
+        <strong>Version:</strong> 2.0 | <strong>Last Updated:</strong> December 2024<br>
+        <strong>Jurisdiction:</strong> India | <strong>Review Required:</strong> Before each use</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+name: Production Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20.x'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # Code Quality & Testing
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint
+      
+      - name: Run TypeScript checks
+        run: npm run typecheck
+      
+      - name: Run tests
+        run: npm run test
+        env:
+          CI: true
+      
+      - name: Build application
+        run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: true
+
+  # Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+      
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  # Performance Testing
+  performance-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build for production
+        run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: true
+      
+      - name: Start application
+        run: npm start &
+        env:
+          PORT: 3000
+      
+      - name: Wait for app to be ready
+        run: |
+          timeout 60s bash -c 'until curl -f http://localhost:3000/api/health; do sleep 2; done'
+      
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost:3000
+            http://localhost:3000/pricing
+            http://localhost:3000/dashboard
+          configPath: './.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+  # Deploy to Preview (PR)
+  deploy-preview:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [quality-checks, security-scan]
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Vercel CLI
+        run: npm install --global vercel@canary
+      
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: echo "::set-output name=url::$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})"
+      
+      - name: Comment Preview URL
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Preview deployment: ${{ steps.deploy.outputs.url }}'
+            })
+
+  # Deploy to Production (main branch)
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [quality-checks, security-scan]
+    environment: production
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Vercel CLI
+        run: npm install --global vercel@canary
+      
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: echo "::set-output name=url::$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})"
+      
+      - name: Run post-deploy health checks
+        run: |
+          sleep 30
+          curl -f ${{ steps.deploy.outputs.url }}/api/health
+          curl -f ${{ steps.deploy.outputs.url }}/sitemap.xml
+          curl -f ${{ steps.deploy.outputs.url }}/robots.txt
+      
+      - name: Notify deployment success
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              target_url: '${{ steps.deploy.outputs.url }}',
+              description: 'Production deployment successful',
+              context: 'deployment/production'
+            })
+
+  # Post-deployment monitoring
+  post-deploy-monitoring:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [deploy-production]
+    steps:
+      - name: Wait for deployment to stabilize
+        run: sleep 60
+      
+      - name: Run production health checks
+        run: |
+          # Health check
+          curl -f https://theindianstartup.in/api/health
+          
+          # SEO checks
+          curl -f https://theindianstartup.in/sitemap.xml
+          curl -f https://theindianstartup.in/robots.txt
+          
+          # Core pages load check
+          curl -f https://theindianstartup.in
+          curl -f https://theindianstartup.in/pricing
+          curl -f https://theindianstartup.in/dashboard
+      
+      - name: Run Lighthouse on production
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            https://theindianstartup.in
+            https://theindianstartup.in/pricing
+            https://theindianstartup.in/dashboard
+          configPath: './.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -25,58 +26,20 @@ import {
   Loader2
 } from 'lucide-react';
 
-interface IncubatorScheme {
-  incubator_name: string;
-  program_name: string;
-  program_duration: number;
-  batch_size: number;
-  batches_per_year: number;
-  seed_funding: number;
-  office_space: boolean;
-  mentorship: boolean;
-  legal_support: boolean;
-  tech_credits: boolean;
-  lab_access: boolean;
-  equity_taken: number;
-  program_fee: number;
-  demo_day: boolean;
-  application_deadline: string;
-  next_batch_date: string;
-  selection_process: string;
-  alumni_count: number;
-  successful_exits: number;
-  total_funding_raised: number;
-  min_team_size: number;
-  max_team_size: number;
-  mvp_required: boolean;
-  revenue_required: boolean;
-  min_revenue: number;
-}
-
-interface FundingCategory {
-  name: string;
-  icon: string;
-}
-
 interface IncubatorData {
   id: string;
   name: string;
-  description: string;
   type: string;
-  min_funding: number;
-  max_funding: number;
-  location_type: string;
-  specific_location: string;
+  city: string;
   sectors: string[];
-  stage: string[];
+  stage_focus: string[];
   website: string;
-  contact_email: string;
-  success_rate: number;
-  avg_decision_time: number;
-  equity_required: boolean;
-  tags: string[];
-  funding_categories: FundingCategory;
-  incubator_schemes: IncubatorScheme[];
+  description: string;
+  total_startups_supported: number;
+  success_stories: string[];
+  program_duration_weeks: number;
+  equity_stake: number;
+  funding_amount_max: number;
 }
 
 interface IncubatorDatabaseProps {
@@ -91,46 +54,45 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
   const [incubators, setIncubators] = useState<IncubatorData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
   const [selectedSector, setSelectedSector] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [fundingRange, setFundingRange] = useState('');
-  const [showFeatured, setShowFeatured] = useState(false);
+  const [selectedStage, setSelectedStage] = useState('');
+  const [selectedType, setSelectedType] = useState('');
   
-  // Filter options
+  // Filter options from API
+  const [cities, setCities] = useState<string[]>([]);
   const [sectors, setSectors] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>([]);
-  const [fundingRanges] = useState([
-    { label: 'Under ₹10L', value: '0-1000000' },
-    { label: '₹10L - ₹50L', value: '1000000-5000000' },
-    { label: '₹50L - ₹2Cr', value: '5000000-20000000' },
-    { label: '₹2Cr+', value: '20000000-999999999' }
-  ]);
+  const [stages, setStages] = useState<string[]>([]);
+  const [types, setTypes] = useState<string[]>([]);
 
   useEffect(() => {
     fetchIncubators();
-  }, [selectedSector, selectedLocation, fundingRange, showFeatured]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity, selectedSector, selectedStage, selectedType]);
 
   const fetchIncubators = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
       
+      if (searchTerm) params.append('query', searchTerm);
+      if (selectedCity) params.append('city', selectedCity);
       if (selectedSector) params.append('sector', selectedSector);
-      if (selectedLocation) params.append('location', selectedLocation);
-      if (fundingRange) params.append('fundingRange', fundingRange);
-      if (showFeatured) params.append('featured', 'true');
-      if (searchTerm) params.append('search', searchTerm);
+      if (selectedStage) params.append('stage', selectedStage);
+      if (selectedType) params.append('type', selectedType);
 
-      const response = await fetch(`/api/funding/incubators?${params}`);
+      const response = await fetch(`/api/incubators?${params}`);
       const data = await response.json();
 
       if (data.success) {
-        setIncubators(data.data);
-        setSectors(data.filters.sectors);
-        setLocations(data.filters.locations);
+        setIncubators(data.data.incubators || []);
+        setCities(data.data.filters.cities || []);
+        setSectors(data.data.filters.sectors || []);
+        setStages(data.data.filters.stages || []);
+        setTypes(data.data.filters.types || []);
       }
     } catch (error) {
-      console.error('Error fetching incubators:', error);
+      logger.error('Error fetching incubators:', error);
     } finally {
       setLoading(false);
     }
@@ -147,7 +109,17 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
   };
 
   const IncubatorCard = ({ incubator }: { incubator: IncubatorData }) => {
-    const scheme = incubator.incubator_schemes?.[0];
+    const getTypeColor = (type: string) => {
+      switch (type?.toLowerCase()) {
+        case 'academic': return 'bg-blue-100 text-blue-800';
+        case 'government': return 'bg-green-100 text-green-800';
+        case 'corporate': return 'bg-purple-100 text-purple-800';
+        case 'private': return 'bg-orange-100 text-orange-800';
+        case 'sector_specific': return 'bg-teal-100 text-teal-800';
+        case 'accelerator': return 'bg-red-100 text-red-800';
+        default: return 'bg-gray-100 text-gray-800';
+      }
+    };
     
     return (
       <Card className="h-full transition-all hover:shadow-lg hover:border-gray-400 group">
@@ -159,16 +131,18 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
               </CardTitle>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="w-4 h-4" />
-                {incubator.specific_location}
+                {incubator.city}
               </div>
             </div>
             <div className="flex flex-col items-end gap-1">
-              <Badge variant={incubator.type === 'accelerator' ? 'default' : 'outline'}>
+              <Badge className={getTypeColor(incubator.type)}>
                 {incubator.type}
               </Badge>
-              <div className="text-xs text-gray-500">
-                {incubator.success_rate}% success
-              </div>
+              {incubator.total_startups_supported && (
+                <div className="text-xs text-gray-500">
+                  {incubator.total_startups_supported}+ startups
+                </div>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -179,105 +153,95 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
           </Text>
 
           {/* Key Program Details */}
-          {scheme && (
-            <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+          <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+            {incubator.funding_amount_max && (
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-green-600" />
-                <span>{formatCurrency(scheme.seed_funding || 0)}</span>
+                <span>Up to {formatCurrency(incubator.funding_amount_max)}</span>
               </div>
+            )}
+            {incubator.program_duration_weeks && (
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-blue-600" />
-                <span>{scheme.program_duration} months</span>
+                <span>{incubator.program_duration_weeks} weeks</span>
               </div>
+            )}
+            {incubator.total_startups_supported && (
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-purple-600" />
-                <span>Batch: {scheme.batch_size}</span>
+                <span>{incubator.total_startups_supported}+ supported</span>
               </div>
+            )}
+            {incubator.equity_stake && (
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-orange-600" />
-                <span>{scheme.equity_taken || 0}% equity</span>
+                <span>{incubator.equity_stake}% equity</span>
               </div>
-            </div>
-          )}
-
-          {/* Support Offered */}
-          {scheme && (
-            <div className="flex flex-wrap gap-1 mb-4">
-              {scheme.office_space && <Badge size="sm" variant="outline">Office Space</Badge>}
-              {scheme.mentorship && <Badge size="sm" variant="outline">Mentorship</Badge>}
-              {scheme.legal_support && <Badge size="sm" variant="outline">Legal Support</Badge>}
-              {scheme.tech_credits && <Badge size="sm" variant="outline">Tech Credits</Badge>}
-              {scheme.lab_access && <Badge size="sm" variant="outline">Lab Access</Badge>}
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Sectors */}
           <div className="mb-4">
             <Text size="xs" color="muted" className="mb-1">Focus Areas:</Text>
             <div className="flex flex-wrap gap-1">
               {incubator.sectors.slice(0, 3).map((sector, index) => (
-                <Badge key={index} size="sm" variant="secondary">
+                <Badge key={index} size="sm" variant="default">
                   {sector}
                 </Badge>
               ))}
               {incubator.sectors.length > 3 && (
-                <Badge size="sm" variant="secondary">
+                <Badge size="sm" variant="default">
                   +{incubator.sectors.length - 3}
                 </Badge>
               )}
             </div>
           </div>
 
-          {/* Success Metrics */}
-          {scheme && (scheme.alumni_count || scheme.successful_exits) && (
-            <div className="flex gap-4 mb-4 text-xs text-gray-600">
-              {scheme.alumni_count && (
-                <div className="flex items-center gap-1">
-                  <Award className="w-3 h-3" />
-                  {scheme.alumni_count} Alumni
-                </div>
-              )}
-              {scheme.successful_exits && (
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  {scheme.successful_exits} Exits
-                </div>
+          {/* Stage Focus */}
+          <div className="mb-4">
+            <Text size="xs" color="muted" className="mb-1">Stage Focus:</Text>
+            <div className="flex flex-wrap gap-1">
+              {incubator.stage_focus.slice(0, 3).map((stage, index) => (
+                <Badge key={index} size="sm" variant="secondary">
+                  {stage.replace('_', ' ')}
+                </Badge>
+              ))}
+              {incubator.stage_focus.length > 3 && (
+                <Badge size="sm" variant="secondary">
+                  +{incubator.stage_focus.length - 3}
+                </Badge>
               )}
             </div>
-          )}
+          </div>
 
-          {/* Application Status */}
-          {scheme?.next_batch_date && (
-            <div className="bg-blue-50 p-3 rounded-lg mb-4">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-blue-600" />
-                <span className="font-medium">Next Batch:</span>
-                <span>{new Date(scheme.next_batch_date).toLocaleDateString()}</span>
+          {/* Success Stories */}
+          {incubator.success_stories && incubator.success_stories.length > 0 && (
+            <div className="mb-4">
+              <Text size="xs" color="muted" className="mb-1">Success Stories:</Text>
+              <div className="flex flex-wrap gap-1">
+                {incubator.success_stories.slice(0, 2).map((story, index) => (
+                  <Badge key={index} size="sm" variant="outline">
+                    {story.replace('_', ' ')}
+                  </Badge>
+                ))}
+                {incubator.success_stories.length > 2 && (
+                  <Badge size="sm" variant="outline">
+                    +{incubator.success_stories.length - 2}
+                  </Badge>
+                )}
               </div>
-              {scheme.application_deadline && (
-                <div className="text-xs text-gray-600 mt-1">
-                  Apply by: {new Date(scheme.application_deadline).toLocaleDateString()}
-                </div>
-              )}
             </div>
           )}
 
           {/* Actions */}
           <div className="flex gap-2">
             {incubator.website && (
-              <Button variant="primary" size="sm" className="flex-1" asChild>
-                <a href={incubator.website} target="_blank" rel="noopener noreferrer">
+              <a href={incubator.website} target="_blank" rel="noopener noreferrer" className="flex-1">
+                <Button variant="primary" size="sm" className="w-full">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Visit Website
-                </a>
-              </Button>
-            )}
-            {incubator.contact_email && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={`mailto:${incubator.contact_email}`}>
-                  <Mail className="w-4 h-4" />
-                </a>
-              </Button>
+                </Button>
+              </a>
             )}
           </div>
 
@@ -302,32 +266,32 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
           <Briefcase className="w-8 h-8 text-purple-600" />
         </div>
         <Heading as="h3" variant="h4" className="mb-3">
-          Access 700+ Verified Incubators
+          Access 18+ Verified Incubators & Accelerators
         </Heading>
         <Text className="mb-6 max-w-2xl mx-auto">
           Get detailed profiles, application strategies, success rates, and insider tips from 
-          our comprehensive incubator database. Available with P3 Funding Course.
+          our comprehensive incubator database with real, current data. Available with P3 Funding Course.
         </Text>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 max-w-2xl mx-auto">
           <div className="p-3 bg-white rounded-lg border border-purple-100">
             <CheckCircle className="w-6 h-6 text-green-600 mx-auto mb-1" />
-            <Text size="sm" weight="medium">200+ Indian Programs</Text>
+            <Text size="sm" weight="medium">18+ Verified Programs</Text>
           </div>
           <div className="p-3 bg-white rounded-lg border border-purple-100">
             <CheckCircle className="w-6 h-6 text-green-600 mx-auto mb-1" />
-            <Text size="sm" weight="medium">500+ Global Programs</Text>
+            <Text size="sm" weight="medium">Real Contact Details</Text>
           </div>
           <div className="p-3 bg-white rounded-lg border border-purple-100">
             <CheckCircle className="w-6 h-6 text-green-600 mx-auto mb-1" />
-            <Text size="sm" weight="medium">Application Templates</Text>
+            <Text size="sm" weight="medium">Current Program Data</Text>
           </div>
         </div>
-        <Button variant="primary" size="lg" asChild>
-          <a href="/pricing">
+        <a href="/pricing">
+          <Button variant="primary" size="lg">
             <Briefcase className="w-5 h-5 mr-2" />
             Unlock Incubator Database
-          </a>
-        </Button>
+          </Button>
+        </a>
       </Card>
     );
   }
@@ -337,10 +301,10 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
       {/* Header */}
       <div>
         <Heading as="h2" variant="h3" className="mb-2">
-          Global Incubator Database
+          Indian Incubator & Accelerator Database
         </Heading>
         <Text color="muted" className="mb-4">
-          Discover and apply to 700+ verified incubators and accelerators worldwide
+          Discover and apply to 18+ verified incubators and accelerators with real, current data
         </Text>
       </div>
 
@@ -367,6 +331,17 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Cities</option>
+                {cities.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+
+              <select
                 value={selectedSector}
                 onChange={(e) => setSelectedSector(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -378,39 +353,26 @@ const IncubatorDatabase: React.FC<IncubatorDatabaseProps> = ({
               </select>
 
               <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
+                value={selectedStage}
+                onChange={(e) => setSelectedStage(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Locations</option>
-                {locations.map(location => (
-                  <option key={location} value={location}>{location}</option>
+                <option value="">All Stages</option>
+                {stages.map(stage => (
+                  <option key={stage} value={stage}>{stage.replace('_', ' ')}</option>
                 ))}
               </select>
 
               <select
-                value={fundingRange}
-                onChange={(e) => setFundingRange(e.target.value)}
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Funding Ranges</option>
-                {fundingRanges.map(range => (
-                  <option key={range.value} value={range.value}>{range.label}</option>
+                <option value="">All Types</option>
+                {types.map(type => (
+                  <option key={type} value={type}>{type}</option>
                 ))}
               </select>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  checked={showFeatured}
-                  onChange={(e) => setShowFeatured(e.target.checked)}
-                  className="rounded"
-                />
-                <label htmlFor="featured" className="text-sm">
-                  Featured Only
-                </label>
-              </div>
             </div>
           </div>
         </CardContent>

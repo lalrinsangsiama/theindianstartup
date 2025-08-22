@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P1 Master Template Library - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #FFFFFF;
+            color: #111111;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #111111;
+            padding-bottom: 1rem;
+        }
+
+        .category {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem;
+            background: #F5F5F5;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .template-card {
+            border: 1px solid #111111;
+            padding: 1.5rem;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 #111111;
+        }
+
+        .template-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .template-desc {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .template-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #F5F5F5;
+        }
+
+        .day-badge {
+            background: #111111;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .download-btn {
+            background: white;
+            border: 1px solid #111111;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #111111;
+            color: white;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #111111;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #F5F5F5;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid #111111;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: #111111;
+            color: white;
+        }
+
+        .premium-banner {
+            background: linear-gradient(135deg, #111111 0%, #333333 100%);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .premium-banner h3 {
+            font-family: 'IBM Plex Mono', monospace;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="premium-banner">
+            <h3>🎯 P1 Master Template Library</h3>
+            <p>150+ Premium Templates Worth ₹25,000 - Included in Your Course</p>
+        </div>
+
+        <h1>30-Day Launch Sprint Templates</h1>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">Premium Templates</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Interactive Tools</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">30</div>
+                <div class="stat-label">Daily Workbooks</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">₹25K</div>
+                <div class="stat-label">Total Value</div>
+            </div>
+        </div>
+
+        <input type="text" class="search-bar" placeholder="Search templates... (e.g., 'pitch deck', 'legal', 'financial model')">
+
+        <div class="filter-tabs">
+            <div class="filter-tab active">All Templates</div>
+            <div class="filter-tab">Week 1: Foundation</div>
+            <div class="filter-tab">Week 2: Building</div>
+            <div class="filter-tab">Week 3: Launch</div>
+            <div class="filter-tab">Week 4: Scale</div>
+            <div class="filter-tab">Legal & Compliance</div>
+            <div class="filter-tab">Financial</div>
+            <div class="filter-tab">Marketing</div>
+        </div>
+
+        <!-- Week 1: Foundation Templates -->
+        <div class="category">
+            <h2>📋 Week 1: Foundation Templates</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-title">Problem-Solution Fit Canvas</div>
+                    <div class="template-desc">Validate your startup idea with this comprehensive framework used by Y Combinator startups</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 1</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Market Research Workbook</div>
+                    <div class="template-desc">Complete TAM/SAM/SOM analysis with India-specific market data sources</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 2</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Customer Interview Script Pack</div>
+                    <div class="template-desc">20+ proven interview scripts for B2B, B2C, and marketplace models</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 3</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">MVP Planning Framework</div>
+                    <div class="template-desc">Define your minimum viable product with feature prioritization matrix</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 4</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Business Model Designer</div>
+                    <div class="template-desc">Interactive canvas with 15+ proven Indian business model examples</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 5</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Brand Identity Kit</div>
+                    <div class="template-desc">Complete branding workbook with naming, positioning, and visual guidelines</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 6</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 2: Legal & Setup Templates -->
+        <div class="category">
+            <h2>⚖️ Week 2: Legal & Setup Templates</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-title">Entity Selection Matrix</div>
+                    <div class="template-desc">Compare Pvt Ltd, LLP, OPC with tax implications and compliance requirements</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 8</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Founder's Agreement</div>
+                    <div class="template-desc">Comprehensive 15-page agreement with vesting, IP, and exit clauses</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 8</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">MOA & AOA Templates</div>
+                    <div class="template-desc">Ready-to-file memorandum and articles for tech startups</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 10</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">GST Registration Guide</div>
+                    <div class="template-desc">Step-by-step GST registration with HSN/SAC codes for startups</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 12</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Compliance Calendar</div>
+                    <div class="template-desc">Annual compliance tracker with MCA, GST, Income Tax deadlines</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 14</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Employment Agreement Pack</div>
+                    <div class="template-desc">5 types of employment contracts with NDA and IP clauses</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 14</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Templates -->
+        <div class="category">
+            <h2>💰 Financial Planning Templates</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-title">18-Month Financial Model</div>
+                    <div class="template-desc">Complete Excel model with revenue, costs, and funding scenarios</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 24</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Unit Economics Calculator</div>
+                    <div class="template-desc">Calculate CAC, LTV, payback period with Indian benchmarks</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 5</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Pricing Strategy Workbook</div>
+                    <div class="template-desc">Set optimal pricing with competitor analysis and margin calculations</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 18</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Cap Table Manager</div>
+                    <div class="template-desc">Track equity, ESOP pool, and dilution across funding rounds</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 24</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Invoice Generator</div>
+                    <div class="template-desc">GST-compliant invoice templates with auto-calculations</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 11</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Burn Rate Dashboard</div>
+                    <div class="template-desc">Track monthly burn and runway with scenario planning</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 24</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marketing & Sales Templates -->
+        <div class="category">
+            <h2>📈 Marketing & Sales Templates</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-title">Pitch Deck Template</div>
+                    <div class="template-desc">15-slide investor deck with Indian market examples</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 25</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Content Calendar</div>
+                    <div class="template-desc">90-day content plan for social media and blog</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 17</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Email Templates Pack</div>
+                    <div class="template-desc">50+ email templates for investors, customers, partners</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 22</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Sales CRM Setup</div>
+                    <div class="template-desc">Ready-to-use CRM template with pipeline stages</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 18</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">PR Media Kit</div>
+                    <div class="template-desc">Press release templates and media outreach strategy</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 20</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Landing Page Copy</div>
+                    <div class="template-desc">High-converting copy templates for different industries</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Day 16</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Tools -->
+        <div class="category">
+            <h2>🛠️ Interactive Tools & Calculators</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-title">Market Size Calculator</div>
+                    <div class="template-desc">Calculate TAM/SAM/SOM with India demographic data</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Tool</span>
+                        <button class="download-btn">Launch</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Funding Eligibility Checker</div>
+                    <div class="template-desc">Check eligibility for 50+ government schemes instantly</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Tool</span>
+                        <button class="download-btn">Launch</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Equity Dilution Simulator</div>
+                    <div class="template-desc">Visualize dilution across multiple funding rounds</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Tool</span>
+                        <button class="download-btn">Launch</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Name Availability Checker</div>
+                    <div class="template-desc">Check company name, domain, and trademark availability</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Tool</span>
+                        <button class="download-btn">Launch</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">ROI Calculator</div>
+                    <div class="template-desc">Calculate marketing campaign ROI and payback period</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Tool</span>
+                        <button class="download-btn">Launch</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Competitor Analyzer</div>
+                    <div class="template-desc">Comprehensive competitive analysis framework</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Tool</span>
+                        <button class="download-btn">Launch</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bonus Templates -->
+        <div class="category">
+            <h2>🎁 Bonus Templates</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-title">Investor Database</div>
+                    <div class="template-desc">500+ Indian VCs and angels with investment thesis</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Bonus</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Startup Glossary</div>
+                    <div class="template-desc">200+ startup terms explained with Indian context</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Bonus</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Failure Analysis Kit</div>
+                    <div class="template-desc">Learn from 100+ Indian startup failures</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Bonus</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Exit Strategy Planner</div>
+                    <div class="template-desc">Plan acquisition, IPO, or strategic exit paths</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Bonus</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Crisis Management Plan</div>
+                    <div class="template-desc">Handle PR crises, legal issues, and team conflicts</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Bonus</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-title">Board Meeting Kit</div>
+                    <div class="template-desc">Agenda, minutes, and reporting templates</div>
+                    <div class="template-meta">
+                        <span class="day-badge">Bonus</span>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // In production, this would trigger actual download
+                alert('Template download will be available in the course portal');
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-bar').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.template-card').forEach(card => {
+                const title = card.querySelector('.template-title').textContent.toLowerCase();
+                const desc = card.querySelector('.template-desc').textContent.toLowerCase();
+                if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // Add filter logic here
+            });
+        });
+    </script>
+</body>
+</html>

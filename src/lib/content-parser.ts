@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { logger } from '@/lib/logger';
 import { join } from 'path';
 
 interface TaskContent {
@@ -90,7 +91,7 @@ export function parseEnhancedContent(day: number): {
     contentCache.set(day, result);
     return result;
   } catch (error) {
-    console.error(`Error parsing content for day ${day}:`, error);
+    logger.error(`Error parsing content for day ${day}:`, error);
     // Return fallback content
     return getFallbackContent(day);
   }

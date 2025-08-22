@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
       };
 
     if (purchaseError) {
-      console.error('Error fetching purchases:', purchaseError);
+      logger.error('Error fetching purchases:', purchaseError);
       return NextResponse.json({
         error: 'Failed to fetch purchases'
       }, { status: 500 });
@@ -152,7 +153,7 @@ export async function GET(request: NextRequest) {
       };
 
     if (modulesError) {
-      console.error('Error fetching modules:', modulesError);
+      logger.error('Error fetching modules:', modulesError);
       return NextResponse.json({
         error: 'Failed to fetch resources'
       }, { status: 500 });
@@ -196,12 +197,108 @@ export async function GET(request: NextRequest) {
       };
 
     if (lessonsError) {
-      console.error('Error fetching lessons:', lessonsError);
+      logger.error('Error fetching lessons:', lessonsError);
     }
 
+    // Add professional downloadable templates (always available)
+    const professionalTemplates = [
+      {
+        id: 'template-business-model-canvas',
+        title: 'Business Model Canvas - Professional',
+        description: 'A3 landscape canvas with guided sections and examples, perfect for strategic planning and investor presentations.',
+        type: 'template',
+        url: '/templates/downloads/pdf/business-model-canvas-professional.html',
+        fileUrl: '/templates/downloads/pdf/business-model-canvas-professional.html',
+        tags: ['business-model', 'strategy', 'planning', 'pdf'],
+        isDownloadable: true,
+        format: 'PDF',
+        category: 'Business Planning',
+        source: 'template' as const,
+        productCode: 'TEMPLATES',
+        productTitle: 'Professional Templates'
+      },
+      {
+        id: 'template-financial-projections',
+        title: '5-Year Financial Projections Template',
+        description: 'Comprehensive financial model with P&L, cash flow, key metrics, and assumption documentation.',
+        type: 'template',
+        url: '/templates/downloads/pdf/financial-projections-template.html',
+        fileUrl: '/templates/downloads/pdf/financial-projections-template.html',
+        tags: ['financial', 'projections', 'modeling', 'pdf'],
+        isDownloadable: true,
+        format: 'PDF',
+        category: 'Financial Planning',
+        source: 'template' as const,
+        productCode: 'TEMPLATES',
+        productTitle: 'Professional Templates'
+      },
+      {
+        id: 'template-financial-model-excel',
+        title: 'Startup Financial Model - Excel',
+        description: 'Excel-ready financial model with automated calculations, charts, and scenario analysis for startups.',
+        type: 'template',
+        url: '/templates/downloads/excel/startup-financial-model.csv',
+        fileUrl: '/templates/downloads/excel/startup-financial-model.csv',
+        tags: ['financial', 'modeling', 'excel', 'calculations'],
+        isDownloadable: true,
+        format: 'Excel/CSV',
+        category: 'Financial Planning',
+        source: 'template' as const,
+        productCode: 'TEMPLATES',
+        productTitle: 'Professional Templates'
+      },
+      {
+        id: 'template-fundraising-tracker',
+        title: 'Fundraising Tracker - Excel',
+        description: 'Complete investor pipeline management with due diligence checklist, term sheet comparison, and meeting tracker.',
+        type: 'template',
+        url: '/templates/downloads/excel/fundraising-tracker.csv',
+        fileUrl: '/templates/downloads/excel/fundraising-tracker.csv',
+        tags: ['fundraising', 'investors', 'tracking', 'excel'],
+        isDownloadable: true,
+        format: 'Excel/CSV',
+        category: 'Fundraising',
+        source: 'template' as const,
+        productCode: 'TEMPLATES',
+        productTitle: 'Professional Templates'
+      },
+      {
+        id: 'template-founders-agreement',
+        title: 'Founders Agreement Template',
+        description: 'Comprehensive co-founder agreement with equity split, vesting schedules, IP assignment, and exit clauses.',
+        type: 'template',
+        url: '/templates/downloads/word/founders-agreement-template.html',
+        fileUrl: '/templates/downloads/word/founders-agreement-template.html',
+        tags: ['legal', 'founders', 'agreement', 'equity'],
+        isDownloadable: true,
+        format: 'Word/HTML',
+        category: 'Legal Documents',
+        source: 'template' as const,
+        productCode: 'TEMPLATES',
+        productTitle: 'Professional Templates'
+      },
+      {
+        id: 'template-employment-contract',
+        title: 'Employment Contract Template',
+        description: 'Indian labor law compliant employment agreement with compensation structure, benefits, and confidentiality clauses.',
+        type: 'template',
+        url: '/templates/downloads/word/employment-contract-template.html',
+        fileUrl: '/templates/downloads/word/employment-contract-template.html',
+        tags: ['legal', 'employment', 'hr', 'contract'],
+        isDownloadable: true,
+        format: 'Word/HTML',
+        category: 'HR & Legal',
+        source: 'template' as const,
+        productCode: 'TEMPLATES',
+        productTitle: 'Professional Templates'
+      }
+    ];
+
     // Aggregate all resources
-    const allResources: any[] = [];
-    const resourcesByProduct: Record<string, any[]> = {};
+    const allResources: any[] = [...professionalTemplates];
+    const resourcesByProduct: Record<string, any[]> = {
+      'TEMPLATES': [...professionalTemplates]
+    };
 
     // Add module resources
     modules?.forEach(module => {
@@ -295,7 +392,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Resources API error:', error);
+    logger.error('Resources API error:', error);
     return NextResponse.json({
       error: 'Internal server error'
     }, { status: 500 });

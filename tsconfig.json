@@ -26,8 +26,7 @@
       "@/contexts/*": ["./src/contexts/*"],
       "@/hooks/*": ["./src/hooks/*"]
     },
-    "baseUrl": ".",
-    "types": ["jest", "@testing-library/jest-dom"]
+    "baseUrl": "."
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.ts"],
   "exclude": ["node_modules", "prisma/seed.ts"]

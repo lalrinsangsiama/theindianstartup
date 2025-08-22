@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(stats);
 
   } catch (error) {
-    console.error('Community stats error:', error);
+    logger.error('Community stats error:', error);
     
     // Return mock data if there's an error (for development)
     return NextResponse.json({

@@ -66,7 +66,20 @@ Create this folder structure on your computer/drive to organize all startup docu
 - [ ] Validate assumptions with quick research
 - [ ] Set 3-5 SMART goals for 30 days
 - [ ] Create your elevator pitch
+- [ ] **📊 Build Your Portfolio:** Complete the Problem Statement activity below
 - [ ] Join the Day 1 community discussion
+
+### 📊 Portfolio Activity: Define Your Problem Statement
+
+<ActivityCapture 
+  activityTypeId="define_problem_statement"
+  activityName="Problem Statement Definition"
+  lessonId="p1-day-01"
+  courseCode="P1"
+  moduleId="foundation-week"
+/>
+
+**Instructions:** Use the 5W1H framework above to create a comprehensive problem statement. This will automatically populate the "Idea & Vision" section of your startup portfolio and help you track your progress.
 
 ### Bonus Tasks (+30 mins)
 - [ ] Research 3 similar startups globally

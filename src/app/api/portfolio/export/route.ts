@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Export API error:', error);
+    logger.error('Export API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -132,7 +133,7 @@ export default function ExpertSessionsPage() {
 
       setSessions(filteredSessions);
     } catch (error) {
-      console.error('Error fetching expert sessions:', error);
+      logger.error('Error fetching expert sessions:', error);
     } finally {
       setLoading(false);
     }
@@ -145,7 +146,7 @@ export default function ExpertSessionsPage() {
   const handleRegister = async (sessionId: string) => {
     try {
       // In real app, call API to register
-      console.log('Registering for session:', sessionId);
+      logger.info('Registering for session:', sessionId);
       
       // Update local state
       setSessions(sessions.map(session =>
@@ -158,7 +159,7 @@ export default function ExpertSessionsPage() {
           : session
       ));
     } catch (error) {
-      console.error('Registration error:', error);
+      logger.error('Registration error:', error);
     }
   };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Loader2, Lock, ShoppingCart } from 'lucide-react';
@@ -48,15 +49,15 @@ export function PurchaseProtectedRoute({
           
           // Temporary bypass for testing if Purchase table doesn't exist
           if (data.warning && data.warning.includes('Purchase tracking not yet configured')) {
-            console.warn('Purchase table not configured - allowing access for testing');
+            logger.warn('Purchase table not configured - allowing access for testing');
             setHasAccess(true); // Allow access for testing
           }
         } else {
-          console.error('Failed to check purchase status:', data.error);
+          logger.error('Failed to check purchase status:', data.error);
           setHasAccess(false);
         }
       } catch (error) {
-        console.error('Error checking access:', error);
+        logger.error('Error checking access:', error);
         setHasAccess(false);
       } finally {
         setCheckingAccess(false);

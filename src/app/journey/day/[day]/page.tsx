@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
@@ -30,6 +31,7 @@ import { ResourcesSection, type Resource } from '@/components/journey/ResourcesS
 import { DocumentChecklist } from '@/components/journey/DocumentChecklist';
 import { StartupFolderStructure } from '@/components/journey/StartupFolderStructure';
 import { EveningReflection } from '@/components/journey/EveningReflection';
+import { PremiumLessonContent } from '@/components/journey/PremiumLessonContent';
 
 interface LessonData {
   day: number;
@@ -98,7 +100,7 @@ export default function DailyLessonPage() {
       setTasks(enhancedTasks);
 
     } catch (error) {
-      console.error('Error fetching lesson:', error);
+      logger.error('Error fetching lesson:', error);
       setError('Failed to load lesson data. Please try again.');
       
       // Set fallback lesson data to prevent total failure
@@ -197,7 +199,7 @@ export default function DailyLessonPage() {
       // Navigate to completion page
       router.push(`/journey/day/${day}/complete`);
     } catch (error) {
-      console.error('Error completing lesson:', error);
+      logger.error('Error completing lesson:', error);
       setError('Failed to complete lesson. Please try again.');
     } finally {
       setIsCompleting(false);
@@ -313,7 +315,17 @@ export default function DailyLessonPage() {
           </div>
 
           <div className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Check if we have rich lesson data from database */}
+            {lessonData.actionItems && Array.isArray(lessonData.actionItems) && lessonData.actionItems.length > 0 ? (
+              /* Premium Content from Database */
+              <PremiumLessonContent
+                lesson={lessonData}
+                onComplete={handleCompleteLesson}
+                isCompleted={allTasksCompleted}
+              />
+            ) : (
+              /* Fallback to Original Layout */
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Morning Brief */}
@@ -341,7 +353,7 @@ export default function DailyLessonPage() {
                     reflectionQuestions={lessonData.reflectionQuestions || []}
                     onSave={async (reflection) => {
                       // Save reflection data
-                      console.log('Saving reflection:', reflection);
+                      logger.info('Saving reflection:', reflection);
                     }}
                     onComplete={handleCompleteLesson}
                   />
@@ -402,7 +414,7 @@ export default function DailyLessonPage() {
                 {day < 30 && (
                   <Card className="border-2 border-gray-200">
                     <CardHeader>
-                      <CardTitle>What&apos;s Next?</CardTitle>
+                      <CardTitle>What's Next?</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
@@ -425,6 +437,7 @@ export default function DailyLessonPage() {
                 )}
               </div>
             </div>
+            )}
           </div>
 
           {/* Document Organization Modal */}

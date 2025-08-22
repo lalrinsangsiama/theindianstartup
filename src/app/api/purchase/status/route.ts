@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 
@@ -6,11 +7,47 @@ export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth();
     const { searchParams } = new URL(request.url);
+    const orderId = searchParams.get('orderId');
     const productType = searchParams.get('productType') || '30_day_guide';
 
     const supabase = createClient();
 
-    // Get user's purchases for this product
+    // If orderId is provided, get specific order
+    if (orderId) {
+      const { data: purchase, error } = await supabase
+        .from('Purchase')
+        .select(`
+          *,
+          product:Product(*)
+        `)
+        .eq('userId', user.id)
+        .eq('razorpayOrderId', orderId)
+        .single();
+
+      if (error || !purchase) {
+        logger.error('Failed to fetch order:', error);
+        return NextResponse.json(
+          { error: 'Order not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        orderId: purchase.razorpayOrderId,
+        paymentId: purchase.razorpayPaymentId,
+        status: purchase.status,
+        amount: purchase.amount,
+        currency: purchase.currency,
+        productName: purchase.productName,
+        productCode: purchase.productCode,
+        purchaseDate: purchase.createdAt,
+        expiresAt: purchase.expiresAt,
+        product: purchase.product,
+        isActive: purchase.isActive
+      });
+    }
+
+    // Otherwise get all purchases for product type
     const { data: purchases, error } = await supabase
       .from('Purchase')
       .select('*')
@@ -19,7 +56,7 @@ export async function GET(request: NextRequest) {
       .order('createdAt', { ascending: false });
 
     if (error) {
-      console.error('Database error:', error);
+      logger.error('Database error:', error);
       
       // If table doesn't exist, return no access
       if (error.code === 'PGRST205') {
@@ -65,7 +102,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Purchase status error:', error);
+    logger.error('Purchase status error:', error);
     return NextResponse.json(
       { error: 'Failed to check purchase status' },
       { status: 500 }

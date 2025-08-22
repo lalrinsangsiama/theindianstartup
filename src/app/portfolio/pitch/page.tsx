@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -68,7 +69,7 @@ export default function PitchPage() {
         exitStrategy: data.exitStrategy || '',
       });
     } catch (err) {
-      console.error('Error fetching portfolio:', err);
+      logger.error('Error fetching portfolio:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
@@ -108,7 +109,7 @@ export default function PitchPage() {
 
       setLastSaved(new Date());
     } catch (err) {
-      console.error('Error saving portfolio:', err);
+      logger.error('Error saving portfolio:', err);
       setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
@@ -134,7 +135,7 @@ export default function PitchPage() {
         onePageSummary: data.summary
       }));
     } catch (err) {
-      console.error('Error generating one-pager:', err);
+      logger.error('Error generating one-pager:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate');
     } finally {
       setGenerating(false);
@@ -159,7 +160,7 @@ export default function PitchPage() {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Error exporting pitch deck:', err);
+      logger.error('Error exporting pitch deck:', err);
       setError(err instanceof Error ? err.message : 'Failed to export');
     }
   };
@@ -289,7 +290,7 @@ export default function PitchPage() {
                     rows={3}
                   />
                   <Text size="sm" color="muted" className="mt-1">
-                    Be specific about the amount, equity offered, and type of investors you&apos;re targeting
+                    Be specific about the amount, equity offered, and type of investors you're targeting
                   </Text>
                 </div>
 
@@ -479,7 +480,7 @@ export default function PitchPage() {
                       Congratulations! Your startup portfolio is complete!
                     </Text>
                     <Text className="text-green-600">
-                      You can now generate your pitch deck and one-page summary. Share these materials with potential investors, partners, and stakeholders to showcase your startup&apos;s potential.
+                      You can now generate your pitch deck and one-page summary. Share these materials with potential investors, partners, and stakeholders to showcase your startup's potential.
                     </Text>
                   </div>
                 </div>

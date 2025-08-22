@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incorporation Application Form - The Indian Startup</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .form-row { display: flex; gap: 15px; }
+        .form-row .form-group { flex: 1; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .checkbox-group input { width: auto; }
+        .section { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #3498db; }
+        .required { color: #e74c3c; }
+        .btn { background: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin: 10px 5px; }
+        .btn:hover { background: #2980b9; }
+        .btn-secondary { background: #95a5a6; }
+        .btn-secondary:hover { background: #7f8c8d; }
+        .download-note { background: #e8f4f8; padding: 15px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #3498db; }
+        .help-text { font-size: 12px; color: #666; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Company Incorporation Application Form</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Complete this form to prepare your incorporation documents for MCA filing</p>
+        
+        <div class="download-note">
+            <strong>📋 How to use this template:</strong><br>
+            1. Fill out all required fields marked with <span class="required">*</span><br>
+            2. Click "Generate Application" to create your incorporation documents<br>
+            3. Review and print the generated forms<br>
+            4. Submit to MCA with required attachments
+        </div>
+
+        <form id="incorporationForm">
+            <div class="section">
+                <h2>Company Basic Information</h2>
+                
+                <div class="form-group">
+                    <label>Proposed Company Name <span class="required">*</span></label>
+                    <input type="text" id="companyName" required>
+                    <div class="help-text">Enter your preferred company name (must end with Private Limited)</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company Type <span class="required">*</span></label>
+                        <select id="companyType" required>
+                            <option value="">Select Company Type</option>
+                            <option value="private">Private Limited Company</option>
+                            <option value="opc">One Person Company (OPC)</option>
+                            <option value="llp">Limited Liability Partnership</option>
+                            <option value="partnership">Partnership Firm</option>
+                            <option value="proprietorship">Sole Proprietorship</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Business Activity <span class="required">*</span></label>
+                        <select id="businessActivity" required>
+                            <option value="">Select Primary Activity</option>
+                            <option value="technology">Information Technology</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="trading">Trading</option>
+                            <option value="services">Professional Services</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Authorized Capital (₹) <span class="required">*</span></label>
+                    <input type="number" id="authorizedCapital" value="100000" required>
+                    <div class="help-text">Minimum ₹1,00,000 for Private Limited Company</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Paid-up Capital (₹) <span class="required">*</span></label>
+                    <input type="number" id="paidUpCapital" value="100000" required>
+                    <div class="help-text">Cannot exceed authorized capital</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Registered Office Address</h2>
+                
+                <div class="form-group">
+                    <label>Building/Flat No. <span class="required">*</span></label>
+                    <input type="text" id="buildingNo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Street/Road Name <span class="required">*</span></label>
+                    <input type="text" id="streetName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City <span class="required">*</span></label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>State <span class="required">*</span></label>
+                        <select id="state" required>
+                            <option value="">Select State</option>
+                            <option value="AN">Andaman and Nicobar Islands</option>
+                            <option value="AP">Andhra Pradesh</option>
+                            <option value="AR">Arunachal Pradesh</option>
+                            <option value="AS">Assam</option>
+                            <option value="BR">Bihar</option>
+                            <option value="CH">Chandigarh</option>
+                            <option value="CT">Chhattisgarh</option>
+                            <option value="DN">Dadra and Nagar Haveli</option>
+                            <option value="DD">Daman and Diu</option>
+                            <option value="DL">Delhi</option>
+                            <option value="GA">Goa</option>
+                            <option value="GJ">Gujarat</option>
+                            <option value="HR">Haryana</option>
+                            <option value="HP">Himachal Pradesh</option>
+                            <option value="JK">Jammu and Kashmir</option>
+                            <option value="JH">Jharkhand</option>
+                            <option value="KA">Karnataka</option>
+                            <option value="KL">Kerala</option>
+                            <option value="LD">Lakshadweep</option>
+                            <option value="MP">Madhya Pradesh</option>
+                            <option value="MH">Maharashtra</option>
+                            <option value="MN">Manipur</option>
+                            <option value="ML">Meghalaya</option>
+                            <option value="MZ">Mizoram</option>
+                            <option value="NL">Nagaland</option>
+                            <option value="OR">Odisha</option>
+                            <option value="PY">Puducherry</option>
+                            <option value="PB">Punjab</option>
+                            <option value="RJ">Rajasthan</option>
+                            <option value="SK">Sikkim</option>
+                            <option value="TN">Tamil Nadu</option>
+                            <option value="TG">Telangana</option>
+                            <option value="TR">Tripura</option>
+                            <option value="TS">Telangana</option>
+                            <option value="UP">Uttar Pradesh</option>
+                            <option value="UT">Uttarakhand</option>
+                            <option value="WB">West Bengal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PIN Code <span class="required">*</span></label>
+                        <input type="text" id="pinCode" pattern="[0-9]{6}" maxlength="6" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Director Information</h2>
+                <p style="color: #666; margin-bottom: 20px;">Add at least 2 directors for Private Limited Company</p>
+                
+                <div id="directorsContainer">
+                    <div class="director-entry" data-director="1">
+                        <h3>Director 1 <span class="required">*</span></h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" name="director1_firstname" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" name="director1_lastname" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="director1_email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="tel" name="director1_mobile" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>PAN Number</label>
+                                <input type="text" name="director1_pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Aadhar Number</label>
+                                <input type="text" name="director1_aadhar" pattern="[0-9]{12}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Shareholding (%)</label>
+                            <input type="number" name="director1_shares" min="0" max="100" required>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="director1_is_managing" id="director1_managing">
+                            <label for="director1_managing">Managing Director</label>
+                        </div>
+                    </div>
+
+                    <div class="director-entry" data-director="2">
+                        <h3>Director 2 <span class="required">*</span></h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" name="director2_firstname" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" name="director2_lastname" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="director2_email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="tel" name="director2_mobile" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>PAN Number</label>
+                                <input type="text" name="director2_pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Aadhar Number</label>
+                                <input type="text" name="director2_aadhar" pattern="[0-9]{12}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Shareholding (%)</label>
+                            <input type="number" name="director2_shares" min="0" max="100" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="addDirector()">+ Add Another Director</button>
+            </div>
+
+            <div class="section">
+                <h2>Object Clause</h2>
+                
+                <div class="form-group">
+                    <label>Main Object <span class="required">*</span></label>
+                    <textarea id="mainObject" rows="3" placeholder="Describe the main business activity of the company" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Other Objects</label>
+                    <textarea id="otherObjects" rows="3" placeholder="Any other business activities (optional)"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Required Documents Checklist</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="doc1">
+                    <label for="doc1">Identity proof of all directors (PAN Card)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="doc2">
+                    <label for="doc2">Address proof of all directors (Aadhar Card)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="doc3">
+                    <label for="doc3">Passport size photographs of all directors</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="doc4">
+                    <label for="doc4">Registered office address proof (Rent agreement/Ownership documents)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="doc5">
+                    <label for="doc5">No Objection Certificate from property owner</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="doc6">
+                    <label for="doc6">Digital Signature Certificate (DSC) for all directors</label>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" class="btn" onclick="generateApplication()">📄 Generate Incorporation Application</button>
+                <button type="button" class="btn btn-secondary" onclick="saveAsDraft()">💾 Save as Draft</button>
+                <button type="reset" class="btn btn-secondary">🔄 Reset Form</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let directorCount = 2;
+
+        function addDirector() {
+            directorCount++;
+            const container = document.getElementById('directorsContainer');
+            const newDirector = document.createElement('div');
+            newDirector.className = 'director-entry';
+            newDirector.setAttribute('data-director', directorCount);
+            
+            newDirector.innerHTML = `
+                <h3>Director ${directorCount} 
+                    <button type="button" onclick="removeDirector(${directorCount})" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; float: right;">Remove</button>
+                </h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="director${directorCount}_firstname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="director${directorCount}_lastname" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="director${directorCount}_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" name="director${directorCount}_mobile" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>PAN Number</label>
+                        <input type="text" name="director${directorCount}_pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Aadhar Number</label>
+                        <input type="text" name="director${directorCount}_aadhar" pattern="[0-9]{12}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Shareholding (%)</label>
+                    <input type="number" name="director${directorCount}_shares" min="0" max="100" required>
+                </div>
+            `;
+            
+            container.appendChild(newDirector);
+        }
+
+        function removeDirector(directorNum) {
+            const director = document.querySelector(`[data-director="${directorNum}"]`);
+            if (director && directorCount > 2) {
+                director.remove();
+                directorCount--;
+            } else {
+                alert('Minimum 2 directors required for Private Limited Company');
+            }
+        }
+
+        function generateApplication() {
+            const form = document.getElementById('incorporationForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Validate shareholding adds up to 100%
+            let totalShares = 0;
+            const shareInputs = form.querySelectorAll('input[name*="_shares"]');
+            shareInputs.forEach(input => {
+                totalShares += parseInt(input.value) || 0;
+            });
+            
+            if (totalShares !== 100) {
+                alert('Total shareholding must equal 100%');
+                return;
+            }
+
+            // Generate application document
+            const formData = new FormData(form);
+            const companyName = document.getElementById('companyName').value;
+            
+            alert(`✅ Incorporation application generated successfully for ${companyName}!\n\nNext steps:\n1. Download the generated forms\n2. Get digital signatures from all directors\n3. Submit to MCA with required documents\n4. Pay government fees\n\nExpected processing time: 15-20 working days`);
+            
+            // Here you would typically generate and download the actual documents
+            console.log('Form data:', Object.fromEntries(formData));
+        }
+
+        function saveAsDraft() {
+            const formData = new FormData(document.getElementById('incorporationForm'));
+            localStorage.setItem('incorporationDraft', JSON.stringify(Object.fromEntries(formData)));
+            alert('✅ Application saved as draft successfully!');
+        }
+
+        // Load draft on page load
+        window.addEventListener('load', function() {
+            const draft = localStorage.getItem('incorporationDraft');
+            if (draft) {
+                const data = JSON.parse(draft);
+                Object.keys(data).forEach(key => {
+                    const input = document.querySelector(`[name="${key}"]`) || document.getElementById(key);
+                    if (input) {
+                        input.value = data[key];
+                    }
+                });
+            }
+        });
+
+        // Real-time validation
+        document.getElementById('paidUpCapital').addEventListener('input', function() {
+            const authorized = parseInt(document.getElementById('authorizedCapital').value);
+            const paidUp = parseInt(this.value);
+            
+            if (paidUp > authorized) {
+                this.setCustomValidity('Paid-up capital cannot exceed authorized capital');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html>

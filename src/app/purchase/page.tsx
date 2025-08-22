@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -55,10 +56,10 @@ export default function PurchasePage() {
       }
 
       // Create order
-      const orderResponse = await fetch('/api/payment/create-order', {
+      const orderResponse = await fetch('/api/purchase/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productType: '30_day_guide' }),
+        body: JSON.stringify({ productType: 'P1', amount: 100 }),
       });
 
       if (!orderResponse.ok) {
@@ -82,7 +83,7 @@ export default function PurchasePage() {
         handler: async function (response: any) {
           try {
             // Verify payment
-            const verifyResponse = await fetch('/api/payment/verify', {
+            const verifyResponse = await fetch('/api/purchase/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -99,7 +100,7 @@ export default function PurchasePage() {
             // Redirect to journey
             router.push('/journey?purchased=true');
           } catch (error) {
-            console.error('Payment verification error:', error);
+            logger.error('Payment verification error:', error);
             setError('Payment verification failed. Please contact support.');
             setLoading(false);
           }
@@ -115,7 +116,7 @@ export default function PurchasePage() {
       razorpay.open();
 
     } catch (error) {
-      console.error('Purchase error:', error);
+      logger.error('Purchase error:', error);
       setError('Failed to initiate payment. Please try again.');
       setLoading(false);
     }

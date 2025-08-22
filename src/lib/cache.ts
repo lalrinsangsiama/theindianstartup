@@ -1,392 +1,264 @@
-/**
- * Client-side caching utilities for The Indian Startup
- * Implements various caching strategies for better performance
- */
+// Redis caching implementation for performance optimization
+// Note: This is a simplified in-memory cache for now
+// For production, use Redis with ioredis package
 
-import React from 'react';
-
-// Cache configuration
-interface CacheConfig {
-  ttl?: number; // Time to live in milliseconds
-  maxSize?: number; // Maximum number of items to store
-  version?: string; // Cache version for invalidation
-}
-
-// Default cache configuration
-const DEFAULT_CONFIG: Required<CacheConfig> = {
-  ttl: 5 * 60 * 1000, // 5 minutes
-  maxSize: 100,
-  version: '1.0.0',
-};
-
-// Cache item interface
-interface CacheItem<T> {
+interface CacheEntry<T> {
   data: T;
-  timestamp: number;
-  ttl: number;
-  version: string;
+  expiry: number;
 }
 
-/**
- * In-memory cache implementation
- */
-class MemoryCache {
-  private cache = new Map<string, CacheItem<any>>();
-  private config: Required<CacheConfig>;
+class CacheManager {
+  private cache: Map<string, CacheEntry<any>> = new Map();
+  private timers: Map<string, NodeJS.Timeout> = new Map();
 
-  constructor(config: CacheConfig = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
-  }
-
-  set<T>(key: string, data: T, ttl?: number): void {
-    // Clean up expired items if cache is getting large
-    if (this.cache.size >= this.config.maxSize) {
-      this.cleanup();
-    }
-
-    const item: CacheItem<T> = {
-      data,
-      timestamp: Date.now(),
-      ttl: ttl || this.config.ttl,
-      version: this.config.version,
-    };
-
-    this.cache.set(key, item);
-  }
-
-  get<T>(key: string): T | null {
-    const item = this.cache.get(key);
+  // Set cache with TTL in seconds
+  set<T>(key: string, data: T, ttl: number): void {
+    const expiry = Date.now() + ttl * 1000;
     
-    if (!item) {
-      return null;
-    }
-
-    // Check if item has expired
-    if (this.isExpired(item)) {
-      this.cache.delete(key);
-      return null;
-    }
-
-    // Check version compatibility
-    if (item.version !== this.config.version) {
-      this.cache.delete(key);
-      return null;
-    }
-
-    return item.data;
-  }
-
-  has(key: string): boolean {
-    const item = this.cache.get(key);
-    return item !== undefined && !this.isExpired(item) && item.version === this.config.version;
-  }
-
-  delete(key: string): void {
-    this.cache.delete(key);
-  }
-
-  clear(): void {
-    this.cache.clear();
-  }
-
-  private isExpired(item: CacheItem<any>): boolean {
-    return Date.now() - item.timestamp > item.ttl;
-  }
-
-  private cleanup(): void {
-    const now = Date.now();
-    const entries = Array.from(this.cache.entries());
-    for (const [key, item] of entries) {
-      if (this.isExpired(item) || item.version !== this.config.version) {
-        this.cache.delete(key);
-      }
-    }
-  }
-
-  // Get cache statistics
-  getStats() {
-    const now = Date.now();
-    let expired = 0;
-    let valid = 0;
-
-    const values = Array.from(this.cache.values());
-    for (const item of values) {
-      if (this.isExpired(item)) {
-        expired++;
-      } else {
-        valid++;
-      }
-    }
-
-    return {
-      total: this.cache.size,
-      valid,
-      expired,
-      hitRate: valid / (valid + expired) || 0,
-    };
-  }
-}
-
-/**
- * LocalStorage cache implementation
- */
-class LocalStorageCache {
-  private prefix: string;
-  private config: Required<CacheConfig>;
-
-  constructor(prefix: string = 'tis_cache_', config: CacheConfig = {}) {
-    this.prefix = prefix;
-    this.config = { ...DEFAULT_CONFIG, ...config };
-  }
-
-  set<T>(key: string, data: T, ttl?: number): void {
-    if (typeof window === 'undefined') return;
-
-    try {
-      const item: CacheItem<T> = {
-        data,
-        timestamp: Date.now(),
-        ttl: ttl || this.config.ttl,
-        version: this.config.version,
-      };
-
-      localStorage.setItem(this.prefix + key, JSON.stringify(item));
-    } catch (error) {
-      console.warn('Failed to set localStorage cache:', error);
-    }
-  }
-
-  get<T>(key: string): T | null {
-    if (typeof window === 'undefined') return null;
-
-    try {
-      const itemStr = localStorage.getItem(this.prefix + key);
-      if (!itemStr) return null;
-
-      const item: CacheItem<T> = JSON.parse(itemStr);
-
-      // Check if expired
-      if (Date.now() - item.timestamp > item.ttl) {
-        this.delete(key);
-        return null;
-      }
-
-      // Check version
-      if (item.version !== this.config.version) {
-        this.delete(key);
-        return null;
-      }
-
-      return item.data;
-    } catch (error) {
-      console.warn('Failed to get localStorage cache:', error);
-      return null;
-    }
-  }
-
-  delete(key: string): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(this.prefix + key);
-  }
-
-  clear(): void {
-    if (typeof window === 'undefined') return;
+    // Clear existing timer if any
+    this.clearTimer(key);
     
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-      if (key.startsWith(this.prefix)) {
-        localStorage.removeItem(key);
-      }
-    });
-  }
-}
-
-/**
- * Request cache with automatic deduplication
- */
-class RequestCache {
-  private pendingRequests = new Map<string, Promise<any>>();
-  private cache: MemoryCache;
-
-  constructor(config?: CacheConfig) {
-    this.cache = new MemoryCache(config);
+    // Set new cache entry
+    this.cache.set(key, { data, expiry });
+    
+    // Set auto-cleanup timer
+    const timer = setTimeout(() => {
+      this.delete(key);
+    }, ttl * 1000);
+    
+    this.timers.set(key, timer);
   }
 
-  async get<T>(
+  // Get from cache
+  get<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    
+    if (!entry) {
+      return null;
+    }
+    
+    // Check if expired
+    if (Date.now() > entry.expiry) {
+      this.delete(key);
+      return null;
+    }
+    
+    return entry.data as T;
+  }
+
+  // Get or set pattern
+  async getOrSet<T>(
     key: string,
-    fetcher: () => Promise<T>,
-    ttl?: number
+    factory: () => Promise<T>,
+    ttl: number
   ): Promise<T> {
-    // Check cache first
-    const cached = this.cache.get<T>(key);
+    // Try to get from cache first
+    const cached = this.get<T>(key);
     if (cached !== null) {
       return cached;
     }
-
-    // Check if request is already pending
-    if (this.pendingRequests.has(key)) {
-      return this.pendingRequests.get(key);
-    }
-
-    // Make the request
-    const promise = fetcher().then(
-      (data) => {
-        this.cache.set(key, data, ttl);
-        this.pendingRequests.delete(key);
-        return data;
-      },
-      (error) => {
-        this.pendingRequests.delete(key);
-        throw error;
-      }
-    );
-
-    this.pendingRequests.set(key, promise);
-    return promise;
+    
+    // Generate data
+    const data = await factory();
+    
+    // Cache it
+    this.set(key, data, ttl);
+    
+    return data;
   }
 
-  invalidate(key: string): void {
+  // Delete from cache
+  delete(key: string): void {
     this.cache.delete(key);
-    this.pendingRequests.delete(key);
+    this.clearTimer(key);
+  }
+
+  // Delete by pattern
+  deletePattern(pattern: string): void {
+    const regex = new RegExp(pattern);
+    const keysToDelete: string[] = [];
+    
+    this.cache.forEach((_, key) => {
+      if (regex.test(key)) {
+        keysToDelete.push(key);
+      }
+    });
+    
+    keysToDelete.forEach(key => this.delete(key));
+  }
+
+  // Clear all cache
+  flush(): void {
+    this.timers.forEach(timer => clearTimeout(timer));
+    this.cache.clear();
+    this.timers.clear();
+  }
+
+  // Get cache stats
+  stats(): { size: number; keys: string[] } {
+    return {
+      size: this.cache.size,
+      keys: Array.from(this.cache.keys()),
+    };
+  }
+
+  // Private helper to clear timer
+  private clearTimer(key: string): void {
+    const timer = this.timers.get(key);
+    if (timer) {
+      clearTimeout(timer);
+      this.timers.delete(key);
+    }
   }
 }
 
-// Create global cache instances
-export const memoryCache = new MemoryCache();
-export const localStorageCache = new LocalStorageCache();
-export const requestCache = new RequestCache();
+// Singleton instance
+export const cache = new CacheManager();
 
 // Cache key generators
 export const cacheKeys = {
-  user: (userId: string) => `user:${userId}`,
-  userProfile: (userId: string) => `user_profile:${userId}`,
-  dailyLesson: (day: number) => `daily_lesson:${day}`,
-  userProgress: (userId: string) => `user_progress:${userId}`,
-  badges: (userId: string) => `badges:${userId}`,
-  communityPosts: (page: number) => `community_posts:${page}`,
-  ecosystemListings: (filters: string) => `ecosystem:${filters}`,
+  // User related
+  userDashboard: (userId: string) => `user:dashboard:${userId}`,
+  userProducts: (userId: string) => `user:products:${userId}`,
+  userProgress: (userId: string) => `user:progress:${userId}`,
+  
+  // Product related
+  productAccess: (userId: string, productCode: string) => `product:access:${userId}:${productCode}`,
+  productDetails: (productCode: string) => `product:details:${productCode}`,
+  productLessons: (productCode: string) => `product:lessons:${productCode}`,
+  productAnalytics: (productCode: string) => `product:analytics:${productCode}`,
+  
+  // Portfolio related
+  portfolio: (userId: string) => `portfolio:${userId}`,
+  portfolioRecommendations: (userId: string) => `portfolio:recommendations:${userId}`,
+  
+  // Lesson related
+  lesson: (lessonId: string) => `lesson:${lessonId}`,
+  lessonProgress: (userId: string, lessonId: string) => `lesson:progress:${userId}:${lessonId}`,
+  
+  // Global
+  allProducts: () => 'products:all',
+  bundles: () => 'bundles:all',
+  stats: () => 'stats:global',
 };
 
-// React hook for cached data
-export function useCachedData<T>(
-  key: string,
-  fetcher: () => Promise<T>,
-  options: {
-    ttl?: number;
-    enabled?: boolean;
-    refetchOnMount?: boolean;
-  } = {}
-) {
-  const [data, setData] = React.useState<T | null>(null);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<Error | null>(null);
+// Cache invalidation helpers
+export const cacheInvalidation = {
+  // Invalidate user cache when purchase is made
+  onPurchase: (userId: string) => {
+    cache.deletePattern(`user:.*:${userId}`);
+    cache.deletePattern(`product:access:${userId}:.*`);
+  },
+  
+  // Invalidate progress cache when lesson is completed
+  onLessonComplete: (userId: string, lessonId: string) => {
+    cache.delete(cacheKeys.userDashboard(userId));
+    cache.delete(cacheKeys.userProgress(userId));
+    cache.delete(cacheKeys.lessonProgress(userId, lessonId));
+  },
+  
+  // Invalidate portfolio cache on update
+  onPortfolioUpdate: (userId: string) => {
+    cache.delete(cacheKeys.portfolio(userId));
+    cache.delete(cacheKeys.portfolioRecommendations(userId));
+  },
+  
+  // Invalidate product cache on update
+  onProductUpdate: (productCode: string) => {
+    cache.delete(cacheKeys.productDetails(productCode));
+    cache.delete(cacheKeys.productLessons(productCode));
+    cache.delete(cacheKeys.productAnalytics(productCode));
+    cache.delete(cacheKeys.allProducts());
+  },
+};
 
-  const {
-    ttl,
-    enabled = true,
-    refetchOnMount = false,
-  } = options;
-
-  React.useEffect(() => {
-    if (!enabled) return;
-
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Check cache first (unless refetchOnMount is true)
-        if (!refetchOnMount) {
-          const cached = memoryCache.get<T>(key);
-          if (cached !== null) {
-            setData(cached);
-            setLoading(false);
-            return;
-          }
-        }
-
-        // Fetch data with request deduplication
-        const result = await requestCache.get(key, fetcher, ttl);
-        setData(result);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [key, enabled, refetchOnMount, ttl, fetcher]);
-
-  const invalidate = React.useCallback(() => {
-    requestCache.invalidate(key);
-    setData(null);
-  }, [key]);
-
-  return { data, loading, error, invalidate };
+// Redis-compatible interface for future migration
+export interface ICacheManager {
+  get<T>(key: string): Promise<T | null>;
+  set<T>(key: string, value: T, ttl?: number): Promise<void>;
+  del(key: string | string[]): Promise<void>;
+  exists(key: string): Promise<boolean>;
+  expire(key: string, ttl: number): Promise<void>;
+  ttl(key: string): Promise<number>;
+  keys(pattern: string): Promise<string[]>;
+  flushall(): Promise<void>;
 }
 
-// Service Worker cache helpers (for production)
-export const swCache = {
-  // Cache static assets
-  cacheAssets: async (urls: string[]) => {
-    if ('serviceWorker' in navigator && 'caches' in window) {
-      try {
-        const cache = await caches.open('tis-assets-v1');
-        await cache.addAll(urls);
-      } catch (error) {
-        console.warn('Failed to cache assets:', error);
+// Wrapper for Redis migration readiness
+export class RedisCacheAdapter implements ICacheManager {
+  private manager: CacheManager;
+  
+  constructor(manager: CacheManager) {
+    this.manager = manager;
+  }
+  
+  async get<T>(key: string): Promise<T | null> {
+    return this.manager.get<T>(key);
+  }
+  
+  async set<T>(key: string, value: T, ttl: number = 3600): Promise<void> {
+    this.manager.set(key, value, ttl);
+  }
+  
+  async del(keys: string | string[]): Promise<void> {
+    const keyArray = Array.isArray(keys) ? keys : [keys];
+    keyArray.forEach(key => this.manager.delete(key));
+  }
+  
+  async exists(key: string): Promise<boolean> {
+    return this.manager.get(key) !== null;
+  }
+  
+  async expire(key: string, ttl: number): Promise<void> {
+    const data = this.manager.get(key);
+    if (data !== null) {
+      this.manager.set(key, data, ttl);
+    }
+  }
+  
+  async ttl(key: string): Promise<number> {
+    // Not implemented in memory cache
+    return -1;
+  }
+  
+  async keys(pattern: string): Promise<string[]> {
+    const { keys } = this.manager.stats();
+    const regex = new RegExp(pattern.replace('*', '.*'));
+    return keys.filter(key => regex.test(key));
+  }
+  
+  async flushall(): Promise<void> {
+    this.manager.flush();
+  }
+}
+
+// Export Redis-ready adapter
+export const redisCache = new RedisCacheAdapter(cache);
+
+// Performance monitoring middleware
+export function cacheMiddleware(cacheDuration: number = 300) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    const originalMethod = descriptor.value;
+    
+    descriptor.value = async function (...args: any[]) {
+      // Generate cache key based on method name and arguments
+      const cacheKey = `method:${target.constructor.name}:${propertyKey}:${JSON.stringify(args)}`;
+      
+      // Try cache first
+      const cached = cache.get(cacheKey);
+      if (cached !== null) {
+        return cached;
       }
-    }
-  },
-
-  // Cache API responses
-  cacheResponse: async (request: Request, response: Response) => {
-    if ('caches' in window) {
-      try {
-        const cache = await caches.open('tis-api-v1');
-        await cache.put(request, response.clone());
-      } catch (error) {
-        console.warn('Failed to cache response:', error);
-      }
-    }
-  },
-
-  // Get cached response
-  getCachedResponse: async (request: Request): Promise<Response | null> => {
-    if ('caches' in window) {
-      try {
-        const cache = await caches.open('tis-api-v1');
-        const response = await cache.match(request);
-        return response || null;
-      } catch (error) {
-        console.warn('Failed to get cached response:', error);
-      }
-    }
-    return null;
-  },
-};
-
-// Performance monitoring
-export const cacheMetrics = {
-  logCacheHit: (key: string) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Cache HIT: ${key}`);
-    }
-  },
-
-  logCacheMiss: (key: string) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Cache MISS: ${key}`);
-    }
-  },
-
-  getStats: () => {
-    return {
-      memory: memoryCache.getStats(),
-      localStorage: {
-        // Implementation for localStorage stats
-      },
+      
+      // Execute original method
+      const result = await originalMethod.apply(this, args);
+      
+      // Cache result
+      cache.set(cacheKey, result, cacheDuration);
+      
+      return result;
     };
-  },
-};
+    
+    return descriptor;
+  };
+}

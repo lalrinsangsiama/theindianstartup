@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils';
 import { AlertCircle, CheckCircle, Info, XCircle, X as XIcon } from 'lucide-react';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -194,5 +194,19 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
 );
 
 Toast.displayName = 'Toast';
+
+// AlertDescription component for compatibility
+export const AlertDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    {...props}
+  />
+));
+
+AlertDescription.displayName = "AlertDescription";
 
 export { Alert, Toast };

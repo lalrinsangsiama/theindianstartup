@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Loader2, Lock, ShoppingCart, Calendar } from 'lucide-react';
@@ -46,7 +47,7 @@ export function ProductProtectedRoute({
         const accessData = await response.json();
         setAccess(accessData);
       } catch (error) {
-        console.error('Error checking product access:', error);
+        logger.error('Error checking product access:', error);
         setAccess({ hasAccess: false });
       } finally {
         setLoading(false);
@@ -175,7 +176,7 @@ export function useProductAccess(productCode: string) {
         const accessData = await response.json();
         setAccess(accessData);
       } catch (error) {
-        console.error('Error checking product access:', error);
+        logger.error('Error checking product access:', error);
         setAccess({ hasAccess: false });
       } finally {
         setLoading(false);

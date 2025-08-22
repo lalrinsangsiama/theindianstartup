@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Executive Employment Agreement</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .parties { border: 1px solid #000; padding: 15px; margin: 20px 0; }
+        .section { margin: 25px 0; }
+        .clause { margin: 15px 0; }
+        .signature-block { margin-top: 40px; border-top: 1px solid #000; padding-top: 20px; }
+        .fill-in { border-bottom: 1px solid #000; min-width: 200px; }
+        h1 { font-size: 18px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 16px; margin-top: 30px; }
+        h3 { font-size: 14px; margin-top: 20px; }
+        .checkbox { display: inline-block; width: 15px; height: 15px; border: 1px solid #000; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 10px; vertical-align: top; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>EXECUTIVE EMPLOYMENT AGREEMENT</h1>
+        <h2>Chief Executive Officer / C-Level Executive Contract</h2>
+        <p><strong>Comprehensive Employment Framework for Senior Executives</strong></p>
+    </div>
+
+    <div class="parties">
+        <p><strong>EMPLOYMENT AGREEMENT</strong></p>
+        <p>This Employment Agreement ("Agreement") is entered into on <span class="fill-in">_______</span> day of <span class="fill-in">_______</span>, 2024, between:</p>
+        
+        <p><strong>COMPANY:</strong></p>
+        <p>[Company Name] <span class="fill-in">_________________________</span></p>
+        <p>CIN: <span class="fill-in">_________________________</span></p>
+        <p>Registered Office: <span class="fill-in">____________</span></p>
+        <p><span class="fill-in">_____________________________</span></p>
+        <p>("Company")</p>
+
+        <p><strong>EXECUTIVE:</strong></p>
+        <p>Name: <span class="fill-in">_______________________</span></p>
+        <p>Address: <span class="fill-in">____________________</span></p>
+        <p><span class="fill-in">_____________________________</span></p>
+        <p>PAN: <span class="fill-in">________________________</span></p>
+        <p>Aadhaar: <span class="fill-in">____________________</span></p>
+        <p>Email: <span class="fill-in">______________________</span></p>
+        <p>Phone: <span class="fill-in">_____________________</span></p>
+        <p>("Executive")</p>
+    </div>
+
+    <div class="section">
+        <h2>1. EMPLOYMENT TERMS</h2>
+        
+        <div class="clause">
+            <h3>1.1 Position and Responsibilities</h3>
+            <p><strong>Title:</strong> Chief Executive Officer / <span class="fill-in">[Executive Position]</span></p>
+            <p><strong>Reporting:</strong> Board of Directors</p>
+            <p><strong>Start Date:</strong> <span class="fill-in">_________________</span></p>
+            <p><strong>Employment Type:</strong> Full-time, at-will employment</p>
+
+            <p><strong>Primary Responsibilities:</strong></p>
+            <p><span class="checkbox">☐</span> Strategic leadership and vision execution</p>
+            <p><span class="checkbox">☐</span> Overall business operations management</p>
+            <p><span class="checkbox">☐</span> Board and stakeholder relations</p>
+            <p><span class="checkbox">☐</span> Team leadership and culture development</p>
+            <p><span class="checkbox">☐</span> Investor relations and fundraising</p>
+            <p><span class="checkbox">☐</span> Legal and regulatory compliance oversight</p>
+            <p><span class="checkbox">☐</span> Partnership and business development</p>
+            <p><span class="checkbox">☐</span> Financial performance and budget management</p>
+
+            <p><strong>Key Performance Indicators:</strong></p>
+            <p>• Revenue targets: ₹<span class="fill-in">_______</span> annually</p>
+            <p>• Profitability/EBITDA: ₹<span class="fill-in">_______</span> or <span class="fill-in">_____</span>%</p>
+            <p>• Team performance and retention: <span class="fill-in">____</span>%</p>
+            <p>• Customer satisfaction: <span class="fill-in">____</span>/10 score</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. COMPENSATION PACKAGE</h2>
+        
+        <div class="clause">
+            <h3>2.1 Base Salary</h3>
+            <p><strong>Annual Base Salary:</strong> ₹<span class="fill-in">_____________</span></p>
+            <p><strong>Monthly Salary:</strong> ₹<span class="fill-in">_____________</span></p>
+            <p><strong>Payment:</strong> Monthly in arrears on the last working day</p>
+            <p><strong>Review:</strong> Annual review with potential adjustment based on performance and market conditions</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.2 Variable Compensation</h3>
+            <p><strong>Performance Bonus:</strong></p>
+            <p>• Target: <span class="fill-in">____</span>% of annual base salary</p>
+            <p>• Maximum: <span class="fill-in">____</span>% of annual base salary</p>
+            <p>• Payment: Within 90 days of fiscal year-end</p>
+
+            <p><strong>Long-term Incentives:</strong></p>
+            <p>• Equity participation: <span class="fill-in">___</span>% of company equity through stock options/shares</p>
+            <p>• Vesting schedule: <span class="fill-in">___</span>% annually over <span class="fill-in">___</span> years with <span class="fill-in">___</span> year cliff</p>
+            <p>• Exercise price: ₹<span class="fill-in">____</span> per share or fair market value</p>
+
+            <p><strong>Retention Bonus:</strong></p>
+            <p>• Amount: ₹<span class="fill-in">_________</span> payable after <span class="fill-in">___</span> years of service</p>
+            <p>• Conditions: Continued employment and satisfactory performance</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.3 Benefits Package</h3>
+            <p><strong>Health Benefits:</strong></p>
+            <p>• Medical insurance: Family coverage up to ₹<span class="fill-in">_______</span> annually</p>
+            <p>• Dental and vision coverage included</p>
+            <p>• Annual health checkup: ₹<span class="fill-in">_______</span> reimbursement</p>
+
+            <p><strong>Insurance Benefits:</strong></p>
+            <p>• Life insurance: ₹<span class="fill-in">_______</span> (Company paid)</p>
+            <p>• Accidental death and disability: ₹<span class="fill-in">_______</span></p>
+            <p>• Directors and officers (D&O) insurance coverage</p>
+
+            <p><strong>Time Off:</strong></p>
+            <p>• Annual leave: <span class="fill-in">_____</span> days per year</p>
+            <p>• Sick leave: <span class="fill-in">_____</span> days per year</p>
+            <p>• Casual leave: <span class="fill-in">_____</span> days per year</p>
+            <p>• Maternity/Paternity leave: As per applicable law + <span class="fill-in">_____</span> additional days</p>
+
+            <p><strong>Professional Development:</strong></p>
+            <p>• Training and conference budget: ₹<span class="fill-in">_______</span> annually</p>
+            <p>• Executive coaching allowance: ₹<span class="fill-in">_______</span> annually</p>
+            <p>• Advanced education support: ₹<span class="fill-in">_______</span> per year</p>
+
+            <p><strong>Perquisites:</strong></p>
+            <p>• Company vehicle or transport allowance: ₹<span class="fill-in">_______</span> monthly</p>
+            <p>• Mobile phone and data plan reimbursement</p>
+            <p>• Home office setup allowance: ₹<span class="fill-in">_______</span></p>
+            <p>• Club membership: ₹<span class="fill-in">_______</span> annually</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. RESTRICTIVE COVENANTS</h2>
+        
+        <div class="clause">
+            <h3>3.1 Non-Competition (During Employment + 12 Months)</h3>
+            <p>The Executive agrees not to:</p>
+            <p>• Directly or indirectly engage in competing business</p>
+            <p>• Provide services to competitors as employee, consultant, or advisor</p>
+            <p>• Invest in competing businesses (>2% ownership)</p>
+            <p>• Use Company's confidential information for competitive purposes</p>
+            
+            <p><strong>Geographic Scope:</strong> India and any countries where Company operates</p>
+            <p><strong>Business Scope:</strong> Core business activities as defined in Company charter</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.2 Non-Solicitation (During Employment + 18 Months)</h3>
+            <p><strong>Employee Non-Solicitation:</strong></p>
+            <p>• Not solicit, recruit, or hire Company employees</p>
+            <p>• Not encourage employees to terminate employment</p>
+            <p>• Not assist competitors in recruiting Company personnel</p>
+
+            <p><strong>Customer/Client Non-Solicitation:</strong></p>
+            <p>• Not solicit Company's customers or clients</p>
+            <p>• Not divert business opportunities from Company</p>
+            <p>• Not use customer lists for competing purposes</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.3 Confidentiality and Trade Secrets (Indefinite)</h3>
+            <p><strong>Confidential Information Includes:</strong></p>
+            <p>• Business strategies, plans, and financial information</p>
+            <p>• Customer lists, pricing, and commercial terms</p>
+            <p>• Technical specifications, code, and intellectual property</p>
+            <p>• Board discussions and strategic decisions</p>
+            <p>• Investor information and funding details</p>
+
+            <p><strong>Obligations:</strong></p>
+            <p>• Maintain absolute confidentiality during and after employment</p>
+            <p>• Not disclose to third parties without authorization</p>
+            <p>• Return all confidential materials upon termination</p>
+            <p>• Report any unauthorized disclosure immediately</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. TERMINATION PROVISIONS</h2>
+        
+        <div class="clause">
+            <h3>4.1 Termination by Company for Cause</h3>
+            <p><strong>Immediate Termination (No Severance):</strong></p>
+            <p>• Willful misconduct or gross negligence</p>
+            <p>• Material breach of employment duties</p>
+            <p>• Conviction of felony or crime involving moral turpitude</p>
+            <p>• Material violation of Company policies</p>
+            <p>• Breach of confidentiality or non-compete obligations</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.2 Termination by Company Without Cause</h3>
+            <p><strong>Severance Benefits:</strong></p>
+            <p>• Notice period: <span class="fill-in">_____</span> months salary in lieu of notice</p>
+            <p>• Severance pay: <span class="fill-in">_____</span> months of base salary</p>
+            <p>• Prorated bonus for completed portion of year</p>
+            <p>• Health insurance continuation for <span class="fill-in">_____</span> months</p>
+            <p>• Vesting acceleration: <span class="fill-in">_____</span> months of additional vesting</p>
+
+            <p><strong>Conditions:</strong></p>
+            <p>• Execution of separation agreement and release</p>
+            <p>• Compliance with restrictive covenants</p>
+            <p>• Cooperation with transition and knowledge transfer</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.3 Termination by Executive for Good Reason</h3>
+            <p><strong>Good Reason Defined:</strong></p>
+            <p>• Material reduction in duties, authority, or responsibilities</p>
+            <p>• Material reduction in base salary (>20%)</p>
+            <p>• Relocation requirement beyond 50 miles</p>
+            <p>• Material breach of this Agreement by Company</p>
+            
+            <p><strong>Severance:</strong> Same as without cause termination above</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. DISPUTE RESOLUTION</h2>
+        
+        <div class="clause">
+            <h3>5.1 Arbitration Provisions</h3>
+            <p><strong>Mandatory Arbitration:</strong></p>
+            <p>• All employment-related disputes</p>
+            <p>• ICC Arbitration Rules</p>
+            <p>• Single arbitrator for disputes <₹1 crore</p>
+            <p>• Seat: New Delhi, India</p>
+            <p>• Language: English</p>
+
+            <p><strong>Exceptions to Arbitration:</strong></p>
+            <p>• Injunctive relief for IP or confidentiality breaches</p>
+            <p>• Worker's compensation claims</p>
+            <p>• Matters subject to regulatory jurisdiction</p>
+        </div>
+    </div>
+
+    <div class="signature-block">
+        <h2>EXECUTION</h2>
+        <p>IN WITNESS WHEREOF, the parties have executed this Employment Agreement on the date first written above.</p>
+        
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <p><strong>COMPANY:</strong></p>
+                    <p>[Company Name]</p>
+                    <br><br>
+                    <p>By: _________________________</p>
+                    <p>Name: [Name]</p>
+                    <p>Title: [Title]</p>
+                    <p>Date: ______________________</p>
+                </td>
+                <td width="50%">
+                    <p><strong>EXECUTIVE:</strong></p>
+                    <br><br><br>
+                    <p>_____________________________</p>
+                    <p>Signature</p>
+                    <p>_____________________________</p>
+                    <p>Print Name</p>
+                    <p>Date: ______________________</p>
+                </td>
+            </tr>
+        </table>
+
+        <br><br>
+        <p><strong>WITNESSES:</strong></p>
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <p>Witness 1:</p>
+                    <p>Signature: ____________________</p>
+                    <p>Name: _______________________</p>
+                    <p>Date: _______________________</p>
+                </td>
+                <td width="50%">
+                    <p>Witness 2:</p>
+                    <p>Signature: ____________________</p>
+                    <p>Name: _______________________</p>
+                    <p>Date: _______________________</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #000; padding-top: 20px;">
+        <p><strong>IMPORTANT LEGAL NOTICE:</strong></p>
+        <p>This template is for educational purposes and should be customized for specific circumstances. Employment laws vary significantly, and this agreement should be reviewed by qualified employment law attorneys before execution.</p>
+        
+        <p><strong>Template Source:</strong> The Indian Startup - P5 Legal Stack<br>
+        <strong>Version:</strong> 2.0 | <strong>Last Updated:</strong> December 2024<br>
+        <strong>Jurisdiction:</strong> India | <strong>Review Required:</strong> Legal counsel recommended</p>
+    </div>
+</body>
+</html>

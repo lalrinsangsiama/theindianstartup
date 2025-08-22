@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       .limit(50);
 
     if (error) {
-      console.error('Database error:', error);
+      logger.error('Database error:', error);
       return NextResponse.json(
         { error: 'Failed to fetch matching funding options' },
         { status: 500 }
@@ -168,7 +169,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('API error:', error);
+    logger.error('API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

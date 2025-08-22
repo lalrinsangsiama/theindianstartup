@@ -457,7 +457,7 @@ function TaskItem({ task, onToggle, onDocumentOrganize, showXPAnimation }: TaskI
                 {task.detailedContent.examples.map((example, index) => (
                   <div key={index} className="bg-white p-3 rounded border-l-4 border-purple-200">
                     <Text size="sm" className="text-gray-700 italic">
-                      &quot;{example}&quot;
+                      "{example}"
                     </Text>
                   </div>
                 ))}

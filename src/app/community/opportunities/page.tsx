@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -294,7 +295,7 @@ export default function OpportunitiesPage() {
         setAnnouncements(mockAnnouncements);
       }
     } catch (error) {
-      console.error('Error fetching announcements:', error);
+      logger.error('Error fetching announcements:', error);
     } finally {
       setLoading(false);
     }
@@ -388,7 +389,7 @@ export default function OpportunitiesPage() {
           : announcement
       ));
     } catch (error) {
-      console.error('Error saving announcement:', error);
+      logger.error('Error saving announcement:', error);
       // Fallback to optimistic update
       setAnnouncements(announcements.map(announcement =>
         announcement.id === id

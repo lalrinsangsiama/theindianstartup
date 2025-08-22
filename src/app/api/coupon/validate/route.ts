@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { validateCoupon } from '@/lib/coupon-utils';
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Coupon validation error:', error);
+    logger.error('Coupon validation error:', error);
     return NextResponse.json(
       { valid: false, error: 'Failed to validate coupon' },
       { status: 500 }

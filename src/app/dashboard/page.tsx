@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -42,9 +43,17 @@ import {
   MapPin,
   Package,
   Star,
-  AlertCircle
+  AlertCircle,
+  Gift,
+  Building
 } from 'lucide-react';
+import { PaymentButton, BuyNowButton, AddToCartButton, AllAccessButton } from '@/components/payment/PaymentButton';
 import dynamic from 'next/dynamic';
+import { ProgressiveOnboarding } from '@/components/onboarding/ProgressiveOnboarding';
+import { MobileDashboard } from '@/components/dashboard/MobileDashboard';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { AchievementsSection } from '@/components/dashboard/AchievementsSection';
+import { PersonalizedRecommendations } from '@/components/dashboard/PersonalizedRecommendations';
 
 // Lazy load heavy components
 const XPDisplay = dynamic(() => import('@/components/progress').then(mod => ({ default: mod.XPDisplay })), {
@@ -72,6 +81,7 @@ interface Product {
 
 interface DashboardData {
   userName: string;
+  userEmail?: string;
   totalXP: number;
   currentStreak: number;
   badges: string[];
@@ -83,6 +93,11 @@ interface DashboardData {
   recommendedProduct?: Product;
   totalInvestedTime?: number;
   skillsAcquired?: string[];
+  lessonProgress?: any[];
+  experience?: string;
+  goals?: string[];
+  businessStage?: string;
+  primaryFocus?: string;
 }
 
 // Product categories with icons
@@ -193,18 +208,22 @@ const enhancedProducts: Record<string, Partial<Product>> = {
 };
 
 function DashboardContent() {
-  console.log('🚀 NEW ENHANCED DASHBOARD LOADING - Version 2.0')
+  logger.info('🚀 NEW ENHANCED DASHBOARD LOADING - Version 2.0')
   const router = useRouter();
-  const { user } = useAuthContext();
+  const { user, signOut } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'journey'>('grid');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const isMobile = useMediaQuery('(max-width: 768px)');
   
   // Check if user is coming from completed onboarding
   const [skipOnboardingCheck, setSkipOnboardingCheck] = useState(false);
+  const [showProgressiveOnboarding, setShowProgressiveOnboarding] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
   
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -212,33 +231,78 @@ function DashboardContent() {
       setSkipOnboardingCheck(true);
       window.history.replaceState({}, '', '/dashboard');
     }
+    
+    // Check if we should show progressive onboarding
+    if (urlParams.get('showOnboarding') === 'true') {
+      setShowProgressiveOnboarding(true);
+      window.history.replaceState({}, '', '/dashboard');
+    }
   }, []);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setError(null);
+        setIsRetrying(retryCount > 0);
+        
         const response = await fetch('/api/dashboard', {
-          cache: 'force-cache',
-          next: { revalidate: 300 }
+          cache: 'no-store', // Always get fresh data for dashboard
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
         });
         
-        if (!response.ok) {
-          if (!skipOnboardingCheck) {
-            router.push('/onboarding');
-          }
+        if (response.status === 401) {
+          // Session expired, redirect to login
+          logger.warn('Dashboard: Session expired, redirecting to login');
+          router.push('/login');
           return;
+        }
+        
+        if (response.status === 404 || (response.status === 500 && !skipOnboardingCheck)) {
+          // User not found in DB, needs onboarding
+          logger.info('Dashboard: User profile not found, redirecting to onboarding');
+          router.push('/onboarding');
+          return;
+        }
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
         const data = await response.json();
         
+        // Validate response data structure
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid response format from dashboard API');
+        }
+        
+        // Check if user needs progressive onboarding (only if not already showing it)
+        if (!showProgressiveOnboarding && (!data.userName || data.userName === data.userEmail?.split('@')[0])) {
+          try {
+            const onboardingResponse = await fetch('/api/user/progressive-onboarding', {
+              cache: 'no-store'
+            });
+            if (onboardingResponse.ok) {
+              const onboardingData = await onboardingResponse.json();
+              if (onboardingData.onboardingStep < 3) {
+                setShowProgressiveOnboarding(true);
+              }
+            }
+          } catch (onboardingError) {
+            logger.error('Failed to check progressive onboarding:', onboardingError);
+            // Don't block dashboard loading for onboarding check failures
+          }
+        }
+        
         // Enhance products with additional data
-        const enhancedOwnedProducts = data.ownedProducts.map((product: Product) => ({
+        const enhancedOwnedProducts = (data.ownedProducts || []).map((product: Product) => ({
           ...product,
           ...enhancedProducts[product.code]
         }));
         
         // Enhance all products with additional data
-        const enhancedAllProducts = data.allProducts.map((product: Product) => ({
+        const enhancedAllProducts = (data.allProducts || []).map((product: Product) => ({
           ...product,
           ...enhancedProducts[product.code]
         }));
@@ -248,21 +312,40 @@ function DashboardContent() {
           ownedProducts: enhancedOwnedProducts,
           allProducts: enhancedAllProducts
         });
+        
+        // Reset retry count on success
+        setRetryCount(0);
+        
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-        setError('Failed to load dashboard data. Please try refreshing the page.');
-        if (!skipOnboardingCheck && error instanceof Error && error.message.includes('profile')) {
-          router.push('/onboarding');
+        logger.error('Failed to fetch dashboard data:', error);
+        
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        
+        if (retryCount < 2) {
+          // Retry up to 2 times
+          logger.info(`Dashboard: Retrying fetch, attempt ${retryCount + 1}`);
+          setRetryCount(prev => prev + 1);
+          // Retry after a delay
+          setTimeout(() => {
+            if (user) {
+              fetchDashboardData();
+            }
+          }, 1000 * (retryCount + 1)); // Progressive delay
+          return;
         }
+        
+        // Max retries reached
+        setError(`Failed to load dashboard: ${errorMessage}`);
       } finally {
         setLoading(false);
+        setIsRetrying(false);
       }
     };
 
-    if (user) {
+    if (user && !loading) {
       fetchDashboardData();
     }
-  }, [user, router, skipOnboardingCheck]);
+  }, [user, router, skipOnboardingCheck, retryCount]);
 
   const handleProductClick = useCallback((product: Product) => {
     if (product.hasAccess) {
@@ -302,7 +385,17 @@ function DashboardContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+        <div className="text-center max-w-sm mx-auto p-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <Loader2 className="w-8 h-8 animate-spin text-white" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {isRetrying ? 'Retrying...' : 'Loading Dashboard'}
+          </h3>
+          <p className="text-sm text-gray-600">
+            {isRetrying ? `Attempting to reconnect (${retryCount}/2)` : 'Preparing your startup journey...'}
+          </p>
+        </div>
       </div>
     );
   }
@@ -310,13 +403,46 @@ function DashboardContent() {
   if (error) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Card className="p-8 max-w-md">
-          <div className="flex flex-col items-center gap-4">
-            <AlertCircle className="w-12 h-12 text-red-500" />
-            <Text className="text-center text-gray-600">{error}</Text>
-            <Button onClick={() => window.location.reload()}>
-              Refresh Page
-            </Button>
+        <Card className="p-8 max-w-md border-2 border-red-200">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Dashboard Error</h3>
+              <Text className="text-gray-600 mb-4">{error}</Text>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setError(null);
+                  setLoading(true);
+                  setRetryCount(0);
+                  // Trigger refetch
+                  setTimeout(() => window.location.reload(), 100);
+                }}
+              >
+                Try Again
+              </Button>
+              <Button 
+                variant="primary"
+                onClick={() => {
+                  // Sign out and redirect to login
+                  signOut().then(() => {
+                    router.push('/login');
+                  });
+                }}
+              >
+                Sign Out
+              </Button>
+            </div>
+            <Text size="sm" color="muted">
+              If this continues, please contact{' '}
+              <a href="mailto:support@theindianstartup.in" className="text-blue-600 underline">
+                support@theindianstartup.in
+              </a>
+            </Text>
           </div>
         </Card>
       </div>
@@ -338,10 +464,85 @@ function DashboardContent() {
       .reduce((sum, p) => sum + (p.price || 0), 0);
   };
 
+  // Mobile Dashboard
+  if (isMobile) {
+    return (
+      <MobileDashboard
+        user={user}
+        purchases={dashboardData.ownedProducts}
+        lessonProgress={dashboardData.lessonProgress || []}
+        currentStreak={dashboardData.currentStreak}
+        totalXP={dashboardData.totalXP}
+      />
+    );
+  }
+
   return (
     <DashboardLayout>
+      {/* Progressive Onboarding Modal */}
+      {showProgressiveOnboarding && (
+        <ProgressiveOnboarding
+          onComplete={() => {
+            setShowProgressiveOnboarding(false);
+            // Refresh dashboard data after onboarding
+            window.location.reload();
+          }}
+          onSkip={() => setShowProgressiveOnboarding(false)}
+          initialData={{
+            email: user?.email || '',
+            name: dashboardData.userName || '',
+          }}
+        />
+      )}
+      
       <div className="p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Welcome Section */}
+        {/* Special Welcome Banner for New Users */}
+        {dashboardData.ownedProducts.length === 0 && (
+          <Card className="mb-8 border-2 border-blue-300 bg-gradient-to-r from-blue-50 to-purple-50">
+            <CardContent className="p-8">
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                <div className="flex-1">
+                  <Badge className="bg-blue-600 text-white mb-3">NEW FOUNDER OFFER</Badge>
+                  <Heading as="h2" variant="h3" className="mb-3">
+                    Start Your Startup Journey Today! 🚀
+                  </Heading>
+                  <Text size="lg" className="mb-4">
+                    Join 2000+ founders who are building successful startups with our comprehensive course ecosystem.
+                  </Text>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    <Badge className="bg-green-100 text-green-700">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      7-Day Money Back Guarantee
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-700">
+                      <Zap className="w-3 h-3 mr-1" />
+                      Instant Access
+                    </Badge>
+                    <Badge className="bg-orange-100 text-orange-700">
+                      <Trophy className="w-3 h-3 mr-1" />
+                      Certificate on Completion
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <BuyNowButton
+                    productCode="P1"
+                    size="lg"
+                    showPrice={true}
+                    customText="Start with P1: 30-Day Sprint"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  />
+                  <AllAccessButton
+                    size="lg"
+                    showSavings={true}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -359,12 +560,16 @@ function DashboardContent() {
                   <div className="flex items-center gap-3">
                     <Package className="w-5 h-5 text-orange-600" />
                     <div>
-                      <Text weight="medium">Save ₹15,988 with All-Access!</Text>
+                      <Text weight="medium">Save ₹27,989 with All-Access!</Text>
                       <Text size="sm" color="muted">You own {dashboardData.ownedProducts.length} products</Text>
                     </div>
-                    <Button size="sm" variant="primary" onClick={() => router.push('/pricing?bundle=true')}>
-                      Upgrade
-                    </Button>
+                    <BuyNowButton
+                      productCode="ALL_ACCESS"
+                      size="sm"
+                      showPrice={false}
+                      customText="Upgrade Now"
+                      ctaStyle="pulse"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -372,80 +577,102 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <Card className="border-2 border-gray-200 hover:border-black transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <Target className="w-5 h-5 text-gray-600" />
-                <Badge size="sm" variant="default">Products</Badge>
+        {/* Enhanced Stats Grid with Animation */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          {/* Primary Progress Card */}
+          <Card className="col-span-2 lg:col-span-2 relative overflow-hidden group hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-black">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                  <Target className="w-7 h-7 text-white" />
+                </div>
+                <Badge size="sm" variant="outline" className="bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-blue-200">Journey Progress</Badge>
               </div>
-              <Text className="font-heading text-3xl font-bold mb-1">
-                {dashboardData.ownedProducts.length}/11
-              </Text>
-              <Text size="sm" color="muted">Products Owned</Text>
-              <div className="mt-3">
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-black transition-all duration-500"
-                    style={{ width: `${(dashboardData.ownedProducts.length / 11) * 100}%` }}
-                  />
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <Text className="font-heading text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      {dashboardData.ownedProducts.length}
+                    </Text>
+                    <Text className="text-2xl text-gray-400">/12</Text>
+                  </div>
+                  <Text size="sm" color="muted">Courses Mastered</Text>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-gray-600">Overall Progress</span>
+                    <span className="text-blue-600">{Math.round((dashboardData.ownedProducts.length / 12) * 100)}%</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full shadow-sm transition-all duration-1000 ease-out relative"
+                      style={{ width: `${(dashboardData.ownedProducts.length / 12) * 100}%` }}
+                    >
+                      <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-gray-200 hover:border-black transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <Text className="font-heading text-lg font-bold text-green-500">
-                  {Math.round((completedProducts / dashboardData.ownedProducts.length) * 100) || 0}%
-                </Text>
+          {/* Completion Stats */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-green-500 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+                {completedProducts > 0 && (
+                  <Text className="font-heading text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                    {Math.round((completedProducts / dashboardData.ownedProducts.length) * 100)}%
+                  </Text>
+                )}
               </div>
-              <Text className="font-heading text-3xl font-bold mb-1">
-                {completedProducts}/{dashboardData.ownedProducts.length}
+              <Text className="font-heading text-2xl font-bold mb-1 text-gray-900">
+                {completedProducts}
               </Text>
               <Text size="sm" color="muted">Completed</Text>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-gray-200 hover:border-black transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <Zap className="w-5 h-5 text-yellow-500" />
-                <Text className="font-heading text-lg font-bold text-yellow-500">Lvl {dashboardData.userLevel}</Text>
+          {/* XP & Level */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-yellow-500 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                  <Zap className="w-5 h-5 text-yellow-600" />
+                </div>
+                <Badge size="sm" className="bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-0">
+                  Level {dashboardData.userLevel}
+                </Badge>
               </div>
-              <Text className="font-heading text-3xl font-bold mb-1">
-                {dashboardData.totalXP}
+              <Text className="font-heading text-2xl font-bold mb-1 text-gray-900">
+                {dashboardData.totalXP.toLocaleString()}
               </Text>
               <Text size="sm" color="muted">Total XP</Text>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-gray-200 hover:border-black transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <Calendar className="w-5 h-5 text-orange-500" />
-                <div className="text-2xl">🔥</div>
+          {/* Streak */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-orange-500 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Calendar className="w-5 h-5 text-orange-600" />
+                </div>
+                {dashboardData.currentStreak > 0 && (
+                  <div className="text-2xl animate-bounce">🔥</div>
+                )}
               </div>
-              <Text className="font-heading text-3xl font-bold mb-1">
+              <Text className="font-heading text-2xl font-bold mb-1 text-gray-900">
                 {dashboardData.currentStreak}
               </Text>
               <Text size="sm" color="muted">Day Streak</Text>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-gray-200 hover:border-black transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <Trophy className="w-5 h-5 text-purple-500" />
-                <Badge size="sm" variant="outline">Skills</Badge>
-              </div>
-              <Text className="font-heading text-3xl font-bold mb-1">
-                {dashboardData.skillsAcquired?.length || 0}
-              </Text>
-              <Text size="sm" color="muted">Acquired</Text>
             </CardContent>
           </Card>
         </div>
@@ -532,26 +759,28 @@ function DashboardContent() {
                     key={product.code}
                     onClick={() => handleProductClick(product)}
                     className={`
-                      relative p-6 border-2 rounded-lg cursor-pointer transition-all
+                      relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 group
                       ${product.hasAccess 
-                        ? 'border-gray-200 hover:border-black hover:shadow-lg' 
-                        : 'border-gray-100 bg-gray-50 hover:border-gray-300'
+                        ? 'border-gray-200 hover:border-black hover:shadow-xl hover:-translate-y-1 bg-white' 
+                        : 'border-gray-100 bg-gradient-to-br from-gray-50 to-white hover:border-gray-400 hover:shadow-md'
                       }
                     `}
                   >
-                    {/* Lock Icon for Locked Products */}
+                    {/* Lock Badge for Locked Products */}
                     {!product.hasAccess && (
-                      <div className="absolute top-4 right-4">
-                        <Lock className="w-5 h-5 text-gray-400" />
+                      <div className="absolute top-4 right-4 bg-gray-100 rounded-full p-2 shadow-sm">
+                        <Lock className="w-4 h-4 text-gray-500" />
                       </div>
                     )}
                     
-                    {/* Product Icon */}
+                    {/* Product Icon with Gradient */}
                     <div className={`
-                      w-12 h-12 rounded-lg flex items-center justify-center mb-4
-                      ${product.hasAccess ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'}
+                      w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110
+                      ${product.hasAccess 
+                        ? 'bg-gradient-to-br from-gray-800 to-black text-white shadow-lg' 
+                        : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500'}
                     `}>
-                      {product.icon || <BookOpen className="w-6 h-6" />}
+                      {product.icon || <BookOpen className="w-7 h-7" />}
                     </div>
                     
                     {/* Product Info */}
@@ -575,11 +804,13 @@ function DashboardContent() {
                               <Text size="sm" color="muted">Progress</Text>
                               <Text size="sm" weight="medium">{product.progress}%</Text>
                             </div>
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                               <div 
-                                className="h-full bg-black transition-all duration-500"
+                                className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-700 ease-out relative"
                                 style={{ width: `${product.progress}%` }}
-                              />
+                              >
+                                <div className="absolute inset-0 bg-white/30 animate-pulse" />
+                              </div>
                             </div>
                           </div>
                         )}
@@ -596,19 +827,17 @@ function DashboardContent() {
                           </Badge>
                         </div>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="primary" 
-                            size="sm" 
+                          <AddToCartButton
+                            productCode={product.code}
+                            size="sm"
                             className="flex-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // @ts-ignore - Accessing parent component's addToCart
-                              window.dashboardAddToCart?.(product.code, product.title, product.price);
+                            showPrice={false}
+                            customText="Add to Cart"
+                            onSuccess={() => {
+                              // Refresh dashboard data after purchase
+                              window.location.reload();
                             }}
-                          >
-                            <ShoppingCart className="w-4 h-4 mr-1" />
-                            Add to Cart
-                          </Button>
+                          />
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -745,13 +974,88 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
+        {/* Achievements & Gamification */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <Heading as="h2" variant="h4">
+              Your Achievements & Progress
+            </Heading>
+          </div>
+          <AchievementsSection
+            userId={user?.id || ''}
+            totalXP={dashboardData.totalXP}
+            currentLevel={dashboardData.userLevel}
+            badges={dashboardData.badges || []}
+          />
+        </div>
+
+        {/* Personalized Recommendations */}
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <Heading as="h2" variant="h4">
+                Your Personalized Learning Path
+              </Heading>
+            </div>
+            <PersonalizedRecommendations
+              userProfile={{
+                experience: (dashboardData.experience as 'beginner' | 'intermediate' | 'experienced' | 'expert') || 'beginner',
+                goals: dashboardData.goals || [],
+                businessStage: (dashboardData.businessStage as 'idea' | 'mvp' | 'growth' | 'scale') || 'idea',
+                primaryFocus: (dashboardData.primaryFocus as 'tech' | 'sales' | 'marketing' | 'finance' | 'operations') || 'tech'
+              }}
+              completedProducts={dashboardData.ownedProducts.map(p => p.code)}
+              allProducts={dashboardData.allProducts.map(p => ({
+                code: p.code,
+                title: p.title,
+                description: p.description,
+                price: p.price,
+                estimatedDays: p.estimatedDays || 30
+              }))}
+            />
+          </div>
+
+          {/* Quick Stats Sidebar */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Your Stats</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Text size="sm" color="muted">Learning Streak</Text>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Text size="xl" weight="bold">
+                      {dashboardData.currentStreak}
+                    </Text>
+                    <Text size="sm">days 🔥</Text>
+                  </div>
+                </div>
+                <div>
+                  <Text size="sm" color="muted">Courses Owned</Text>
+                  <Text size="xl" weight="bold">
+                    {dashboardData.ownedProducts.length}/12
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" color="muted">Total XP Earned</Text>
+                  <Text size="xl" weight="bold">
+                    {dashboardData.totalXP.toLocaleString()}
+                  </Text>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           <Card className="border-2 border-gray-200 hover:border-black transition-colors">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-3">
                 <Users className="w-5 h-5" />
                 <Text weight="medium">Community Hub</Text>
+                <Badge size="sm" className="bg-green-100 text-green-700">Free</Badge>
               </div>
               <Text size="sm" color="muted" className="mb-4">
                 Connect with 10,000+ Indian founders
@@ -771,11 +1075,29 @@ function DashboardContent() {
                 <Text weight="medium">Startup Portfolio</Text>
               </div>
               <Text size="sm" color="muted" className="mb-4">
-                Track your startup&apos;s progress
+                Track your startup's progress
               </Text>
               <Link href="/portfolio">
                 <Button variant="outline" size="sm" className="w-full">
                   Update Portfolio →
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-gray-200 hover:border-black transition-colors">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <Gift className="w-5 h-5" />
+                <Text weight="medium">Referral Program</Text>
+                <Badge size="sm" className="bg-orange-100 text-orange-700">New</Badge>
+              </div>
+              <Text size="sm" color="muted" className="mb-4">
+                Earn ₹500 per successful referral
+              </Text>
+              <Link href="/referral">
+                <Button variant="outline" size="sm" className="w-full">
+                  Start Referring →
                 </Button>
               </Link>
             </CardContent>
@@ -797,6 +1119,48 @@ function DashboardContent() {
               </Link>
             </CardContent>
           </Card>
+
+          {/* Investor Database - Only show if user has P3 */}
+          {(dashboardData.ownedProducts.some(p => ['P3', 'ALL_ACCESS'].includes(p.code))) && (
+            <Card className="border-2 border-green-200 hover:border-black transition-colors">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <Users className="w-5 h-5 text-green-600" />
+                  <Text weight="medium">Investor Database</Text>
+                  <Badge size="sm" className="bg-green-100 text-green-700">Premium</Badge>
+                </div>
+                <Text size="sm" color="muted" className="mb-4">
+                  37+ verified investor contacts with real data
+                </Text>
+                <Link href="/investors">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Browse Investors →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Government Schemes Database - Only show if user has P7 or P9 */}
+          {(dashboardData.ownedProducts.some(p => ['P7', 'P9', 'ALL_ACCESS'].includes(p.code))) && (
+            <Card className="border-2 border-orange-200 hover:border-black transition-colors">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <Building className="w-5 h-5 text-orange-600" />
+                  <Text weight="medium">Schemes Database</Text>
+                  <Badge size="sm" className="bg-orange-100 text-orange-700">Premium</Badge>
+                </div>
+                <Text size="sm" color="muted" className="mb-4">
+                  500+ government schemes worth ₹5Cr
+                </Text>
+                <Link href="/products/schemes">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Access Database →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Unbought Courses Section */}
@@ -847,19 +1211,24 @@ function DashboardContent() {
                         ₹{product.price?.toLocaleString('en-IN')}
                       </Text>
                       <div className="flex gap-2">
+                        <AddToCartButton
+                          productCode={product.code}
+                          size="sm"
+                          showPrice={false}
+                          customText="Add"
+                          onSuccess={() => {
+                            // Refresh dashboard data after purchase
+                            window.location.reload();
+                          }}
+                        />
                         <Button 
-                          variant="primary" 
+                          variant="outline" 
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // @ts-ignore - Accessing parent component's addToCart
-                            window.dashboardAddToCart?.(product.code, product.title, product.price);
+                            router.push(`/pricing#${product.code}`);
                           }}
                         >
-                          <ShoppingCart className="w-4 h-4 mr-1" />
-                          Add
-                        </Button>
-                        <Button variant="outline" size="sm">
                           Info
                         </Button>
                       </div>
@@ -921,12 +1290,11 @@ function DashboardContent() {
                         ₹54,999
                       </Text>
                     </div>
-                    <Link href="/pricing">
-                      <Button variant="primary" size="lg" className="min-w-[200px]">
-                        <ShoppingCart className="w-5 h-5 mr-2" />
-                        Get All Access
-                      </Button>
-                    </Link>
+                    <AllAccessButton 
+                      size="lg"
+                      showSavings={false}
+                      className="min-w-[200px]"
+                    />
                   </div>
 
                   {dashboardData.ownedProducts.length > 0 && (

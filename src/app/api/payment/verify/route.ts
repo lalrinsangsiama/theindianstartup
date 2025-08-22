@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import crypto from 'crypto';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (updateError) {
-      console.error('Error updating purchase:', updateError);
+      logger.error('Error updating purchase:', updateError);
       return NextResponse.json(
         { error: 'Failed to update purchase record' },
         { status: 500 }
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
         }),
       });
     } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError);
+      logger.error('Failed to send confirmation email:', emailError);
       // Don't fail the payment verification
     }
     */
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Payment verification error:', error);
+    logger.error('Payment verification error:', error);
     return NextResponse.json(
       { error: 'Payment verification failed' },
       { status: 500 }

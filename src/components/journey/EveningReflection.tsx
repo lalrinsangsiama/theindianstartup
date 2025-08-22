@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/logger';
 import { Card } from '@/components/ui/Card';
 import { CardContent } from '@/components/ui/Card';
 import { CardHeader } from '@/components/ui/Card';
@@ -76,7 +77,7 @@ export function EveningReflection({
         onComplete?.();
       }, 1500);
     } catch (error) {
-      console.error('Failed to save reflection:', error);
+      logger.error('Failed to save reflection:', error);
     } finally {
       setIsSaving(false);
     }
@@ -180,7 +181,7 @@ export function EveningReflection({
           <div>
             <label className="flex items-center gap-2 text-sm font-medium mb-3">
               <Heart className="w-4 h-4 text-red-500" />
-              How satisfied are you with today&apos;s progress?
+              How satisfied are you with today's progress?
             </label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((rating) => (

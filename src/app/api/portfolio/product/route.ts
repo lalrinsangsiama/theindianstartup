@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { prisma } from '@/lib/prisma';
 
@@ -32,7 +33,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(portfolio);
   } catch (error) {
-    console.error('Error updating portfolio product section:', error);
+    logger.error('Error updating portfolio product section:', error);
     return NextResponse.json(
       { error: 'Failed to update portfolio' },
       { status: 500 }

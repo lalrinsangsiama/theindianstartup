@@ -34,7 +34,7 @@ export default function AnalyticsPage() {
               Analytics Dashboard Coming Soon
             </Heading>
             <Text color="muted" className="max-w-2xl mx-auto mb-6">
-              We&apos;re building comprehensive analytics to help you track your startup journey, 
+              We're building comprehensive analytics to help you track your startup journey, 
               measure progress, and identify areas for improvement. This feature will be available 
               in the next platform update.
             </Text>

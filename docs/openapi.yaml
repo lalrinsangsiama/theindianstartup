@@ -1,0 +1,837 @@
+openapi: 3.0.3
+info:
+  title: The Indian Startup API
+  description: |
+    Comprehensive API for managing user accounts, product access, progress tracking, and portfolio management.
+    
+    ## Authentication
+    All authenticated endpoints require a valid session through NextAuth.js.
+    
+    ## Rate Limiting
+    - Authenticated endpoints: 100 requests/minute per user
+    - Public endpoints: 20 requests/minute per IP
+    
+    ## Support
+    For API support, contact: support@theindianstartup.in
+  version: 1.2.0
+  contact:
+    name: The Indian Startup Support
+    email: support@theindianstartup.in
+    url: https://theindianstartup.in
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://theindianstartup.in/api
+    description: Production server
+  - url: https://test.theindianstartup.in/api
+    description: Test server
+  - url: http://localhost:3000/api
+    description: Development server
+
+paths:
+  /user/profile:
+    get:
+      summary: Get user profile
+      description: Retrieve the current user's profile information
+      tags:
+        - User Management
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    put:
+      summary: Update user profile
+      description: Update the current user's profile information
+      tags:
+        - User Management
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /dashboard:
+    get:
+      summary: Get dashboard data
+      description: Retrieve comprehensive dashboard data for the current user
+      tags:
+        - Dashboard
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /products:
+    get:
+      summary: Get all products
+      description: Retrieve all available products
+      tags:
+        - Products
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+
+  /products/{productCode}/access:
+    get:
+      summary: Check product access
+      description: Check if the current user has access to a specific product
+      tags:
+        - Products
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productCode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, ALL_ACCESS]
+      responses:
+        '200':
+          description: Access status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{productCode}/lessons/{lessonId}:
+    get:
+      summary: Get lesson details
+      description: Retrieve detailed information about a specific lesson
+      tags:
+        - Lessons
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lesson details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    post:
+      summary: Complete lesson
+      description: Mark a lesson as completed and submit progress
+      tags:
+        - Lessons
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteLessonRequest'
+      responses:
+        '200':
+          description: Lesson completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /portfolio:
+    get:
+      summary: Get portfolio data
+      description: Retrieve the user's startup portfolio
+      tags:
+        - Portfolio
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Portfolio data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /portfolio/activities/{activityTypeId}:
+    put:
+      summary: Update portfolio activity
+      description: Update a specific portfolio activity
+      tags:
+        - Portfolio
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: activityTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActivityRequest'
+      responses:
+        '200':
+          description: Activity updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /portfolio/export:
+    post:
+      summary: Export portfolio
+      description: Export portfolio to various formats
+      tags:
+        - Portfolio
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportPortfolioRequest'
+      responses:
+        '200':
+          description: Portfolio exported successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /purchase/create-order:
+    post:
+      summary: Create purchase order
+      description: Create a new purchase order for a product
+      tags:
+        - Purchase
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /purchase/verify:
+    post:
+      summary: Verify payment
+      description: Verify payment and complete purchase
+      tags:
+        - Purchase
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyPaymentRequest'
+      responses:
+        '200':
+          description: Payment verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /achievements:
+    get:
+      summary: Get user achievements
+      description: Retrieve user's achievements and progress
+      tags:
+        - Achievements
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Achievements retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+      description: NextAuth.js session token
+
+  schemas:
+    # Common schemas
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Error message"
+        details:
+          type: string
+          description: "Additional error details (development only)"
+
+    # User schemas
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user_123"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        name:
+          type: string
+          example: "John Doe"
+        totalXP:
+          type: integer
+          example: 1250
+        currentStreak:
+          type: integer
+          example: 7
+        hasCompletedOnboarding:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+
+    UserProfileResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserProfile'
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        bio:
+          type: string
+          example: "Startup founder"
+        website:
+          type: string
+          format: uri
+          example: "https://example.com"
+
+    # Dashboard schemas
+    DashboardData:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserProfile'
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: "P1"
+              title:
+                type: string
+                example: "30-Day India Launch Sprint"
+              hasAccess:
+                type: boolean
+              progressPercentage:
+                type: integer
+                minimum: 0
+                maximum: 100
+        recentProgress:
+          type: array
+          items:
+            type: object
+            properties:
+              lessonTitle:
+                type: string
+              moduleTitle:
+                type: string
+              completedAt:
+                type: string
+                format: date-time
+              xpEarned:
+                type: integer
+        stats:
+          type: object
+          properties:
+            totalProducts:
+              type: integer
+            completedLessons:
+              type: integer
+            totalXP:
+              type: integer
+            currentStreak:
+              type: integer
+
+    DashboardResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/DashboardData'
+
+    # Product schemas
+    Product:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "P1"
+        title:
+          type: string
+          example: "30-Day India Launch Sprint"
+        description:
+          type: string
+          example: "Go from idea to incorporated startup"
+        price:
+          type: integer
+          example: 4999
+        isBundle:
+          type: boolean
+          example: false
+        estimatedDays:
+          type: integer
+          example: 30
+
+    ProductsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Product'
+
+    ProductAccessResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                hasAccess:
+                  type: boolean
+                expiresAt:
+                  type: string
+                  format: date-time
+                purchaseDate:
+                  type: string
+                  format: date-time
+
+    # Lesson schemas
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "lesson_123"
+        day:
+          type: integer
+          example: 5
+        title:
+          type: string
+          example: "Market Research Fundamentals"
+        briefContent:
+          type: string
+          example: "<h2>Understanding Your Market</h2>..."
+        actionItems:
+          type: array
+          items:
+            type: string
+          example: ["Research 5 competitors", "Define target audience"]
+        resources:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              url:
+                type: string
+        estimatedTime:
+          type: integer
+          example: 45
+        xpReward:
+          type: integer
+          example: 50
+        completed:
+          type: boolean
+          example: false
+
+    LessonResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Lesson'
+
+    CompleteLessonRequest:
+      type: object
+      required:
+        - tasksCompleted
+        - xpEarned
+      properties:
+        tasksCompleted:
+          type: array
+          items:
+            type: string
+          example: ["0", "1", "2"]
+        reflection:
+          type: string
+          example: "Key insights about market research..."
+        xpEarned:
+          type: integer
+          example: 50
+
+    # Portfolio schemas
+    Portfolio:
+      type: object
+      properties:
+        id:
+          type: string
+        completionPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+        sections:
+          type: array
+          items:
+            type: object
+            properties:
+              sectionName:
+                type: string
+              title:
+                type: string
+              completionPercentage:
+                type: integer
+              activities:
+                type: array
+                items:
+                  type: object
+
+    PortfolioResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Portfolio'
+
+    UpdateActivityRequest:
+      type: object
+      properties:
+        data:
+          type: object
+          description: "Activity-specific data"
+        notes:
+          type: string
+        completionStatus:
+          type: string
+          enum: [draft, completed]
+
+    ExportPortfolioRequest:
+      type: object
+      required:
+        - exportType
+      properties:
+        exportType:
+          type: string
+          enum: [pdf, one_pager, pitch_deck, business_model_canvas]
+        sections:
+          type: array
+          items:
+            type: string
+          description: "Optional: specific sections to export"
+
+    ExportResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                downloadUrl:
+                  type: string
+                  format: uri
+                expiresAt:
+                  type: string
+                  format: date-time
+
+    # Purchase schemas
+    CreateOrderRequest:
+      type: object
+      required:
+        - productCode
+      properties:
+        productCode:
+          type: string
+          enum: [P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, ALL_ACCESS]
+        couponCode:
+          type: string
+          example: "EARLY_BIRD"
+
+    CreateOrderResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                amount:
+                  type: integer
+                currency:
+                  type: string
+                  example: "INR"
+                razorpayOrderId:
+                  type: string
+
+    VerifyPaymentRequest:
+      type: object
+      required:
+        - orderId
+        - paymentId
+        - signature
+      properties:
+        orderId:
+          type: string
+        paymentId:
+          type: string
+        signature:
+          type: string
+
+    # Achievement schemas
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        badgeUrl:
+          type: string
+          format: uri
+        unlockedAt:
+          type: string
+          format: date-time
+
+    AchievementsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                unlockedAchievements:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Achievement'
+                availableAchievements:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      progress:
+                        type: integer
+                      requirement:
+                        type: integer
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Invalid request parameters"
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Authentication required"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Insufficient permissions"
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Resource not found"
+
+    RateLimitExceeded:
+      description: Too Many Requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Rate limit exceeded"
+
+tags:
+  - name: User Management
+    description: User profile and account management
+  - name: Dashboard
+    description: User dashboard and statistics
+  - name: Products
+    description: Product catalog and access management
+  - name: Lessons
+    description: Lesson content and progress tracking
+  - name: Portfolio
+    description: Startup portfolio management
+  - name: Purchase
+    description: Product purchase and payment processing
+  - name: Achievements
+    description: Gamification and achievement system

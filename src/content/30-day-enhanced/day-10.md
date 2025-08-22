@@ -40,7 +40,20 @@ This is where ideas become reality - moving from "what if" to "here it is!"
 - [ ] Choose technology stack
 - [ ] Plan development sprints
 - [ ] Define success metrics
+- [ ] **📊 Build Your Portfolio:** Complete Product Roadmap activity below
 - [ ] Create test scenarios
+
+### 📊 Portfolio Activity: Product Development Plan
+
+<ActivityCapture 
+  activityTypeId="product_roadmap"
+  activityName="MVP & Product Roadmap"
+  lessonId="p1-day-10"
+  courseCode="P1"
+  moduleId="building-blocks"
+/>
+
+**Instructions:** Document your complete MVP plan including prioritized features, user flows, and development timeline. This will be saved to your portfolio's "Product Development" section and help you track your building progress.
 
 ### Resource Planning (45 mins)
 - [ ] Assess team capabilities

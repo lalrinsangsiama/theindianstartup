@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -97,7 +98,7 @@ function DashboardContent() {
         const data = await response.json();
         setDashboardData(data);
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+        logger.error('Failed to fetch dashboard data:', error);
         if (!skipOnboardingCheck) {
           router.push('/onboarding');
         }

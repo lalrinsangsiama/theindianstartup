@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
@@ -92,7 +93,7 @@ export function useAuth() {
       // Redirect to home
       router.push('/');
     } catch (error) {
-      console.error('Error signing out:', error);
+      logger.error('Error signing out:', error);
       setAuthState(prev => ({ ...prev, error: error as Error }));
     }
   };

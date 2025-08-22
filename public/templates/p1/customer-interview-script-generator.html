@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Interview Script Generator - P1 Day 3</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            color: #333; 
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1); 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            border-bottom: 3px solid #2c3e50; 
+            padding-bottom: 20px; 
+        }
+        .header h1 { 
+            font-size: 28px; 
+            color: #2c3e50; 
+            margin: 0 0 10px 0; 
+        }
+        .tab-container { 
+            display: flex; 
+            border-bottom: 2px solid #dee2e6; 
+            margin-bottom: 30px; 
+        }
+        .tab { 
+            padding: 15px 25px; 
+            cursor: pointer; 
+            border: none; 
+            background: none; 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: #6c757d; 
+            border-bottom: 3px solid transparent; 
+        }
+        .tab.active { 
+            color: #2c3e50; 
+            border-bottom-color: #3498db; 
+        }
+        .tab-content { 
+            display: none; 
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+        .form-section { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 25px; 
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        .form-group label { 
+            display: block; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            color: #555; 
+        }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .btn { 
+            background: #3498db; 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 10px 5px; 
+        }
+        .btn:hover { 
+            background: #2980b9; 
+        }
+        .btn-secondary { 
+            background: #6c757d; 
+        }
+        .generated-script { 
+            background: white; 
+            border: 2px solid #3498db; 
+            border-radius: 8px; 
+            padding: 25px; 
+            margin-top: 20px; 
+        }
+        .script-section { 
+            margin-bottom: 25px; 
+        }
+        .script-section h4 { 
+            color: #2c3e50; 
+            margin: 0 0 15px 0; 
+            font-size: 16px; 
+            border-bottom: 1px solid #dee2e6; 
+            padding-bottom: 8px; 
+        }
+        .question { 
+            background: #f8f9fa; 
+            padding: 10px 15px; 
+            margin: 8px 0; 
+            border-left: 4px solid #3498db; 
+            border-radius: 3px; 
+        }
+        .note { 
+            background: #fff9e6; 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid #f39c12; 
+            margin: 15px 0; 
+            font-size: 14px; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+        }
+        .personas { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        .persona-chip { 
+            background: #e9ecef; 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-size: 12px; 
+        }
+        .persona-chip.selected { 
+            background: #3498db; 
+            color: white; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Customer Interview Script Generator</h1>
+            <div style="color: #7f8c8d; font-size: 16px;">P1 Course - Day 3 Customer Discovery Tool</div>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab active" onclick="showTab('setup')">1. Setup</button>
+            <button class="tab" onclick="showTab('questions')">2. Questions</button>
+            <button class="tab" onclick="showTab('script')">3. Script</button>
+            <button class="tab" onclick="showTab('tracker')">4. Tracker</button>
+        </div>
+
+        <!-- Setup Tab -->
+        <div class="tab-content active" id="setup">
+            <div class="form-section">
+                <h3 style="color: #2c3e50; margin-bottom: 20px;">Interview Setup</h3>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Your Startup Name</label>
+                        <input type="text" id="startupName" placeholder="Enter your startup name">
+                    </div>
+                    <div class="form-group">
+                        <label>Interview Duration (minutes)</label>
+                        <select id="duration">
+                            <option value="15">15 minutes (quick)</option>
+                            <option value="30" selected>30 minutes (standard)</option>
+                            <option value="45">45 minutes (detailed)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Problem Statement (1-2 sentences)</label>
+                    <textarea id="problemStatement" rows="3" placeholder="What problem are you solving? Be specific and clear."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Target Customer Type</label>
+                    <div class="personas">
+                        <div class="persona-chip" onclick="selectPersona(this, 'B2B')">B2B Decision Makers</div>
+                        <div class="persona-chip" onclick="selectPersona(this, 'B2C')">Individual Consumers</div>
+                        <div class="persona-chip" onclick="selectPersona(this, 'SMB')">Small Business Owners</div>
+                        <div class="persona-chip" onclick="selectPersona(this, 'Students')">Students</div>
+                        <div class="persona-chip" onclick="selectPersona(this, 'Parents')">Parents</div>
+                        <div class="persona-chip" onclick="selectPersona(this, 'Seniors')">Senior Citizens</div>
+                    </div>
+                    <input type="hidden" id="customerType" value="">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Interview Format</label>
+                        <select id="format">
+                            <option value="Video Call">Video Call (Zoom/Meet)</option>
+                            <option value="Phone">Phone Call</option>
+                            <option value="In-Person">In-Person Meeting</option>
+                            <option value="Survey">Online Survey</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Incentive Offering</label>
+                        <select id="incentive">
+                            <option value="None">No incentive</option>
+                            <option value="Gift Card">₹500 Amazon voucher</option>
+                            <option value="Product">Free product access</option>
+                            <option value="Report">Market insights report</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="showTab('questions')">Next: Customize Questions →</button>
+        </div>
+
+        <!-- Questions Tab -->
+        <div class="tab-content" id="questions">
+            <div class="form-section">
+                <h3 style="color: #2c3e50; margin-bottom: 20px;">Question Categories</h3>
+                
+                <div class="grid">
+                    <div>
+                        <h4>Background Questions</h4>
+                        <label><input type="checkbox" id="q_background" checked> Include background questions</label>
+                        <label><input type="checkbox" id="q_demographics" checked> Collect demographics</label>
+                        <label><input type="checkbox" id="q_role"> Ask about role/responsibilities</label>
+                    </div>
+                    <div>
+                        <h4>Problem Discovery</h4>
+                        <label><input type="checkbox" id="q_current_solution" checked> Current solution usage</label>
+                        <label><input type="checkbox" id="q_pain_intensity" checked> Pain intensity rating</label>
+                        <label><input type="checkbox" id="q_frequency" checked> Problem frequency</label>
+                    </div>
+                </div>
+                
+                <div class="grid">
+                    <div>
+                        <h4>Solution Validation</h4>
+                        <label><input type="checkbox" id="q_solution_reaction" checked> Solution concept reaction</label>
+                        <label><input type="checkbox" id="q_features"> Feature prioritization</label>
+                        <label><input type="checkbox" id="q_concerns"> Concerns and objections</label>
+                    </div>
+                    <div>
+                        <h4>Buying Behavior</h4>
+                        <label><input type="checkbox" id="q_pricing" checked> Pricing expectations</label>
+                        <label><input type="checkbox" id="q_decision_process"> Decision-making process</label>
+                        <label><input type="checkbox" id="q_timeline"> Implementation timeline</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 style="color: #2c3e50; margin-bottom: 20px;">Custom Questions</h3>
+                <div id="customQuestions">
+                    <div class="form-group">
+                        <label>Custom Question 1 (Optional)</label>
+                        <input type="text" id="custom1" placeholder="Add your specific question">
+                    </div>
+                    <div class="form-group">
+                        <label>Custom Question 2 (Optional)</label>
+                        <input type="text" id="custom2" placeholder="Add your specific question">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="addCustomQuestion()">+ Add Another Question</button>
+            </div>
+
+            <button class="btn" onclick="generateScript()">Generate Interview Script →</button>
+        </div>
+
+        <!-- Script Tab -->
+        <div class="tab-content" id="script">
+            <div id="generatedScript">
+                <p style="color: #6c757d; text-align: center; font-style: italic;">
+                    Complete the setup and questions tabs to generate your interview script.
+                </p>
+            </div>
+        </div>
+
+        <!-- Tracker Tab -->
+        <div class="tab-content" id="tracker">
+            <div class="form-section">
+                <h3 style="color: #2c3e50; margin-bottom: 20px;">Interview Tracker</h3>
+                
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 48px; color: #3498db; font-weight: bold;" id="interviewCount">0</div>
+                    <div style="color: #6c757d;">Interviews Completed</div>
+                    <div style="color: #e74c3c; font-size: 14px;">Goal: 20 interviews in 5 days</div>
+                </div>
+
+                <div class="grid">
+                    <div style="text-align: center; padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                        <div style="font-size: 24px; color: #27ae60; font-weight: bold;" id="validatedCount">0</div>
+                        <div style="color: #27ae60;">Problem Validated</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #ffebee; border-radius: 8px;">
+                        <div style="font-size: 24px; color: #e74c3c; font-weight: bold;" id="rejectedCount">0</div>
+                        <div style="color: #e74c3c;">Problem Rejected</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h4>Quick Log Interview Result</h4>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input type="text" id="intervieweeName" placeholder="Interviewee name" style="flex: 1;">
+                        <select id="resultType" style="width: 200px;">
+                            <option value="validated">Problem Validated ✓</option>
+                            <option value="rejected">Problem Rejected ✗</option>
+                            <option value="partial">Partially Validated ?</option>
+                        </select>
+                        <button class="btn" onclick="logInterview()">Log Interview</button>
+                    </div>
+                </div>
+
+                <div id="interviewLog">
+                    <h4>Interview Log</h4>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-style: italic; color: #6c757d;">
+                        No interviews logged yet. Start interviewing customers!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>💡 Pro Tip:</strong> Aim for 20 interviews in 5 days. If 70%+ validate your problem, you're on the right track. If less than 50% validate, consider pivoting your problem statement.
+        </div>
+    </div>
+
+    <script>
+        let customQuestionCount = 2;
+        let interviewResults = JSON.parse(localStorage.getItem('interviewResults') || '[]');
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'tracker') {
+                updateTrackerDisplay();
+            }
+        }
+        
+        function selectPersona(element, type) {
+            document.querySelectorAll('.persona-chip').forEach(chip => chip.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('customerType').value = type;
+        }
+        
+        function addCustomQuestion() {
+            customQuestionCount++;
+            const container = document.getElementById('customQuestions');
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label>Custom Question ${customQuestionCount} (Optional)</label>
+                <input type="text" id="custom${customQuestionCount}" placeholder="Add your specific question">
+            `;
+            container.appendChild(div);
+        }
+        
+        function generateScript() {
+            const startupName = document.getElementById('startupName').value || 'Your Startup';
+            const duration = document.getElementById('duration').value;
+            const problem = document.getElementById('problemStatement').value || 'Your problem statement';
+            const customerType = document.getElementById('customerType').value || 'customers';
+            const format = document.getElementById('format').value;
+            const incentive = document.getElementById('incentive').value;
+            
+            let script = `
+                <div class="generated-script">
+                    <h3 style="color: #2c3e50; margin-bottom: 25px;">Customer Interview Script for ${startupName}</h3>
+                    
+                    <div class="script-section">
+                        <h4>📋 Pre-Interview Checklist</h4>
+                        <div style="font-size: 14px;">
+                            □ ${format} setup tested and working<br>
+                            □ Recording permission requested<br>
+                            □ Notepad and pen ready<br>
+                            □ Timer set for ${duration} minutes<br>
+                            ${incentive !== 'None' ? '□ ' + incentive + ' ready to send<br>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="script-section">
+                        <h4>👋 Introduction (2 minutes)</h4>
+                        <div class="question">
+                            "Hi [Name], thank you so much for taking the time to speak with me today. I really appreciate it. 
+                            I'm [Your Name] from ${startupName}, and we're working on solving a problem that might affect you. 
+                            This will take about ${duration} minutes of your time."
+                        </div>
+                        <div class="question">
+                            "Before we start, I want to be clear - I'm not trying to sell you anything today. I'm here to learn 
+                            from your experience and understand how you currently handle certain challenges. Is it okay if I 
+                            record this conversation for my notes?"
+                        </div>
+                        ${incentive !== 'None' ? '<div class="question">"As a thank you for your time, I\'ll send you a ' + incentive + ' after our conversation."</div>' : ''}
+                    </div>
+                    
+                    <div class="script-section">
+                        <h4>🎯 Background Questions (3-5 minutes)</h4>
+            `;
+            
+            if (document.getElementById('q_background').checked) {
+                script += `<div class="question">"Could you tell me a bit about yourself and what you do?"</div>`;
+            }
+            
+            if (document.getElementById('q_demographics').checked) {
+                script += `<div class="question">"What city are you based in? What's your age range if you don't mind me asking?"</div>`;
+            }
+            
+            if (document.getElementById('q_role').checked) {
+                script += `<div class="question">"What's your role and main responsibilities in your work/daily life?"</div>`;
+            }
+            
+            script += `
+                    </div>
+                    
+                    <div class="script-section">
+                        <h4>🔍 Problem Discovery (10-15 minutes)</h4>
+                        <div class="question">
+                            "I'm curious about how you currently handle [specific situation related to problem]. 
+                            Can you walk me through the last time you faced this situation?"
+                        </div>
+            `;
+            
+            if (document.getElementById('q_current_solution').checked) {
+                script += `<div class="question">"What tools or methods do you currently use to handle this? What do you like and dislike about them?"</div>`;
+            }
+            
+            if (document.getElementById('q_pain_intensity').checked) {
+                script += `<div class="question">"On a scale of 1-10, how frustrating is this problem for you? What makes it particularly challenging?"</div>`;
+            }
+            
+            if (document.getElementById('q_frequency').checked) {
+                script += `<div class="question">"How often does this problem come up for you? Daily? Weekly? Monthly?"</div>`;
+            }
+            
+            script += `
+                        <div class="question">"What would happen if this problem was completely solved? How would that change things for you?"</div>
+                        <div class="question">"Have you actively looked for solutions to this problem? What did you try?"</div>
+                    </div>
+            `;
+            
+            if (document.getElementById('q_solution_reaction').checked) {
+                script += `
+                    <div class="script-section">
+                        <h4>💡 Solution Validation (8-10 minutes)</h4>
+                        <div class="question">
+                            "I'd like to share a concept we're working on and get your thoughts. We're building a solution that 
+                            ${problem.toLowerCase()}. What's your initial reaction to this idea?"
+                        </div>
+                        <div class="question">"What concerns or questions do you have about this approach?"</div>
+                        <div class="question">"What would need to be true for you to try something like this?"</div>
+                `;
+                
+                if (document.getElementById('q_features').checked) {
+                    script += `<div class="question">"If this solution had these features [list 3-4 key features], which would be most valuable to you? Which would you not care about?"</div>`;
+                }
+            }
+            
+            if (document.getElementById('q_pricing').checked) {
+                script += `
+                    <div class="script-section">
+                        <h4>💰 Pricing & Purchase Intent (3-5 minutes)</h4>
+                        <div class="question">"How much do you currently spend on solving this problem? (time, money, resources)"</div>
+                        <div class="question">"If a solution could save you [X hours/week] or [₹X/month], what would that be worth to you?"</div>
+                        <div class="question">"Would you be interested in being notified when we launch? Would you consider being a beta user?"</div>
+                    </div>
+                `;
+            }
+            
+            // Add custom questions
+            for (let i = 1; i <= customQuestionCount; i++) {
+                const customQ = document.getElementById(`custom${i}`);
+                if (customQ && customQ.value.trim()) {
+                    if (!script.includes('Custom Questions')) {
+                        script += `<div class="script-section"><h4>❓ Custom Questions (2-3 minutes)</h4>`;
+                    }
+                    script += `<div class="question">"${customQ.value}"</div>`;
+                }
+            }
+            
+            if (script.includes('Custom Questions')) {
+                script += `</div>`;
+            }
+            
+            script += `
+                    <div class="script-section">
+                        <h4>🤝 Closing (2 minutes)</h4>
+                        <div class="question">"Is there anything else about this problem area that I should understand?"</div>
+                        <div class="question">"Do you know anyone else who faces similar challenges who might be willing to chat with me?"</div>
+                        <div class="question">"Thank you so much for your time and insights. This has been incredibly valuable. I'll send you that ${incentive !== 'None' ? incentive : 'summary'} as promised."</div>
+                    </div>
+                    
+                    <div class="note">
+                        <strong>🎯 What to Listen For:</strong><br>
+                        ✅ Specific examples and stories (not opinions)<br>
+                        ✅ Emotional language ("frustrated", "annoying", "love", "hate")<br>
+                        ✅ Money/time spent on current solutions<br>
+                        ✅ Workarounds they've created<br>
+                        ❌ Generic positive feedback ("sounds good", "nice idea")<br>
+                        ❌ Feature suggestions without context
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 25px;">
+                        <button class="btn" onclick="window.print()">📄 Print Script</button>
+                        <button class="btn btn-secondary" onclick="copyScript()">📋 Copy to Clipboard</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('generatedScript').innerHTML = script;
+            showTab('script');
+        }
+        
+        function copyScript() {
+            const scriptContent = document.getElementById('generatedScript').innerText;
+            navigator.clipboard.writeText(scriptContent).then(() => {
+                alert('Script copied to clipboard!');
+            });
+        }
+        
+        function logInterview() {
+            const name = document.getElementById('intervieweeName').value;
+            const result = document.getElementById('resultType').value;
+            
+            if (!name.trim()) {
+                alert('Please enter interviewee name');
+                return;
+            }
+            
+            const interview = {
+                name: name,
+                result: result,
+                date: new Date().toLocaleDateString(),
+                timestamp: new Date().getTime()
+            };
+            
+            interviewResults.push(interview);
+            localStorage.setItem('interviewResults', JSON.stringify(interviewResults));
+            
+            document.getElementById('intervieweeName').value = '';
+            updateTrackerDisplay();
+        }
+        
+        function updateTrackerDisplay() {
+            const total = interviewResults.length;
+            const validated = interviewResults.filter(r => r.result === 'validated').length;
+            const rejected = interviewResults.filter(r => r.result === 'rejected').length;
+            
+            document.getElementById('interviewCount').textContent = total;
+            document.getElementById('validatedCount').textContent = validated;
+            document.getElementById('rejectedCount').textContent = rejected;
+            
+            const logContainer = document.getElementById('interviewLog');
+            if (total === 0) {
+                logContainer.innerHTML = `
+                    <h4>Interview Log</h4>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-style: italic; color: #6c757d;">
+                        No interviews logged yet. Start interviewing customers!
+                    </div>
+                `;
+            } else {
+                let logHTML = '<h4>Interview Log</h4><div style="max-height: 300px; overflow-y: auto;">';
+                interviewResults.reverse().forEach((interview, index) => {
+                    const statusIcon = interview.result === 'validated' ? '✅' : 
+                                    interview.result === 'rejected' ? '❌' : '❓';
+                    logHTML += `
+                        <div style="background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 5px; display: flex; justify-content: space-between;">
+                            <span><strong>${interview.name}</strong> ${statusIcon}</span>
+                            <span style="color: #6c757d;">${interview.date}</span>
+                        </div>
+                    `;
+                });
+                logHTML += '</div>';
+                
+                const validationRate = total > 0 ? Math.round((validated / total) * 100) : 0;
+                logHTML += `
+                    <div style="margin-top: 15px; padding: 15px; background: ${validationRate >= 70 ? '#e8f5e8' : validationRate >= 50 ? '#fff9e6' : '#ffebee'}; border-radius: 5px;">
+                        <strong>Validation Rate: ${validationRate}%</strong><br>
+                        ${validationRate >= 70 ? '🎉 Excellent! Strong problem validation.' : 
+                          validationRate >= 50 ? '⚠️ Good start. Keep interviewing for more confidence.' : 
+                          '🚨 Consider pivoting your problem statement.'}
+                    </div>
+                `;
+                
+                logContainer.innerHTML = logHTML;
+                interviewResults.reverse(); // Restore original order
+            }
+        }
+        
+        // Initialize tracker on page load
+        updateTrackerDisplay();
+    </script>
+</body>
+</html>

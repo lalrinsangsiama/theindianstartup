@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 const VALID_SECTIONS = [
@@ -107,7 +108,7 @@ export async function PATCH(
       .single();
 
     if (updateError) {
-      console.error('Portfolio section update error:', updateError);
+      logger.error('Portfolio section update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update portfolio section' },
         { status: 500 }
@@ -121,7 +122,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Portfolio section API error:', error);
+    logger.error('Portfolio section API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

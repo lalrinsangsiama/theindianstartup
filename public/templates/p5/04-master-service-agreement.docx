@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Master Service Agreement</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .parties { border: 1px solid #000; padding: 15px; margin: 20px 0; }
+        .section { margin: 25px 0; }
+        .clause { margin: 15px 0; }
+        .signature-block { margin-top: 40px; border-top: 1px solid #000; padding-top: 20px; }
+        .fill-in { border-bottom: 1px solid #000; min-width: 200px; }
+        h1 { font-size: 18px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 16px; margin-top: 30px; }
+        h3 { font-size: 14px; margin-top: 20px; }
+        .checkbox { display: inline-block; width: 15px; height: 15px; border: 1px solid #000; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 10px; vertical-align: top; }
+        .highlight { background-color: #f0f0f0; padding: 10px; border-left: 4px solid #000; margin: 15px 0; }
+        .payment-terms { border: 2px solid #000; padding: 15px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MASTER SERVICE AGREEMENT</h1>
+        <h2>Comprehensive B2B Services Framework</h2>
+        <p><strong>Professional Services Contract for Business Relationships</strong></p>
+    </div>
+
+    <div class="parties">
+        <p><strong>MASTER SERVICE AGREEMENT</strong></p>
+        <p>This Master Service Agreement ("Agreement") is entered into on <span class="fill-in">_______</span> day of <span class="fill-in">_______</span>, 2024, between:</p>
+        
+        <p><strong>SERVICE PROVIDER:</strong></p>
+        <p>[Company Name] <span class="fill-in">_________________________</span></p>
+        <p>CIN/Registration: <span class="fill-in">_________________________</span></p>
+        <p>Address: <span class="fill-in">____________________</span></p>
+        <p><span class="fill-in">_____________________________</span></p>
+        <p>GST No.: <span class="fill-in">_________________________</span></p>
+        <p>Email: <span class="fill-in">______________________</span></p>
+        <p>("Service Provider" or "Provider")</p>
+
+        <p><strong>CLIENT:</strong></p>
+        <p>[Company Name] <span class="fill-in">_________________________</span></p>
+        <p>CIN/Registration: <span class="fill-in">_________________________</span></p>
+        <p>Address: <span class="fill-in">____________________</span></p>
+        <p><span class="fill-in">_____________________________</span></p>
+        <p>GST No.: <span class="fill-in">_________________________</span></p>
+        <p>Email: <span class="fill-in">______________________</span></p>
+        <p>("Client" or "Customer")</p>
+    </div>
+
+    <div class="section">
+        <h2>1. SCOPE OF SERVICES</h2>
+        
+        <div class="clause">
+            <h3>1.1 Service Categories</h3>
+            <p>The Service Provider agrees to provide the following categories of services:</p>
+            <p><span class="checkbox">☐</span> Technology development and consulting</p>
+            <p><span class="checkbox">☐</span> Marketing and advertising services</p>
+            <p><span class="checkbox">☐</span> Business consulting and strategy</p>
+            <p><span class="checkbox">☐</span> Financial and accounting services</p>
+            <p><span class="checkbox">☐</span> Legal and compliance services</p>
+            <p><span class="checkbox">☐</span> Human resources and recruitment</p>
+            <p><span class="checkbox">☐</span> Operations and logistics support</p>
+            <p><span class="checkbox">☐</span> Other: <span class="fill-in">_________________________</span></p>
+        </div>
+
+        <div class="clause">
+            <h3>1.2 Service Specifications</h3>
+            <p>Detailed specifications for each service engagement will be documented in separate Statements of Work ("SOWs") or Work Orders that reference this Master Agreement. Each SOW will include:</p>
+            <p>• Specific deliverables and milestones</p>
+            <p>• Timeline and performance standards</p>
+            <p>• Resource requirements and responsibilities</p>
+            <p>• Pricing and payment terms (if different from this Agreement)</p>
+            <p>• Acceptance criteria and testing procedures</p>
+        </div>
+
+        <div class="clause">
+            <h3>1.3 Service Standards</h3>
+            <p>All services will be performed:</p>
+            <p>• In accordance with industry best practices and standards</p>
+            <p>• By qualified and experienced personnel</p>
+            <p>• With professional care, skill, and diligence</p>
+            <p>• In compliance with all applicable laws and regulations</p>
+            <p>• Meeting or exceeding agreed performance metrics</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. TERMS AND CONDITIONS</h2>
+        
+        <div class="clause">
+            <h3>2.1 Term</h3>
+            <p><strong>Initial Term:</strong> <span class="fill-in">_____</span> years from the Effective Date</p>
+            <p><strong>Renewal:</strong> Automatic renewal for successive <span class="fill-in">_____</span> year periods unless either party provides <span class="fill-in">_____</span> days written notice</p>
+            <p><strong>Early Termination:</strong> Either party may terminate with <span class="fill-in">_____</span> days written notice</p>
+        </div>
+
+        <div class="clause">
+            <h3>2.2 Performance Standards</h3>
+            <div class="highlight">
+                <p><strong>Service Level Agreements (SLAs):</strong></p>
+                <p>• Response Time: <span class="fill-in">_____</span> hours for initial response</p>
+                <p>• Resolution Time: <span class="fill-in">_____</span> business days for standard issues</p>
+                <p>• Availability: <span class="fill-in">_____</span>% uptime (for technology services)</p>
+                <p>• Quality Metrics: <span class="fill-in">_____</span>% customer satisfaction rating</p>
+                <p>• Communication: Weekly/Monthly status reports</p>
+            </div>
+        </div>
+
+        <div class="clause">
+            <h3>2.3 Key Personnel</h3>
+            <p><strong>Service Provider Key Personnel:</strong></p>
+            <p>• Project Manager: <span class="fill-in">_________________________</span></p>
+            <p>• Technical Lead: <span class="fill-in">_________________________</span></p>
+            <p>• Account Manager: <span class="fill-in">_________________________</span></p>
+            
+            <p><strong>Personnel Changes:</strong> Service Provider must obtain Client's prior written approval before replacing key personnel. Replacement personnel must have equivalent or superior qualifications.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. FINANCIAL TERMS</h2>
+        
+        <div class="payment-terms">
+            <h3>3.1 Pricing Structure</h3>
+            <p><strong>Pricing Model:</strong></p>
+            <p><span class="checkbox">☐</span> Fixed Fee: ₹<span class="fill-in">_______</span> per project/month</p>
+            <p><span class="checkbox">☐</span> Time & Materials: ₹<span class="fill-in">_______</span> per hour</p>
+            <p><span class="checkbox">☐</span> Retainer: ₹<span class="fill-in">_______</span> monthly</p>
+            <p><span class="checkbox">☐</span> Performance-based: <span class="fill-in">_____</span>% of achieved results</p>
+            <p><span class="checkbox">☐</span> Hybrid: Combination of above</p>
+
+            <p><strong>Rate Card (if applicable):</strong></p>
+            <p>• Senior Consultant: ₹<span class="fill-in">_______</span>/hour</p>
+            <p>• Project Manager: ₹<span class="fill-in">_______</span>/hour</p>
+            <p>• Technical Specialist: ₹<span class="fill-in">_______</span>/hour</p>
+            <p>• Junior Analyst: ₹<span class="fill-in">_______</span>/hour</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.2 Payment Terms</h3>
+            <p><strong>Invoice Schedule:</strong></p>
+            <p>• Monthly invoicing on the <span class="fill-in">_____</span> of each month</p>
+            <p>• Project milestones (for fixed-fee engagements)</p>
+            <p>• Upon completion of deliverables</p>
+            
+            <p><strong>Payment Terms:</strong> Net <span class="fill-in">_____</span> days from invoice date</p>
+            <p><strong>Late Payment:</strong> <span class="fill-in">_____</span>% per month interest on overdue amounts</p>
+            <p><strong>Currency:</strong> Indian Rupees (INR)</p>
+            <p><strong>GST:</strong> Applicable GST will be charged extra as per law</p>
+        </div>
+
+        <div class="clause">
+            <h3>3.3 Expenses</h3>
+            <p><strong>Reimbursable Expenses:</strong></p>
+            <p>• Travel and accommodation (with prior approval)</p>
+            <p>• Third-party software licenses (for Client use)</p>
+            <p>• Specialized equipment or materials</p>
+            <p>• Other pre-approved expenses above ₹<span class="fill-in">_______</span></p>
+            
+            <p><strong>Expense Policy:</strong> All expenses require prior written approval and proper documentation with receipts.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. INTELLECTUAL PROPERTY</h2>
+        
+        <div class="clause">
+            <h3>4.1 Work Product Ownership</h3>
+            <p><strong>Client-Owned IP:</strong></p>
+            <p>• Custom deliverables created specifically for Client</p>
+            <p>• Modifications to Client's existing IP</p>
+            <p>• Client-specific configurations and customizations</p>
+            
+            <p><strong>Provider-Owned IP:</strong></p>
+            <p>• Pre-existing methodologies, tools, and frameworks</p>
+            <p>• General knowledge and experience gained</p>
+            <p>• Improvements to Provider's existing IP</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.2 License Grants</h3>
+            <p><strong>Client License to Provider:</strong> Client grants Provider a non-exclusive license to use Client's IP solely for providing Services under this Agreement.</p>
+            
+            <p><strong>Provider License to Client:</strong> Provider grants Client a non-exclusive, perpetual license to use any Provider IP incorporated into deliverables.</p>
+        </div>
+
+        <div class="clause">
+            <h3>4.3 Third-Party IP</h3>
+            <p>Both parties warrant they have rights to use any third-party IP included in their contributions and will secure necessary licenses for the other party's use.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. CONFIDENTIALITY AND DATA PROTECTION</h2>
+        
+        <div class="clause">
+            <h3>5.1 Confidential Information</h3>
+            <p>Both parties acknowledge they may receive confidential information. Each party agrees to:</p>
+            <p>• Maintain strict confidentiality of the other party's information</p>
+            <p>• Use confidential information solely for performing under this Agreement</p>
+            <p>• Limit access to employees with legitimate need to know</p>
+            <p>• Return or destroy confidential information upon termination</p>
+        </div>
+
+        <div class="clause">
+            <h3>5.2 Data Protection</h3>
+            <p>Where services involve personal data processing:</p>
+            <p>• Provider will comply with applicable data protection laws</p>
+            <p>• Appropriate security measures will be implemented</p>
+            <p>• Data processing will be limited to agreed purposes</p>
+            <p>• Data subject rights will be respected and facilitated</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. REPRESENTATIONS AND WARRANTIES</h2>
+        
+        <div class="clause">
+            <h3>6.1 Mutual Warranties</h3>
+            <p>Each party represents and warrants:</p>
+            <p>• Full corporate authority to enter this Agreement</p>
+            <p>• Compliance with all applicable laws and regulations</p>
+            <p>• No conflicts with existing agreements or obligations</p>
+            <p>• Accuracy of information provided</p>
+        </div>
+
+        <div class="clause">
+            <h3>6.2 Service Provider Warranties</h3>
+            <p>Service Provider additionally warrants:</p>
+            <p>• Services will be performed in workmanlike manner</p>
+            <p>• Personnel have necessary qualifications and certifications</p>
+            <p>• Services will conform to agreed specifications</p>
+            <p>• No infringement of third-party rights</p>
+            
+            <p><strong>Warranty Period:</strong> <span class="fill-in">_____</span> days after delivery/completion</p>
+            <p><strong>Remedy:</strong> Re-performance of non-conforming services at no cost</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7. LIABILITY AND INDEMNIFICATION</h2>
+        
+        <div class="clause">
+            <h3>7.1 Limitation of Liability</h3>
+            <div class="highlight">
+                <p><strong>Liability Cap:</strong> Each party's total liability shall not exceed:</p>
+                <p><span class="checkbox">☐</span> ₹<span class="fill-in">_______</span> (specific amount)</p>
+                <p><span class="checkbox">☐</span> <span class="fill-in">_____</span>% of fees paid in the 12 months preceding the claim</p>
+                <p><span class="checkbox">☐</span> Total fees payable under this Agreement</p>
+                
+                <p><strong>Excluded Damages:</strong> Neither party liable for:</p>
+                <p>• Indirect, consequential, or special damages</p>
+                <p>• Lost profits or revenue</p>
+                <p>• Business interruption costs</p>
+                <p>• Loss of data or goodwill</p>
+                
+                <p><strong>Exceptions:</strong> Liability limitations do not apply to:</p>
+                <p>• Confidentiality breaches</p>
+                <p>• IP infringement</p>
+                <p>• Willful misconduct or fraud</p>
+                <p>• Death or personal injury</p>
+            </div>
+        </div>
+
+        <div class="clause">
+            <h3>7.2 Indemnification</h3>
+            <p><strong>Service Provider Indemnification:</strong> Provider will indemnify Client against claims arising from:</p>
+            <p>• Provider's negligence or misconduct</p>
+            <p>• IP infringement by Provider's services</p>
+            <p>• Provider's breach of confidentiality</p>
+            
+            <p><strong>Client Indemnification:</strong> Client will indemnify Provider against claims arising from:</p>
+            <p>• Client's misuse of services</p>
+            <p>• Client's breach of this Agreement</p>
+            <p>• Claims related to Client's business or products</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. TERMINATION</h2>
+        
+        <div class="clause">
+            <h3>8.1 Termination for Convenience</h3>
+            <p>Either party may terminate this Agreement for convenience with <span class="fill-in">_____</span> days written notice.</p>
+        </div>
+
+        <div class="clause">
+            <h3>8.2 Termination for Cause</h3>
+            <p>Either party may terminate immediately for:</p>
+            <p>• Material breach not cured within <span class="fill-in">_____</span> days of notice</p>
+            <p>• Insolvency, bankruptcy, or assignment for benefit of creditors</p>
+            <p>• Breach of confidentiality or IP provisions</p>
+        </div>
+
+        <div class="clause">
+            <h3>8.3 Effect of Termination</h3>
+            <p>Upon termination:</p>
+            <p>• Provider will complete work in progress (unless terminated for cause)</p>
+            <p>• Client will pay for services performed through termination date</p>
+            <p>• Each party will return confidential information</p>
+            <p>• Accrued rights and obligations will survive</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>9. GENERAL PROVISIONS</h2>
+        
+        <div class="clause">
+            <h3>9.1 Governing Law and Dispute Resolution</h3>
+            <p><strong>Governing Law:</strong> This Agreement shall be governed by the laws of India.</p>
+            <p><strong>Jurisdiction:</strong> Courts of <span class="fill-in">[City]</span>, India shall have exclusive jurisdiction.</p>
+            <p><strong>Dispute Resolution:</strong></p>
+            <p>1. Good faith negotiation (30 days)</p>
+            <p>2. Mediation (if negotiation fails)</p>
+            <p>3. Arbitration under ICC Rules (if mediation fails)</p>
+            <p>4. Court proceedings (for injunctive relief)</p>
+        </div>
+
+        <div class="clause">
+            <h3>9.2 Force Majeure</h3>
+            <p>Neither party liable for delays due to circumstances beyond reasonable control, including natural disasters, government actions, labor disputes, or technical failures.</p>
+        </div>
+
+        <div class="clause">
+            <h3>9.3 Independent Contractors</h3>
+            <p>The parties are independent contractors. This Agreement does not create employment, partnership, or agency relationship.</p>
+        </div>
+    </div>
+
+    <div class="signature-block">
+        <h2>EXECUTION</h2>
+        <p>IN WITNESS WHEREOF, the parties have executed this Master Service Agreement on the date first written above.</p>
+        
+        <table width="100%">
+            <tr>
+                <td width="50%">
+                    <p><strong>SERVICE PROVIDER:</strong></p>
+                    <p>[Company Name]</p>
+                    <br><br>
+                    <p>By: _________________________</p>
+                    <p>Name: _______________________</p>
+                    <p>Title: ______________________</p>
+                    <p>Date: ______________________</p>
+                </td>
+                <td width="50%">
+                    <p><strong>CLIENT:</strong></p>
+                    <p>[Company Name]</p>
+                    <br><br>
+                    <p>By: _________________________</p>
+                    <p>Name: _______________________</p>
+                    <p>Title: ______________________</p>
+                    <p>Date: ______________________</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 2px solid #000; padding-top: 20px;">
+        <p><strong>SCHEDULE A: STATEMENT OF WORK TEMPLATE</strong></p>
+        <p>Each SOW will include: Project Description, Deliverables, Timeline, Resources, Acceptance Criteria, Specific Terms</p>
+        
+        <br>
+        <p><strong>IMPORTANT LEGAL NOTICE:</strong></p>
+        <p>This Master Service Agreement template should be customized for specific business relationships and reviewed by qualified legal counsel.</p>
+        
+        <p><strong>Template Source:</strong> The Indian Startup - P5 Legal Stack<br>
+        <strong>Version:</strong> 2.0 | <strong>Last Updated:</strong> December 2024<br>
+        <strong>Jurisdiction:</strong> India | <strong>Review Required:</strong> Legal counsel recommended</p>
+    </div>
+</body>
+</html>

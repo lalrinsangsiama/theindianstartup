@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { logger } from '@/lib/logger';
 import { trackError, TrackableError } from '@/lib/error-tracking';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -73,8 +74,8 @@ export class ErrorBoundary extends Component<Props, State> {
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.group('🚨 Error Boundary Caught Error');
-      console.error('Error:', error);
-      console.error('Error Info:', errorInfo);
+      logger.error('Error:', error);
+      logger.error('Error Info:', errorInfo);
       console.groupEnd();
     }
   }
@@ -136,7 +137,7 @@ export class ErrorBoundary extends Component<Props, State> {
             
             <CardContent className="space-y-4">
               <Text className="text-center text-gray-600">
-                We&apos;re sorry, but something unexpected happened. Our team has been notified and is working to fix this issue.
+                We're sorry, but something unexpected happened. Our team has been notified and is working to fix this issue.
               </Text>
 
               {this.state.errorId && (

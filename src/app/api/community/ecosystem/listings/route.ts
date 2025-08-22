@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
     const { data: listings, error } = await query;
 
     if (error) {
-      console.error('Error fetching listings:', error);
+      logger.error('Error fetching listings:', error);
       return NextResponse.json(
         { error: 'Failed to fetch listings' },
         { status: 500 }
@@ -123,7 +124,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Listings API error:', error);
+    logger.error('Listings API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -191,7 +192,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (listingError) {
-      console.error('Error creating listing:', listingError);
+      logger.error('Error creating listing:', listingError);
       return NextResponse.json(
         { error: 'Failed to create listing' },
         { status: 500 }
@@ -213,7 +214,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create listing error:', error);
+    logger.error('Create listing error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

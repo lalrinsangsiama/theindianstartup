@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
@@ -47,35 +48,37 @@ interface Module {
 
 const modules: Module[] = [
   {
-    id: 'foundations',
-    title: 'Marketing Foundations & Strategy',
-    description: 'Master modern marketing fundamentals, customer understanding, and strategic framework development',
-    days: 'Days 1-4',
-    lessons: 4,
+    id: 'p12_mod_1',
+    title: 'Strategic Marketing Foundation & Executive Leadership',
+    description: 'Master strategic marketing thinking with frameworks from Flipkart CEO. Build marketing vision, goal-setting systems, and resource optimization for 10x growth.',
+    days: 'Days 1-5',
+    lessons: 5,
     icon: Target,
     color: 'bg-blue-500',
-    xpReward: 600,
+    xpReward: 750,
     topics: [
-      'Marketing vs Sales vs Branding distinction',
-      'Customer journey mapping (AAARRR)',
-      'Performance vs Brand marketing balance',
-      'Marketing metrics & KPIs mastery'
+      'Marketing Strategy Evolution - From Startup to ₹1000Cr (Flipkart CEO)',
+      'Digital-First Marketing - Building India\'s Largest Tech Brands',
+      'Marketing Goal Setting & OKR Framework Mastery',
+      'Marketing Budget Optimization & ROI Maximization',
+      'Competitive Analysis & Market Positioning Excellence'
     ]
   },
   {
-    id: 'digital-fundamentals',
-    title: 'Digital Marketing Fundamentals',
-    description: 'Master SEO, PPC, social media, and content marketing for maximum online presence',
-    days: 'Days 5-10',
-    lessons: 6,
+    id: 'p12_mod_2',
+    title: 'Digital Marketing Excellence - Multi-Channel Mastery',
+    description: 'Complete digital ecosystem mastery with Zomato CMO insights. Performance marketing, SEO dominance, and PPC optimization generating ₹100Cr+ revenue.',
+    days: 'Days 6-10',
+    lessons: 5,
     icon: Globe,
     color: 'bg-green-500',
     xpReward: 900,
     topics: [
-      'Search Engine Optimization (SEO)',
-      'Pay-Per-Click Advertising (PPC)',
-      'Social media marketing strategies',
-      'Content marketing frameworks'
+      'Performance Marketing at Scale - ₹100Cr+ Ad Spend (Zomato CEO)',
+      'Search Marketing Supremacy - Dominating Google (Paytm CMO)',
+      'Social Media Advertising & Paid Social Mastery',
+      'Marketing Analytics & Data-Driven Optimization',
+      'Conversion Rate Optimization & A/B Testing Mastery'
     ]
   },
   {
@@ -259,7 +262,29 @@ export default function MarketingMasteryPage() {
   useEffect(() => {
     const fetchProgress = async () => {
       try {
-        // This would be replaced with actual API call
+        // Fetch actual P12 progress from backend
+        const response = await fetch('/api/products/p12_marketing/progress', {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setProgress(data);
+        } else {
+          // Default progress if API fails
+          setProgress({
+            totalLessons: 60,
+            completedLessons: 0,
+            currentDay: 1,
+            totalXP: 0,
+            badges: [],
+            moduleProgress: {}
+          });
+        }
+      } catch (error) {
+        logger.error('Failed to fetch P12 progress:', error);
+        // Default progress on error
         setProgress({
           totalLessons: 60,
           completedLessons: 0,
@@ -268,15 +293,15 @@ export default function MarketingMasteryPage() {
           badges: [],
           moduleProgress: {}
         });
-      } catch (error) {
-        console.error('Failed to fetch progress:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProgress();
-  }, []);
+    if (user) {
+      fetchProgress();
+    }
+  }, [user]);
 
   const toggleModule = (moduleId: string) => {
     setExpandedModules(prev => 
@@ -287,8 +312,16 @@ export default function MarketingMasteryPage() {
   };
 
   const startModule = (moduleId: string) => {
-    // This would navigate to the first lesson of the module
-    console.log(`Starting module: ${moduleId}`);
+    // Navigate to the first lesson of the P12 module
+    logger.info(`Starting P12 module: ${moduleId}`);
+    
+    // Find the module to get the day range
+    const module = modules.find(m => m.id === moduleId);
+    if (module) {
+      // Extract first day from the days string (e.g., "Days 1-5" -> 1)
+      const firstDay = parseInt(module.days.split(' ')[1].split('-')[0]);
+      router.push(`/products/p12_marketing/lessons/${firstDay}`);
+    }
   };
 
   if (loading) {
@@ -304,7 +337,7 @@ export default function MarketingMasteryPage() {
   const progressPercentage = progress ? (progress.completedLessons / progress.totalLessons) * 100 : 0;
 
   return (
-    <ProductProtectedRoute productCode="P12">
+    <ProductProtectedRoute productCode="p12_marketing">
       <DashboardLayout>
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
@@ -318,9 +351,9 @@ export default function MarketingMasteryPage() {
               Marketing Mastery - Complete Growth Engine
             </Heading>
             <Text size="lg" color="muted" className="max-w-3xl">
-              Transform into a data-driven marketing machine generating predictable customer acquisition, 
-              retention, and growth with measurable ROI. Master all marketing channels from SEO to AI, 
-              build complete marketing systems, and create predictable growth engines that scale.
+              Build a data-driven marketing machine generating predictable growth across all channels with expert guidance 
+              from Flipkart, Zomato, and Nykaa leadership teams. Master 500+ marketing templates (Worth ₹5,00,000+), 
+              50+ hours of expert masterclasses, and get triple industry certification with 1,500x ROI potential.
             </Text>
           </div>
 
@@ -356,39 +389,39 @@ export default function MarketingMasteryPage() {
           {/* Key Outcomes */}
           <Card className="mb-8">
             <div className="p-6">
-              <Heading as="h2" variant="h4" className="mb-4">What You&apos;ll Achieve</Heading>
+              <Heading as="h2" variant="h4" className="mb-4">What You'll Achieve</Heading>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <Heading as="h3" variant="h6" className="mb-3">Marketing Infrastructure</Heading>
+                  <Heading as="h3" variant="h6" className="mb-3">Expert-Led Marketing Mastery</Heading>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Complete marketing technology stack setup</Text>
+                      <Text size="sm">500+ Marketing Templates (Worth ₹5,00,000+)</Text>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Advanced analytics & attribution systems</Text>
+                      <Text size="sm">50+ Hours Expert Masterclasses from Unicorn CEOs</Text>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Marketing automation workflows</Text>
+                      <Text size="sm">Triple Industry Certification & Recognition</Text>
                     </li>
                   </ul>
                 </div>
                 <div>
-                  <Heading as="h3" variant="h6" className="mb-3">Growth & Results</Heading>
+                  <Heading as="h3" variant="h6" className="mb-3">Growth & Career Impact</Heading>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Predictable customer acquisition engine</Text>
+                      <Text size="sm">1,500x Return on Investment Potential</Text>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Measurable ROI on all marketing campaigns</Text>
+                      <Text size="sm">50-300% Salary Increase Capability</Text>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Scalable growth systems & processes</Text>
+                      <Text size="sm">Complete Marketing Technology Stack Mastery</Text>
                     </li>
                   </ul>
                 </div>

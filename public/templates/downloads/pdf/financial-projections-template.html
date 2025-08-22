@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Projections Template - The Indian Startup</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2c3e50;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .company-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .company-info div {
+            flex: 1;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section h2 {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #ecf0f1;
+            border-left: 4px solid #3498db;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 10px;
+        }
+        
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 6px 4px;
+            text-align: right;
+        }
+        
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .row-header {
+            text-align: left !important;
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .subtotal {
+            background: #e8f4f8;
+            font-weight: bold;
+        }
+        
+        .total {
+            background: #d5e8d4;
+            font-weight: bold;
+            border-top: 2px solid #27ae60;
+        }
+        
+        .assumptions {
+            background: #fff9e6;
+            padding: 15px;
+            border: 1px solid #f1c40f;
+            border-radius: 5px;
+        }
+        
+        .assumptions h3 {
+            color: #f39c12;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .assumptions ul {
+            padding-left: 20px;
+        }
+        
+        .assumptions li {
+            margin-bottom: 3px;
+            font-size: 10px;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 10mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 9px;
+            color: #7f8c8d;
+            border-top: 1px solid #bdc3c7;
+            padding-top: 5px;
+        }
+        
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>5-Year Financial Projections</h1>
+        <div class="subtitle">Indian Startup Financial Planning Template (All figures in INR Lakhs)</div>
+    </div>
+
+    <div class="company-info">
+        <div><strong>Company:</strong> _________________________</div>
+        <div><strong>Industry:</strong> _________________________</div>
+        <div><strong>Prepared by:</strong> _____________________</div>
+        <div><strong>Date:</strong> ___________</div>
+    </div>
+
+    <div class="section">
+        <h2>Revenue Projections</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Revenue Streams</th>
+                    <th>Year 1</th>
+                    <th>Year 2</th>
+                    <th>Year 3</th>
+                    <th>Year 4</th>
+                    <th>Year 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="row-header">Product/Service Sales</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Subscription Revenue</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Consulting/Services</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Other Revenue</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr class="total">
+                    <td class="row-header">Total Revenue</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Cost Structure</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cost Categories</th>
+                    <th>Year 1</th>
+                    <th>Year 2</th>
+                    <th>Year 3</th>
+                    <th>Year 4</th>
+                    <th>Year 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="row-header"><strong>Cost of Goods Sold (COGS)</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="row-header">Direct Materials</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Direct Labor</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Manufacturing Overhead</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr class="subtotal">
+                    <td class="row-header">Total COGS</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header"><strong>Operating Expenses</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="row-header">Salaries & Benefits</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Marketing & Advertising</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Technology & Software</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Office & Admin</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Professional Services</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr class="subtotal">
+                    <td class="row-header">Total OpEx</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Profitability Analysis</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="row-header">Total Revenue</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Total COGS</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr class="subtotal">
+                    <td class="row-header"><strong>Gross Profit</strong></td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Total OpEx</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr class="total">
+                    <td class="row-header"><strong>EBITDA</strong></td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Depreciation</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Interest Expense</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr class="total">
+                    <td class="row-header"><strong>Net Income (Before Tax)</strong></td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section">
+        <h2>Cash Flow Projections</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="row-header">Net Income</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Depreciation</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Working Capital Changes</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr class="subtotal">
+                    <td class="row-header">Operating Cash Flow</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Capital Expenditures</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Investment Cash Flow</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                    <td>(_______)</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Debt/Equity Financing</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr class="total">
+                    <td class="row-header"><strong>Net Cash Flow</strong></td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Cumulative Cash</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="assumptions">
+        <h3>Key Assumptions & Notes</h3>
+        <ul>
+            <li><strong>Revenue Growth:</strong> _______________________________________________</li>
+            <li><strong>Customer Acquisition:</strong> ________________________________________</li>
+            <li><strong>Pricing Strategy:</strong> ___________________________________________</li>
+            <li><strong>Market Size:</strong> ________________________________________________</li>
+            <li><strong>Competition:</strong> ________________________________________________</li>
+            <li><strong>Team Growth:</strong> ________________________________________________</li>
+            <li><strong>Technology Costs:</strong> __________________________________________</li>
+            <li><strong>Capital Requirements:</strong> _______________________________________</li>
+            <li><strong>Funding Timeline:</strong> ___________________________________________</li>
+            <li><strong>Risk Factors:</strong> ______________________________________________</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Key Performance Metrics</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="row-header">Customer Acquisition Cost (CAC)</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Customer Lifetime Value (CLV)</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Monthly Recurring Revenue (MRR)</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Gross Margin %</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Burn Rate (Monthly)</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Runway (Months)</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                    <td>_______</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <strong>The Indian Startup</strong> | theindianstartup.in | Financial Projections Template<br>
+        This template is for planning purposes. Consult with a qualified accountant for accuracy.
+    </div>
+</body>
+</html>

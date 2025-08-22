@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -135,7 +136,7 @@ export default function PortfolioDashboardPage() {
         }
         
       } catch (err) {
-        console.error('Failed to fetch portfolio data:', err);
+        logger.error('Failed to fetch portfolio data:', err);
         setError('Failed to load portfolio. Please try refreshing the page.');
       } finally {
         setIsLoading(false);

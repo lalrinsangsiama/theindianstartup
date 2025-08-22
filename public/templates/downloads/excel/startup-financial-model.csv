@@ -1,0 +1,132 @@
+Startup Financial Model - The Indian Startup
+Company Name:,___________________,Industry:,___________________,Date:,___________
+
+REVENUE PROJECTIONS (INR Lakhs)
+Revenue Streams,Year 1,Year 2,Year 3,Year 4,Year 5,Growth Rate,Notes
+Product Sales,0,0,0,0,0,,%
+Subscription Revenue,0,0,0,0,0,,%
+Consulting Services,0,0,0,0,0,,%
+Licensing Revenue,0,0,0,0,0,,%
+Other Revenue,0,0,0,0,0,,%
+Total Revenue,=SUM(B4:B8),=SUM(C4:C8),=SUM(D4:D8),=SUM(E4:E8),=SUM(F4:F8),,
+
+COST STRUCTURE (INR Lakhs)
+Cost Categories,Year 1,Year 2,Year 3,Year 4,Year 5,% of Revenue,Notes
+Cost of Goods Sold,0,0,0,0,0,,
+- Direct Materials,0,0,0,0,0,,
+- Direct Labor,0,0,0,0,0,,
+- Manufacturing Overhead,0,0,0,0,0,,
+Total COGS,=SUM(B13:B15),=SUM(C13:C15),=SUM(D13:D15),=SUM(E13:E15),=SUM(F13:F15),,
+
+Operating Expenses
+Salaries & Benefits,0,0,0,0,0,,
+Marketing & Advertising,0,0,0,0,0,,
+Technology & Software,0,0,0,0,0,,
+Office & Administration,0,0,0,0,0,,
+Professional Services,0,0,0,0,0,,
+Travel & Entertainment,0,0,0,0,0,,
+Insurance,0,0,0,0,0,,
+Other OpEx,0,0,0,0,0,,
+Total OpEx,=SUM(B19:B26),=SUM(C19:C26),=SUM(D19:D26),=SUM(E19:E26),=SUM(F19:F26),,
+
+PROFITABILITY ANALYSIS
+Total Revenue,=B9,=C9,=D9,=E9,=F9,,
+Less: Total COGS,=-B16,=-C16,=-D16,=-E16,=-F16,,
+Gross Profit,=B30+B31,=C30+C31,=D30+D31,=E30+E31,=F30+F31,,
+Gross Margin %,=B32/B30,=C32/C30,=D32/D30,=E32/E30,=F32/F30,,
+
+Less: Total OpEx,=-B27,=-C27,=-D27,=-E27,=-F27,,
+EBITDA,=B32+B35,=C32+C35,=D32+D35,=E32+E35,=F32+F35,,
+EBITDA Margin %,=B36/B30,=C36/C30,=D36/D30,=E36/E30,=F36/F30,,
+
+Less: Depreciation,0,0,0,0,0,,
+Less: Interest Expense,0,0,0,0,0,,
+Net Income (Before Tax),=B36+B39+B40,=C36+C39+C40,=D36+D39+D40,=E36+E39+E40,=F36+F39+F40,,
+Net Margin %,=B41/B30,=C41/C30,=D41/D30,=E41/E30,=F41/F30,,
+
+CASH FLOW PROJECTIONS
+Operating Activities
+Net Income,=B41,=C41,=D41,=E41,=F41,,
+Add: Depreciation,=B39,=C39,=D39,=E39,=F39,,
+Working Capital Changes,0,0,0,0,0,,
+Operating Cash Flow,=B46+B47+B48,=C46+C47+C48,=D46+D47+D48,=E46+E47+E48,=F46+F47+F48,,
+
+Investing Activities
+Capital Expenditures,0,0,0,0,0,,
+Investment Cash Flow,=-B52,=-C52,=-D52,=-E52,=-F52,,
+
+Financing Activities
+Debt Financing,0,0,0,0,0,,
+Equity Financing,0,0,0,0,0,,
+Financing Cash Flow,=B56+B57,=C56+C57,=D56+D57,=E56+E57,=F56+F57,,
+
+Net Cash Flow,=B49+B53+B58,=C49+C53+C58,=D49+D53+D58,=E49+E53+E58,=F49+F53+F58,,
+Beginning Cash,0,=B60,=C60,=D60,=E60,,
+Ending Cash,=B60+B61,=C60+C61,=D60+D61,=E60+E61,=F60+F61,,
+
+KEY METRICS
+Customer Metrics,Year 1,Year 2,Year 3,Year 4,Year 5,,
+New Customers Acquired,0,0,0,0,0,,
+Total Customers,=B65,=B66+C65,=C66+D65,=D66+E65,=E66+F65,,
+Customer Retention Rate,%,80%,85%,90%,90%,90%,
+Churn Rate,%,20%,15%,10%,10%,10%,
+
+Unit Economics
+Customer Acquisition Cost (CAC),0,0,0,0,0,,
+Customer Lifetime Value (CLV),0,0,0,0,0,,
+CLV:CAC Ratio,=B71/B70,=C71/C70,=D71/D70,=E71/E70,=F71/F70,,
+Monthly Recurring Revenue (MRR),0,0,0,0,0,,
+Annual Run Rate (ARR),=B73*12,=C73*12,=D73*12,=E73*12,=F73*12,,
+
+Financial Health
+Burn Rate (Monthly),0,0,0,0,0,,
+Runway (Months),0,0,0,0,0,,
+Revenue per Employee,=B30/1,=C30/1,=D30/1,=E30/1,=F30/1,, Update employee count
+Debt-to-Equity Ratio,0,0,0,0,0,,
+
+FUNDING REQUIREMENTS
+Funding Rounds,Pre-Seed,Seed,Series A,Series B,Series C,,
+Funding Amount (Lakhs),0,0,0,0,0,,
+Valuation (Lakhs),0,0,0,0,0,,
+Equity Dilution %,0%,0%,0%,0%,0%,,
+Use of Funds,,,,,,,
+- Product Development,0%,0%,0%,0%,0%,,
+- Marketing & Sales,0%,0%,0%,0%,0%,,
+- Team Expansion,0%,0%,0%,0%,0%,,
+- Working Capital,0%,0%,0%,0%,0%,,
+- Other,0%,0%,0%,0%,0%,,
+
+SENSITIVITY ANALYSIS
+Scenario Analysis,Base Case,Best Case,Worst Case,,,
+Revenue Growth Rate,0%,0%,0%,,,
+Market Size Assumption,0,0,0,,,
+Competition Impact,Low,Low,High,,,
+Funding Success Rate,100%,100%,50%,,,
+
+NOTES & ASSUMPTIONS
+Key Assumptions:
+1. Revenue growth based on market research and competitive analysis
+2. Customer acquisition costs derived from marketing channel analysis
+3. Operating expenses scaled with revenue growth and team expansion
+4. Capital requirements estimated based on technology and infrastructure needs
+5. Funding timeline aligned with growth milestones and cash flow requirements
+
+Risk Factors:
+1. Market adoption risk
+2. Competitive response risk
+3. Technology execution risk
+4. Funding availability risk
+5. Regulatory/compliance risk
+
+Validation Checklist:
+□ Market size validated through primary research
+□ Pricing strategy tested with potential customers  
+□ Cost structure benchmarked against competitors
+□ Funding requirements aligned with business plan
+□ Key metrics reviewed with industry standards
+□ Sensitivity analysis covers realistic scenarios
+□ Assumptions documented and defendable
+
+Contact: support@theindianstartup.in
+Template Version: 2.0
+Last Updated: 2024

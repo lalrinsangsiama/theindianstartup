@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { createFirstPurchaseCoupon, markCouponAsUsed } from '@/lib/coupon-utils';
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (updateError || !purchase) {
-      console.error('Update error:', updateError);
+      logger.error('Update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update purchase' },
         { status: 500 }
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
       try {
         await markCouponAsUsed(purchase.couponId, purchase.id);
       } catch (couponError) {
-        console.error('Failed to mark coupon as used:', couponError);
+        logger.error('Failed to mark coupon as used:', couponError);
         // Don't fail the purchase verification
       }
     }
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', user.id);
     } catch (xpError) {
-      console.error('Failed to award XP:', xpError);
+      logger.error('Failed to award XP:', xpError);
       // Don't fail the purchase verification
     }
 
@@ -96,9 +97,9 @@ export async function POST(request: NextRequest) {
       try {
         // No need to update currentDay in new schema
         // Progress is tracked through LessonProgress table
-        console.log('P1 product purchased, user can now access lessons');
+        logger.info('P1 product purchased, user can now access lessons');
       } catch (error) {
-        console.error('Failed to initialize P1 progress:', error);
+        logger.error('Failed to initialize P1 progress:', error);
       }
     }
 
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
           newCoupon = await createFirstPurchaseCoupon(user.id, userName);
         }
       } catch (couponError) {
-        console.error('Failed to check/create coupon:', couponError);
+        logger.error('Failed to check/create coupon:', couponError);
         // Don't fail the purchase verification
       }
     }
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Verify payment error:', error);
+    logger.error('Verify payment error:', error);
     return NextResponse.json(
       { error: 'Failed to verify payment' },
       { status: 500 }

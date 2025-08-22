@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -109,7 +110,7 @@ export default function NewPostPage() {
       }, 2000);
 
     } catch (err) {
-      console.error('Error creating post:', err);
+      logger.error('Error creating post:', err);
       setError(err instanceof Error ? err.message : 'Failed to create post');
     } finally {
       setLoading(false);

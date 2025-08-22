@@ -396,7 +396,7 @@ export default function FinanceMasteryPage() {
             {/* Key Outcomes */}
             <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-green-50">
               <Heading as="h3" variant="h6" className="mb-4">
-                What You&apos;ll Achieve
+                What You'll Achieve
               </Heading>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-3">
@@ -503,7 +503,7 @@ export default function FinanceMasteryPage() {
                   {isExpanded && (
                     <div className="px-6 pb-6 border-t">
                       <div className="pt-4">
-                        <Text weight="medium" className="mb-3">What you&apos;ll learn:</Text>
+                        <Text weight="medium" className="mb-3">What you'll learn:</Text>
                         <div className="grid md:grid-cols-2 gap-2 mb-4">
                           {module.topics.map((topic, topicIndex) => (
                             <div key={topicIndex} className="flex items-center gap-2">

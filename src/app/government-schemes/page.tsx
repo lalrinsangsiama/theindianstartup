@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { logger } from '@/lib/logger';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
 import { Card } from '@/components/ui/Card';
@@ -9,7 +12,7 @@ import { Heading, Text } from '@/components/ui/Typography';
 import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { 
-  Shield, 
+  MapPin, 
   Calculator, 
   FileText, 
   TrendingUp, 
@@ -18,8 +21,14 @@ import {
   BookOpen,
   ArrowRight,
   Star,
-  Award
+  Award,
+  Target,
+  DollarSign,
+  Building,
+  Database,
+  Search
 } from 'lucide-react';
+import ComprehensiveSchemeDatabase from '@/components/schemes/ComprehensiveSchemeDatabase';
 
 interface Module {
   id: string;
@@ -43,65 +52,169 @@ interface Lesson {
   isLocked: boolean;
 }
 
-export default function GovernmentSchemesPage() {
+export default function StateSchemeMapPage() {
+  const router = useRouter();
+  const { user } = useAuthContext();
   const [modules, setModules] = useState<Module[]>([]);
-  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [overallProgress, setOverallProgress] = useState(0);
   const [totalXPEarned, setTotalXPEarned] = useState(0);
 
   useEffect(() => {
-    // Simulate loading modules and progress from API
-    const mockModules: Module[] = [
-      {
-        id: 'p9_m1_foundation',
-        title: 'Foundation & Ecosystem Navigation',
-        description: 'Master the ₹2.5L crore ecosystem, 23-ministry navigation, and your personal benefits calculator',
-        lessonsCount: 5,
-        totalXP: 375,
-        isUnlocked: true,
-        isCompleted: false,
-        progress: 0
-      },
-      {
-        id: 'p9_m2_funding',
-        title: 'The Money Map - Funding Strategies',
-        description: 'Deep-dive into grants, loans, equity with real case studies and stacking strategies for ₹2-5Cr combinations',
-        lessonsCount: 7,
-        totalXP: 525,
-        isUnlocked: false,
-        isCompleted: false,
-        progress: 0
-      },
-      {
-        id: 'p9_m3_advantages',
-        title: 'Category & Sector Mastery',
-        description: 'Unlock enhanced benefits: Women (+10%), SC/ST (+20%), Manufacturing PLI, Tech exemptions, State bonuses',
-        lessonsCount: 5,
-        totalXP: 375,
-        isUnlocked: false,
-        isCompleted: false,
-        progress: 0
-      },
-      {
-        id: 'p9_m4_implementation',
-        title: 'Implementation Mastery & Tools',
-        description: 'Master application systems, documentation mastery, GeM access, and your 90-day ₹10-50L roadmap',
-        lessonsCount: 4,
-        totalXP: 300,
-        isUnlocked: false,
-        isCompleted: false,
-        progress: 0
+    const fetchP7Progress = async () => {
+      try {
+        const response = await fetch('/api/products/P7/progress', {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setOverallProgress(data.progressPercentage || 0);
+          setTotalXPEarned(data.totalXP || 0);
+          
+          // Set P7 modules based on actual backend data
+          const p7Modules: Module[] = [
+            {
+              id: 'p7_m1_federal_structure',
+              title: 'Federal Structure & Central Government Benefits',
+              description: 'Master India\'s federal governance structure, central government schemes, and national-level benefits for startups and businesses.',
+              lessonsCount: 3,
+              totalXP: 450,
+              isUnlocked: true,
+              isCompleted: data.moduleProgress?.['p7_m1_federal_structure'] === 100,
+              progress: data.moduleProgress?.['p7_m1_federal_structure'] || 0
+            },
+            {
+              id: 'p7_m2_northern_states',
+              title: 'Northern States Powerhouse (UP, Punjab, Haryana, Delhi, Rajasthan)',
+              description: 'Deep dive into Northern India\'s industrial landscape, policy benefits, and massive market opportunities.',
+              lessonsCount: 3,
+              totalXP: 540,
+              isUnlocked: data.moduleProgress?.['p7_m1_federal_structure'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m2_northern_states'] === 100,
+              progress: data.moduleProgress?.['p7_m2_northern_states'] || 0
+            },
+            {
+              id: 'p7_m3_western_states',
+              title: 'Western States Excellence (Maharashtra, Gujarat, Goa, MP)',
+              description: 'Navigate India\'s industrial heartland with comprehensive scheme mapping and optimization strategies.',
+              lessonsCount: 3,
+              totalXP: 600,
+              isUnlocked: data.moduleProgress?.['p7_m2_northern_states'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m3_western_states'] === 100,
+              progress: data.moduleProgress?.['p7_m3_western_states'] || 0
+            },
+            {
+              id: 'p7_m4_southern_states',
+              title: 'Southern States Innovation Hub (Karnataka, Tamil Nadu, Telangana, AP, Kerala)',
+              description: 'Master the South Indian innovation ecosystem with tech-focused benefits and startup-friendly policies.',
+              lessonsCount: 3,
+              totalXP: 660,
+              isUnlocked: data.moduleProgress?.['p7_m3_western_states'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m4_southern_states'] === 100,
+              progress: data.moduleProgress?.['p7_m4_southern_states'] || 0
+            },
+            {
+              id: 'p7_m5_eastern_states',
+              title: 'Eastern States Potential (West Bengal, Odisha, Jharkhand, Bihar)',
+              description: 'Unlock Eastern India\'s emerging opportunities and government incentive programs.',
+              lessonsCount: 3,
+              totalXP: 450,
+              isUnlocked: data.moduleProgress?.['p7_m4_southern_states'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m5_eastern_states'] === 100,
+              progress: data.moduleProgress?.['p7_m5_eastern_states'] || 0
+            },
+            {
+              id: 'p7_m6_northeastern_states',
+              title: 'North-Eastern States Advantages (8 Sister States + Sikkim)',
+              description: 'Explore India\'s most incentivized region with maximum subsidies, tax benefits, and development schemes.',
+              lessonsCount: 3,
+              totalXP: 540,
+              isUnlocked: data.moduleProgress?.['p7_m5_eastern_states'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m6_northeastern_states'] === 100,
+              progress: data.moduleProgress?.['p7_m6_northeastern_states'] || 0
+            },
+            {
+              id: 'p7_m7_implementation',
+              title: 'Implementation Framework & Multi-State Strategy',
+              description: 'Build systematic approach to leverage multiple state benefits and create optimized business presence.',
+              lessonsCount: 3,
+              totalXP: 600,
+              isUnlocked: data.moduleProgress?.['p7_m6_northeastern_states'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m7_implementation'] === 100,
+              progress: data.moduleProgress?.['p7_m7_implementation'] || 0
+            },
+            {
+              id: 'p7_m8_sector_benefits',
+              title: 'Sector-Specific State Benefits Mapping',
+              description: 'Navigate industry-specific incentives across manufacturing, technology, agriculture, and services sectors.',
+              lessonsCount: 3,
+              totalXP: 600,
+              isUnlocked: data.moduleProgress?.['p7_m7_implementation'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m8_sector_benefits'] === 100,
+              progress: data.moduleProgress?.['p7_m8_sector_benefits'] || 0
+            },
+            {
+              id: 'p7_m9_financial_planning',
+              title: 'Financial Planning & ROI Optimization',
+              description: 'Master the art of maximizing state benefits to achieve 30-50% cost savings and optimal ROI.',
+              lessonsCount: 3,
+              totalXP: 660,
+              isUnlocked: data.moduleProgress?.['p7_m8_sector_benefits'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m9_financial_planning'] === 100,
+              progress: data.moduleProgress?.['p7_m9_financial_planning'] || 0
+            },
+            {
+              id: 'p7_m10_advanced_strategies',
+              title: 'Advanced Strategies & Policy Monitoring',
+              description: 'Stay ahead with policy tracking, relationship building, and future-proofing strategies.',
+              lessonsCount: 3,
+              totalXP: 750,
+              isUnlocked: data.moduleProgress?.['p7_m9_financial_planning'] > 0,
+              isCompleted: data.moduleProgress?.['p7_m10_advanced_strategies'] === 100,
+              progress: data.moduleProgress?.['p7_m10_advanced_strategies'] || 0
+            }
+          ];
+          
+          setModules(p7Modules);
+        } else {
+          // Default modules if API fails
+          setModules([]);
+        }
+      } catch (error) {
+        logger.error('Failed to fetch P7 progress:', error);
+        setModules([]);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    setModules(mockModules);
-    setLoading(false);
-  }, []);
+    if (user) {
+      fetchP7Progress();
+    }
+  }, [user]);
 
-  const handleStartLesson = (moduleId: string) => {
-    // Navigate to first lesson of module
-    console.log('Starting module:', moduleId);
+  const handleStartModule = (moduleId: string) => {
+    // Find the module to get the first lesson day
+    const module = modules.find(m => m.id === moduleId);
+    if (module) {
+      // Calculate first day based on module index (3 lessons per module)
+      const moduleIndex = modules.indexOf(module);
+      const firstDay = (moduleIndex * 3) + 1;
+      router.push(`/products/P7/lessons/${firstDay}`);
+    }
+  };
+
+  const handleContinueProgress = () => {
+    // Find the first incomplete lesson
+    let nextDay = 1;
+    if (overallProgress > 0) {
+      // Calculate next lesson based on progress
+      const completedLessons = Math.floor((overallProgress / 100) * 30);
+      nextDay = Math.min(30, completedLessons + 1);
+    }
+    router.push(`/products/P7/lessons/${nextDay}`);
   };
 
   if (loading) {
@@ -121,22 +234,22 @@ export default function GovernmentSchemesPage() {
 
   return (
     <DashboardLayout>
-      <ProductProtectedRoute productCode="P9">
+      <ProductProtectedRoute productCode="P7">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Shield className="w-6 h-6 text-blue-600" />
+              <MapPin className="w-6 h-6 text-blue-600" />
               <Badge variant="outline" className="bg-blue-100 text-blue-800">
-                P9 Course
+                P7 Course
               </Badge>
             </div>
             <Heading as="h1" variant="h2" className="text-3xl font-bold">
-              Government Schemes & Funding Mastery
+              State-wise Scheme Map - Complete Navigation
             </Heading>
             <Text size="lg" color="muted" className="max-w-2xl mx-auto">
-              Master access to ₹50L-₹5Cr government funding through 100+ schemes. 
-              Includes detailed case studies, calculators, and proven templates.
+              Master India's state ecosystem with comprehensive coverage of all states and UTs. 
+              Navigate 500+ state schemes and achieve 30-50% cost savings through strategic state benefits.
             </Text>
           </div>
 
@@ -154,14 +267,30 @@ export default function GovernmentSchemesPage() {
                 <div className="text-2xl font-bold text-green-600">
                   {totalXPEarned}
                 </div>
-                <Text size="sm" color="muted">XP Earned / 1,575 Total</Text>
+                <Text size="sm" color="muted">XP Earned / 5,850 Total</Text>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  21
+                  30
                 </div>
                 <Text size="sm" color="muted">Total Lessons</Text>
               </div>
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+              {overallProgress > 0 && (
+                <Button onClick={handleContinueProgress} className="px-8">
+                  Continue Learning
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/products/P7/resources')}
+                className="px-8"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                View Resources
+              </Button>
             </div>
           </Card>
 
@@ -169,34 +298,52 @@ export default function GovernmentSchemesPage() {
           <Card className="p-6 bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-blue-500">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex items-center gap-3">
-                <Calculator className="w-5 h-5 text-blue-600" />
+                <Database className="w-5 h-5 text-blue-600" />
                 <div>
-                  <Text weight="medium">Benefits Calculator</Text>
-                  <Text size="sm" color="muted">₹85.5L+ potential</Text>
+                  <Text weight="medium">Live Database</Text>
+                  <Text size="sm" color="muted">Real-time access</Text>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-green-600" />
+                <Search className="w-5 h-5 text-green-600" />
                 <div>
-                  <Text weight="medium">30+ Templates</Text>
-                  <Text size="sm" color="muted">Ready applications</Text>
+                  <Text weight="medium">Smart Search</Text>
+                  <Text size="sm" color="muted">Find matching schemes</Text>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
+                <Building className="w-5 h-5 text-purple-600" />
                 <div>
-                  <Text weight="medium">Real Case Studies</Text>
-                  <Text size="sm" color="muted">₹45L+ success stories</Text>
+                  <Text weight="medium">All 36 States/UTs</Text>
+                  <Text size="sm" color="muted">Complete coverage</Text>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Star className="w-5 h-5 text-yellow-600" />
                 <div>
-                  <Text weight="medium">100+ Schemes</Text>
-                  <Text size="sm" color="muted">Complete database</Text>
+                  <Text weight="medium">376+ Schemes</Text>
+                  <Text size="sm" color="muted">Verified database</Text>
                 </div>
               </div>
             </div>
+          </Card>
+
+          {/* Comprehensive Scheme Database */}
+          <Card className="p-6">
+            <div className="mb-6">
+              <Heading as="h2" variant="h3" className="mb-2">
+                State Schemes Database - Live Access
+              </Heading>
+              <Text color="muted">
+                Explore our comprehensive database of 376+ verified state schemes across all 36 states and UTs. 
+                Filter by location, sector, funding amount, and scheme type to find opportunities matching your business needs.
+              </Text>
+            </div>
+            <ComprehensiveSchemeDatabase 
+              productCode="P7" 
+              showFilters={true}
+              limit={12}
+            />
           </Card>
 
           {/* Modules */}
@@ -264,7 +411,7 @@ export default function GovernmentSchemesPage() {
                       <Button
                         variant={module.isUnlocked ? "primary" : "outline"}
                         disabled={!module.isUnlocked}
-                        onClick={() => handleStartLesson(module.id)}
+                        onClick={() => handleStartModule(module.id)}
                         className="whitespace-nowrap"
                       >
                         {module.isCompleted ? 'Review' : module.progress > 0 ? 'Continue' : 'Start'}
@@ -280,19 +427,19 @@ export default function GovernmentSchemesPage() {
           {/* Call to Action */}
           <Card className="p-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center">
             <Heading as="h2" variant="h3" className="text-white mb-4">
-              Ready to Access ₹50L-₹5Cr in Government Funding?
+              Ready to Master India's State Ecosystem?
             </Heading>
             <Text className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Start with Module 1 to unlock the complete system used by entrepreneurs 
-              who accessed ₹45L+ in government benefits.
+              Start with Module 1 to unlock strategic state benefits and achieve 30-50% cost savings 
+              through systematic state scheme navigation.
             </Text>
             <Button 
               variant="outline" 
               size="lg"
-              onClick={() => handleStartLesson('p9_m1_foundation')}
+              onClick={() => handleStartModule('p7_m1_federal_structure')}
               className="bg-white text-blue-700 hover:bg-gray-50"
             >
-              Start Your Journey
+              Start Your State Mastery Journey
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Card>

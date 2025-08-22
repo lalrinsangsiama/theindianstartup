@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -90,7 +91,7 @@ export default function BrandAssetsPage() {
         setSocialHandles(data.socialHandles.handles || []);
       }
     } catch (err) {
-      console.error('Error fetching portfolio:', err);
+      logger.error('Error fetching portfolio:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
@@ -123,7 +124,7 @@ export default function BrandAssetsPage() {
 
       setLastSaved(new Date());
     } catch (err) {
-      console.error('Error saving portfolio:', err);
+      logger.error('Error saving portfolio:', err);
       setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);

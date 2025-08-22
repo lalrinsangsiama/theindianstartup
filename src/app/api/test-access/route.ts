@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@supabase/supabase-js';
 import { requireAuth } from '@/lib/auth';
 
@@ -36,7 +37,7 @@ export async function POST() {
       });
 
     if (error) {
-      console.error('Error creating test purchase:', error);
+      logger.error('Error creating test purchase:', error);
       
       // If Purchase table doesn't exist, return success anyway
       if (error.code === 'PGRST205' || error.code === '42P01') {
@@ -61,7 +62,7 @@ export async function POST() {
     });
 
   } catch (error) {
-    console.error('Test access error:', error);
+    logger.error('Test access error:', error);
     return NextResponse.json(
       { error: 'Failed to grant test access' },
       { status: 500 }

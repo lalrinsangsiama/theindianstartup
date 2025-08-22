@@ -1,6 +1,120 @@
-// Portfolio Feature Validation and Integration Tests
-// Utility functions to validate the portfolio implementation
+import { z } from 'zod';
 
+// Portfolio activity data validation schemas
+export const portfolioActivitySchema = z.object({
+  activityTypeId: z.string().min(1, 'Activity type is required'),
+  data: z.record(z.any()).optional(),
+  notes: z.string().optional(),
+  files: z.array(z.string()).optional(),
+  completionStatus: z.enum(['draft', 'completed']).default('draft'),
+  metadata: z.record(z.any()).optional()
+});
+
+// Specific validation schemas for different activity types
+export const problemStatementSchema = z.object({
+  problemDescription: z.string().min(10, 'Problem description must be at least 10 characters'),
+  targetAudience: z.string().min(5, 'Target audience must be specified'),
+  painPoints: z.array(z.string()).min(1, 'At least one pain point is required'),
+  currentSolutions: z.array(z.string()).optional(),
+  marketSize: z.string().optional()
+});
+
+export const businessModelSchema = z.object({
+  valueProposition: z.string().min(10, 'Value proposition is required'),
+  customerSegments: z.array(z.string()).min(1, 'At least one customer segment is required'),
+  channels: z.array(z.string()).min(1, 'At least one channel is required'),
+  revenueStreams: z.array(z.string()).min(1, 'At least one revenue stream is required'),
+  keyResources: z.array(z.string()).optional(),
+  keyPartners: z.array(z.string()).optional(),
+  costStructure: z.array(z.string()).optional()
+});
+
+export const marketResearchSchema = z.object({
+  marketSize: z.string().min(1, 'Market size is required'),
+  targetMarket: z.string().min(10, 'Target market description is required'),
+  competitors: z.array(z.object({
+    name: z.string(),
+    strengths: z.array(z.string()),
+    weaknesses: z.array(z.string())
+  })).min(1, 'At least one competitor is required'),
+  marketTrends: z.array(z.string()).optional(),
+  customerInsights: z.string().optional()
+});
+
+export const financialProjectionsSchema = z.object({
+  revenue: z.object({
+    year1: z.number().min(0),
+    year2: z.number().min(0),
+    year3: z.number().min(0)
+  }),
+  expenses: z.object({
+    year1: z.number().min(0),
+    year2: z.number().min(0),
+    year3: z.number().min(0)
+  }),
+  fundingRequired: z.number().min(0),
+  useOfFunds: z.array(z.object({
+    category: z.string(),
+    amount: z.number(),
+    percentage: z.number()
+  })).optional()
+});
+
+// Activity type to schema mapping
+const activitySchemas: Record<string, z.ZodSchema> = {
+  'define_problem_statement': problemStatementSchema,
+  'business_model_canvas': businessModelSchema,
+  'target_market_analysis': marketResearchSchema,
+  'financial_projections': financialProjectionsSchema
+};
+
+export function validateActivityData(activityTypeId: string, data: any): { isValid: boolean; errors?: string[] } {
+  const schema = activitySchemas[activityTypeId];
+  
+  if (!schema) {
+    // No specific validation for this activity type, allow any data
+    return { isValid: true };
+  }
+
+  try {
+    schema.parse(data);
+    return { isValid: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        isValid: false,
+        errors: error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+      };
+    }
+    return { isValid: false, errors: ['Invalid data format'] };
+  }
+}
+
+export function validatePortfolioActivity(activityData: any): { isValid: boolean; errors?: string[] } {
+  try {
+    const validatedActivity = portfolioActivitySchema.parse(activityData);
+    
+    // If there's activity-specific data, validate it too
+    if (validatedActivity.data && validatedActivity.activityTypeId) {
+      const dataValidation = validateActivityData(validatedActivity.activityTypeId, validatedActivity.data);
+      if (!dataValidation.isValid) {
+        return dataValidation;
+      }
+    }
+    
+    return { isValid: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        isValid: false,
+        errors: error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+      };
+    }
+    return { isValid: false, errors: ['Invalid activity format'] };
+  }
+}
+
+// Legacy validation interfaces for backward compatibility
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];

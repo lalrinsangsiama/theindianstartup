@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -177,7 +178,7 @@ export default function P1JourneyPage() {
         
         setJourneyData(transformedData);
       } catch (err) {
-        console.error('Failed to fetch user progress:', err);
+        logger.error('Failed to fetch user progress:', err);
         setError('Failed to load your progress. Using default data.');
         // Keep default data on error - don't block the UI
       } finally {
@@ -245,7 +246,7 @@ export default function P1JourneyPage() {
             </Text>
             {showPurchaseSuccess && (
               <Alert variant="success" className="mt-4">
-                🎉 Purchase successful! You now have full access to the 30-Day India Launch Sprint. Let&apos;s start your journey!
+                🎉 Purchase successful! You now have full access to the 30-Day India Launch Sprint. Let's start your journey!
               </Alert>
             )}
             {error && (

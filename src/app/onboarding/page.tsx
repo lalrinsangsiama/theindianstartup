@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/icons/Logo';
@@ -63,7 +64,7 @@ export default function OnboardingPage() {
         if (response.ok) {
           const data = await response.json();
           
-          console.log('Onboarding check response:', {
+          logger.info('Onboarding check response:', {
             hasCompletedOnboarding: data.hasCompletedOnboarding,
             needsOnboarding: data.needsOnboarding,
             userName: data.user?.name
@@ -71,16 +72,16 @@ export default function OnboardingPage() {
           
           if (data.hasCompletedOnboarding && !data.needsOnboarding) {
             // User has already completed onboarding, redirect to dashboard
-            console.log('User has completed onboarding, redirecting to dashboard');
+            logger.info('User has completed onboarding, redirecting to dashboard');
             router.push('/dashboard');
             return;
           }
         } else {
           // If response is not ok, user likely doesn't exist in DB yet
-          console.log('Profile API response not ok - user needs onboarding');
+          logger.info('Profile API response not ok - user needs onboarding');
         }
       } catch (error) {
-        console.error('Failed to check onboarding status:', error);
+        logger.error('Failed to check onboarding status:', error);
         // Don't redirect on error, let user proceed with onboarding
       } finally {
         setCheckingOnboarding(false);
@@ -151,7 +152,7 @@ export default function OnboardingPage() {
         }
 
         const result = await response.json();
-        console.log('Onboarding data saved successfully:', result);
+        logger.info('Onboarding data saved successfully:', result);
 
         // Move to complete step
         setCurrentStep(currentStep + 1);
@@ -176,14 +177,14 @@ export default function OnboardingPage() {
           
           if (response.ok) {
             const data = await response.json();
-            console.log(`Onboarding verification attempt ${attempts + 1}:`, {
+            logger.info(`Onboarding verification attempt ${attempts + 1}:`, {
               hasCompletedOnboarding: data.hasCompletedOnboarding,
               userName: data.user?.name,
               needsOnboarding: data.needsOnboarding
             });
             
             if (data.hasCompletedOnboarding && !data.needsOnboarding) {
-              console.log('Onboarding verified as complete, redirecting to dashboard');
+              logger.info('Onboarding verified as complete, redirecting to dashboard');
               router.push('/dashboard');
               return;
             }
@@ -196,7 +197,7 @@ export default function OnboardingPage() {
         }
         
         // If verification failed, still redirect but with a flag
-        console.log('Onboarding verification failed after max attempts, forcing redirect');
+        logger.info('Onboarding verification failed after max attempts, forcing redirect');
         
         // Check if user has pending cart from signup
         const pendingCart = localStorage.getItem('preSignupCart');
@@ -207,7 +208,7 @@ export default function OnboardingPage() {
           router.push('/dashboard?onboarding=complete');
         }
       } catch (error) {
-        console.error('Error during final redirect:', error);
+        logger.error('Error during final redirect:', error);
         router.push('/dashboard?onboarding=complete');
       } finally {
         setLoading(false);
@@ -305,7 +306,7 @@ export default function OnboardingPage() {
                     disabled={loading}
                   />
                   <Text size="xs" color="muted" className="mt-1">
-                    We&apos;ll use this for important updates about your journey
+                    We'll use this for important updates about your journey
                   </Text>
                 </div>
               </>
@@ -326,7 +327,7 @@ export default function OnboardingPage() {
                     disabled={loading}
                   />
                   <Text size="xs" color="muted" className="mt-1">
-                    Don&apos;t worry, you can change this later
+                    Don't worry, you can change this later
                   </Text>
                 </div>
 
@@ -374,7 +375,7 @@ export default function OnboardingPage() {
                 </Heading>
                 <Text color="muted" className="mb-6">
                   Your 30-day journey to launch your startup begins now. 
-                  Let&apos;s turn your idea into reality!
+                  Let's turn your idea into reality!
                 </Text>
                 <div className="space-y-2 text-left max-w-md mx-auto">
                   <Text size="sm">✓ Daily lessons unlocked</Text>

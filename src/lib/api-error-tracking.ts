@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { trackAPIError, trackPaymentError, trackAuthError, trackDatabaseError, TrackableError } from '@/lib/error-tracking';
 
 // API error types
@@ -152,7 +153,7 @@ export function handleAPIError(error: unknown, request?: NextRequest): NextRespo
 
   // Log in development
   if (process.env.NODE_ENV === 'development') {
-    console.error('API Error:', {
+    logger.error('API Error:', {
       message: apiError.message,
       type: apiError.type,
       statusCode: apiError.statusCode,
@@ -270,14 +271,33 @@ export async function checkRateLimit(
   limit: number, 
   window: string
 ): Promise<void> {
-  // TODO: Implement with Redis or similar
-  // For now, just a placeholder
-  const shouldLimit = false; // Replace with actual rate limiting logic
+  // Simple in-memory rate limiting - production should use Redis
+  const now = Date.now();
+  const windowMs = parseInt(window) * 1000; // Convert seconds to milliseconds
   
-  if (shouldLimit) {
+  if (!rateLimitStore.has(key)) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+    return;
+  }
+  
+  const record = rateLimitStore.get(key)!;
+  
+  if (now > record.resetTime) {
+    // Window expired, reset
+    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+    return;
+  }
+  
+  if (record.count >= limit) {
     throw APIErrors.RateLimit(limit, window);
   }
+  
+  record.count++;
+  rateLimitStore.set(key, record);
 }
+
+// Simple in-memory store - replace with Redis in production
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 // Success response helper
 export function successResponse(data?: any, status: number = 200) {

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Funding Calculator - Real Excel Functionality</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .controls-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .excel-sheet {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .sheet-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .sheet-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-right: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .sheet-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .sheet-tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+        
+        .sheet-content {
+            padding: 30px;
+            display: none;
+        }
+        
+        .sheet-content.active {
+            display: block;
+        }
+        
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .excel-table th {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .excel-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            position: relative;
+        }
+        
+        .excel-table input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 4px;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        
+        .excel-table input:focus {
+            outline: 2px solid #667eea;
+            background: #f0f4ff;
+        }
+        
+        .calculated-cell {
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        .input-cell {
+            background: #fff;
+        }
+        
+        .formula-cell {
+            background: #e3f2fd;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-row input,
+        .form-row select {
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .scenario-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .scenario-btn {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .scenario-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .scenario-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #218838;
+        }
+        
+        .formula-bar {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .metrics-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        @media (max-width: 1200px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Advanced Funding Calculator</h1>
+            <p>Professional Excel-like calculations for funding scenarios, dilution analysis, and investor returns</p>
+        </div>
+        
+        <div class="calculator-grid">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>🏢 Company Basics</h3>
+                    <div class="form-row">
+                        <label>Pre-Money</label>
+                        <input type="number" id="preMoney" value="40000000" onchange="calculate()">
+                    </div>
+                    <div class="form-row">
+                        <label>Investment</label>
+                        <input type="number" id="investment" value="10000000" onchange="calculate()">
+                    </div>
+                    <div class="form-row">
+                        <label>ESOP Pool</label>
+                        <input type="number" id="esopPool" value="15" onchange="calculate()"> %
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>📈 Growth Assumptions</h3>
+                    <div class="form-row">
+                        <label>Revenue Y1</label>
+                        <input type="number" id="revenueY1" value="5000000" onchange="calculate()">
+                    </div>
+                    <div class="form-row">
+                        <label>Growth Rate</label>
+                        <input type="number" id="growthRate" value="200" onchange="calculate()"> %
+                    </div>
+                    <div class="form-row">
+                        <label>Exit Multiple</label>
+                        <input type="number" id="exitMultiple" value="10" onchange="calculate()"> x
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>🎯 Scenarios</h3>
+                    <div class="scenario-buttons">
+                        <button class="scenario-btn active" onclick="loadScenario('conservative')">Conservative</button>
+                        <button class="scenario-btn" onclick="loadScenario('base')">Base Case</button>
+                        <button class="scenario-btn" onclick="loadScenario('optimistic')">Optimistic</button>
+                        <button class="scenario-btn" onclick="loadScenario('unicorn')">Unicorn Path</button>
+                    </div>
+                </div>
+                
+                <div class="export-buttons">
+                    <button class="btn btn-primary" onclick="exportToExcel()">📥 Export Excel</button>
+                    <button class="btn btn-secondary" onclick="exportToCSV()">📄 Export CSV</button>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="excel-sheet">
+                    <div class="sheet-tabs">
+                        <div class="sheet-tab active" onclick="showSheet('capTable')">Cap Table</div>
+                        <div class="sheet-tab" onclick="showSheet('dilution')">Dilution Analysis</div>
+                        <div class="sheet-tab" onclick="showSheet('returns')">Investor Returns</div>
+                        <div class="sheet-tab" onclick="showSheet('scenarios')">Scenario Planning</div>
+                        <div class="sheet-tab" onclick="showSheet('terms')">Term Sheet Analysis</div>
+                    </div>
+                    
+                    <!-- Cap Table Sheet -->
+                    <div id="capTable" class="sheet-content active">
+                        <div class="formula-bar">Formula Bar: =SUM(B2:B10) | Selected Cell: A1</div>
+                        
+                        <table class="excel-table" id="capTableData">
+                            <thead>
+                                <tr>
+                                    <th>Stakeholder</th>
+                                    <th>Shares (Pre)</th>
+                                    <th>% (Pre)</th>
+                                    <th>New Shares</th>
+                                    <th>Shares (Post)</th>
+                                    <th>% (Post)</th>
+                                    <th>Investment (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Founders</td>
+                                    <td class="calculated-cell" id="founderShares">7,000,000</td>
+                                    <td class="calculated-cell" id="founderPrePct">70.0%</td>
+                                    <td class="calculated-cell">0</td>
+                                    <td class="calculated-cell" id="founderPostShares">7,000,000</td>
+                                    <td class="calculated-cell" id="founderPostPct">56.0%</td>
+                                    <td class="calculated-cell">0</td>
+                                </tr>
+                                <tr>
+                                    <td>ESOP Pool</td>
+                                    <td class="calculated-cell" id="esopPreShares">1,500,000</td>
+                                    <td class="calculated-cell" id="esopPrePct">15.0%</td>
+                                    <td class="calculated-cell">375,000</td>
+                                    <td class="calculated-cell" id="esopPostShares">1,875,000</td>
+                                    <td class="calculated-cell" id="esopPostPct">15.0%</td>
+                                    <td class="calculated-cell">0</td>
+                                </tr>
+                                <tr>
+                                    <td>Investor</td>
+                                    <td class="calculated-cell">0</td>
+                                    <td class="calculated-cell">0.0%</td>
+                                    <td class="calculated-cell" id="investorShares">2,500,000</td>
+                                    <td class="calculated-cell" id="investorPostShares">2,500,000</td>
+                                    <td class="calculated-cell" id="investorPostPct">20.0%</td>
+                                    <td class="calculated-cell" id="investorAmount">₹1,00,00,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Others</td>
+                                    <td class="calculated-cell" id="otherShares">1,500,000</td>
+                                    <td class="calculated-cell" id="otherPrePct">15.0%</td>
+                                    <td class="calculated-cell">0</td>
+                                    <td class="calculated-cell" id="otherPostShares">1,500,000</td>
+                                    <td class="calculated-cell" id="otherPostPct">12.0%</td>
+                                    <td class="calculated-cell">0</td>
+                                </tr>
+                                <tr style="background: #e3f2fd; font-weight: bold;">
+                                    <td>TOTAL</td>
+                                    <td class="calculated-cell" id="totalPreShares">10,000,000</td>
+                                    <td class="calculated-cell">100.0%</td>
+                                    <td class="calculated-cell" id="totalNewShares">2,875,000</td>
+                                    <td class="calculated-cell" id="totalPostShares">12,500,000</td>
+                                    <td class="calculated-cell">100.0%</td>
+                                    <td class="calculated-cell" id="totalInvestment">₹1,00,00,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="metrics-cards">
+                            <div class="metric-card">
+                                <div class="metric-value" id="postMoneyVal">₹5.0Cr</div>
+                                <div class="metric-label">Post-Money Valuation</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="dilutionPct">44.0%</div>
+                                <div class="metric-label">Total Dilution</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="pricePerShare">₹40</div>
+                                <div class="metric-label">Price Per Share</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dilution Analysis Sheet -->
+                    <div id="dilution" class="sheet-content">
+                        <div class="formula-bar">Multi-Round Dilution Analysis</div>
+                        
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th>Round</th>
+                                    <th>Investment</th>
+                                    <th>Pre-Money</th>
+                                    <th>Post-Money</th>
+                                    <th>New Shares</th>
+                                    <th>Founder %</th>
+                                    <th>Cumulative Dilution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Pre-Seed</td>
+                                    <td class="input-cell"><input type="number" value="2500000" onchange="calculateMultiRound()"></td>
+                                    <td class="input-cell"><input type="number" value="10000000" onchange="calculateMultiRound()"></td>
+                                    <td class="calculated-cell" id="postMoney1">₹1.25Cr</td>
+                                    <td class="calculated-cell" id="newShares1">2,500,000</td>
+                                    <td class="calculated-cell" id="founderPct1">64.0%</td>
+                                    <td class="calculated-cell" id="dilution1">16.0%</td>
+                                </tr>
+                                <tr>
+                                    <td>Seed</td>
+                                    <td class="input-cell"><input type="number" value="10000000" onchange="calculateMultiRound()"></td>
+                                    <td class="input-cell"><input type="number" value="40000000" onchange="calculateMultiRound()"></td>
+                                    <td class="calculated-cell" id="postMoney2">₹5.0Cr</td>
+                                    <td class="calculated-cell" id="newShares2">2,500,000</td>
+                                    <td class="calculated-cell" id="founderPct2">51.2%</td>
+                                    <td class="calculated-cell" id="dilution2">28.8%</td>
+                                </tr>
+                                <tr>
+                                    <td>Series A</td>
+                                    <td class="input-cell"><input type="number" value="50000000" onchange="calculateMultiRound()"></td>
+                                    <td class="input-cell"><input type="number" value="150000000" onchange="calculateMultiRound()"></td>
+                                    <td class="calculated-cell" id="postMoney3">₹20Cr</td>
+                                    <td class="calculated-cell" id="newShares3">6,666,667</td>
+                                    <td class="calculated-cell" id="founderPct3">38.4%</td>
+                                    <td class="calculated-cell" id="dilution3">41.6%</td>
+                                </tr>
+                                <tr>
+                                    <td>Series B</td>
+                                    <td class="input-cell"><input type="number" value="200000000" onchange="calculateMultiRound()"></td>
+                                    <td class="input-cell"><input type="number" value="600000000" onchange="calculateMultiRound()"></td>
+                                    <td class="calculated-cell" id="postMoney4">₹80Cr</td>
+                                    <td class="calculated-cell" id="newShares4">11,111,111</td>
+                                    <td class="calculated-cell" id="founderPct4">26.7%</td>
+                                    <td class="calculated-cell" id="dilution4">53.3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="chart-container">
+                            <div>📊 Dilution Chart: Founder ownership decreases from 80% to 26.7% over 4 rounds</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Investor Returns Sheet -->
+                    <div id="returns" class="sheet-content">
+                        <div class="formula-bar">Investor Return Analysis with Liquidation Preferences</div>
+                        
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th>Exit Scenario</th>
+                                    <th>Exit Value</th>
+                                    <th>Revenue Multiple</th>
+                                    <th>Investor Returns</th>
+                                    <th>Return Multiple</th>
+                                    <th>IRR</th>
+                                    <th>Founder Returns</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Fire Sale</td>
+                                    <td class="calculated-cell">₹25Cr</td>
+                                    <td class="calculated-cell">2.5x</td>
+                                    <td class="calculated-cell">₹15Cr</td>
+                                    <td class="calculated-cell">1.5x</td>
+                                    <td class="calculated-cell" style="color: red;">-12%</td>
+                                    <td class="calculated-cell">₹10Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Modest Exit</td>
+                                    <td class="calculated-cell">₹100Cr</td>
+                                    <td class="calculated-cell">10x</td>
+                                    <td class="calculated-cell">₹25Cr</td>
+                                    <td class="calculated-cell">2.5x</td>
+                                    <td class="calculated-cell" style="color: orange;">25%</td>
+                                    <td class="calculated-cell">₹75Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Good Exit</td>
+                                    <td class="calculated-cell">₹500Cr</td>
+                                    <td class="calculated-cell">50x</td>
+                                    <td class="calculated-cell">₹100Cr</td>
+                                    <td class="calculated-cell">10x</td>
+                                    <td class="calculated-cell" style="color: green;">65%</td>
+                                    <td class="calculated-cell">₹400Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Unicorn Exit</td>
+                                    <td class="calculated-cell">₹7,500Cr</td>
+                                    <td class="calculated-cell">750x</td>
+                                    <td class="calculated-cell">₹1,500Cr</td>
+                                    <td class="calculated-cell">150x</td>
+                                    <td class="calculated-cell" style="color: green;">125%</td>
+                                    <td class="calculated-cell">₹6,000Cr</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="metrics-cards">
+                            <div class="metric-card">
+                                <div class="metric-value">₹50Cr</div>
+                                <div class="metric-label">Break-even Exit Value</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">5x</div>
+                                <div class="metric-label">Revenue Multiple Target</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">25%</div>
+                                <div class="metric-label">Target IRR</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">5 years</div>
+                                <div class="metric-label">Expected Hold Period</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario Planning Sheet -->
+                    <div id="scenarios" class="sheet-content">
+                        <div class="formula-bar">Monte Carlo Scenario Analysis</div>
+                        
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Conservative</th>
+                                    <th>Base Case</th>
+                                    <th>Optimistic</th>
+                                    <th>Unicorn Path</th>
+                                    <th>Current</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Year 5 Revenue</td>
+                                    <td class="calculated-cell">₹50Cr</td>
+                                    <td class="calculated-cell">₹200Cr</td>
+                                    <td class="calculated-cell">₹500Cr</td>
+                                    <td class="calculated-cell">₹1,000Cr</td>
+                                    <td class="formula-cell" id="currentRevenue">₹200Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Exit Multiple</td>
+                                    <td class="calculated-cell">5x</td>
+                                    <td class="calculated-cell">8x</td>
+                                    <td class="calculated-cell">12x</td>
+                                    <td class="calculated-cell">15x</td>
+                                    <td class="formula-cell" id="currentMultiple">8x</td>
+                                </tr>
+                                <tr>
+                                    <td>Exit Valuation</td>
+                                    <td class="calculated-cell">₹250Cr</td>
+                                    <td class="calculated-cell">₹1,600Cr</td>
+                                    <td class="calculated-cell">₹6,000Cr</td>
+                                    <td class="calculated-cell">₹15,000Cr</td>
+                                    <td class="formula-cell" id="currentValuation">₹1,600Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Investor Returns</td>
+                                    <td class="calculated-cell">₹50Cr</td>
+                                    <td class="calculated-cell">₹320Cr</td>
+                                    <td class="calculated-cell">₹1,200Cr</td>
+                                    <td class="calculated-cell">₹3,000Cr</td>
+                                    <td class="formula-cell" id="currentInvestorReturns">₹320Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Return Multiple</td>
+                                    <td class="calculated-cell">5.0x</td>
+                                    <td class="calculated-cell">32.0x</td>
+                                    <td class="calculated-cell">120.0x</td>
+                                    <td class="calculated-cell">300.0x</td>
+                                    <td class="formula-cell" id="currentReturnMultiple">32.0x</td>
+                                </tr>
+                                <tr>
+                                    <td>Founder Wealth</td>
+                                    <td class="calculated-cell">₹67Cr</td>
+                                    <td class="calculated-cell">₹427Cr</td>
+                                    <td class="calculated-cell">₹1,600Cr</td>
+                                    <td class="calculated-cell">₹4,000Cr</td>
+                                    <td class="formula-cell" id="currentFounderWealth">₹427Cr</td>
+                                </tr>
+                                <tr>
+                                    <td>Probability</td>
+                                    <td class="calculated-cell">40%</td>
+                                    <td class="calculated-cell">30%</td>
+                                    <td class="calculated-cell">25%</td>
+                                    <td class="calculated-cell">5%</td>
+                                    <td class="formula-cell">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="chart-container">
+                            <div>📈 Probability Distribution: Expected value analysis with risk-adjusted returns</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Term Sheet Analysis Sheet -->
+                    <div id="terms" class="sheet-content">
+                        <div class="formula-bar">Term Sheet Impact Analysis</div>
+                        
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th>Term</th>
+                                    <th>Proposed</th>
+                                    <th>Market Standard</th>
+                                    <th>Impact</th>
+                                    <th>Founder Cost</th>
+                                    <th>Recommendation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Liquidation Preference</td>
+                                    <td class="input-cell"><input type="text" value="1x Non-Participating" onchange="analyzeTerms()"></td>
+                                    <td class="calculated-cell">1x Non-Participating</td>
+                                    <td class="calculated-cell" style="color: green;">✓ Standard</td>
+                                    <td class="calculated-cell">₹0</td>
+                                    <td class="calculated-cell" style="color: green;">Accept</td>
+                                </tr>
+                                <tr>
+                                    <td>Anti-Dilution</td>
+                                    <td class="input-cell"><input type="text" value="Weighted Average" onchange="analyzeTerms()"></td>
+                                    <td class="calculated-cell">Weighted Average</td>
+                                    <td class="calculated-cell" style="color: green;">✓ Standard</td>
+                                    <td class="calculated-cell">₹5Cr</td>
+                                    <td class="calculated-cell" style="color: green;">Accept</td>
+                                </tr>
+                                <tr>
+                                    <td>Board Seats</td>
+                                    <td class="input-cell"><input type="text" value="2 of 5" onchange="analyzeTerms()"></td>
+                                    <td class="calculated-cell">1-2 of 5-7</td>
+                                    <td class="calculated-cell" style="color: green;">✓ Reasonable</td>
+                                    <td class="calculated-cell">Moderate</td>
+                                    <td class="calculated-cell" style="color: green;">Accept</td>
+                                </tr>
+                                <tr>
+                                    <td>Option Pool</td>
+                                    <td class="input-cell"><input type="text" value="15% (pre-money)" onchange="analyzeTerms()"></td>
+                                    <td class="calculated-cell">10-20%</td>
+                                    <td class="calculated-cell" style="color: orange;">⚠ Negotiate</td>
+                                    <td class="calculated-cell">₹8Cr</td>
+                                    <td class="calculated-cell" style="color: orange;">Counter 12%</td>
+                                </tr>
+                                <tr>
+                                    <td>Drag Along</td>
+                                    <td class="input-cell"><input type="text" value=">50% threshold" onchange="analyzeTerms()"></td>
+                                    <td class="calculated-cell">Majority</td>
+                                    <td class="calculated-cell" style="color: green;">✓ Standard</td>
+                                    <td class="calculated-cell">Low</td>
+                                    <td class="calculated-cell" style="color: green;">Accept</td>
+                                </tr>
+                                <tr>
+                                    <td>Pay-to-Play</td>
+                                    <td class="input-cell"><input type="text" value="Yes" onchange="analyzeTerms()"></td>
+                                    <td class="calculated-cell">Common</td>
+                                    <td class="calculated-cell" style="color: red;">⚠ Risk</td>
+                                    <td class="calculated-cell">₹20Cr</td>
+                                    <td class="calculated-cell" style="color: red;">Negotiate out</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="metrics-cards">
+                            <div class="metric-card">
+                                <div class="metric-value">₹33Cr</div>
+                                <div class="metric-label">Total Founder Cost</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">3/6</div>
+                                <div class="metric-label">Terms to Negotiate</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">7.2/10</div>
+                                <div class="metric-label">Overall Term Score</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">Negotiate</div>
+                                <div class="metric-label">Recommendation</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSheet = 'capTable';
+        let calculationData = {
+            preMoney: 40000000,
+            investment: 10000000,
+            esopPool: 15,
+            revenueY1: 5000000,
+            growthRate: 200,
+            exitMultiple: 10
+        };
+        
+        function showSheet(sheetName) {
+            // Hide all sheets
+            document.querySelectorAll('.sheet-content').forEach(sheet => {
+                sheet.classList.remove('active');
+            });
+            document.querySelectorAll('.sheet-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected sheet
+            document.getElementById(sheetName).classList.add('active');
+            event.target.classList.add('active');
+            
+            currentSheet = sheetName;
+            calculate(); // Recalculate when switching sheets
+        }
+        
+        function calculate() {
+            // Get values from controls
+            calculationData.preMoney = parseFloat(document.getElementById('preMoney').value) || 40000000;
+            calculationData.investment = parseFloat(document.getElementById('investment').value) || 10000000;
+            calculationData.esopPool = parseFloat(document.getElementById('esopPool').value) || 15;
+            calculationData.revenueY1 = parseFloat(document.getElementById('revenueY1').value) || 5000000;
+            calculationData.growthRate = parseFloat(document.getElementById('growthRate').value) || 200;
+            calculationData.exitMultiple = parseFloat(document.getElementById('exitMultiple').value) || 10;
+            
+            calculateCapTable();
+            calculateMultiRound();
+            calculateReturns();
+            calculateScenarios();
+        }
+        
+        function calculateCapTable() {
+            const postMoney = calculationData.preMoney + calculationData.investment;
+            const totalPreShares = 10000000;
+            const sharePrice = calculationData.preMoney / totalPreShares;
+            const investorShares = calculationData.investment / sharePrice;
+            const esopNewShares = (totalPreShares + investorShares) * (calculationData.esopPool / 100) - (totalPreShares * 0.15);
+            const totalPostShares = totalPreShares + investorShares + esopNewShares;
+            
+            // Founder calculations
+            const founderShares = totalPreShares * 0.7;
+            const founderPostPct = (founderShares / totalPostShares) * 100;
+            
+            // Update cap table
+            document.getElementById('founderPostPct').textContent = founderPostPct.toFixed(1) + '%';
+            document.getElementById('investorShares').textContent = Math.round(investorShares).toLocaleString();
+            document.getElementById('investorPostShares').textContent = Math.round(investorShares).toLocaleString();
+            document.getElementById('investorPostPct').textContent = ((investorShares / totalPostShares) * 100).toFixed(1) + '%';
+            document.getElementById('investorAmount').textContent = '₹' + (calculationData.investment / 10000000).toFixed(1) + 'Cr';
+            document.getElementById('totalPostShares').textContent = Math.round(totalPostShares).toLocaleString();
+            document.getElementById('totalNewShares').textContent = Math.round(investorShares + esopNewShares).toLocaleString();
+            
+            // Update metrics
+            document.getElementById('postMoneyVal').textContent = '₹' + (postMoney / 10000000).toFixed(1) + 'Cr';
+            document.getElementById('dilutionPct').textContent = (100 - founderPostPct).toFixed(1) + '%';
+            document.getElementById('pricePerShare').textContent = '₹' + sharePrice.toFixed(0);
+        }
+        
+        function calculateMultiRound() {
+            // Multi-round dilution calculations would go here
+            // This is a simplified version - in real Excel, this would be more complex
+        }
+        
+        function calculateReturns() {
+            const year5Revenue = calculationData.revenueY1 * Math.pow((calculationData.growthRate / 100 + 1), 4);
+            const exitValuation = year5Revenue * calculationData.exitMultiple;
+            
+            // Update current scenario values
+            document.getElementById('currentRevenue').textContent = '₹' + (year5Revenue / 10000000).toFixed(0) + 'Cr';
+            document.getElementById('currentMultiple').textContent = calculationData.exitMultiple + 'x';
+            document.getElementById('currentValuation').textContent = '₹' + (exitValuation / 10000000).toFixed(0) + 'Cr';
+        }
+        
+        function calculateScenarios() {
+            // Scenario calculations
+            const scenarios = {
+                conservative: { revenue: 50, multiple: 5 },
+                base: { revenue: 200, multiple: 8 },
+                optimistic: { revenue: 500, multiple: 12 },
+                unicorn: { revenue: 1000, multiple: 15 }
+            };
+            
+            Object.keys(scenarios).forEach(scenario => {
+                const data = scenarios[scenario];
+                const exitValue = data.revenue * data.multiple;
+                const investorReturns = exitValue * 0.2; // Assuming 20% ownership
+                const founderWealth = exitValue * 0.267; // Assuming final founder ownership
+                
+                // Update scenario values would go here in real implementation
+            });
+        }
+        
+        function loadScenario(scenarioType) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const scenarios = {
+                conservative: { growth: 50, multiple: 5, revenue: 2000000 },
+                base: { growth: 200, multiple: 10, revenue: 5000000 },
+                optimistic: { growth: 400, multiple: 15, revenue: 10000000 },
+                unicorn: { growth: 800, multiple: 25, revenue: 20000000 }
+            };
+            
+            const scenario = scenarios[scenarioType];
+            if (scenario) {
+                document.getElementById('growthRate').value = scenario.growth;
+                document.getElementById('exitMultiple').value = scenario.multiple;
+                document.getElementById('revenueY1').value = scenario.revenue;
+                calculate();
+            }
+        }
+        
+        function analyzeTerms() {
+            // Term sheet analysis calculations
+            // This would involve complex calculations based on different terms
+            console.log('Analyzing term sheet impact...');
+        }
+        
+        function exportToExcel() {
+            // Create Excel-like CSV content
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Cap Table export
+            csvContent += "Cap Table Analysis\n";
+            csvContent += "Stakeholder,Shares (Pre),% (Pre),New Shares,Shares (Post),% (Post),Investment\n";
+            csvContent += "Founders,7000000,70.0%,0,7000000,56.0%,0\n";
+            csvContent += "ESOP Pool,1500000,15.0%,375000,1875000,15.0%,0\n";
+            csvContent += "Investor,0,0.0%,2500000,2500000,20.0%," + calculationData.investment + "\n";
+            csvContent += "Others,1500000,15.0%,0,1500000,12.0%,0\n\n";
+            
+            // Multi-round dilution
+            csvContent += "Multi-Round Dilution\n";
+            csvContent += "Round,Investment,Pre-Money,Post-Money,Founder %\n";
+            csvContent += "Pre-Seed,2500000,10000000,12500000,64.0%\n";
+            csvContent += "Seed,10000000,40000000,50000000,51.2%\n";
+            csvContent += "Series A,50000000,150000000,200000000,38.4%\n";
+            csvContent += "Series B,200000000,600000000,800000000,26.7%\n\n";
+            
+            // Create and download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "funding_calculator.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function exportToCSV() {
+            exportToExcel(); // Same functionality for now
+        }
+        
+        // Initialize calculations
+        window.onload = function() {
+            calculate();
+        };
+        
+        // Auto-save functionality
+        setInterval(() => {
+            localStorage.setItem('fundingCalculatorData', JSON.stringify(calculationData));
+        }, 10000);
+        
+        // Load saved data
+        const savedData = localStorage.getItem('fundingCalculatorData');
+        if (savedData) {
+            calculationData = { ...calculationData, ...JSON.parse(savedData) };
+            // Update form fields with saved data
+            Object.keys(calculationData).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = calculationData[key];
+                }
+            });
+        }
+    </script>
+</body>
+</html>

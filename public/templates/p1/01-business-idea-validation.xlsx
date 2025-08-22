@@ -1,0 +1,28 @@
+# Business Idea Validation Template
+# This is a CSV version - convert to Excel for full functionality
+
+Validation Criteria,Score (1-5),Weight,Weighted Score,Notes
+Market Size (TAM),4,20%,0.8,"Large addressable market in India"
+Problem Severity,5,25%,1.25,"Critical pain point for target customers"
+Competition Analysis,3,15%,0.45,"Moderate competition - good positioning opportunity"
+Technical Feasibility,4,15%,0.6,"Achievable with current technology"
+Regulatory Compliance,3,10%,0.3,"Manageable regulatory requirements"
+Customer Willingness to Pay,4,15%,0.6,"Customers showed interest in paying"
+
+TOTAL SCORE,,100%,4.0/5,"Strong business opportunity"
+
+Action Items:
+1. Conduct 50 customer interviews
+2. Analyze top 5 competitors in detail  
+3. Create MVP requirements document
+4. Estimate development costs
+5. Plan regulatory compliance strategy
+
+Target Customer Profile:
+- Age Range: 25-45
+- Income Level: ₹5-15 LPA
+- Location: Tier 1 & Tier 2 cities
+- Pain Points: [List specific pain points]
+- Buying Behavior: [Describe how they currently solve this problem]
+
+Go/No-Go Decision: GO (Score >= 3.5)

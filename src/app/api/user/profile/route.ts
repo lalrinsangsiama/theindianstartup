@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { errorResponse, successResponse } from '@/lib/api-utils';
+import { PURCHASE_STATUS } from '@/lib/constants';
+import { validateName, validatePhone, validateURL } from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,10 +15,7 @@ export async function GET(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return errorResponse('Unauthorized', 401);
     }
 
     // Get user profile with portfolio and purchases
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     // If user doesn't exist in our database yet, they haven't completed onboarding
     if (!userProfile) {
-      console.log('User profile not found in database for user:', user.id);
+      logger.info('User profile not found in database for user:', user.id);
       return NextResponse.json({
         user: null,
         hasCompletedOnboarding: false,
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
     return response;
   } catch (error) {
-    console.error('Profile fetch error:', error);
+    logger.error('Profile fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch profile' },
       { status: 500 }
@@ -78,10 +79,7 @@ export async function PATCH(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return errorResponse('Unauthorized', 401);
     }
 
     // Parse request body
@@ -103,7 +101,7 @@ export async function PATCH(request: NextRequest) {
       .maybeSingle();
 
     if (updateError) {
-      console.error('Profile update error:', updateError);
+      logger.error('Profile update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update profile' },
         { status: 500 }
@@ -114,7 +112,7 @@ export async function PATCH(request: NextRequest) {
       user: updatedUser,
     });
   } catch (error) {
-    console.error('Profile update error:', error);
+    logger.error('Profile update error:', error);
     return NextResponse.json(
       { error: 'Failed to update profile' },
       { status: 500 }

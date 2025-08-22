@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 
+import { logger } from '@/lib/logger';
 /**
  * Generate a unique coupon code for a user
  * Format: TIS-{USERNAME}-{RANDOM}
@@ -29,7 +30,7 @@ export async function createFirstPurchaseCoupon(userId: string, userName: string
       .single();
     
     if (existingCoupon) {
-      console.log('User already has a first purchase coupon');
+      logger.info('User already has a first purchase coupon');
       return null;
     }
     
@@ -71,13 +72,13 @@ export async function createFirstPurchaseCoupon(userId: string, userName: string
       .single();
     
     if (error) {
-      console.error('Failed to create coupon:', error);
+      logger.error('Failed to create coupon:', error);
       return null;
     }
     
     return coupon;
   } catch (error) {
-    console.error('Error creating first purchase coupon:', error);
+    logger.error('Error creating first purchase coupon:', error);
     return null;
   }
 }
@@ -150,7 +151,7 @@ export async function validateCoupon(
       coupon
     };
   } catch (error) {
-    console.error('Error validating coupon:', error);
+    logger.error('Error validating coupon:', error);
     return { valid: false, error: 'Failed to validate coupon' };
   }
 }
@@ -173,7 +174,7 @@ export async function markCouponAsUsed(couponId: string, purchaseId: string) {
     
     return true;
   } catch (error) {
-    console.error('Error marking coupon as used:', error);
+    logger.error('Error marking coupon as used:', error);
     return false;
   }
 }

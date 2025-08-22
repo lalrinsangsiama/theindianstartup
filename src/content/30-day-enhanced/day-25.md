@@ -34,6 +34,18 @@ By the end of today, you will:
 
 ### Phase 1: Product Strategy & Vision (75 mins, 60 XP)
 
+### 📊 Portfolio Activity: Product Strategy & Roadmap
+
+<ActivityCapture 
+  activityTypeId="product_roadmap"
+  activityName="6-Month Product Roadmap"
+  lessonId="p1-day-25"
+  courseCode="P1"
+  moduleId="launch-ready"
+/>
+
+**Instructions:** Create your comprehensive 6-month product roadmap including feature priorities, competitive analysis, and strategic vision. This will be saved to your portfolio's "Product Development" section and guide your future development decisions.
+
 #### 1.1 Product Vision Refinement *(35 mins)*
 **Strategic Product Thinking:**
 

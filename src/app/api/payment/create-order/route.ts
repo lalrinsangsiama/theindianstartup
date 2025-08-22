@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import Razorpay from 'razorpay';
 import { createClient } from '@/lib/supabase/server';
 import { createId } from '@paralleldrive/cuid2';
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       .insert(purchaseData);
 
     if (purchaseError) {
-      console.error('Error creating purchase record:', purchaseError);
+      logger.error('Error creating purchase record:', purchaseError);
       // Continue anyway - we'll create the record after payment
     }
 
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Create order error:', error);
+    logger.error('Create order error:', error);
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }

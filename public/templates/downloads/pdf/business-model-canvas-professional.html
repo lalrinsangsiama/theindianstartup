@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Model Canvas - The Indian Startup</title>
+    <style>
+        @page {
+            size: A3 landscape;
+            margin: 20px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2c3e50;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+        
+        .canvas {
+            display: grid;
+            grid-template-columns: 200px 200px 200px 200px 200px;
+            grid-template-rows: 180px 180px 120px;
+            gap: 8px;
+            width: 100%;
+            height: 480px;
+        }
+        
+        .section {
+            border: 2px solid #34495e;
+            padding: 15px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section h3 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            text-align: center;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .section .lines {
+            position: absolute;
+            top: 40px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+        }
+        
+        .section .lines::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                transparent,
+                transparent 18px,
+                #e8e8e8 18px,
+                #e8e8e8 20px
+            );
+        }
+        
+        .examples {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            line-height: 1.2;
+        }
+        
+        .key-partners { 
+            grid-column: 1; 
+            grid-row: 1 / 3;
+        }
+        
+        .key-activities { 
+            grid-column: 2; 
+            grid-row: 1;
+        }
+        
+        .value-propositions { 
+            grid-column: 3; 
+            grid-row: 1 / 3;
+            background: #f8f9fa;
+            border: 3px solid #e74c3c;
+        }
+        
+        .customer-relationships { 
+            grid-column: 4; 
+            grid-row: 1;
+        }
+        
+        .customer-segments { 
+            grid-column: 5; 
+            grid-row: 1 / 3;
+        }
+        
+        .key-resources { 
+            grid-column: 2; 
+            grid-row: 2;
+        }
+        
+        .channels { 
+            grid-column: 4; 
+            grid-row: 2;
+        }
+        
+        .cost-structure { 
+            grid-column: 1 / 4; 
+            grid-row: 3;
+        }
+        
+        .revenue-streams { 
+            grid-column: 4 / 6; 
+            grid-row: 3;
+            background: #e8f5e8;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #bdc3c7;
+            padding-top: 10px;
+        }
+        
+        .company-info {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+        
+        .instructions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 8px;
+            color: #95a5a6;
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        Print this template and fill by hand, or use our interactive version at theindianstartup.in
+    </div>
+    
+    <div class="header">
+        <h1>Business Model Canvas</h1>
+        <div class="subtitle">Strategic Planning Template for Indian Startups</div>
+    </div>
+
+    <div class="canvas">
+        <div class="section key-partners">
+            <h3>Key Partners</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Strategic alliances<br>
+                • Key suppliers<br>
+                • Joint ventures<br>
+                • Technology partners
+            </div>
+        </div>
+
+        <div class="section key-activities">
+            <h3>Key Activities</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Production<br>
+                • Marketing<br>
+                • Platform development<br>
+                • Customer support
+            </div>
+        </div>
+
+        <div class="section value-propositions">
+            <h3>Value Propositions</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Problem solving<br>
+                • Unique features<br>
+                • Cost reduction<br>
+                • Convenience
+            </div>
+        </div>
+
+        <div class="section customer-relationships">
+            <h3>Customer Relationships</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Personal assistance<br>
+                • Self-service<br>
+                • Communities<br>
+                • Co-creation
+            </div>
+        </div>
+
+        <div class="section customer-segments">
+            <h3>Customer Segments</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Mass market<br>
+                • Niche market<br>
+                • Segmented<br>
+                • Multi-sided
+            </div>
+        </div>
+
+        <div class="section key-resources">
+            <h3>Key Resources</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Physical assets<br>
+                • Intellectual property<br>
+                • Human resources<br>
+                • Financial resources
+            </div>
+        </div>
+
+        <div class="section channels">
+            <h3>Channels</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Sales force<br>
+                • Web sales<br>
+                • Partner stores<br>
+                • Social media
+            </div>
+        </div>
+
+        <div class="section cost-structure">
+            <h3>Cost Structure</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                Fixed costs: Staff, rent, utilities • Variable costs: Materials, commissions • Economies of scale/scope
+            </div>
+        </div>
+
+        <div class="section revenue-streams">
+            <h3>Revenue Streams</h3>
+            <div class="lines"></div>
+            <div class="examples">
+                • Asset sales • Usage fees • Subscription fees • Licensing • Advertising • Brokerage
+            </div>
+        </div>
+    </div>
+    
+    <div class="company-info">
+        <div>Company Name: _________________________</div>
+        <div>Date: _____________</div>
+        <div>Version: _______</div>
+        <div>Created by: _________________________</div>
+    </div>
+
+    <div class="footer">
+        <strong>The Indian Startup</strong> | theindianstartup.in | Business Model Canvas Template<br>
+        Based on the original Business Model Canvas by Alexander Osterwalder
+    </div>
+</body>
+</html>

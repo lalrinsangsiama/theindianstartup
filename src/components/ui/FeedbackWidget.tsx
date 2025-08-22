@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/textarea';
 import { Modal } from '@/components/ui/Modal';
 import { ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ui/Modal';
 import { Alert } from '@/components/ui/Alert';
@@ -166,7 +166,7 @@ export function FeedbackWidget() {
             </p>
             <p className="text-gray-600">
               We appreciate your input and will review it carefully. If you provided an email, 
-              we&apos;ll get back to you soon.
+              we'll get back to you soon.
             </p>
           </div>
         </ModalBody>

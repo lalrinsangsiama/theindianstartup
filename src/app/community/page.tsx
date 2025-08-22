@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -172,7 +173,7 @@ export default function CommunityPage() {
       ]);
 
     } catch (error) {
-      console.error('Error fetching community data:', error);
+      logger.error('Error fetching community data:', error);
     } finally {
       setLoading(false);
     }
@@ -483,7 +484,7 @@ export default function CommunityPage() {
                     </div>
                     <div className="flex items-start gap-2">
                       <Award className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Celebrate others&apos; successes and milestones</Text>
+                      <Text size="sm">Celebrate others' successes and milestones</Text>
                     </div>
                     <div className="flex items-start gap-2">
                       <Target className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />

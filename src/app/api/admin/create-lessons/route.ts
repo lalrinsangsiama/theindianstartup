@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 
@@ -132,7 +133,7 @@ export async function POST() {
         });
 
       if (error) {
-        console.error(`Error inserting day ${lesson.day}:`, error);
+        logger.error(`Error inserting day ${lesson.day}:`, error);
         return NextResponse.json(
           { success: false, error: `Failed to insert day ${lesson.day}: ${error.message}` },
           { status: 500 }
@@ -147,7 +148,7 @@ export async function POST() {
     });
 
   } catch (error) {
-    console.error('Create lessons error:', error);
+    logger.error('Create lessons error:', error);
     return NextResponse.json(
       { 
         success: false, 

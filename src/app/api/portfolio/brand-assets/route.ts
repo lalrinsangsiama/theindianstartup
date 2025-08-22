@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export async function PATCH(request: NextRequest) {
@@ -30,7 +31,7 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error updating brand assets:', error);
+      logger.error('Error updating brand assets:', error);
       return NextResponse.json(
         { error: 'Failed to update brand assets' },
         { status: 500 }
@@ -43,7 +44,7 @@ export async function PATCH(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Brand assets API error:', error);
+    logger.error('Brand assets API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

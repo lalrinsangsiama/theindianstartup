@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 interface UserCoupon {
@@ -31,7 +32,7 @@ export function useUserCoupons() {
           setCoupons(data.coupons || []);
         }
       } catch (error) {
-        console.error('Failed to fetch coupons:', error);
+        logger.error('Failed to fetch coupons:', error);
         setCoupons([]);
       } finally {
         setIsLoading(false);

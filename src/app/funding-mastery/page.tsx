@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
@@ -347,7 +348,7 @@ export default function FundingMasteryPage() {
         
         setProductData(data);
       } catch (err) {
-        console.error('Error fetching modules:', err);
+        logger.error('Error fetching modules:', err);
         setError(err instanceof Error ? err.message : 'Failed to load course data');
         
         // Fallback to basic structure for display
@@ -496,7 +497,7 @@ export default function FundingMasteryPage() {
             {/* Key Outcomes */}
             <Card className="p-6 mb-8 bg-gradient-to-r from-green-50 to-blue-50">
               <Heading as="h3" variant="h6" className="mb-4">
-                What You&apos;ll Achieve
+                What You'll Achieve
               </Heading>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-3">
@@ -533,6 +534,10 @@ export default function FundingMasteryPage() {
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
                     <Text size="sm">Access to 200+ templates, tools, and calculators</Text>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <Text size="sm">Exclusive investor database with 37+ verified contacts</Text>
                   </div>
                 </div>
               </div>

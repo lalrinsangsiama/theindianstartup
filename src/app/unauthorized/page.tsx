@@ -24,7 +24,7 @@ export default function UnauthorizedPage() {
         {/* Message */}
         <div className="text-center space-y-3">
           <Text>
-            The page you&apos;re trying to access requires special permissions.
+            The page you're trying to access requires special permissions.
           </Text>
           <Text color="muted" size="sm">
             If you believe this is an error, please contact support.

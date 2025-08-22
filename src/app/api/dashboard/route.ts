@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { errorResponse, successResponse } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,10 +13,7 @@ export async function GET(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return errorResponse('Unauthorized', 401);
     }
 
     // Get user profile
@@ -25,7 +24,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     if (!userProfile) {
-      return NextResponse.json({
+      return successResponse({
         user: null,
         hasCompletedOnboarding: false,
         needsOnboarding: true,
@@ -39,11 +38,7 @@ export async function GET(request: NextRequest) {
       .order('code');
 
     if (productsError) {
-      console.error('Products fetch error:', productsError);
-      return NextResponse.json(
-        { error: 'Failed to fetch products' },
-        { status: 500 }
-      );
+      return errorResponse('Failed to fetch products', 500, productsError);
     }
 
     // Get user's purchases
@@ -58,7 +53,7 @@ export async function GET(request: NextRequest) {
       .gt('expiresAt', new Date().toISOString());
 
     if (purchasesError) {
-      console.error('Purchases fetch error:', purchasesError);
+      logger.error('Purchases fetch error:', purchasesError);
       return NextResponse.json(
         { error: 'Failed to fetch purchases' },
         { status: 500 }
@@ -246,7 +241,7 @@ export async function GET(request: NextRequest) {
     
     return response;
   } catch (error) {
-    console.error('Dashboard API error:', error);
+    logger.error('Dashboard API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { healthCheck } from '@/lib/monitoring';
 import { createClient } from '@/lib/supabase/server';
 
@@ -68,7 +69,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Health check failed:', error);
+    logger.error('Health check failed:', error);
     
     return NextResponse.json(
       {

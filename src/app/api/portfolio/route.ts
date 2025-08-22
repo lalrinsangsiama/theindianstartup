@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -160,7 +161,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Portfolio API error:', error);
+    logger.error('Portfolio API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -195,7 +196,7 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (updateError) {
-      console.error('Portfolio update error:', updateError);
+      logger.error('Portfolio update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update portfolio' },
         { status: 500 }
@@ -205,7 +206,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(portfolio);
 
   } catch (error) {
-    console.error('Portfolio update API error:', error);
+    logger.error('Portfolio update API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

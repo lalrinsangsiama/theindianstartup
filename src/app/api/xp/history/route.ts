@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { calculateLevel, calculateXPForNextLevel, getLevelTitle } from '@/lib/xp';
 
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
       .range(offset, offset + limit - 1);
 
     if (eventsError) {
-      console.error('Error fetching XP events:', eventsError);
+      logger.error('Error fetching XP events:', eventsError);
       return NextResponse.json(
         { error: 'Failed to fetch XP history' },
         { status: 500 }
@@ -114,7 +115,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('XP history API error:', error);
+    logger.error('XP history API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

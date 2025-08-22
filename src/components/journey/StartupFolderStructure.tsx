@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/logger';
 import { Card } from '@/components/ui/Card';
 import { CardContent } from '@/components/ui/Card';
 import { CardHeader } from '@/components/ui/Card';
@@ -119,7 +120,7 @@ export function StartupFolderStructure({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      logger.error('Failed to copy:', err);
     }
   };
 
@@ -289,9 +290,9 @@ export function StartupFolderStructure({
               </Text>
               <ol className="text-sm text-blue-800 space-y-1">
                 <li>1. Choose your cloud storage provider</li>
-                <li>2. Create a &quot;My Startup&quot; main folder</li>
+                <li>2. Create a "My Startup" main folder</li>
                 <li>3. Copy our folder structure (use the copy button above)</li>
-                <li>4. Create the subfolders as you complete each day&apos;s tasks</li>
+                <li>4. Create the subfolders as you complete each day's tasks</li>
                 <li>5. Share with co-founders and set proper permissions</li>
               </ol>
             </div>

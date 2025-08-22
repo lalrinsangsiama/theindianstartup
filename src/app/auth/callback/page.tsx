@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { logger } from '@/lib/logger';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
@@ -14,51 +15,93 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleCallback = async () => {
-      // Get the hash fragment from the URL
-      const hashFragment = window.location.hash;
-      
-      if (!hashFragment) {
-        setError('Invalid callback URL');
-        return;
-      }
-
-      // Parse the hash fragment
-      const params = new URLSearchParams(hashFragment.substring(1));
-      const accessToken = params.get('access_token');
-      const type = params.get('type');
-      const errorParam = params.get('error');
-      const errorDescription = params.get('error_description');
-
-      if (errorParam) {
-        setError(errorDescription || 'Authentication failed');
-        return;
-      }
-
-      if (!accessToken) {
-        setError('No access token received');
-        return;
-      }
-
-      // Handle different callback types
-      switch (type) {
-        case 'signup':
-          // Email verification successful - redirect to onboarding for new users
-          router.push('/onboarding');
-          break;
+      try {
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashFragment = window.location.hash;
         
-        case 'recovery':
-          // Password reset link clicked
-          router.push('/reset-password');
-          break;
+        // Parse hash fragment for OAuth tokens
+        let params = new URLSearchParams();
+        if (hashFragment) {
+          params = new URLSearchParams(hashFragment.substring(1));
+        }
         
-        case 'invite':
-          // Handle team invites (future feature)
-          router.push('/dashboard');
-          break;
-        
-        default:
-          // Default to dashboard
-          router.push('/dashboard');
+        const accessToken = params.get('access_token');
+        const type = params.get('type');
+        const errorParam = params.get('error') || urlParams.get('error');
+        const errorDescription = params.get('error_description') || urlParams.get('error_description');
+        const redirectTo = urlParams.get('redirectTo');
+
+        if (errorParam) {
+          setError(errorDescription || 'Authentication failed');
+          return;
+        }
+
+        // Handle successful authentication
+        if (accessToken || type) {
+          // Check for saved cart information
+          const savedCart = localStorage.getItem('preSignupCart');
+          const earlyBird = localStorage.getItem('earlyBirdPurchase');
+          
+          // Check for minimal signup flow
+          const isMinimalSignup = urlParams.get('minimal') === 'true' || localStorage.getItem('minimalSignup') === 'true';
+
+          // Handle different callback types
+          switch (type) {
+            case 'signup':
+              // Email verification successful
+              if (isMinimalSignup) {
+                // For minimal signup, go directly to dashboard
+                localStorage.removeItem('minimalSignup');
+                router.push('/dashboard?showOnboarding=true');
+              } else {
+                // For full signup, redirect to onboarding
+                router.push('/onboarding');
+              }
+              break;
+            
+            case 'recovery':
+              // Password reset link clicked
+              router.push('/reset-password');
+              break;
+            
+            case 'invite':
+              // Handle team invites (future feature)
+              router.push('/dashboard');
+              break;
+            
+            default:
+              // Handle OAuth login/signup
+              if (savedCart && savedCart !== '[]') {
+                // If user had items in cart, redirect to purchase
+                router.push('/purchase');
+              } else if (redirectTo) {
+                // If there's a redirect URL, go there
+                router.push(decodeURIComponent(redirectTo));
+              } else {
+                // Check if user needs onboarding
+                const response = await fetch('/api/user/profile');
+                const profileData = await response.json();
+                
+                if (!profileData.hasCompletedOnboarding) {
+                  router.push('/onboarding');
+                } else {
+                  router.push('/dashboard');
+                }
+              }
+          }
+        } else {
+          // No token found, might be email verification callback
+          const type = urlParams.get('type');
+          if (type === 'email') {
+            router.push('/login?verified=true');
+          } else {
+            setError('Invalid callback URL - no authentication data found');
+          }
+        }
+      } catch (error) {
+        logger.error('Auth callback error:', error);
+        setError('An error occurred during authentication');
       }
     };
 

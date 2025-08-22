@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAM/SAM/SOM Market Size Calculator - P1 Day 2</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            color: #333;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1); 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            border-bottom: 3px solid #2c3e50; 
+            padding-bottom: 20px; 
+        }
+        .header h1 { 
+            font-size: 28px; 
+            color: #2c3e50; 
+            margin: 0 0 10px 0; 
+        }
+        .info-box { 
+            background: #e3f2fd; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-bottom: 25px; 
+            border-left: 4px solid #2196f3; 
+        }
+        .section { 
+            margin-bottom: 30px; 
+            padding: 20px; 
+            border: 2px solid #dee2e6; 
+            border-radius: 8px; 
+        }
+        .section h3 { 
+            color: #2c3e50; 
+            margin: 0 0 15px 0; 
+            font-size: 18px; 
+            display: flex; 
+            align-items: center; 
+        }
+        .tam { border-left: 4px solid #e74c3c; }
+        .sam { border-left: 4px solid #f39c12; }
+        .som { border-left: 4px solid #27ae60; }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        .form-group label { 
+            display: block; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            color: #555; 
+        }
+        .form-group input, .form-group select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .result-box { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-top: 15px; 
+            border: 2px dashed #6c757d; 
+        }
+        .result-value { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #2c3e50; 
+            margin-bottom: 5px; 
+        }
+        .calculate-btn { 
+            background: #3498db; 
+            color: white; 
+            padding: 12px 30px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 10px 5px; 
+        }
+        .calculate-btn:hover { 
+            background: #2980b9; 
+        }
+        .examples { 
+            background: #fff9e6; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-top: 15px; 
+            font-size: 13px; 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+        }
+        .funnel-visual {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .funnel-level {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .tam-level { background: #ffebee; color: #c62828; }
+        .sam-level { background: #fff3e0; color: #ef6c00; }
+        .som-level { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TAM/SAM/SOM Market Size Calculator</h1>
+            <div style="color: #7f8c8d; font-size: 16px;">P1 Course - Day 2 Market Analysis Tool</div>
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 14px;">
+                <div>Startup: <input type="text" id="startupName" placeholder="Enter startup name" style="border:none; border-bottom:1px solid #ccc; width:200px;"></div>
+                <div>Date: <input type="date" id="analysisDate" style="border:none; border-bottom:1px solid #ccc;"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h4 style="margin: 0 0 10px 0; color: #1976d2;">Understanding Market Size</h4>
+            <p style="margin: 0; font-size: 14px;">
+                <strong>TAM</strong> (Total Addressable Market) = Everyone who could possibly use your product<br>
+                <strong>SAM</strong> (Serviceable Addressable Market) = People you can realistically reach<br>
+                <strong>SOM</strong> (Serviceable Obtainable Market) = What you can actually capture in 3-5 years
+            </p>
+        </div>
+
+        <!-- TAM Section -->
+        <div class="section tam">
+            <h3>🌍 TAM - Total Addressable Market</h3>
+            <p style="color: #666; margin-bottom: 20px;">The entire universe of potential customers</p>
+            
+            <div class="grid">
+                <div class="form-group">
+                    <label>Total Target Population in India</label>
+                    <input type="number" id="totalPopulation" placeholder="e.g., 1400000000">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Total people who could theoretically use your product</div>
+                </div>
+                <div class="form-group">
+                    <label>Average Annual Spend per Person (₹)</label>
+                    <input type="number" id="avgSpendTAM" placeholder="e.g., 5000">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">How much they spend on your category annually</div>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateTAM()">Calculate TAM</button>
+            <div class="result-box" id="tamResult" style="display:none;">
+                <div class="result-value" id="tamValue">₹0</div>
+                <div style="font-size: 14px; color: #666;">Total Addressable Market</div>
+            </div>
+
+            <div class="examples">
+                <strong>Example:</strong> Food delivery app<br>
+                • Total population: 50 crore urban Indians<br>
+                • Annual food spend: ₹50,000 per person<br>
+                • TAM = 50,00,00,000 × ₹50,000 = ₹25,00,00,00,00,000 (₹25 lakh crores)
+            </div>
+        </div>
+
+        <!-- SAM Section -->
+        <div class="section sam">
+            <h3>🎯 SAM - Serviceable Addressable Market</h3>
+            <p style="color: #666; margin-bottom: 20px;">The segment you can actually reach with your business model</p>
+            
+            <div class="grid">
+                <div class="form-group">
+                    <label>Target Demographics (% of TAM)</label>
+                    <input type="number" id="demographicsPercent" placeholder="e.g., 15" min="0" max="100">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Age, income, location filters</div>
+                </div>
+                <div class="form-group">
+                    <label>Geographic Reach (% of Demographics)</label>
+                    <input type="number" id="geographicPercent" placeholder="e.g., 30" min="0" max="100">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Cities/states you can serve</div>
+                </div>
+            </div>
+            
+            <div class="grid">
+                <div class="form-group">
+                    <label>Technology Adoption (% of Geographic)</label>
+                    <input type="number" id="techPercent" placeholder="e.g., 60" min="0" max="100">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Smartphone/internet users</div>
+                </div>
+                <div class="form-group">
+                    <label>Behavioral Fit (% of Tech Users)</label>
+                    <input type="number" id="behaviorPercent" placeholder="e.g., 40" min="0" max="100">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Willing to try your solution</div>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateSAM()">Calculate SAM</button>
+            <div class="result-box" id="samResult" style="display:none;">
+                <div class="result-value" id="samValue">₹0</div>
+                <div style="font-size: 14px; color: #666;">Serviceable Addressable Market</div>
+            </div>
+
+            <div class="examples">
+                <strong>Example:</strong> Food delivery app in metro cities<br>
+                • Demographics: 15% (age 18-45, middle class)<br>
+                • Geographic: 30% (top 10 cities)<br>
+                • Technology: 60% (smartphone users)<br>
+                • Behavioral: 40% (willing to order online)<br>
+                • SAM = TAM × 15% × 30% × 60% × 40% = ₹2.7 lakh crores
+            </div>
+        </div>
+
+        <!-- SOM Section -->
+        <div class="section som">
+            <h3>💰 SOM - Serviceable Obtainable Market</h3>
+            <p style="color: #666; margin-bottom: 20px;">What you can realistically capture given competition and resources</p>
+            
+            <div class="grid">
+                <div class="form-group">
+                    <label>Market Share Goal (%)</label>
+                    <input type="number" id="marketSharePercent" placeholder="e.g., 5" min="0" max="100">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Realistic market share in 3-5 years</div>
+                </div>
+                <div class="form-group">
+                    <label>Time to Achieve (Years)</label>
+                    <select id="timeToAchieve">
+                        <option value="1">1 Year</option>
+                        <option value="2">2 Years</option>
+                        <option value="3" selected>3 Years</option>
+                        <option value="5">5 Years</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Competition Factor</label>
+                    <select id="competitionFactor">
+                        <option value="0.8">High Competition (80% adjustment)</option>
+                        <option value="0.9" selected>Medium Competition (90% adjustment)</option>
+                        <option value="1.0">Low Competition (100% - no adjustment)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Execution Confidence</label>
+                    <select id="executionFactor">
+                        <option value="0.5">Conservative (50%)</option>
+                        <option value="0.7">Moderate (70%)</option>
+                        <option value="0.9" selected>Optimistic (90%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateSOM()">Calculate SOM</button>
+            <div class="result-box" id="somResult" style="display:none;">
+                <div class="result-value" id="somValue">₹0</div>
+                <div style="font-size: 14px; color: #666;">Serviceable Obtainable Market</div>
+            </div>
+
+            <div class="examples">
+                <strong>Example:</strong> Food delivery realistic capture<br>
+                • Market share: 5% (1 in 20 users)<br>
+                • Competition factor: 90% (medium competition)<br>
+                • Execution: 90% (optimistic team)<br>
+                • SOM = SAM × 5% × 90% × 90% = ₹1,093 crores
+            </div>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="funnel-visual">
+            <h3 style="color: #2c3e50; margin-bottom: 20px;">Market Funnel Summary</h3>
+            <div class="funnel-level tam-level">
+                TAM: <span id="tamDisplay">₹0</span>
+                <div style="font-size: 14px; font-weight: normal;">Total possible market</div>
+            </div>
+            <div style="font-size: 30px; color: #bdc3c7;">⬇️</div>
+            <div class="funnel-level sam-level">
+                SAM: <span id="samDisplay">₹0</span>
+                <div style="font-size: 14px; font-weight: normal;">Market you can serve</div>
+            </div>
+            <div style="font-size: 30px; color: #bdc3c7;">⬇️</div>
+            <div class="funnel-level som-level">
+                SOM: <span id="somDisplay">₹0</span>
+                <div style="font-size: 14px; font-weight: normal;">What you'll capture</div>
+            </div>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 30px;">
+            <h4 style="color: #2c3e50; margin: 0 0 15px 0;">Validation Checklist</h4>
+            <div style="font-size: 14px;">
+                □ <strong>TAM > ₹1,000 crores:</strong> Large enough market<br>
+                □ <strong>SAM > ₹100 crores:</strong> Serviceable market size<br>
+                □ <strong>SOM > ₹10 crores:</strong> Worth building a business<br>
+                □ <strong>Market growing > 15% annually:</strong> Expanding opportunity<br>
+                □ <strong>Low customer acquisition cost:</strong> Can reach target market efficiently<br>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="generateReport()" style="background: #27ae60; float: right; margin-top: 20px;">Generate Market Analysis Report</button>
+        <div style="clear: both;"></div>
+    </div>
+
+    <script>
+        let tamValue = 0, samValue = 0, somValue = 0;
+
+        function formatINR(amount) {
+            if (amount >= 10000000) {
+                return '₹' + (amount / 10000000).toFixed(2) + ' crores';
+            } else if (amount >= 100000) {
+                return '₹' + (amount / 100000).toFixed(2) + ' lakhs';
+            } else {
+                return '₹' + amount.toLocaleString('en-IN');
+            }
+        }
+
+        function calculateTAM() {
+            const population = parseFloat(document.getElementById('totalPopulation').value) || 0;
+            const avgSpend = parseFloat(document.getElementById('avgSpendTAM').value) || 0;
+            
+            tamValue = population * avgSpend;
+            
+            document.getElementById('tamValue').textContent = formatINR(tamValue);
+            document.getElementById('tamDisplay').textContent = formatINR(tamValue);
+            document.getElementById('tamResult').style.display = 'block';
+        }
+
+        function calculateSAM() {
+            if (tamValue === 0) {
+                alert('Please calculate TAM first');
+                return;
+            }
+            
+            const demo = parseFloat(document.getElementById('demographicsPercent').value) || 0;
+            const geo = parseFloat(document.getElementById('geographicPercent').value) || 0;
+            const tech = parseFloat(document.getElementById('techPercent').value) || 0;
+            const behavior = parseFloat(document.getElementById('behaviorPercent').value) || 0;
+            
+            samValue = tamValue * (demo/100) * (geo/100) * (tech/100) * (behavior/100);
+            
+            document.getElementById('samValue').textContent = formatINR(samValue);
+            document.getElementById('samDisplay').textContent = formatINR(samValue);
+            document.getElementById('samResult').style.display = 'block';
+        }
+
+        function calculateSOM() {
+            if (samValue === 0) {
+                alert('Please calculate SAM first');
+                return;
+            }
+            
+            const marketShare = parseFloat(document.getElementById('marketSharePercent').value) || 0;
+            const competition = parseFloat(document.getElementById('competitionFactor').value) || 1;
+            const execution = parseFloat(document.getElementById('executionFactor').value) || 1;
+            
+            somValue = samValue * (marketShare/100) * competition * execution;
+            
+            document.getElementById('somValue').textContent = formatINR(somValue);
+            document.getElementById('somDisplay').textContent = formatINR(somValue);
+            document.getElementById('somResult').style.display = 'block';
+        }
+
+        function generateReport() {
+            if (somValue === 0) {
+                alert('Please complete all calculations first');
+                return;
+            }
+            
+            const startup = document.getElementById('startupName').value || 'Your Startup';
+            const date = document.getElementById('analysisDate').value || new Date().toISOString().split('T')[0];
+            
+            const reportWindow = window.open('', '_blank');
+            reportWindow.document.write(`
+                <html>
+                <head><title>Market Analysis Report - ${startup}</title></head>
+                <body style="font-family: Arial, sans-serif; padding: 30px; line-height: 1.6;">
+                    <h1>Market Analysis Report</h1>
+                    <p><strong>Company:</strong> ${startup}</p>
+                    <p><strong>Analysis Date:</strong> ${date}</p>
+                    <hr>
+                    <h2>Market Size Analysis</h2>
+                    <ul>
+                        <li><strong>TAM (Total Addressable Market):</strong> ${formatINR(tamValue)}</li>
+                        <li><strong>SAM (Serviceable Addressable Market):</strong> ${formatINR(samValue)}</li>
+                        <li><strong>SOM (Serviceable Obtainable Market):</strong> ${formatINR(somValue)}</li>
+                    </ul>
+                    <h2>Market Opportunity Assessment</h2>
+                    <p><strong>Overall Rating:</strong> ${somValue > 1000000000 ? 'Excellent' : somValue > 100000000 ? 'Good' : 'Challenging'}</p>
+                    <h2>Next Steps</h2>
+                    <ol>
+                        <li>Validate assumptions through customer interviews</li>
+                        <li>Research competition in detail</li>
+                        <li>Create go-to-market strategy</li>
+                        <li>Plan customer acquisition channels</li>
+                        <li>Prepare investor pitch with this data</li>
+                    </ol>
+                    <p><em>Generated by The Indian Startup - P1 Course</em></p>
+                </body>
+                </html>
+            `);
+            reportWindow.document.close();
+        }
+
+        // Auto-populate date
+        document.getElementById('analysisDate').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

@@ -55,6 +55,18 @@ By the end of today, you will:
 
 ### Phase 1: Application Preparation (60 mins, 50 XP)
 
+### 📊 Portfolio Activity: DPIIT Application Strategy
+
+<ActivityCapture 
+  activityTypeId="legal_structure_decision"
+  activityName="DPIIT Recognition Application"
+  lessonId="p1-day-15"
+  courseCode="P1"
+  moduleId="making-it-real"
+/>
+
+**Instructions:** Document your DPIIT application strategy, innovation narrative, and compliance checklist. This will be saved to your portfolio's "Legal Compliance" section and help track your regulatory progress.
+
 #### 1.1 Innovation Narrative Development *(30 mins)*
 **Objective:** Craft compelling innovation story
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
@@ -67,7 +68,7 @@ export function SessionManager() {
       await refreshSession();
       setShowWarning(false);
     } catch (error) {
-      console.error('Failed to refresh session:', error);
+      logger.error('Failed to refresh session:', error);
     } finally {
       setIsRefreshing(false);
     }

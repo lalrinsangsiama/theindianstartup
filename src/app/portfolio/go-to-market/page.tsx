@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -81,7 +82,7 @@ export default function GoToMarketPage() {
         salesChannels: data.salesChannels || [],
       });
     } catch (err) {
-      console.error('Error fetching portfolio:', err);
+      logger.error('Error fetching portfolio:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
@@ -178,7 +179,7 @@ export default function GoToMarketPage() {
 
       setLastSaved(new Date());
     } catch (err) {
-      console.error('Error saving portfolio:', err);
+      logger.error('Error saving portfolio:', err);
       setError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
@@ -416,7 +417,7 @@ export default function GoToMarketPage() {
                     <User className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <Text color="muted">No customer personas defined yet</Text>
                     <Text size="sm" color="muted" className="mt-1">
-                      Click &quot;Add Persona&quot; to define your target customers
+                      Click "Add Persona" to define your target customers
                     </Text>
                   </div>
                 )}
@@ -486,7 +487,7 @@ export default function GoToMarketPage() {
                     <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <Text color="muted">No sales channels defined yet</Text>
                     <Text size="sm" color="muted" className="mt-1">
-                      Click &quot;Add Channel&quot; to plan your customer acquisition channels
+                      Click "Add Channel" to plan your customer acquisition channels
                     </Text>
                   </div>
                 )}
@@ -535,7 +536,7 @@ export default function GoToMarketPage() {
               <CardContent className="p-4 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <Text className="text-green-700 font-medium">
-                  Great work! You&apos;ve completed your Go-to-Market strategy. Ready to work on your financial projections?
+                  Great work! You've completed your Go-to-Market strategy. Ready to work on your financial projections?
                 </Text>
               </CardContent>
             </Card>

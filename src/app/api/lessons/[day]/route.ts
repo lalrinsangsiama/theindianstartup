@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { createClient } from '@supabase/supabase-js';
 import { getUser } from '@/lib/auth';
 import { parseEnhancedContent } from '@/lib/content-parser';
@@ -61,15 +62,22 @@ export async function GET(
       process.env.SUPABASE_SERVICE_KEY!
     );
 
-    // Fetch lesson data
+    // Fetch lesson data from proper Lesson table with relationships
     const { data: lesson, error: lessonError } = await supabase
-      .from('DailyLesson')
-      .select('*')
+      .from('Lesson')
+      .select(`
+        *,
+        module:Module!inner (
+          *,
+          product:Product!inner (*)
+        )
+      `)
       .eq('day', dayNumber)
+      .eq('module.product.code', 'P1')
       .single();
 
     if (lessonError) {
-      console.error('Error fetching lesson:', lessonError);
+      logger.error('Error fetching lesson:', lessonError);
       return NextResponse.json(
         { error: 'Lesson not found' },
         { status: 404 }
@@ -89,7 +97,7 @@ export async function GET(
 
     // If no error or "not found" error, that's okay
     if (progressError && progressError.code !== 'PGRST116') {
-      console.error('Error fetching progress:', progressError);
+      logger.error('Error fetching progress:', progressError);
       // Don't return error, just continue without progress data
     }
 
@@ -98,7 +106,7 @@ export async function GET(
     try {
       enhancedContent = parseEnhancedContent(dayNumber);
     } catch (error) {
-      console.log('Using database content for day', dayNumber);
+      logger.info('Using database content for day', dayNumber);
       enhancedContent = null;
     }
     
@@ -111,7 +119,7 @@ export async function GET(
     const focus = enhancedContent?.focus || extractFocusFromContent(briefContent);
     const successMetrics = enhancedContent?.successMetrics || extractSuccessMetrics(briefContent);
     
-    // Format the response
+    // Format the response - handle both old DailyLesson and new Lesson table structures
     const responseData = {
       day: lesson.day,
       title: title,
@@ -120,9 +128,10 @@ export async function GET(
       xpReward: lesson.xpReward,
       actionItems: actionItems,
       resources: resources,
+      metadata: lesson.metadata || {},
       focus: focus,
       successMetrics: successMetrics,
-      expertTips: [], // Can be added to database schema later
+      expertTips: lesson.metadata?.expertInsight ? [lesson.metadata.expertInsight] : [],
       reflectionQuestions: [], // Can be added to database schema later
       progress: progress ? {
         started: !!progress.startedAt,
@@ -136,7 +145,7 @@ export async function GET(
     return NextResponse.json(responseData);
 
   } catch (error) {
-    console.error('Lesson API error:', error);
+    logger.error('Lesson API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

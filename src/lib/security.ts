@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 
+import { logger } from '@/lib/logger';
 /**
  * Security utilities for production
  */
@@ -106,7 +107,7 @@ export function logSecurityEvent(event: {
   userId?: string;
   details?: string;
 }) {
-  console.warn('[SECURITY]', {
+  logger.warn('[SECURITY]', {
     timestamp: new Date().toISOString(),
     ...event,
   });

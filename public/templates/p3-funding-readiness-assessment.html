@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funding Readiness Assessment Tool - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: white;
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .assessment-body {
+            padding: 40px;
+        }
+        
+        .category {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .category h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+        }
+        
+        .question label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        
+        .radio-option label {
+            display: block;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .radio-option input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .radio-option label:hover {
+            border-color: #667eea;
+        }
+        
+        .score-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            display: none;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .score-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+        }
+        
+        .score-label {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .recommendations {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .recommendations h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .recommendation-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .btn-calculate {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-calculate:hover {
+            background: #764ba2;
+        }
+        
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .assessment-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Funding Readiness Assessment</h1>
+            <p>Evaluate your startup's readiness to raise funding</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+        
+        <div class="assessment-body">
+            <!-- Business Model & Traction -->
+            <div class="category">
+                <h2>📊 Business Model & Traction</h2>
+                
+                <div class="question">
+                    <label>What is your current revenue status?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="revenue" id="revenue-0" value="0" onchange="updateProgress()">
+                            <label for="revenue-0">Pre-revenue</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="revenue" id="revenue-5" value="5" onchange="updateProgress()">
+                            <label for="revenue-5">< ₹10L ARR</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="revenue" id="revenue-10" value="10" onchange="updateProgress()">
+                            <label for="revenue-10">₹10L - ₹1Cr</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="revenue" id="revenue-15" value="15" onchange="updateProgress()">
+                            <label for="revenue-15">₹1Cr - ₹10Cr</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="revenue" id="revenue-20" value="20" onchange="updateProgress()">
+                            <label for="revenue-20">> ₹10Cr</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <label>What is your monthly growth rate?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="growth" id="growth-0" value="0" onchange="updateProgress()">
+                            <label for="growth-0">Negative</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="growth" id="growth-5" value="5" onchange="updateProgress()">
+                            <label for="growth-5">0-5%</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="growth" id="growth-10" value="10" onchange="updateProgress()">
+                            <label for="growth-10">5-10%</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="growth" id="growth-15" value="15" onchange="updateProgress()">
+                            <label for="growth-15">10-20%</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="growth" id="growth-20" value="20" onchange="updateProgress()">
+                            <label for="growth-20">> 20%</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <label>Product-Market Fit Status</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="pmf" id="pmf-0" value="0" onchange="updateProgress()">
+                            <label for="pmf-0">Still searching</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="pmf" id="pmf-5" value="5" onchange="updateProgress()">
+                            <label for="pmf-5">Early signs</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="pmf" id="pmf-10" value="10" onchange="updateProgress()">
+                            <label for="pmf-10">Moderate fit</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="pmf" id="pmf-15" value="15" onchange="updateProgress()">
+                            <label for="pmf-15">Strong fit</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="pmf" id="pmf-20" value="20" onchange="updateProgress()">
+                            <label for="pmf-20">Proven & scaling</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financial Metrics -->
+            <div class="category">
+                <h2>💰 Financial Metrics</h2>
+                
+                <div class="question">
+                    <label>Unit Economics (CLV/CAC Ratio)</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="unit" id="unit-0" value="0" onchange="updateProgress()">
+                            <label for="unit-0">< 1:1</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="unit" id="unit-5" value="5" onchange="updateProgress()">
+                            <label for="unit-5">1:1 - 2:1</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="unit" id="unit-10" value="10" onchange="updateProgress()">
+                            <label for="unit-10">2:1 - 3:1</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="unit" id="unit-15" value="15" onchange="updateProgress()">
+                            <label for="unit-15">3:1 - 5:1</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="unit" id="unit-20" value="20" onchange="updateProgress()">
+                            <label for="unit-20">> 5:1</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <label>Current Runway (months of cash)</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="runway" id="runway-0" value="0" onchange="updateProgress()">
+                            <label for="runway-0">< 3 months</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="runway" id="runway-5" value="5" onchange="updateProgress()">
+                            <label for="runway-5">3-6 months</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="runway" id="runway-10" value="10" onchange="updateProgress()">
+                            <label for="runway-10">6-12 months</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="runway" id="runway-15" value="15" onchange="updateProgress()">
+                            <label for="runway-15">12-18 months</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="runway" id="runway-20" value="20" onchange="updateProgress()">
+                            <label for="runway-20">> 18 months</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team & Legal -->
+            <div class="category">
+                <h2>👥 Team & Legal Readiness</h2>
+                
+                <div class="question">
+                    <label>Team Completeness</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="team" id="team-0" value="0" onchange="updateProgress()">
+                            <label for="team-0">Solo founder</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="team" id="team-5" value="5" onchange="updateProgress()">
+                            <label for="team-5">2-3 founders</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="team" id="team-10" value="10" onchange="updateProgress()">
+                            <label for="team-10">Core team (5+)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="team" id="team-15" value="15" onchange="updateProgress()">
+                            <label for="team-15">Full team (10+)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="team" id="team-20" value="20" onchange="updateProgress()">
+                            <label for="team-20">Scaled team (20+)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <label>Legal & Compliance Status</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="legal" id="legal-0" value="0" onchange="updateProgress()">
+                            <label for="legal-0">Not incorporated</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="legal" id="legal-5" value="5" onchange="updateProgress()">
+                            <label for="legal-5">Basic incorporation</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="legal" id="legal-10" value="10" onchange="updateProgress()">
+                            <label for="legal-10">DPIIT registered</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="legal" id="legal-15" value="15" onchange="updateProgress()">
+                            <label for="legal-15">Full compliance</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="legal" id="legal-20" value="20" onchange="updateProgress()">
+                            <label for="legal-20">IP protected</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateScore()">Calculate Funding Readiness Score</button>
+        </div>
+        
+        <div class="score-section" id="scoreSection">
+            <div class="score-circle">
+                <svg width="200" height="200">
+                    <circle cx="100" cy="100" r="90" stroke="rgba(255,255,255,0.3)" stroke-width="20" fill="none"/>
+                    <circle id="scoreCircle" cx="100" cy="100" r="90" stroke="white" stroke-width="20" fill="none"
+                            stroke-dasharray="565" stroke-dashoffset="565" 
+                            transform="rotate(-90 100 100)"
+                            style="transition: stroke-dashoffset 1s ease"/>
+                </svg>
+                <div class="score-number" id="scoreNumber">0</div>
+            </div>
+            <div class="score-label" id="scoreLabel">Calculating...</div>
+            
+            <div class="recommendations" id="recommendations">
+                <h3>📋 Your Personalized Action Plan</h3>
+                <div id="recommendationsList"></div>
+            </div>
+            
+            <button class="btn-reset" onclick="resetAssessment()">Start New Assessment</button>
+        </div>
+    </div>
+    
+    <script>
+        function updateProgress() {
+            const totalQuestions = 7;
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function calculateScore() {
+            const questions = ['revenue', 'growth', 'pmf', 'unit', 'runway', 'team', 'legal'];
+            let totalScore = 0;
+            let answeredCount = 0;
+            
+            questions.forEach(question => {
+                const selected = document.querySelector(`input[name="${question}"]:checked`);
+                if (selected) {
+                    totalScore += parseInt(selected.value);
+                    answeredCount++;
+                }
+            });
+            
+            if (answeredCount < questions.length) {
+                alert('Please answer all questions to get your complete assessment.');
+                return;
+            }
+            
+            // Adjust score to 100-point scale (7 questions * 20 points = 140 max)
+            const finalScore = Math.round((totalScore / 140) * 100);
+            
+            // Hide assessment body and show score
+            document.querySelector('.assessment-body').style.display = 'none';
+            document.getElementById('scoreSection').style.display = 'block';
+            
+            // Animate score
+            animateScore(finalScore);
+            
+            // Generate recommendations
+            generateRecommendations(finalScore);
+        }
+        
+        function animateScore(finalScore) {
+            let currentScore = 0;
+            const scoreElement = document.getElementById('scoreNumber');
+            const circleElement = document.getElementById('scoreCircle');
+            const labelElement = document.getElementById('scoreLabel');
+            
+            const interval = setInterval(() => {
+                currentScore++;
+                scoreElement.textContent = currentScore;
+                
+                // Update circle
+                const offset = 565 - (565 * currentScore / 100);
+                circleElement.style.strokeDashoffset = offset;
+                
+                if (currentScore >= finalScore) {
+                    clearInterval(interval);
+                    
+                    // Set label based on score
+                    if (finalScore >= 80) {
+                        labelElement.textContent = '🎯 Excellent! Ready to Raise';
+                        circleElement.style.stroke = '#4ade80';
+                    } else if (finalScore >= 60) {
+                        labelElement.textContent = '👍 Good! Minor Improvements Needed';
+                        circleElement.style.stroke = '#fbbf24';
+                    } else if (finalScore >= 40) {
+                        labelElement.textContent = '⚠️ Fair! Significant Work Required';
+                        circleElement.style.stroke = '#fb923c';
+                    } else {
+                        labelElement.textContent = '🚧 Not Ready! Focus on Fundamentals';
+                        circleElement.style.stroke = '#f87171';
+                    }
+                }
+            }, 20);
+        }
+        
+        function generateRecommendations(score) {
+            const recommendationsList = document.getElementById('recommendationsList');
+            let recommendations = [];
+            
+            if (score >= 80) {
+                recommendations = [
+                    '✅ Start preparing your pitch deck and financial model',
+                    '✅ Build your target investor list (20-30 investors)',
+                    '✅ Get warm introductions through your network',
+                    '✅ Prepare your data room with all documents',
+                    '✅ Practice your pitch with advisors'
+                ];
+            } else if (score >= 60) {
+                recommendations = [
+                    '📈 Improve unit economics to CLV/CAC > 3:1',
+                    '📊 Achieve consistent 15%+ monthly growth',
+                    '📝 Complete all legal and compliance requirements',
+                    '👥 Strengthen your team with key hires',
+                    '💰 Extend runway to 12+ months before raising'
+                ];
+            } else if (score >= 40) {
+                recommendations = [
+                    '🎯 Focus on achieving product-market fit',
+                    '💵 Generate consistent revenue (target ₹10L+ ARR)',
+                    '📈 Build repeatable sales process',
+                    '👥 Find co-founders or senior team members',
+                    '🏢 Complete company incorporation and DPIIT registration'
+                ];
+            } else {
+                recommendations = [
+                    '🚀 Validate your business idea with customers',
+                    '💡 Build MVP and get initial users',
+                    '📊 Start tracking key metrics from day 1',
+                    '🏢 Incorporate your company properly',
+                    '💪 Consider bootstrapping or government grants first'
+                ];
+            }
+            
+            recommendationsList.innerHTML = recommendations
+                .map(rec => `<div class="recommendation-item">${rec}</div>`)
+                .join('');
+        }
+        
+        function resetAssessment() {
+            // Reset all radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            // Reset progress bar
+            document.getElementById('progressBar').style.width = '0%';
+            
+            // Show assessment body and hide score
+            document.querySelector('.assessment-body').style.display = 'block';
+            document.getElementById('scoreSection').style.display = 'none';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

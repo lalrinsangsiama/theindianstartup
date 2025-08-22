@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Readiness Assessment - The Indian Startup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #FFFFFF;
+            color: #111111;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #F5F5F5;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #F5F5F5;
+            border: 2px solid #111111;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #111111;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option {
+            padding: 1.5rem;
+            border: 2px solid #111111;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            transform: translateX(5px);
+            box-shadow: 3px 3px 0 #111111;
+        }
+
+        .option.selected {
+            background: #111111;
+            color: white;
+        }
+
+        .option-letter {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+        }
+
+        .nav-btn {
+            padding: 1rem 2rem;
+            border: 2px solid #111111;
+            background: white;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #111111;
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .results-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .score-svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .grade {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #F5F5F5;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .recommendations {
+            margin-top: 3rem;
+        }
+
+        .recommendation-category {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #111111;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .category-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .category-score {
+            font-family: 'IBM Plex Mono', monospace;
+            padding: 0.25rem 0.75rem;
+            background: #111111;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .recommendation-items {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .recommendation-items li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .recommendation-items li:before {
+            content: "→ ";
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .action-plan {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: #F5F5F5;
+            border: 2px solid #111111;
+        }
+
+        .action-plan h3 {
+            font-family: 'IBM Plex Mono', monospace;
+            margin-bottom: 1rem;
+        }
+
+        .action-items {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .action-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #111111;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .action-checkbox:checked {
+            background: #111111;
+        }
+
+        .cta-section {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 2rem;
+            background: #111111;
+            color: white;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: white;
+            color: #111111;
+            text-decoration: none;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .restart-btn {
+            display: block;
+            margin: 2rem auto;
+            padding: 1rem 2rem;
+            border: 2px solid #111111;
+            background: white;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+        }
+
+        .restart-btn:hover {
+            background: #111111;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Startup Readiness Assessment</h1>
+        
+        <div class="intro" id="intro">
+            <h2>Discover Your Startup Readiness Score</h2>
+            <p>This 15-question assessment evaluates your preparedness across 5 critical dimensions:</p>
+            <p><strong>Idea Clarity • Market Understanding • Technical Readiness • Financial Planning • Personal Commitment</strong></p>
+            <p style="margin-top: 1rem;">Takes just 5 minutes. Get personalized recommendations.</p>
+            <button class="nav-btn" onclick="startAssessment()" style="margin-top: 1.5rem;">Start Assessment</button>
+        </div>
+
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+
+        <div id="questionsContainer"></div>
+
+        <div class="navigation" id="navigation" style="display: none;">
+            <button class="nav-btn" id="prevBtn" onclick="previousQuestion()">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+        </div>
+
+        <div class="results-container" id="results">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Your Startup Readiness Report</h2>
+            
+            <div class="score-circle">
+                <svg width="200" height="200" class="score-svg">
+                    <circle cx="100" cy="100" r="90" stroke="#F5F5F5" stroke-width="20" fill="none"/>
+                    <circle id="scoreCircle" cx="100" cy="100" r="90" stroke="#111111" stroke-width="20" fill="none" 
+                            stroke-dasharray="565" stroke-dashoffset="565" stroke-linecap="round"/>
+                </svg>
+                <div class="score-text">
+                    <div class="score-number" id="scoreNumber">0</div>
+                    <div class="score-label">out of 100</div>
+                </div>
+            </div>
+
+            <div class="grade" id="grade"></div>
+
+            <div class="recommendations" id="recommendations"></div>
+
+            <div class="action-plan">
+                <h3>Your Personalized 30-Day Action Plan</h3>
+                <p>Based on your assessment, here's what you should focus on:</p>
+                <div class="action-items" id="actionItems"></div>
+            </div>
+
+            <div class="cta-section">
+                <h3>Ready to Launch Your Startup in 30 Days?</h3>
+                <p>Join 1000+ founders who've successfully launched using our proven system</p>
+                <a href="#" class="cta-btn">Start Your 30-Day Journey</a>
+            </div>
+
+            <button class="restart-btn" onclick="restartAssessment()">Take Assessment Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Idea Clarity (3 questions)
+            {
+                category: 'Idea Clarity',
+                question: 'How clearly can you explain your startup idea?',
+                options: [
+                    { text: 'I have a vague idea that needs more work', points: 1 },
+                    { text: 'I can explain it but it takes 5-10 minutes', points: 3 },
+                    { text: 'I have a clear 1-minute elevator pitch', points: 5 },
+                    { text: 'I have a validated problem-solution fit with evidence', points: 7 }
+                ]
+            },
+            {
+                category: 'Idea Clarity',
+                question: 'Have you identified the specific problem you\'re solving?',
+                options: [
+                    { text: 'Still exploring different problems', points: 1 },
+                    { text: 'I have a general problem area in mind', points: 3 },
+                    { text: 'I\'ve identified a specific problem with some research', points: 5 },
+                    { text: 'I\'ve validated the problem with 20+ customer interviews', points: 7 }
+                ]
+            },
+            {
+                category: 'Idea Clarity',
+                question: 'How unique is your solution?',
+                options: [
+                    { text: 'Similar solutions exist, mine is slightly different', points: 2 },
+                    { text: 'My solution has 1-2 unique features', points: 4 },
+                    { text: 'My approach is fundamentally different', points: 6 },
+                    { text: 'I have a patentable/defensible innovation', points: 7 }
+                ]
+            },
+            // Market Understanding (3 questions)
+            {
+                category: 'Market Understanding',
+                question: 'How well do you know your target market?',
+                options: [
+                    { text: 'I have a general idea of who might use this', points: 1 },
+                    { text: 'I\'ve done basic online research', points: 3 },
+                    { text: 'I\'ve created detailed customer personas', points: 5 },
+                    { text: 'I\'ve interviewed 20+ potential customers', points: 7 }
+                ]
+            },
+            {
+                category: 'Market Understanding',
+                question: 'What\'s your understanding of the market size?',
+                options: [
+                    { text: 'Haven\'t researched market size yet', points: 1 },
+                    { text: 'I have a rough estimate', points: 3 },
+                    { text: 'I\'ve calculated TAM, SAM, and SOM', points: 5 },
+                    { text: 'I have detailed market analysis with growth projections', points: 7 }
+                ]
+            },
+            {
+                category: 'Market Understanding',
+                question: 'How well do you know your competition?',
+                options: [
+                    { text: 'Haven\'t researched competitors yet', points: 1 },
+                    { text: 'I know 2-3 main competitors', points: 3 },
+                    { text: 'I\'ve analyzed 5+ competitors in detail', points: 5 },
+                    { text: 'I have a comprehensive competitive analysis with positioning strategy', points: 7 }
+                ]
+            },
+            // Technical Readiness (3 questions)
+            {
+                category: 'Technical Readiness',
+                question: 'What\'s your product development status?',
+                options: [
+                    { text: 'Just an idea, no development started', points: 1 },
+                    { text: 'I have mockups/wireframes', points: 3 },
+                    { text: 'I have a working prototype/MVP', points: 5 },
+                    { text: 'I have a market-ready product with early users', points: 7 }
+                ]
+            },
+            {
+                category: 'Technical Readiness',
+                question: 'Do you have the technical skills or team?',
+                options: [
+                    { text: 'No technical skills, need to hire/outsource everything', points: 2 },
+                    { text: 'Basic skills, will need significant help', points: 3 },
+                    { text: 'I or my co-founder can build the MVP', points: 5 },
+                    { text: 'Full technical team in place or strong technical background', points: 7 }
+                ]
+            },
+            {
+                category: 'Technical Readiness',
+                question: 'What\'s your technology strategy?',
+                options: [
+                    { text: 'Haven\'t decided on tech stack yet', points: 1 },
+                    { text: 'Have a general idea of technologies to use', points: 3 },
+                    { text: 'Clear tech stack chosen with architecture planned', points: 5 },
+                    { text: 'Detailed technical roadmap with scalability planned', points: 7 }
+                ]
+            },
+            // Financial Planning (3 questions)
+            {
+                category: 'Financial Planning',
+                question: 'What\'s your financial runway?',
+                options: [
+                    { text: 'No savings, need immediate revenue', points: 1 },
+                    { text: '3-6 months of personal expenses covered', points: 3 },
+                    { text: '6-12 months runway', points: 5 },
+                    { text: '12+ months runway or initial funding secured', points: 7 }
+                ]
+            },
+            {
+                category: 'Financial Planning',
+                question: 'Have you planned your startup costs?',
+                options: [
+                    { text: 'No idea about costs yet', points: 1 },
+                    { text: 'Rough estimate of major costs', points: 3 },
+                    { text: 'Detailed budget for first 6 months', points: 5 },
+                    { text: 'Complete financial model with 18-month projections', points: 6 }
+                ]
+            },
+            {
+                category: 'Financial Planning',
+                question: 'What\'s your revenue model?',
+                options: [
+                    { text: 'Haven\'t figured out monetization yet', points: 1 },
+                    { text: 'Have some ideas about pricing', points: 3 },
+                    { text: 'Clear pricing strategy with unit economics', points: 5 },
+                    { text: 'Validated pricing with paying customers or LOIs', points: 7 }
+                ]
+            },
+            // Personal Commitment (3 questions)
+            {
+                category: 'Personal Commitment',
+                question: 'How much time can you dedicate?',
+                options: [
+                    { text: 'Few hours on weekends', points: 1 },
+                    { text: '10-20 hours per week', points: 3 },
+                    { text: '30-40 hours per week', points: 5 },
+                    { text: 'Full-time commitment (40+ hours)', points: 7 }
+                ]
+            },
+            {
+                category: 'Personal Commitment',
+                question: 'What\'s your risk tolerance?',
+                options: [
+                    { text: 'Very low, need guaranteed income', points: 2 },
+                    { text: 'Can take some risk with safety net', points: 4 },
+                    { text: 'Comfortable with calculated risks', points: 5 },
+                    { text: 'High risk tolerance, all-in mentality', points: 7 }
+                ]
+            },
+            {
+                category: 'Personal Commitment',
+                question: 'Why do you want to start this business?',
+                options: [
+                    { text: 'Want to try something new', points: 2 },
+                    { text: 'See a good business opportunity', points: 4 },
+                    { text: 'Passionate about solving this problem', points: 6 },
+                    { text: 'This problem affects me personally, must solve it', points: 7 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let categoryScores = {};
+
+        function startAssessment() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('navigation').style.display = 'flex';
+            showQuestion(0);
+        }
+
+        function showQuestion(index) {
+            const container = document.getElementById('questionsContainer');
+            const question = questions[index];
+            
+            container.innerHTML = `
+                <div class="question-container active">
+                    <div class="question-number">Question ${index + 1} of ${questions.length}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${i})" data-index="${i}">
+                                <span class="option-letter">${String.fromCharCode(65 + i)}.</span>
+                                ${opt.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Restore selected option if exists
+            if (answers[index] !== undefined) {
+                document.querySelectorAll('.option')[answers[index]].classList.add('selected');
+            }
+
+            updateProgress();
+            updateNavigation();
+        }
+
+        function selectOption(optionIndex) {
+            answers[currentQuestion] = optionIndex;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[optionIndex].classList.add('selected');
+            
+            // Auto-advance after selection
+            setTimeout(() => {
+                if (currentQuestion < questions.length - 1) {
+                    nextQuestion();
+                } else {
+                    showResults();
+                }
+            }, 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else if (answers.length === questions.length) {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressFill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = 
+                currentQuestion === questions.length - 1 ? 'See Results →' : 'Next →';
+            document.getElementById('nextBtn').disabled = answers[currentQuestion] === undefined;
+        }
+
+        function calculateScores() {
+            let totalScore = 0;
+            let maxPossibleScore = 0;
+            categoryScores = {};
+
+            questions.forEach((q, i) => {
+                if (!categoryScores[q.category]) {
+                    categoryScores[q.category] = { score: 0, max: 0, count: 0 };
+                }
+                
+                const selectedOption = q.options[answers[i]];
+                if (selectedOption) {
+                    categoryScores[q.category].score += selectedOption.points;
+                    totalScore += selectedOption.points;
+                }
+                
+                const maxPoints = Math.max(...q.options.map(o => o.points));
+                categoryScores[q.category].max += maxPoints;
+                maxPossibleScore += maxPoints;
+                categoryScores[q.category].count++;
+            });
+
+            const percentageScore = Math.round((totalScore / maxPossibleScore) * 100);
+            return { totalScore, maxPossibleScore, percentageScore };
+        }
+
+        function showResults() {
+            document.getElementById('questionsContainer').style.display = 'none';
+            document.getElementById('navigation').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+
+            const { percentageScore } = calculateScores();
+            
+            // Animate score circle
+            const circle = document.getElementById('scoreCircle');
+            const scoreNumber = document.getElementById('scoreNumber');
+            const circumference = 2 * Math.PI * 90;
+            const offset = circumference - (percentageScore / 100) * circumference;
+            
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 1s ease';
+                circle.style.strokeDashoffset = offset;
+                
+                // Animate number
+                let current = 0;
+                const increment = percentageScore / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= percentageScore) {
+                        current = percentageScore;
+                        clearInterval(timer);
+                    }
+                    scoreNumber.textContent = Math.round(current);
+                }, 20);
+            }, 100);
+
+            // Set grade
+            let grade, gradeText;
+            if (percentageScore >= 80) {
+                grade = 'A';
+                gradeText = 'Launch Ready! You\'re well-prepared to start.';
+            } else if (percentageScore >= 60) {
+                grade = 'B';
+                gradeText = 'Almost There! A few areas need attention.';
+            } else if (percentageScore >= 40) {
+                grade = 'C';
+                gradeText = 'Good Start! Significant preparation needed.';
+            } else {
+                grade = 'D';
+                gradeText = 'Early Stage. Focus on foundational work.';
+            }
+            
+            document.getElementById('grade').innerHTML = `
+                <div>Grade: <strong>${grade}</strong></div>
+                <div style="font-size: 1rem; margin-top: 0.5rem;">${gradeText}</div>
+            `;
+
+            // Generate recommendations
+            generateRecommendations();
+            
+            // Generate action plan
+            generateActionPlan();
+        }
+
+        function generateRecommendations() {
+            const container = document.getElementById('recommendations');
+            let html = '<h3 style="margin-bottom: 1.5rem;">Detailed Analysis by Category</h3>';
+            
+            for (const [category, data] of Object.entries(categoryScores)) {
+                const percentage = Math.round((data.score / data.max) * 100);
+                let recommendations = [];
+                
+                if (category === 'Idea Clarity' && percentage < 70) {
+                    recommendations = [
+                        'Complete customer discovery interviews',
+                        'Refine your problem statement',
+                        'Create a clear value proposition',
+                        'Develop your elevator pitch'
+                    ];
+                } else if (category === 'Market Understanding' && percentage < 70) {
+                    recommendations = [
+                        'Conduct comprehensive market research',
+                        'Analyze competitor strategies',
+                        'Calculate TAM, SAM, and SOM',
+                        'Create detailed customer personas'
+                    ];
+                } else if (category === 'Technical Readiness' && percentage < 70) {
+                    recommendations = [
+                        'Define MVP features and scope',
+                        'Choose appropriate tech stack',
+                        'Find technical co-founder or team',
+                        'Create development roadmap'
+                    ];
+                } else if (category === 'Financial Planning' && percentage < 70) {
+                    recommendations = [
+                        'Create 18-month financial projection',
+                        'Calculate unit economics',
+                        'Plan funding strategy',
+                        'Build expense budget'
+                    ];
+                } else if (category === 'Personal Commitment' && percentage < 70) {
+                    recommendations = [
+                        'Evaluate time commitment realistically',
+                        'Build support network',
+                        'Set clear personal goals',
+                        'Prepare for the entrepreneurial journey'
+                    ];
+                }
+                
+                html += `
+                    <div class="recommendation-category">
+                        <div class="category-header">
+                            <span class="category-title">${category}</span>
+                            <span class="category-score">${percentage}%</span>
+                        </div>
+                        ${recommendations.length > 0 ? `
+                            <ul class="recommendation-items">
+                                ${recommendations.slice(0, 3).map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        ` : '<p>Great job! You\'re well-prepared in this area.</p>'}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function generateActionPlan() {
+            const container = document.getElementById('actionItems');
+            const { percentageScore } = calculateScores();
+            
+            let actionItems = [];
+            
+            if (percentageScore < 40) {
+                actionItems = [
+                    'Start with customer discovery - interview 20 potential users',
+                    'Define your problem statement clearly',
+                    'Research your market and competition',
+                    'Join our 30-Day Launch Sprint for structured guidance'
+                ];
+            } else if (percentageScore < 60) {
+                actionItems = [
+                    'Validate your assumptions with real customers',
+                    'Build a simple MVP or prototype',
+                    'Create financial projections for 18 months',
+                    'Start building your network and finding mentors'
+                ];
+            } else if (percentageScore < 80) {
+                actionItems = [
+                    'Finalize your MVP and get early user feedback',
+                    'Prepare incorporation documents',
+                    'Set up basic legal and financial structure',
+                    'Create your go-to-market strategy'
+                ];
+            } else {
+                actionItems = [
+                    'Incorporate your company and register for compliance',
+                    'Launch your MVP to early customers',
+                    'Start tracking metrics and iterating',
+                    'Begin fundraising preparations if needed'
+                ];
+            }
+            
+            container.innerHTML = actionItems.map((item, i) => `
+                <div class="action-item">
+                    <input type="checkbox" class="action-checkbox" id="action${i}">
+                    <label for="action${i}">${item}</label>
+                </div>
+            `).join('');
+        }
+
+        function restartAssessment() {
+            currentQuestion = 0;
+            answers = [];
+            categoryScores = {};
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('intro').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { logger } from '@/lib/logger';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Text, Heading } from '@/components/ui/Typography';
@@ -35,7 +36,7 @@ export class PortfolioErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Portfolio Error Boundary caught an error:', error, errorInfo);
+    logger.error('Portfolio Error Boundary caught an error:', error, errorInfo);
     
     this.setState({
       hasError: true,

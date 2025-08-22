@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Heading } from '@/components/ui/Typography';
@@ -31,15 +32,37 @@ import {
   Smartphone,
   FileText,
   Loader2,
-  Mail
+  Mail,
+  CreditCard,
+  Package,
+  Calendar,
+  Receipt,
+  ShoppingCart,
+  TrendingUp,
+  Clock,
+  Gift,
+  AlertCircle,
+  ExternalLink,
+  User,
+  Building,
+  MapPin,
+  Phone,
+  Edit2,
+  Camera,
+  BookOpen
 } from 'lucide-react';
+import { PaymentButton, BuyNowButton, AllAccessButton, UpgradeButton } from '@/components/payment/PaymentButton';
+import Link from 'next/link';
 
 export default function SettingsPage() {
   const { user } = useAuthContext();
-  const [activeTab, setActiveTab] = useState('notifications');
+  const [activeTab, setActiveTab] = useState('billing');
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [billingData, setBillingData] = useState<any>(null);
+  const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
+  const [loadingBilling, setLoadingBilling] = useState(true);
 
   // Notification preferences
   const [notifications, setNotifications] = useState({
@@ -66,6 +89,35 @@ export default function SettingsPage() {
     unsubscribeAll: false
   });
 
+  // Fetch billing data on component mount
+  useEffect(() => {
+    const fetchBillingData = async () => {
+      try {
+        setLoadingBilling(true);
+        
+        // Fetch purchase history
+        const historyRes = await fetch('/api/purchase/history');
+        if (historyRes.ok) {
+          const history = await historyRes.json();
+          setPurchaseHistory(history.purchases || []);
+        }
+        
+        // Fetch current subscriptions
+        const subscriptionsRes = await fetch('/api/user/subscriptions');
+        if (subscriptionsRes.ok) {
+          const subs = await subscriptionsRes.json();
+          setBillingData(subs);
+        }
+      } catch (error) {
+        logger.error('Failed to fetch billing data:', error);
+      } finally {
+        setLoadingBilling(false);
+      }
+    };
+    
+    fetchBillingData();
+  }, []);
+
   const handleSaveNotifications = async () => {
     setLoading(true);
     try {
@@ -74,7 +126,7 @@ export default function SettingsPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
-      console.error('Failed to save notifications:', error);
+      logger.error('Failed to save notifications:', error);
     } finally {
       setLoading(false);
     }
@@ -88,7 +140,7 @@ export default function SettingsPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
-      console.error('Failed to save privacy settings:', error);
+      logger.error('Failed to save privacy settings:', error);
     } finally {
       setLoading(false);
     }
@@ -108,7 +160,7 @@ export default function SettingsPage() {
         setTimeout(() => setSaved(false), 3000);
       }
     } catch (error) {
-      console.error('Failed to save email preferences:', error);
+      logger.error('Failed to save email preferences:', error);
     } finally {
       setLoading(false);
     }
@@ -131,7 +183,7 @@ export default function SettingsPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to export data:', error);
+      logger.error('Failed to export data:', error);
       // Fallback to HTML export if PDF generation fails
       handleExportAsHTML();
     } finally {
@@ -234,7 +286,7 @@ export default function SettingsPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to export HTML:', error);
+      logger.error('Failed to export HTML:', error);
     }
   };
 
@@ -261,14 +313,22 @@ export default function SettingsPage() {
 
           {/* Settings Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-8">
+            <TabsList className="mb-8 flex-wrap">
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Profile
+              </TabsTrigger>
+              <TabsTrigger value="billing" className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4" />
+                Billing
+              </TabsTrigger>
               <TabsTrigger value="notifications" className="flex items-center gap-2">
                 <Bell className="w-4 h-4" />
                 Notifications
               </TabsTrigger>
               <TabsTrigger value="email" className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                Email Preferences
+                Email
               </TabsTrigger>
               <TabsTrigger value="privacy" className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
@@ -280,9 +340,448 @@ export default function SettingsPage() {
               </TabsTrigger>
               <TabsTrigger value="data" className="flex items-center gap-2">
                 <Download className="w-4 h-4" />
-                Data & Export
+                Data
               </TabsTrigger>
             </TabsList>
+
+            {/* Profile Tab */}
+            <TabsContent value="profile">
+              <div className="space-y-6">
+                {/* Profile Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <User className="w-5 h-5" />
+                        Profile Information
+                      </span>
+                      <Button variant="outline" size="sm">
+                        <Edit2 className="w-4 h-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {/* Avatar Section */}
+                      <div className="flex items-center gap-6">
+                        <div className="relative">
+                          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                            {user?.email?.charAt(0).toUpperCase() || 'U'}
+                          </div>
+                          <button className="absolute bottom-0 right-0 p-2 bg-black text-white rounded-full hover:bg-gray-800">
+                            <Camera className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div>
+                          <Text size="lg" weight="bold">{user?.user_metadata?.name || 'Founder'}</Text>
+                          <Text color="muted">Member since {new Date(user?.created_at || Date.now()).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</Text>
+                        </div>
+                      </div>
+
+                      {/* Personal Details */}
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Full Name</label>
+                          <Input 
+                            type="text" 
+                            value={user?.user_metadata?.name || ''} 
+                            placeholder="Enter your name"
+                            disabled
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Email Address</label>
+                          <Input 
+                            type="email" 
+                            value={user?.email || ''} 
+                            disabled
+                          />
+                          <Text size="xs" color="muted" className="mt-1">Email cannot be changed</Text>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Phone Number</label>
+                          <Input 
+                            type="tel" 
+                            placeholder="+91 98765 43210"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2">LinkedIn Profile</label>
+                          <Input 
+                            type="url" 
+                            placeholder="https://linkedin.com/in/yourprofile"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Startup Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building className="w-5 h-5" />
+                      Startup Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Startup Name</label>
+                        <Input 
+                          type="text" 
+                          placeholder="Your Startup Name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Industry</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                          <option value="">Select Industry</option>
+                          <option value="tech">Technology</option>
+                          <option value="ecommerce">E-commerce</option>
+                          <option value="fintech">Fintech</option>
+                          <option value="healthtech">Healthtech</option>
+                          <option value="edtech">Edtech</option>
+                          <option value="agritech">Agritech</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Stage</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                          <option value="">Select Stage</option>
+                          <option value="idea">Idea Stage</option>
+                          <option value="mvp">MVP Built</option>
+                          <option value="early">Early Revenue</option>
+                          <option value="growth">Growth Stage</option>
+                          <option value="scale">Scaling</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Location</label>
+                        <Input 
+                          type="text" 
+                          placeholder="City, State"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium mb-2">Brief Description</label>
+                        <textarea 
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                          rows={3}
+                          placeholder="What does your startup do?"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-6 flex justify-end gap-3">
+                      <Button variant="outline">Cancel</Button>
+                      <Button variant="primary">
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Learning Preferences */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BookOpen className="w-5 h-5" />
+                      Learning Preferences
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Primary Goal</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                          <option value="">Select your primary goal</option>
+                          <option value="launch">Launch my first startup</option>
+                          <option value="funding">Raise funding</option>
+                          <option value="scale">Scale existing business</option>
+                          <option value="learn">Learn startup fundamentals</option>
+                          <option value="network">Build network</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Time Commitment</label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                          <option value="">How much time can you dedicate daily?</option>
+                          <option value="30">30 minutes</option>
+                          <option value="60">1 hour</option>
+                          <option value="120">2 hours</option>
+                          <option value="180">3+ hours</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Preferred Learning Style</label>
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-2">
+                            <Checkbox /> 
+                            <span>Video Tutorials</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <Checkbox /> 
+                            <span>Written Guides</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <Checkbox /> 
+                            <span>Interactive Exercises</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <Checkbox /> 
+                            <span>Community Discussions</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Billing & Subscription Tab */}
+            <TabsContent value="billing">
+              <div className="space-y-6">
+                {/* Current Subscriptions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="w-5 h-5" />
+                      Your Products & Subscriptions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingBilling ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                      </div>
+                    ) : purchaseHistory.filter(p => p.status === 'completed' && p.isActive).length > 0 ? (
+                      <div className="space-y-4">
+                        {purchaseHistory
+                          .filter(p => p.status === 'completed' && p.isActive)
+                          .map((purchase, index) => (
+                            <div key={index} className="border rounded-lg p-4">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Text weight="bold" size="lg">{purchase.productName}</Text>
+                                    <Badge variant="success" size="sm">Active</Badge>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <Text color="muted">Purchased:</Text>
+                                      <Text>{new Date(purchase.purchaseDate).toLocaleDateString('en-IN')}</Text>
+                                    </div>
+                                    <div>
+                                      <Text color="muted">Expires:</Text>
+                                      <Text className={
+                                        new Date(purchase.expiresAt) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                                          ? 'text-orange-600 font-medium'
+                                          : ''
+                                      }>
+                                        {new Date(purchase.expiresAt).toLocaleDateString('en-IN')}
+                                      </Text>
+                                    </div>
+                                  </div>
+                                  {new Date(purchase.expiresAt) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) && (
+                                    <Alert variant="warning" className="mt-3">
+                                      <AlertCircle className="w-4 h-4" />
+                                      Expires in {Math.ceil((new Date(purchase.expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000))} days
+                                    </Alert>
+                                  )}
+                                </div>
+                                <div className="ml-4">
+                                  <Text weight="bold" size="lg">₹{purchase.amount?.toLocaleString('en-IN')}</Text>
+                                </div>
+                              </div>
+                              {purchase.productCode !== 'ALL_ACCESS' && (
+                                <div className="mt-4 pt-4 border-t">
+                                  <UpgradeButton
+                                    productCode="ALL_ACCESS"
+                                    size="sm"
+                                    className="w-full"
+                                    showSavings={true}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <Text color="muted" className="mb-4">No active subscriptions</Text>
+                        <AllAccessButton size="md" showSavings={true} />
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Upgrade Options */}
+                {purchaseHistory.filter(p => p.status === 'completed' && p.isActive && p.productCode !== 'ALL_ACCESS').length > 0 && (
+                  <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-purple-600" />
+                        Upgrade to All-Access
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Text className="mb-4">
+                        You currently own {purchaseHistory.filter(p => p.status === 'completed' && p.isActive).length} individual product(s). 
+                        Upgrade to All-Access and save big!
+                      </Text>
+                      <div className="bg-white rounded-lg p-4 mb-4">
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          <div>
+                            <Text size="xl" weight="bold">12</Text>
+                            <Text size="sm" color="muted">Total Products</Text>
+                          </div>
+                          <div>
+                            <Text size="xl" weight="bold" className="text-green-600">₹27,989</Text>
+                            <Text size="sm" color="muted">You Save</Text>
+                          </div>
+                          <div>
+                            <Text size="xl" weight="bold">1 Year</Text>
+                            <Text size="sm" color="muted">Full Access</Text>
+                          </div>
+                        </div>
+                      </div>
+                      <AllAccessButton size="lg" className="w-full" showSavings={false} />
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Payment Methods */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="w-5 h-5" />
+                      Payment Methods
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Text color="muted" className="mb-4">
+                      We use Razorpay for secure payment processing. Your payment information is never stored on our servers.
+                    </Text>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <CreditCard className="w-5 h-5 text-gray-600" />
+                        <div className="flex-1">
+                          <Text weight="medium">Credit/Debit Cards</Text>
+                          <Text size="sm" color="muted">Visa, Mastercard, Rupay</Text>
+                        </div>
+                        <Badge variant="success">Accepted</Badge>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <Smartphone className="w-5 h-5 text-gray-600" />
+                        <div className="flex-1">
+                          <Text weight="medium">UPI</Text>
+                          <Text size="sm" color="muted">Google Pay, PhonePe, Paytm</Text>
+                        </div>
+                        <Badge variant="success">Accepted</Badge>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <Shield className="w-5 h-5 text-gray-600" />
+                        <div className="flex-1">
+                          <Text weight="medium">Net Banking</Text>
+                          <Text size="sm" color="muted">All major Indian banks</Text>
+                        </div>
+                        <Badge variant="success">Accepted</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Purchase History */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Receipt className="w-5 h-5" />
+                      Purchase History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {purchaseHistory.length > 0 ? (
+                      <div className="space-y-3">
+                        {purchaseHistory.map((purchase, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                            <div>
+                              <Text weight="medium">{purchase.productName}</Text>
+                              <Text size="sm" color="muted">
+                                {new Date(purchase.createdAt).toLocaleDateString('en-IN', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </Text>
+                            </div>
+                            <div className="text-right">
+                              <Text weight="bold">₹{purchase.amount?.toLocaleString('en-IN')}</Text>
+                              <Badge 
+                                variant={purchase.status === 'completed' ? 'success' : 'default'} 
+                                size="sm"
+                              >
+                                {purchase.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Receipt className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <Text color="muted">No purchase history</Text>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Referral Program */}
+                <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Gift className="w-5 h-5 text-green-600" />
+                      Referral Program
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Text className="mb-4">
+                      Earn ₹500 for every friend who purchases a course using your referral code!
+                    </Text>
+                    <div className="bg-white rounded-lg p-4 mb-4">
+                      <Text size="sm" color="muted" className="mb-2">Your Referral Code:</Text>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 p-2 bg-gray-100 rounded font-mono text-lg">
+                          {user?.id ? `REF${user.id.substring(0, 6).toUpperCase()}` : 'LOADING...'}
+                        </code>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`REF${user?.id?.substring(0, 6).toUpperCase()}`);
+                            setSaved(true);
+                            setTimeout(() => setSaved(false), 2000);
+                          }}
+                        >
+                          Copy
+                        </Button>
+                      </div>
+                    </div>
+                    <Link href="/referral">
+                      <Button variant="primary" className="w-full">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        View Referral Dashboard
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
             {/* Notifications Tab */}
             <TabsContent value="notifications">
@@ -547,7 +1046,7 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent>
                     <Text size="sm" color="muted" className="mb-4">
-                      Manage devices where you&apos;re currently logged in
+                      Manage devices where you're currently logged in
                     </Text>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded">

@@ -144,3 +144,7 @@ export async function requireAccess(productType: string = 'P1') {
   return requireProductAccess(productType);
 }
 
+// Alias for compatibility
+export const getCurrentUser = getUser;
+export const auth = getUser;
+

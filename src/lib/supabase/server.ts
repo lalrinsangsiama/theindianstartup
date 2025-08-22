@@ -34,3 +34,6 @@ export function createClient() {
     }
   )
 }
+
+// Default export for compatibility
+export const supabase = createClient;

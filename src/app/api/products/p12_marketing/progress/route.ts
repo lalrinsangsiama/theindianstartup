@@ -87,9 +87,9 @@ export async function GET(request: NextRequest) {
     // Find current day (next incomplete lesson)
     let currentDay = 1;
     if (lessonProgress && modules) {
-      for (const module of modules) {
-        if (module.lessons) {
-          for (const lesson of module.lessons.sort((a, b) => a.orderIndex - b.orderIndex)) {
+      for (const courseModule of modules) {
+        if (courseModule.lessons) {
+          for (const lesson of courseModule.lessons.sort((a, b) => a.orderIndex - b.orderIndex)) {
             const isCompleted = lessonProgress.some(p => p.lessonId === lesson.id && p.completed);
             if (!isCompleted) {
               currentDay = lesson.day;

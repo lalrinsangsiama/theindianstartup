@@ -197,10 +197,10 @@ export default function StateSchemeMapPage() {
 
   const handleStartModule = (moduleId: string) => {
     // Find the module to get the first lesson day
-    const module = modules.find(m => m.id === moduleId);
-    if (module) {
+    const foundModule = modules.find(m => m.id === moduleId);
+    if (foundModule) {
       // Calculate first day based on module index (3 lessons per module)
-      const moduleIndex = modules.indexOf(module);
+      const moduleIndex = modules.indexOf(foundModule);
       const firstDay = (moduleIndex * 3) + 1;
       router.push(`/products/P7/lessons/${firstDay}`);
     }

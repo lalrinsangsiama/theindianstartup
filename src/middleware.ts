@@ -4,9 +4,6 @@ import { createServerClient } from '@supabase/ssr'
 import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
 import { apiRateLimit, authRateLimit, paymentRateLimit } from '@/lib/rate-limit'
 
-// Use Node.js runtime for Supabase compatibility
-export const runtime = 'nodejs'
-
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
   'https://theindianstartup.in',

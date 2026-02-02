@@ -121,12 +121,12 @@ export function logSecurityEvent(event: {
 // Content Security Policy
 export const CSP_HEADER = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://app.posthog.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.posthog.com https://*.razorpay.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https: blob:",
-  "connect-src 'self' https://*.supabase.co https://checkout.razorpay.com https://app.posthog.com",
-  "frame-src 'self' https://checkout.razorpay.com",
+  "connect-src 'self' https://*.supabase.co https://*.razorpay.com https://*.posthog.com wss://*.supabase.co",
+  "frame-src 'self' https://*.razorpay.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

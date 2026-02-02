@@ -109,12 +109,12 @@ export class SecurityValidator {
 export function getCSPHeaders(): Record<string, string> {
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.razorpay.com https://*.posthog.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: https:",
+    "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
-    "connect-src 'self' https://api.razorpay.com https://*.supabase.co",
-    "frame-src 'self' https://api.razorpay.com",
+    "connect-src 'self' https://*.razorpay.com https://*.supabase.co https://*.posthog.com wss://*.supabase.co",
+    "frame-src 'self' https://*.razorpay.com",
     "object-src 'none'",
   ].join('; ');
 

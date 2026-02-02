@@ -1,21 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { applyRateLimit } from '@/lib/rate-limit';
 
-// GET - Fetch posts with pagination and filtering
+// Maximum items per page (prevents abuse)
+const MAX_LIMIT = 50;
+const DEFAULT_LIMIT = 10;
+
+// GET - Fetch posts with cursor-based pagination (scales to millions of rows)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+
+    // Cursor-based pagination params
+    const cursor = searchParams.get('cursor'); // ID of last item from previous page
+    const limit = Math.min(
+      parseInt(searchParams.get('limit') || `${DEFAULT_LIMIT}`),
+      MAX_LIMIT
+    );
     const category = searchParams.get('category') || 'all';
     const search = searchParams.get('search') || '';
-    
-    const offset = (page - 1) * limit;
+
+    // Legacy support: also accept page param for backwards compatibility
+    const page = searchParams.get('page');
+    const useLegacyPagination = page && !cursor;
 
     const supabase = createClient();
 
-    // Build query
+    // Build base query
     let query = supabase
       .from('posts')
       .select(`
@@ -30,9 +42,9 @@ export async function GET(request: NextRequest) {
       `)
       .eq('is_approved', true)
       .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+      .order('id', { ascending: false }); // Secondary sort for stable pagination
 
-    // Apply filters
+    // Apply category filter
     if (category !== 'all') {
       if (category === 'questions') {
         query = query.eq('type', 'question');
@@ -43,8 +55,37 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Apply search filter
     if (search) {
       query = query.or(`title.ilike.%${search}%, content.ilike.%${search}%`);
+    }
+
+    // Apply pagination
+    if (useLegacyPagination) {
+      // Legacy offset-based pagination (for backwards compatibility)
+      // WARNING: This is slow for large offsets
+      const pageNum = Math.max(1, parseInt(page!));
+      const offset = (pageNum - 1) * limit;
+      query = query.range(offset, offset + limit - 1);
+    } else if (cursor) {
+      // Cursor-based pagination (O(log n) with proper index)
+      // Fetch the cursor post to get its created_at timestamp
+      const { data: cursorPost } = await supabase
+        .from('posts')
+        .select('created_at, id')
+        .eq('id', cursor)
+        .single();
+
+      if (cursorPost) {
+        // Get posts older than cursor OR same time but lower ID
+        query = query.or(
+          `created_at.lt.${cursorPost.created_at},and(created_at.eq.${cursorPost.created_at},id.lt.${cursorPost.id})`
+        );
+      }
+      query = query.limit(limit);
+    } else {
+      // First page - no cursor
+      query = query.limit(limit);
     }
 
     const { data: posts, error } = await query;
@@ -67,6 +108,7 @@ export async function GET(request: NextRequest) {
       likesCount: post.likes_count || 0,
       commentsCount: post.comments_count || 0,
       createdAt: formatTimeAgo(new Date(post.created_at)),
+      rawCreatedAt: post.created_at, // Include raw timestamp for cursor
       author: {
         name: post.author?.name || 'Anonymous',
         avatar: post.author?.avatar,
@@ -74,12 +116,31 @@ export async function GET(request: NextRequest) {
       },
     })) || [];
 
-    return NextResponse.json({
+    // Determine next cursor (last item's ID)
+    const nextCursor = transformedPosts.length === limit
+      ? transformedPosts[transformedPosts.length - 1]?.id
+      : null;
+
+    // Build response with cursor pagination info
+    const response: {
+      posts: typeof transformedPosts;
+      hasMore: boolean;
+      nextCursor: string | null;
+      page?: number;
+      total?: number;
+    } = {
       posts: transformedPosts,
-      hasMore: posts?.length === limit,
-      page,
-      total: transformedPosts.length,
-    });
+      hasMore: transformedPosts.length === limit,
+      nextCursor,
+    };
+
+    // Include legacy fields for backwards compatibility
+    if (useLegacyPagination) {
+      response.page = parseInt(page!);
+      response.total = transformedPosts.length;
+    }
+
+    return NextResponse.json(response);
 
   } catch (error) {
     logger.error('Posts API error:', error);
@@ -93,9 +154,7 @@ export async function GET(request: NextRequest) {
 // POST - Create a new post
 export async function POST(request: NextRequest) {
   try {
-    const { title, content, type, tags, threadId } = await request.json();
-
-    // Get authenticated user
+    // Get authenticated user first
     const supabase = createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -105,6 +164,20 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Apply rate limiting (10 posts per hour per user)
+    const rateLimit = await applyRateLimit(request, 'communityPost');
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many posts. Please wait before posting again.' },
+        {
+          status: 429,
+          headers: rateLimit.headers,
+        }
+      );
+    }
+
+    const { title, content, type, tags, threadId } = await request.json();
 
     // Create post
     const { data: post, error: postError } = await supabase

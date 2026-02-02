@@ -17,12 +17,12 @@ export async function GET(
 
     // Check user access to P3
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P3', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P3', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -31,14 +31,14 @@ export async function GET(
 
     // Get lesson data with module info
     const { data: lesson, error: lessonError } = await supabase
-      .from('lessons')
+      .from('Lesson')
       .select(`
         *,
-        module:modules (
+        module:Module (
           id,
           title,
           description,
-          product:products (
+          product:Product (
             code,
             title
           )
@@ -58,31 +58,31 @@ export async function GET(
 
     // Get user progress for this lesson
     const { data: progress } = await supabase
-      .from('lesson_progress')
+      .from('LessonProgress')
       .select('*')
-      .eq('user_id', user.id)
-      .eq('lesson_id', params.lessonId)
+      .eq('userId', user.id)
+      .eq('lessonId', params.lessonId)
       .maybeSingle();
 
     // Check if lesson is unlocked (previous lessons completed or first lesson)
     let isUnlocked = true;
     if (lesson.day > 1) {
       const { data: previousLessons } = await supabase
-        .from('lessons')
+        .from('Lesson')
         .select(`
           id,
-          lesson_progress!inner (
+          progress:LessonProgress!inner (
             completed,
-            user_id
+            userId
           )
         `)
-        .eq('module_id', lesson.module_id)
-        .eq('lesson_progress.user_id', user.id)
+        .eq('moduleId', lesson.moduleId)
+        .eq('progress.userId', user.id)
         .lt('day', lesson.day)
         .order('day');
 
       const incompletePrevious = previousLessons?.some(
-        (prevLesson: any) => !prevLesson.lesson_progress?.some((p: any) => p.completed)
+        (prevLesson: any) => !prevLesson.progress?.some((p: any) => p.completed)
       );
 
       isUnlocked = !incompletePrevious;
@@ -111,10 +111,10 @@ export async function GET(
         productTitle: lesson.module.product.title,
         isUnlocked,
         completed: progress?.completed || false,
-        tasksCompleted: progress?.tasks_completed || [],
+        tasksCompleted: progress?.tasksCompleted || [],
         reflection: progress?.reflection || '',
-        xpEarned: progress?.xp_earned || 0,
-        completedAt: progress?.completed_at
+        xpEarned: progress?.xpEarned || 0,
+        completedAt: progress?.completedAt
       },
       templates: templates || [],
       tools: tools || [],
@@ -126,16 +126,16 @@ export async function GET(
 
     // Get next and previous lesson IDs for navigation
     const { data: nextLesson } = await supabase
-      .from('lessons')
+      .from('Lesson')
       .select('id')
-      .eq('module_id', lesson.module_id)
+      .eq('moduleId', lesson.moduleId)
       .eq('day', lesson.day + 1)
       .maybeSingle();
 
     const { data: previousLesson } = await supabase
-      .from('lessons')
+      .from('Lesson')
       .select('id')
-      .eq('module_id', lesson.module_id)
+      .eq('moduleId', lesson.moduleId)
       .eq('day', lesson.day - 1)
       .maybeSingle();
 
@@ -166,12 +166,12 @@ export async function POST(
 
     // Check user access to P3
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P3', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P3', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -183,19 +183,19 @@ export async function POST(
 
     // Update lesson progress
     const { data: progressUpdate, error: progressError } = await supabase
-      .from('lesson_progress')
+      .from('LessonProgress')
       .upsert({
-        user_id: user.id,
-        lesson_id: params.lessonId,
-        purchase_id: purchase.id,
+        userId: user.id,
+        lessonId: params.lessonId,
+        purchaseId: purchase.id,
         completed: true,
-        completed_at: new Date().toISOString(),
-        tasks_completed: tasksCompleted || [],
+        completedAt: new Date().toISOString(),
+        tasksCompleted: tasksCompleted || [],
         reflection: reflection || null,
-        xp_earned: xpEarned || 0,
-        updated_at: new Date().toISOString()
+        xpEarned: xpEarned || 0,
+        updatedAt: new Date().toISOString()
       }, {
-        onConflict: 'user_id,lesson_id'
+        onConflict: 'userId,lessonId'
       });
 
     if (progressError) throw progressError;
@@ -203,20 +203,20 @@ export async function POST(
     // Award XP if lesson completed
     if (xpEarned) {
       await supabase
-        .from('p3_xp_events')
+        .from('XPEvent')
         .insert({
-          user_id: user.id,
-          event_type: 'lesson_complete',
-          event_id: params.lessonId,
-          xp_earned: xpEarned
+          userId: user.id,
+          type: 'lesson_complete',
+          points: xpEarned,
+          description: 'Completed P3 lesson',
+          metadata: { lessonId: params.lessonId, productCode: 'P3' }
         });
 
-      // Update user's total XP (if you have a users table)
+      // Update user's total XP
       await supabase
-        .from('users')
-        .update({ 
-          total_xp: 'total_xp + ' + xpEarned,
-          updated_at: new Date().toISOString()
+        .from('User')
+        .update({
+          totalXP: supabase.rpc('increment_user_xp', { user_id: user.id, xp_amount: xpEarned })
         })
         .eq('id', user.id);
     }

@@ -165,7 +165,7 @@ export default function HomePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center gap-2 text-green-700 bg-green-50 px-3 py-2 rounded-full">
                       <Shield className="h-4 w-4" />
-                      <span className="font-medium">7-day guarantee</span>
+                      <span className="font-medium">3-day guarantee</span>
                     </div>
                     <div className="flex items-center gap-2 text-blue-700 bg-blue-50 px-3 py-2 rounded-full">
                       <Clock className="h-4 w-4" />
@@ -712,7 +712,7 @@ export default function HomePage() {
                 <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-400">
                   <div className="flex items-center gap-1">
                     <Shield className="w-3 h-3" />
-                    <span>7-day money-back</span>
+                    <span>3-day money-back</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -1024,17 +1024,17 @@ export default function HomePage() {
                   <Shield className="h-10 w-10 text-green-600" />
                 </div>
                 <h3 className="font-mono text-2xl md:text-3xl font-bold mb-4 text-gray-900">
-                  7-Day Money-Back Guarantee
+                  3-Day Money-Back Guarantee
                 </h3>
                 <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
-                  Try our courses for 7 days. If you're not completely satisfied with the quality and value, 
+                  Try our courses for 3 days. If you're not completely satisfied with the quality and value,
                   we'll refund your purchase. No questions asked.
                 </p>
                 
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="flex items-center justify-center gap-2 text-green-700 bg-green-50 p-4 rounded-lg">
                     <CheckCircle className="w-5 h-5" />
-                    <span className="font-semibold">7-day guarantee</span>
+                    <span className="font-semibold">3-day guarantee</span>
                   </div>
                   <div className="flex items-center justify-center gap-2 text-green-700 bg-green-50 p-4 rounded-lg">
                     <CheckCircle className="w-5 h-5" />
@@ -1070,7 +1070,7 @@ export default function HomePage() {
                     }}
                     className="bg-green-600 hover:bg-green-700 px-8 py-4 text-lg font-bold"
                   >
-                    Start Today with 7-Day Guarantee →
+                    Start Today with 3-Day Guarantee →
                   </Button>
                 </div>
               </div>
@@ -1177,7 +1177,7 @@ export default function HomePage() {
               </div>
               <div className="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-lg">
                 <Shield className="h-5 w-5 text-blue-400" />
-                <span className="text-center">7-Day Guarantee</span>
+                <span className="text-center">3-Day Guarantee</span>
               </div>
               <div className="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-lg">
                 <Briefcase className="h-5 w-5 text-purple-400" />
@@ -1207,7 +1207,7 @@ export default function HomePage() {
               </span>
               <span className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
-                7-day guarantee
+                3-day guarantee
               </span>
             </p>
           </div>

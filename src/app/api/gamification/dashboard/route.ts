@@ -108,12 +108,16 @@ export async function GET(request: NextRequest) {
       .not('completedAt', 'is', null);
 
     // Group progress by product
-    const progressByProduct = courseProgress?.reduce((acc, progress) => {
-      const productCode = progress.lesson.module.product.code;
+    const progressByProduct = courseProgress?.reduce((acc, progress: any) => {
+      const lesson = progress.lesson;
+      const lessonModule = lesson?.module;
+      const product = lessonModule?.product;
+      const productCode = product?.code;
+      if (!productCode) return acc;
       if (!acc[productCode]) {
         acc[productCode] = {
           productCode,
-          productTitle: progress.lesson.module.product.title,
+          productTitle: product?.title,
           completedLessons: 0,
           totalXP: 0,
           lastActivity: null as string | null,

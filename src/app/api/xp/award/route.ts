@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
 
     // Get current user stats
     const { data: userData, error: userDataError } = await supabase
-      .from('users')
-      .select('total_xp, current_streak, longest_streak, current_day, badges, started_at')
+      .from('User')
+      .select('totalXP, currentStreak, longestStreak, badges, createdAt')
       .eq('id', user.id)
       .single();
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const currentTotalXP = userData.total_xp || 0;
+    const currentTotalXP = userData.totalXP || 0;
     const currentLevel = calculateLevel(currentTotalXP);
     const event = XP_EVENTS[eventType];
     
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
     let bonusDescriptions: string[] = [];
 
     // Check for streak bonuses
-    if (metadata?.day && userData.current_streak) {
-      const streakBonus = checkStreakBonus(userData.current_streak);
+    if (metadata?.day && userData.currentStreak) {
+      const streakBonus = checkStreakBonus(userData.currentStreak);
       if (streakBonus) {
         const streakEvent = XP_EVENTS[streakBonus];
         bonusXP += streakEvent.points;
@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
 
     // Record XP event
     const { error: xpEventError } = await supabase
-      .from('xp_events')
+      .from('XPEvent')
       .insert({
-        user_id: user.id,
+        userId: user.id,
         type: eventType,
         points: totalXPAwarded,
         description: event.description,
@@ -117,35 +117,30 @@ export async function POST(request: NextRequest) {
 
     // Update user's total XP and other stats
     const updateData: any = {
-      total_xp: newTotalXP,
+      totalXP: newTotalXP,
     };
-
-    // Update current day if this is a daily lesson completion
-    if (eventType === 'DAILY_LESSON_COMPLETE' && metadata?.day) {
-      updateData.current_day = Math.max(userData.current_day || 1, metadata.day + 1);
-    }
 
     // Update streak if applicable
     if (eventType === 'DAILY_LESSON_COMPLETE') {
       const today = new Date();
-      const lastActivity = userData.started_at ? new Date(userData.started_at) : today;
+      const lastActivity = userData.createdAt ? new Date(userData.createdAt) : today;
       const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
-      
+
       if (daysDiff === 1) {
         // Continue streak
-        updateData.current_streak = (userData.current_streak || 0) + 1;
-        updateData.longest_streak = Math.max(updateData.current_streak, userData.longest_streak || 0);
+        updateData.currentStreak = (userData.currentStreak || 0) + 1;
+        updateData.longestStreak = Math.max(updateData.currentStreak, userData.longestStreak || 0);
       } else if (daysDiff === 0) {
         // Same day, maintain streak
-        updateData.current_streak = userData.current_streak || 1;
+        updateData.currentStreak = userData.currentStreak || 1;
       } else {
         // Streak broken, reset
-        updateData.current_streak = 1;
+        updateData.currentStreak = 1;
       }
     }
 
     const { error: updateError } = await supabase
-      .from('users')
+      .from('User')
       .update(updateData)
       .eq('id', user.id);
 
@@ -159,13 +154,13 @@ export async function POST(request: NextRequest) {
 
     // Check for new badges
     const userStats = {
-      currentDay: updateData.current_day || userData.current_day || 1,
-      currentStreak: updateData.current_streak || userData.current_streak || 0,
+      currentDay: 1,
+      currentStreak: updateData.currentStreak || userData.currentStreak || 0,
       totalXP: newTotalXP,
       communityPosts: 0, // TODO: Get from community posts table
       helpGiven: 0, // TODO: Get from community activity
       perfectDays: 0, // TODO: Calculate perfect completion days
-      joinedAt: new Date(userData.started_at || Date.now()),
+      joinedAt: new Date(userData.createdAt || Date.now()),
     };
 
     const currentBadges = (userData.badges as string[]) || [];
@@ -199,19 +194,19 @@ export async function POST(request: NextRequest) {
       const finalTotalXP = newTotalXP + additionalXP;
       
       await supabase
-        .from('users')
-        .update({ 
+        .from('User')
+        .update({
           badges: updatedBadges,
-          total_xp: finalTotalXP
+          totalXP: finalTotalXP
         })
         .eq('id', user.id);
 
       // Record badge XP events
       if (additionalXP > 0) {
         await supabase
-          .from('xp_events')
+          .from('XPEvent')
           .insert({
-            user_id: user.id,
+            userId: user.id,
             type: 'badge_reward',
             points: additionalXP,
             description: `Badge rewards: ${newBadges.join(', ')}`,
@@ -247,8 +242,8 @@ export async function POST(request: NextRequest) {
         total: currentBadges.length + newBadges.length,
       },
       streak: {
-        current: updateData.current_streak || userData.current_streak || 0,
-        longest: updateData.longest_streak || userData.longest_streak || 0,
+        current: updateData.currentStreak || userData.currentStreak || 0,
+        longest: updateData.longestStreak || userData.longestStreak || 0,
       },
     });
 

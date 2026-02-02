@@ -117,16 +117,17 @@ export async function POST(request: NextRequest) {
         } else if (typeof requirement === 'object' && requirement !== null) {
           const numericAnswer = parseFloat(userAnswer) || 0;
           let meets = true;
-          
-          if ('min' in requirement && numericAnswer < requirement.min) {
+          const reqObj = requirement as { min?: number; max?: number };
+
+          if ('min' in reqObj && reqObj.min !== undefined && numericAnswer < reqObj.min) {
             meets = false;
-            missingRequirements.push(`Minimum ${criterion.replace('-', ' ')} of ₹${requirement.min} lakhs required`);
+            missingRequirements.push(`Minimum ${criterion.replace('-', ' ')} of ₹${reqObj.min} lakhs required`);
           }
-          if ('max' in requirement && numericAnswer > requirement.max) {
+          if ('max' in reqObj && reqObj.max !== undefined && numericAnswer > reqObj.max) {
             meets = false;
-            missingRequirements.push(`Maximum ${criterion.replace('-', ' ')} of ₹${requirement.max} lakhs allowed`);
+            missingRequirements.push(`Maximum ${criterion.replace('-', ' ')} of ₹${reqObj.max} lakhs allowed`);
           }
-          
+
           if (meets) matchScore++;
         }
       });

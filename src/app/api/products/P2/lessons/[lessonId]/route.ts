@@ -17,12 +17,12 @@ export async function GET(
 
     // Check user access to P2
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P2', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P2', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -31,14 +31,14 @@ export async function GET(
 
     // Get lesson data with module info
     const { data: lesson, error: lessonError } = await supabase
-      .from('lessons')
+      .from('Lesson')
       .select(`
         *,
-        module:modules (
+        module:Module (
           id,
           title,
           description,
-          product:products (
+          product:Product (
             code,
             title
           )
@@ -58,29 +58,29 @@ export async function GET(
 
     // Get user progress for this lesson
     const { data: progress } = await supabase
-      .from('lesson_progress')
+      .from('LessonProgress')
       .select('*')
-      .eq('user_id', user.id)
-      .eq('lesson_id', params.lessonId)
+      .eq('userId', user.id)
+      .eq('lessonId', params.lessonId)
       .maybeSingle();
 
     // Check if lesson is unlocked (previous lessons completed or first lesson)
     let isUnlocked = true;
     if (lesson.day > 1) {
       const { data: previousLessons } = await supabase
-        .from('lessons')
+        .from('Lesson')
         .select(`
           id,
-          lesson_progress (
+          progress:LessonProgress (
             completed
           )
         `)
-        .eq('module_id', lesson.module_id)
+        .eq('moduleId', lesson.moduleId)
         .lt('day', lesson.day)
         .order('day');
 
       const incompletePrevious = previousLessons?.some(
-        (prevLesson: any) => !prevLesson.lesson_progress?.some((p: any) => p.completed && p.user_id === user.id)
+        (prevLesson: any) => !prevLesson.progress?.some((p: any) => p.completed && p.userId === user.id)
       );
 
       isUnlocked = !incompletePrevious;
@@ -114,16 +114,16 @@ export async function GET(
 
     // Get next and previous lesson IDs for navigation
     const { data: nextLesson } = await supabase
-      .from('lessons')
+      .from('Lesson')
       .select('id')
-      .eq('module_id', lesson.module_id)
+      .eq('moduleId', lesson.moduleId)
       .eq('day', lesson.day + 1)
       .maybeSingle();
 
     const { data: previousLesson } = await supabase
-      .from('lessons')
+      .from('Lesson')
       .select('id')
-      .eq('module_id', lesson.module_id)
+      .eq('moduleId', lesson.moduleId)
       .eq('day', lesson.day - 1)
       .maybeSingle();
 
@@ -154,12 +154,12 @@ export async function PUT(
 
     // Check user access to P2
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P2', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P2', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -173,18 +173,18 @@ export async function PUT(
       case 'update_progress':
         // Update lesson progress
         const { data: progressUpdate, error: progressError } = await supabase
-          .from('lesson_progress')
+          .from('LessonProgress')
           .upsert({
-            user_id: user.id,
-            lesson_id: params.lessonId,
-            purchase_id: purchase.id,
+            userId: user.id,
+            lessonId: params.lessonId,
+            purchaseId: purchase.id,
             completed: data.completed || false,
-            completed_at: data.completed ? new Date().toISOString() : null,
-            tasks_completed: data.tasksCompleted || null,
-            proof_uploads: data.proofUploads || [],
+            completedAt: data.completed ? new Date().toISOString() : null,
+            tasksCompleted: data.tasksCompleted || null,
+            proofUploads: data.proofUploads || [],
             reflection: data.reflection || null,
-            xp_earned: data.xpEarned || 0,
-            updated_at: new Date().toISOString()
+            xpEarned: data.xpEarned || 0,
+            updatedAt: new Date().toISOString()
           });
 
         if (progressError) throw progressError;
@@ -192,12 +192,13 @@ export async function PUT(
         // Award XP if lesson completed
         if (data.completed && data.xpEarned) {
           await supabase
-            .from('p2_xp_events')
+            .from('XPEvent')
             .insert({
-              user_id: user.id,
-              event_type: 'lesson_complete',
-              event_id: params.lessonId,
-              xp_earned: data.xpEarned
+              userId: user.id,
+              type: 'lesson_complete',
+              points: data.xpEarned,
+              description: 'Completed P2 lesson',
+              metadata: { lessonId: params.lessonId, productCode: 'P2' }
             });
         }
 
@@ -206,13 +207,13 @@ export async function PUT(
       case 'save_notes':
         // Save lesson notes
         const { data: notesUpdate, error: notesError } = await supabase
-          .from('lesson_progress')
+          .from('LessonProgress')
           .upsert({
-            user_id: user.id,
-            lesson_id: params.lessonId,
-            purchase_id: purchase.id,
+            userId: user.id,
+            lessonId: params.lessonId,
+            purchaseId: purchase.id,
             reflection: data.notes,
-            updated_at: new Date().toISOString()
+            updatedAt: new Date().toISOString()
           });
 
         if (notesError) throw notesError;

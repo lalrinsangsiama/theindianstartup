@@ -143,15 +143,52 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // Special handling for admin routes
-  if (pathname.startsWith('/admin') && isAuthenticated) {
+  // Special handling for admin routes - FAIL CLOSED
+  if (pathname.startsWith('/admin')) {
+    // Must be authenticated first
+    if (!isAuthenticated) {
+      const redirectUrl = request.nextUrl.clone()
+      redirectUrl.pathname = '/login'
+      redirectUrl.searchParams.set('redirectTo', pathname)
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    // For admin routes, we do a preliminary check in middleware
+    // The real authorization happens at the API/page level with database role check
+    // This is just a UX optimization to redirect non-admins early
     const userEmail = getUserEmailFromCookie(request)
     const adminEmails = process.env.ADMIN_EMAILS
       ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim())
       : []
-    if (userEmail && !adminEmails.includes(userEmail)) {
+
+    // FAIL CLOSED: If we can't determine admin status, deny access
+    // This is the key security fix - we deny by default, not allow
+    if (!userEmail) {
+      // Can't extract email - could be tampered token or format change
+      // Log and deny access
+      logSecurityEvent({
+        type: 'admin_access_blocked',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || undefined,
+        details: `Admin access blocked - could not verify email from token for ${pathname}`,
+      })
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
+
+    if (!adminEmails.includes(userEmail)) {
+      // User is authenticated but not an admin
+      logSecurityEvent({
+        type: 'admin_access_denied',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || undefined,
+        details: `Non-admin user ${userEmail} attempted to access ${pathname}`,
+      })
+      return NextResponse.redirect(new URL('/unauthorized', request.url))
+    }
+
+    // Note: This middleware check is a UX optimization only.
+    // The actual admin authorization is enforced at the API/page level
+    // using requireAdmin() which checks the database role field.
   }
 
   return response

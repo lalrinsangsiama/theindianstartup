@@ -100,7 +100,7 @@ const faqs: FAQItem[] = [
   {
     id: '7',
     question: 'Can I get a refund?',
-    answer: 'We offer a 7-day money-back guarantee if you\'re not satisfied with the platform. Contact our support team within 7 days of purchase for a full refund.',
+    answer: 'We offer a 3-day money-back guarantee if you\'re not satisfied with the platform. Contact our support team within 3 days of purchase for a full refund.',
     category: 'Billing',
     tags: ['refund', 'billing', 'guarantee']
   },

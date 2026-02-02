@@ -43,9 +43,9 @@ export default function RefundPolicyPage() {
               <Shield className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <h2 className="font-bold text-xl text-green-800 mb-2">7-Day Money-Back Guarantee</h2>
+              <h2 className="font-bold text-xl text-green-800 mb-2">3-Day Money-Back Guarantee</h2>
               <p className="text-green-700">
-                We offer a full refund within 7 days of purchase if you are not satisfied with our products.
+                We offer a full refund within 3 days of purchase if you are not satisfied with our products.
                 No questions asked.
               </p>
             </div>
@@ -56,13 +56,13 @@ export default function RefundPolicyPage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">1. Refund Eligibility</Heading>
             <Text className="mb-4">
-              You are eligible for a full refund if you request it within 7 days of your purchase date.
+              You are eligible for a full refund if you request it within 3 days of your purchase date.
               This applies to all individual products (P1-P12) and the All-Access Bundle.
             </Text>
             <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
               <h3 className="font-semibold mb-2">Eligibility Criteria:</h3>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Request must be made within 7 days of purchase</li>
+                <li>Request must be made within 3 days of purchase</li>
                 <li>Valid purchase confirmation or order ID required</li>
                 <li>Refund requested to the original payment method</li>
               </ul>
@@ -129,7 +129,7 @@ export default function RefundPolicyPage() {
               Refunds may not be granted in the following situations:
             </Text>
             <ul className="list-disc pl-6 space-y-2 mb-4">
-              <li>Request made after 7 days from the purchase date</li>
+              <li>Request made after 3 days from the purchase date</li>
               <li>Multiple refund requests for the same product (abuse of refund policy)</li>
               <li>Promotional or discounted purchases where refund exclusions were clearly stated</li>
               <li>Account termination due to violation of Terms of Service</li>

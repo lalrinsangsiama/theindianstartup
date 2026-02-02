@@ -513,7 +513,7 @@ function DashboardContent() {
                   <div className="flex flex-wrap gap-3 mb-4">
                     <Badge className="bg-green-100 text-green-700">
                       <CheckCircle className="w-3 h-3 mr-1" />
-                      7-Day Money Back Guarantee
+                      3-Day Money Back Guarantee
                     </Badge>
                     <Badge className="bg-purple-100 text-purple-700">
                       <Zap className="w-3 h-3 mr-1" />

@@ -808,7 +808,7 @@ export default function PricingPage() {
               </div>
               <div className="flex items-center gap-2 text-sm font-medium text-blue-700">
                 <Shield className="w-4 h-4" />
-                <span>7-day money back guarantee</span>
+                <span>3-day money back guarantee</span>
               </div>
             </div>
 
@@ -954,7 +954,7 @@ export default function PricingPage() {
                   <div className="mt-3 flex flex-col items-center text-xs text-gray-600">
                     <div className="flex items-center gap-1">
                       <Shield className="w-3 h-3" />
-                      <Text size="xs">7-day money back guarantee</Text>
+                      <Text size="xs">3-day money back guarantee</Text>
                     </div>
                     <Text size="xs" className={`mt-1 ${bundle.recommended ? 'text-gray-400' : 'text-gray-500'}`}>
                       {bundle.products.length} courses included
@@ -1113,16 +1113,16 @@ export default function PricingPage() {
                 </div>
               </div>
               <Heading as="h3" variant="h4" className="mb-3">
-                100% Risk-Free with 7-Day Money Back Guarantee
+                100% Risk-Free with 3-Day Money Back Guarantee
               </Heading>
               <Text size="lg" color="muted" className="max-w-2xl mx-auto">
-                We're confident you'll love our courses. If you're not completely satisfied within the first 7 days, 
+                We're confident you'll love our courses. If you're not completely satisfied within the first 3 days,
                 we'll refund your purchase in full. No questions asked. Your success is our priority.
               </Text>
               <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600" />
-                  <Text>Full refund within 7 days</Text>
+                  <Text>Full refund within 3 days</Text>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600" />
@@ -1284,10 +1284,10 @@ export default function PricingPage() {
 
               <div>
                 <Heading as="h3" variant="h5" className="mb-2">
-                  How does the 7-day money back guarantee work?
+                  How does the 3-day money back guarantee work?
                 </Heading>
                 <Text color="muted">
-                  We offer a no-questions-asked refund within 7 days of purchase. Simply email support@theindianstartup.in with your order details, and we'll process your refund within 24-48 hours. You can keep any templates you've downloaded. We believe in our content quality and your satisfaction.
+                  We offer a no-questions-asked refund within 3 days of purchase. Simply email support@theindianstartup.in with your order details, and we'll process your refund within 24-48 hours. You can keep any templates you've downloaded. We believe in our content quality and your satisfaction.
                 </Text>
               </div>
 

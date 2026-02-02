@@ -589,7 +589,7 @@ export default function PricingPage() {
               <div className="p-6">
                 <Heading as="h4" variant="h6" className="mb-2">Do you offer refunds?</Heading>
                 <Text color="muted">
-                  We offer a 7-day money-back guarantee if you're not satisfied with the content quality.
+                  We offer a 3-day money-back guarantee if you're not satisfied with the content quality.
                 </Text>
               </div>
             </Card>

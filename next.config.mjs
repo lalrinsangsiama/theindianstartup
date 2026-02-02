@@ -6,10 +6,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // Reduced from 463 to 194 TypeScript errors (58% reduction)
-    // Remaining errors: 42 implicit any (TS7006), 36 missing props (TS2339), 29 type mismatches
-    // All page prerender issues are fixed - build completes successfully
-    ignoreBuildErrors: true,
+    // TypeScript errors must be fixed - no masking in production
+    ignoreBuildErrors: false,
   },
   webpack: (config, { dev, isServer, nextRuntime }) => {
     config.resolve.alias['@'] = path.resolve(__dirname, 'src');

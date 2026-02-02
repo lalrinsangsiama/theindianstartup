@@ -162,16 +162,16 @@ export default function CancellationPolicyPage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">6. Refunds vs. Cancellations</Heading>
             <Text className="mb-4">
-              If you are within 7 days of your purchase and wish to get your money back, please refer to our
+              If you are within 3 days of your purchase and wish to get your money back, please refer to our
               <Link href="/refund-policy" className="text-blue-600 underline ml-1">Refund Policy</Link>.
             </Text>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <h4 className="font-semibold text-green-800 mb-2">Refund (within 7 days)</h4>
+                <h4 className="font-semibold text-green-800 mb-2">Refund (within 3 days)</h4>
                 <p className="text-sm text-green-700">Full money back, access revoked</p>
               </div>
               <div className="p-4 border border-blue-200 bg-blue-50 rounded-lg">
-                <h4 className="font-semibold text-blue-800 mb-2">Cancellation (after 7 days)</h4>
+                <h4 className="font-semibold text-blue-800 mb-2">Cancellation (after 3 days)</h4>
                 <p className="text-sm text-blue-700">No refund, access continues until expiry</p>
               </div>
             </div>

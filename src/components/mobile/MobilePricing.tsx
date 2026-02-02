@@ -181,7 +181,7 @@ export const MobilePricing: React.FC<MobilePricingProps> = ({
                         
                         <div className="flex items-center justify-center gap-1 text-xs text-gray-600">
                           <Shield className="w-3 h-3" />
-                          <Text size="xs">7-day money back guarantee</Text>
+                          <Text size="xs">3-day money back guarantee</Text>
                         </div>
                       </CardContent>
                     </Card>

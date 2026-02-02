@@ -419,7 +419,7 @@ supabase/migrations/
 ### Environment Variables
 ```bash
 # Database
-NEXT_PUBLIC_SUPABASE_URL=https://haefhemvfalxtvcgkplg.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_REF].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
 
@@ -461,8 +461,8 @@ npm run db:studio        # Open Prisma Studio
 npm run db:seed          # Seed database
 
 # Direct SQL (Supabase)
-PGPASSWORD='TheIndianStartupweb' psql \
-  -h db.haefhemvfalxtvcgkplg.supabase.co \
+PGPASSWORD='[YOUR_DB_PASSWORD]' psql \
+  -h db.[PROJECT_REF].supabase.co \
   -p 5432 -U postgres -d postgres \
   -f supabase/migrations/[file].sql
 ```

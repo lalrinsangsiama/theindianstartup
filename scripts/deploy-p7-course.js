@@ -2,9 +2,16 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-// Supabase configuration
-const supabaseUrl = 'https://enotnyhykuwnfiyzfoko.supabase.co';
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVub3RueWh5a3V3bmZpeXpmb2tvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTIzODA4OSwiZXhwIjoyMDcwODE0MDg5fQ.E0BCKrr9QfxMwWvUaZ48MOPpDT1KjALfZ_AaXFXx-Fo';
+// Supabase configuration from environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   - NEXT_PUBLIC_SUPABASE_URL');
+  console.error('   - SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -95,8 +102,8 @@ deployP7Course().then(result => {
     console.log('2. Copy the contents of scripts/p7-state-scheme-complete.sql');
     console.log('3. Paste and execute in the SQL editor');
     console.log('\nAlternatively, you can use Supabase Dashboard:');
-    console.log('1. Go to https://supabase.com/dashboard/project/enotnyhykuwnfiyzfoko/sql');
-    console.log('2. Paste the SQL content and run');
+    console.log('1. Go to https://supabase.com/dashboard and select your project');
+    console.log('2. Navigate to SQL Editor, paste the SQL content, and run');
   }
   process.exit(result.success ? 0 : 1);
 });

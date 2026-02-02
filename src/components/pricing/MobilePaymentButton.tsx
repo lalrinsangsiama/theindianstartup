@@ -169,7 +169,7 @@ export const MobilePaymentButton: React.FC<MobilePaymentButtonProps> = ({
         <div className="flex items-center justify-center gap-2 text-green-700">
           <CheckCircle className="w-4 h-4" />
           <Text size="xs" weight="medium">
-            7-day money back guarantee
+            3-day money back guarantee
           </Text>
         </div>
         <div className="flex items-center justify-center gap-2 text-gray-600">

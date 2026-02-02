@@ -152,11 +152,19 @@ async function validateDatabase() {
   const util = require('util');
   const execPromise = util.promisify(exec);
   
+  const dbPassword = process.env.DB_PASSWORD;
+  const dbHost = process.env.DB_HOST;
+
+  if (!dbPassword || !dbHost) {
+    log('\n⚠️ Skipping database validation (DB_PASSWORD and DB_HOST env vars not set)', 'yellow');
+    return;
+  }
+
   for (const check of dbQueries) {
     try {
       log(`\nChecking: ${check.name}`, 'cyan');
-      
-      const cmd = `PGPASSWORD='TheIndianStartUp' psql -h db.enotnyhykuwnfiyzfoko.supabase.co -p 5432 -U postgres -d postgres -t -c "${check.query}"`;
+
+      const cmd = `PGPASSWORD='${dbPassword}' psql -h ${dbHost} -p 5432 -U postgres -d postgres -t -c "${check.query}"`;
       const { stdout, stderr } = await execPromise(cmd);
       
       if (stderr) {

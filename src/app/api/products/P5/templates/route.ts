@@ -14,12 +14,12 @@ export async function GET(request: NextRequest) {
 
     // Check user access to P5
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P5', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P5', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -177,12 +177,12 @@ export async function POST(request: NextRequest) {
 
     // Check user access to P5
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P5', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P5', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {

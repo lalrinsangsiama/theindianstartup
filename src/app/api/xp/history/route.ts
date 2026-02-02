@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
 
     // Get user's current XP stats
     const { data: userData, error: userDataError } = await supabase
-      .from('users')
-      .select('total_xp, current_streak, current_day, badges')
+      .from('User')
+      .select('totalXP, currentStreak, badges')
       .eq('id', user.id)
       .single();
 
@@ -39,10 +39,10 @@ export async function GET(request: NextRequest) {
 
     // Get XP history
     const { data: xpEvents, error: eventsError } = await supabase
-      .from('xp_events')
+      .from('XPEvent')
       .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      .eq('userId', user.id)
+      .order('createdAt', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (eventsError) {
@@ -54,16 +54,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate level and progress
-    const totalXP = userData.total_xp || 0;
+    const totalXP = userData.totalXP || 0;
     const currentLevel = calculateLevel(totalXP);
     const levelProgress = calculateXPForNextLevel(totalXP);
     const levelTitle = getLevelTitle(currentLevel);
 
     // Get XP stats by type
     const { data: xpStats } = await supabase
-      .from('xp_events')
+      .from('XPEvent')
       .select('type, points')
-      .eq('user_id', user.id);
+      .eq('userId', user.id);
 
     const xpByType = xpStats?.reduce((acc, event) => {
       if (!acc[event.type]) {
@@ -78,10 +78,10 @@ export async function GET(request: NextRequest) {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const { data: recentXP } = await supabase
-      .from('xp_events')
+      .from('XPEvent')
       .select('points')
-      .eq('user_id', user.id)
-      .gte('created_at', sevenDaysAgo.toISOString());
+      .eq('userId', user.id)
+      .gte('createdAt', sevenDaysAgo.toISOString());
 
     const xpLastWeek = recentXP?.reduce((sum, event) => sum + event.points, 0) || 0;
 
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
       type: event.type,
       points: event.points,
       description: event.description,
-      createdAt: event.created_at,
+      createdAt: event.createdAt,
     })) || [];
 
     return NextResponse.json({
@@ -101,8 +101,8 @@ export async function GET(request: NextRequest) {
         currentLevel,
         levelTitle,
         levelProgress,
-        currentStreak: userData.current_streak || 0,
-        currentDay: userData.current_day || 1,
+        currentStreak: userData.currentStreak || 0,
+        currentDay: 1,
         totalBadges: userData.badges?.length || 0,
         xpLastWeek,
         xpByType,

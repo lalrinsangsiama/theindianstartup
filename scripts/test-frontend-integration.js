@@ -42,12 +42,19 @@ testEndpoints.forEach(test => {
 // Test database connectivity
 try {
   console.log('Testing Database Connection...');
-  const dbTest = execSync(`PGPASSWORD='TheIndianStartUp' psql -h db.enotnyhykuwnfiyzfoko.supabase.co -p 5432 -U postgres -d postgres -c "SELECT COUNT(*) FROM \\"Product\\" WHERE description LIKE '%Transform%';"`, { encoding: 'utf8' });
-  
-  if (dbTest.includes('12')) {
-    console.log('✅ Database: Enhanced content accessible (12 products found)');
+  const dbPassword = process.env.DB_PASSWORD;
+  const dbHost = process.env.DB_HOST;
+
+  if (!dbPassword || !dbHost) {
+    console.log('⚠️ Database: Skipping DB test (DB_PASSWORD and DB_HOST env vars not set)');
   } else {
-    console.log('❌ Database: Enhanced content check failed');
+    const dbTest = execSync(`PGPASSWORD='${dbPassword}' psql -h ${dbHost} -p 5432 -U postgres -d postgres -c "SELECT COUNT(*) FROM \\"Product\\" WHERE description LIKE '%Transform%';"`, { encoding: 'utf8' });
+
+    if (dbTest.includes('12')) {
+      console.log('✅ Database: Enhanced content accessible (12 products found)');
+    } else {
+      console.log('❌ Database: Enhanced content check failed');
+    }
   }
 } catch (error) {
   console.log(`❌ Database: Connection error - ${error.message}`);

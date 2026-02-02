@@ -111,8 +111,7 @@ export async function GET(request: NextRequest) {
         .from('User')
         .update({ totalXP: totalXPFromLessons })
         .eq('id', user.id)
-        .then(() => {})
-        .catch(err => logger.error('Failed to update user XP:', err));
+        .then(() => { /* fire and forget */ }, err => logger.error('Failed to update user XP:', err));
       userProfile.totalXP = totalXPFromLessons;
     }
 

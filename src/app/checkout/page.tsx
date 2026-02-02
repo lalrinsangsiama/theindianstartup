@@ -611,7 +611,7 @@ function CheckoutContent() {
                 <Shield className="w-5 h-5 text-blue-600" />
                 <div>
                   <Text size="sm" weight="bold">Money Back</Text>
-                  <Text size="xs" color="muted">7-day guarantee</Text>
+                  <Text size="xs" color="muted">3-day guarantee</Text>
                 </div>
               </div>
               
@@ -723,10 +723,10 @@ function CheckoutContent() {
                     <Trophy className="w-5 h-5 text-yellow-600 mt-0.5" />
                     <div>
                       <Text size="sm" weight="bold" className="text-yellow-900">
-                        7-Day Money Back Guarantee
+                        3-Day Money Back Guarantee
                       </Text>
                       <Text size="xs" className="text-yellow-700 mt-1">
-                        If you're not completely satisfied within 7 days, we'll refund your purchase.
+                        If you're not completely satisfied within 3 days, we'll refund your purchase.
                       </Text>
                     </div>
                   </div>

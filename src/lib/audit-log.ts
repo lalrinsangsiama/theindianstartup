@@ -9,9 +9,12 @@ import { logger } from '@/lib/logger';
 export type AuditEventType =
   | 'admin_login'
   | 'admin_action'
+  | 'admin_access_denied'
+  | 'admin_access_granted'
   | 'user_create'
   | 'user_delete'
   | 'user_update'
+  | 'user_role_change'
   | 'purchase_create'
   | 'purchase_complete'
   | 'purchase_fail'
@@ -244,7 +247,7 @@ export async function getAdminAuditLogs(
     const { data, error } = await supabase
       .from('AuditLog')
       .select('*')
-      .in('event_type', ['admin_login', 'admin_action'])
+      .in('event_type', ['admin_login', 'admin_action', 'admin_access_denied', 'admin_access_granted'])
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -269,4 +272,46 @@ export async function getAdminAuditLogs(
     logger.error('Failed to fetch admin audit logs:', error);
     return [];
   }
+}
+
+/**
+ * Log admin access attempt (success or failure)
+ */
+export async function logAdminAccessAttempt(
+  success: boolean,
+  userId: string | undefined,
+  details: Record<string, unknown>,
+  ipAddress?: string
+): Promise<void> {
+  await createAuditLog({
+    eventType: success ? 'admin_access_granted' : 'admin_access_denied',
+    userId,
+    action: success ? 'admin_access_verified' : 'admin_access_blocked',
+    details,
+    ipAddress,
+  });
+}
+
+/**
+ * Log user role change (must be done by admin)
+ */
+export async function logUserRoleChange(
+  adminUserId: string,
+  targetUserId: string,
+  oldRole: string,
+  newRole: string,
+  ipAddress?: string
+): Promise<void> {
+  await createAuditLog({
+    eventType: 'user_role_change',
+    userId: adminUserId,
+    targetUserId,
+    resourceType: 'user_role',
+    action: 'role_changed',
+    details: {
+      oldRole,
+      newRole,
+    },
+    ipAddress,
+  });
 }

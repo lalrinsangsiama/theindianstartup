@@ -14,22 +14,22 @@ export async function GET(request: NextRequest) {
 
     // Get P2 product data
     const { data: product, error: productError } = await supabase
-      .from('products')
+      .from('Product')
       .select(`
         *,
-        modules (
+        modules:Module (
           id,
           title,
           description,
-          order_index,
-          lessons (
+          orderIndex,
+          lessons:Lesson (
             id,
             day,
             title,
-            brief_content,
-            estimated_time,
-            xp_reward,
-            order_index
+            briefContent,
+            estimatedTime,
+            xpReward,
+            orderIndex
           )
         )
       `)
@@ -42,12 +42,12 @@ export async function GET(request: NextRequest) {
 
     // Check user access
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P2', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P2', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     const hasAccess = !!purchase;
@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
     let userProgress = null;
     if (hasAccess) {
       const { data: progress } = await supabase
-        .from('lesson_progress')
+        .from('LessonProgress')
         .select('*')
-        .eq('user_id', user.id)
-        .in('lesson_id', product.modules.flatMap((m: any) => m.lessons.map((l: any) => l.id)));
+        .eq('userId', user.id)
+        .in('lessonId', product.modules.flatMap((m: any) => m.lessons.map((l: any) => l.id)));
 
       const completedLessons = progress?.filter(p => p.completed) || [];
       const totalLessons = product.modules.reduce((total: number, module: any) => total + module.lessons.length, 0);
@@ -68,9 +68,9 @@ export async function GET(request: NextRequest) {
         completedLessons: completedLessons.length,
         totalLessons,
         progressPercentage: Math.round((completedLessons.length / totalLessons) * 100),
-        totalXP: completedLessons.reduce((total: number, lesson: any) => total + (lesson.xp_earned || 0), 0),
-        lastActivity: completedLessons.length > 0 ? 
-          Math.max(...completedLessons.map((l: any) => new Date(l.completed_at).getTime())) : null
+        totalXP: completedLessons.reduce((total: number, lesson: any) => total + (lesson.xpEarned || 0), 0),
+        lastActivity: completedLessons.length > 0 ?
+          Math.max(...completedLessons.map((l: any) => new Date(l.completedAt).getTime())) : null
       };
     }
 
@@ -91,9 +91,9 @@ export async function GET(request: NextRequest) {
       toolsCount: tools?.length || 0,
       templatesCount: templates?.length || 0,
       purchaseInfo: purchase ? {
-        purchaseDate: purchase.purchase_date,
-        expiresAt: purchase.expires_at,
-        productName: purchase.product_name
+        purchaseDate: purchase.purchaseDate,
+        expiresAt: purchase.expiresAt,
+        productName: purchase.productName
       } : null
     };
 
@@ -123,12 +123,12 @@ export async function POST(request: NextRequest) {
       case 'update_preferences':
         // Update user learning preferences for P2
         const { data: updated, error } = await supabase
-          .from('user_preferences')
+          .from('UserPreference')
           .upsert({
-            user_id: user.id,
-            product_code: 'P2',
+            userId: user.id,
+            productCode: 'P2',
             preferences: data,
-            updated_at: new Date().toISOString()
+            updatedAt: new Date().toISOString()
           });
 
         if (error) throw error;
@@ -137,12 +137,13 @@ export async function POST(request: NextRequest) {
       case 'track_engagement':
         // Track user engagement with P2 content
         const { data: engagement, error: engagementError } = await supabase
-          .from('p2_xp_events')
+          .from('XPEvent')
           .insert({
-            user_id: user.id,
-            event_type: data.eventType,
-            event_id: data.eventId,
-            xp_earned: data.xpEarned || 0
+            userId: user.id,
+            type: data.eventType,
+            points: data.xpEarned || 0,
+            description: `P2 engagement: ${data.eventType}`,
+            metadata: { eventId: data.eventId, productCode: 'P2' }
           });
 
         if (engagementError) throw engagementError;

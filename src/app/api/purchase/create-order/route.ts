@@ -7,6 +7,8 @@ import { validateCoupon } from '@/lib/coupon-utils';
 import { checkIdempotency, storeIdempotencyResponse, checkPendingOrder } from '@/lib/idempotency';
 import { checkPaymentFraud } from '@/lib/fraud-detection';
 import { logPurchaseEvent } from '@/lib/audit-log';
+import { applyRateLimit, getClientIP } from '@/lib/rate-limit';
+import { capturePaymentError } from '@/lib/sentry';
 import Razorpay from 'razorpay';
 import { PRODUCTS } from '@/lib/product-access';
 
@@ -34,6 +36,22 @@ const razorpay = new Razorpay({
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting first (before auth to prevent enumeration)
+    const rateLimit = await applyRateLimit(request, 'payment');
+    if (!rateLimit.allowed) {
+      logger.warn('Payment rate limit exceeded', {
+        ip: getClientIP(request),
+        remaining: rateLimit.result.remaining,
+      });
+      return NextResponse.json(
+        { error: 'Too many payment attempts. Please wait before trying again.' },
+        {
+          status: 429,
+          headers: rateLimit.headers,
+        }
+      );
+    }
+
     const user = await requireAuth();
 
     // Parse and validate request body
@@ -304,6 +322,16 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     logger.error('Create order error:', error);
+
+    // Capture critical payment error in Sentry
+    capturePaymentError(
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        userId: 'unknown', // User may not be available if auth failed
+        stage: 'create-order',
+      }
+    );
+
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }

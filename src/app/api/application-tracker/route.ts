@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         timeline:ApplicationTimeline(*),
         contacts:ApplicationContact(*)
       `)
-      .eq('userId', session.user.id);
+      .eq('userId', user.id);
 
     if (status && status !== 'all') {
       query = query.eq('status', status);

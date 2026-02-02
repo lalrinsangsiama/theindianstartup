@@ -1,9 +1,32 @@
 /**
  * Sentry error tracking configuration
  * Provides centralized error monitoring for production
+ *
+ * CRITICAL ENDPOINTS that trigger immediate alerts:
+ * - /api/purchase/* (payment failures)
+ * - /api/webhooks/razorpay (webhook failures)
+ * - /api/auth/* (authentication failures)
  */
 
 import * as Sentry from '@sentry/nextjs';
+
+// Critical endpoints that need immediate alerting
+export const CRITICAL_ENDPOINTS = [
+  '/api/purchase',
+  '/api/webhooks/razorpay',
+  '/api/auth',
+] as const;
+
+// Error categories for better grouping
+export const ERROR_CATEGORIES = {
+  PAYMENT: 'payment',
+  WEBHOOK: 'webhook',
+  AUTH: 'auth',
+  DATABASE: 'database',
+  RATE_LIMIT: 'rate_limit',
+  VALIDATION: 'validation',
+  EXTERNAL_SERVICE: 'external_service',
+} as const;
 
 // Initialize Sentry (called from sentry.client.config.ts and sentry.server.config.ts)
 export function initSentry() {
@@ -19,14 +42,17 @@ export function initSentry() {
     environment: process.env.NODE_ENV || 'development',
     enabled: process.env.NODE_ENV === 'production',
 
-    // Performance monitoring
-    tracesSampleRate: 0.1, // Sample 10% of transactions
+    // Performance monitoring - increased from 10% to 30% for better coverage
+    tracesSampleRate: 0.3,
 
-    // Error sampling
-    sampleRate: 1.0, // Capture all errors
+    // Error sampling - capture all errors
+    sampleRate: 1.0,
 
-    // Release tracking
-    release: process.env.npm_package_version || '1.0.0',
+    // Release tracking with git commit hash if available
+    release: process.env.SENTRY_RELEASE
+      || process.env.VERCEL_GIT_COMMIT_SHA
+      || process.env.npm_package_version
+      || '1.0.0',
 
     // Integrations
     integrations: [
@@ -40,7 +66,7 @@ export function initSentry() {
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
 
-    // Before send hook for filtering
+    // Before send hook for filtering and enrichment
     beforeSend(event, hint) {
       // Don't send errors in development
       if (process.env.NODE_ENV === 'development') {
@@ -59,6 +85,37 @@ export function initSentry() {
         if (error.message.includes('Unauthorized - Please login')) {
           return null;
         }
+      }
+
+      // Add custom fingerprinting for better error grouping
+      if (event.exception?.values?.[0]?.value) {
+        const errorMessage = event.exception.values[0].value;
+
+        // Group payment errors together
+        if (errorMessage.includes('Razorpay') || errorMessage.includes('payment')) {
+          event.fingerprint = ['payment-error', '{{ default }}'];
+          event.tags = { ...event.tags, category: ERROR_CATEGORIES.PAYMENT };
+        }
+
+        // Group database errors
+        if (errorMessage.includes('Supabase') || errorMessage.includes('database') || errorMessage.includes('PGRST')) {
+          event.fingerprint = ['database-error', '{{ default }}'];
+          event.tags = { ...event.tags, category: ERROR_CATEGORIES.DATABASE };
+        }
+
+        // Group webhook errors
+        if (errorMessage.includes('webhook') || errorMessage.includes('signature')) {
+          event.fingerprint = ['webhook-error', '{{ default }}'];
+          event.tags = { ...event.tags, category: ERROR_CATEGORIES.WEBHOOK };
+        }
+      }
+
+      // Mark critical endpoint errors for immediate alerting
+      const requestUrl = event.request?.url || '';
+      const isCritical = CRITICAL_ENDPOINTS.some(endpoint => requestUrl.includes(endpoint));
+      if (isCritical) {
+        event.tags = { ...event.tags, critical: 'true' };
+        event.level = 'error'; // Ensure it's marked as error level
       }
 
       return event;
@@ -109,6 +166,113 @@ export function captureError(
 
   Sentry.captureException(error, {
     level: context?.level || 'error',
+  });
+}
+
+/**
+ * Capture a CRITICAL error from payment/webhook/auth endpoints
+ * These errors trigger immediate alerts in Sentry
+ */
+export function captureCriticalError(
+  error: Error,
+  endpoint: 'payment' | 'webhook' | 'auth',
+  context?: {
+    userId?: string;
+    orderId?: string;
+    amount?: number;
+    extra?: Record<string, unknown>;
+  }
+) {
+  Sentry.withScope((scope) => {
+    scope.setLevel('error');
+    scope.setTag('critical', 'true');
+    scope.setTag('endpoint', endpoint);
+    scope.setTag('category', ERROR_CATEGORIES[endpoint.toUpperCase() as keyof typeof ERROR_CATEGORIES] || endpoint);
+
+    if (context?.userId) {
+      scope.setUser({ id: context.userId });
+    }
+
+    if (context?.orderId) {
+      scope.setTag('orderId', context.orderId);
+    }
+
+    if (context?.amount) {
+      scope.setExtra('amount', context.amount);
+    }
+
+    if (context?.extra) {
+      Object.entries(context.extra).forEach(([key, value]) => {
+        scope.setExtra(key, value);
+      });
+    }
+
+    Sentry.captureException(error);
+  });
+}
+
+/**
+ * Capture a payment-specific error with full context
+ */
+export function capturePaymentError(
+  error: Error,
+  context: {
+    userId: string;
+    orderId?: string;
+    razorpayOrderId?: string;
+    amount?: number;
+    productCode?: string;
+    stage: 'create-order' | 'verify' | 'webhook' | 'refund';
+  }
+) {
+  Sentry.withScope((scope) => {
+    scope.setLevel('error');
+    scope.setTag('critical', 'true');
+    scope.setTag('category', ERROR_CATEGORIES.PAYMENT);
+    scope.setTag('payment_stage', context.stage);
+
+    scope.setUser({ id: context.userId });
+
+    if (context.orderId) scope.setTag('orderId', context.orderId);
+    if (context.razorpayOrderId) scope.setTag('razorpayOrderId', context.razorpayOrderId);
+    if (context.productCode) scope.setTag('productCode', context.productCode);
+    if (context.amount) scope.setExtra('amount', context.amount);
+
+    // Custom fingerprint for payment errors
+    scope.setFingerprint(['payment-error', context.stage, '{{ default }}']);
+
+    Sentry.captureException(error);
+  });
+}
+
+/**
+ * Capture a webhook processing error
+ */
+export function captureWebhookError(
+  error: Error,
+  context: {
+    webhookType: 'razorpay' | 'other';
+    eventType?: string;
+    orderId?: string;
+    signatureValid?: boolean;
+  }
+) {
+  Sentry.withScope((scope) => {
+    scope.setLevel('error');
+    scope.setTag('critical', 'true');
+    scope.setTag('category', ERROR_CATEGORIES.WEBHOOK);
+    scope.setTag('webhook_type', context.webhookType);
+
+    if (context.eventType) scope.setTag('webhook_event', context.eventType);
+    if (context.orderId) scope.setTag('orderId', context.orderId);
+    if (context.signatureValid !== undefined) {
+      scope.setExtra('signatureValid', context.signatureValid);
+    }
+
+    // Custom fingerprint for webhook errors
+    scope.setFingerprint(['webhook-error', context.webhookType, context.eventType || 'unknown']);
+
+    Sentry.captureException(error);
   });
 }
 

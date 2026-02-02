@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { PRODUCTS } from '@/lib/product-access';
+import { applyUserRateLimit } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,14 +20,29 @@ export async function POST(
 ) {
   try {
     const supabase = createClient();
-    
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return NextResponse.json({
         error: 'Unauthorized'
       }, { status: 401 });
+    }
+
+    // Apply rate limiting (50 lessons per hour per user to prevent XP farming)
+    const rateLimit = await applyUserRateLimit(user.id, 'lessonComplete');
+    if (!rateLimit.allowed) {
+      logger.warn('Lesson completion rate limit exceeded', {
+        userId: user.id,
+        lessonId: params.lessonId,
+      });
+      return NextResponse.json({
+        error: 'Too many lesson completions. Please slow down.'
+      }, {
+        status: 429,
+        headers: rateLimit.headers,
+      });
     }
 
     const { tasksCompleted, reflection, proofUploads, timeSpent }: LessonCompletionRequest = await request.json();

@@ -17,12 +17,12 @@ export async function GET(request: NextRequest) {
 
     // Check user access to P2
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P2', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P2', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -31,18 +31,18 @@ export async function GET(request: NextRequest) {
 
     // Get all P2 lessons
     const { data: product } = await supabase
-      .from('products')
+      .from('Product')
       .select(`
-        modules (
+        modules:Module (
           id,
           title,
-          order_index,
-          lessons (
+          orderIndex,
+          lessons:Lesson (
             id,
             day,
             title,
-            xp_reward,
-            estimated_time
+            xpReward,
+            estimatedTime
           )
         )
       `)
@@ -54,81 +54,82 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's lesson progress
-    const allLessons = product.modules.flatMap((module: any) => 
+    const allLessons = product.modules.flatMap((module: any) =>
       module.lessons.map((lesson: any) => ({
         ...lesson,
         moduleId: module.id,
         moduleTitle: module.title,
-        moduleOrder: module.order_index
+        moduleOrder: module.orderIndex
       }))
     );
 
     const { data: progress } = await supabase
-      .from('lesson_progress')
+      .from('LessonProgress')
       .select('*')
-      .eq('user_id', user.id)
-      .in('lesson_id', allLessons.map(l => l.id));
+      .eq('userId', user.id)
+      .in('lessonId', allLessons.map(l => l.id));
 
     // Get user's XP events for P2
     const { data: xpEvents } = await supabase
-      .from('p2_xp_events')
+      .from('XPEvent')
       .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .eq('userId', user.id)
+      .order('createdAt', { ascending: false });
 
-    // Get completion stats from P2 completions table
+    // Get completion stats from LessonProgress
     const { data: completions } = await supabase
-      .from('p2_completions')
+      .from('LessonProgress')
       .select('*')
-      .eq('user_id', user.id);
+      .eq('userId', user.id)
+      .eq('completed', true);
 
     // Calculate progress statistics
     const completedLessons = progress?.filter(p => p.completed) || [];
     const totalLessons = allLessons.length;
-    const totalXP = xpEvents?.reduce((sum, event) => sum + event.xp_earned, 0) || 0;
-    const totalTimeSpent = completions?.reduce((sum, comp) => sum + (comp.time_spent || 0), 0) || 0;
+    const totalXP = xpEvents?.reduce((sum, event) => sum + event.points, 0) || 0;
+    const totalTimeSpent = completions?.reduce((sum, comp) => sum + (comp.estimatedTime || 0), 0) || 0;
 
     // Module progress breakdown
     const moduleProgress = product.modules.map((module: any) => {
       const moduleLessons = module.lessons;
-      const moduleCompleted = progress?.filter(p => 
-        p.completed && moduleLessons.some((l: any) => l.id === p.lesson_id)
+      const moduleCompleted = progress?.filter(p =>
+        p.completed && moduleLessons.some((l: any) => l.id === p.lessonId)
       ) || [];
 
       return {
         moduleId: module.id,
         title: module.title,
-        order: module.order_index,
+        order: module.orderIndex,
         totalLessons: moduleLessons.length,
         completedLessons: moduleCompleted.length,
         progressPercentage: Math.round((moduleCompleted.length / moduleLessons.length) * 100),
         isCompleted: moduleCompleted.length === moduleLessons.length,
-        lastActivity: moduleCompleted.length > 0 ? 
-          Math.max(...moduleCompleted.map(l => new Date(l.completed_at).getTime())) : null
+        lastActivity: moduleCompleted.length > 0 ?
+          Math.max(...moduleCompleted.map(l => new Date(l.completedAt).getTime())) : null
       };
     });
 
     // Recent activity
     const recentActivity = progress
-      ?.filter(p => p.completed_at)
-      .sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())
+      ?.filter(p => p.completedAt)
+      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
       .slice(0, 10)
       .map(p => {
-        const lesson = allLessons.find(l => l.id === p.lesson_id);
+        const lesson = allLessons.find(l => l.id === p.lessonId);
         return {
-          lessonId: p.lesson_id,
+          lessonId: p.lessonId,
           lessonTitle: lesson?.title,
           day: lesson?.day,
           moduleTitle: lesson?.moduleTitle,
-          completedAt: p.completed_at,
-          xpEarned: p.xp_earned,
-          timeSpent: p.time_spent || lesson?.estimated_time
+          completedAt: p.completedAt,
+          xpEarned: p.xpEarned,
+          timeSpent: lesson?.estimatedTime
         };
       }) || [];
 
     // Learning streak calculation
     const completionDates = completedLessons
-      .map(l => new Date(l.completed_at).toDateString())
+      .map(l => new Date(l.completedAt).toDateString())
       .filter((date, index, arr) => arr.indexOf(date) === index)
       .sort();
 
@@ -159,7 +160,7 @@ export async function GET(request: NextRequest) {
 
     // Next recommendations
     const nextLesson = allLessons
-      .filter(lesson => !progress?.some(p => p.lesson_id === lesson.id && p.completed))
+      .filter(lesson => !progress?.some(p => p.lessonId === lesson.id && p.completed))
       .sort((a, b) => a.day - b.day)[0];
 
     const progressData = {
@@ -180,8 +181,8 @@ export async function GET(request: NextRequest) {
         title: nextLesson.title,
         day: nextLesson.day,
         moduleTitle: nextLesson.moduleTitle,
-        estimatedTime: nextLesson.estimated_time,
-        xpReward: nextLesson.xp_reward
+        estimatedTime: nextLesson.estimatedTime,
+        xpReward: nextLesson.xpReward
       } : null,
       achievements: {
         totalTemplatesDownloaded: 0, // Will be calculated from p2_templates usage
@@ -189,11 +190,11 @@ export async function GET(request: NextRequest) {
         portfolioActivitiesCompleted: 0 // Will be calculated from portfolio activities
       },
       timeline: {
-        startDate: purchase.purchase_date,
+        startDate: purchase.purchaseDate,
         expectedCompletion: null, // Calculate based on pace
         daysActive: completionDates.length,
-        averageLessonsPerWeek: completionDates.length > 0 ? 
-          (completedLessons.length / Math.max(1, Math.ceil((Date.now() - new Date(purchase.purchase_date).getTime()) / (7 * 24 * 60 * 60 * 1000)))) : 0
+        averageLessonsPerWeek: completionDates.length > 0 ?
+          (completedLessons.length / Math.max(1, Math.ceil((Date.now() - new Date(purchase.purchaseDate).getTime()) / (7 * 24 * 60 * 60 * 1000)))) : 0
       }
     };
 
@@ -218,12 +219,12 @@ export async function POST(request: NextRequest) {
 
     // Check user access to P2
     const { data: purchase } = await supabase
-      .from('purchases')
+      .from('Purchase')
       .select('*')
-      .eq('user_id', user.id)
-      .in('product_code', ['P2', 'ALL_ACCESS'])
+      .eq('userId', user.id)
+      .in('productCode', ['P2', 'ALL_ACCESS'])
       .eq('status', 'completed')
-      .gt('expires_at', new Date().toISOString())
+      .gt('expiresAt', new Date().toISOString())
       .maybeSingle();
 
     if (!purchase) {
@@ -236,8 +237,8 @@ export async function POST(request: NextRequest) {
     if (action === 'complete') {
       // Get lesson info
       const { data: lesson } = await supabase
-        .from('lessons')
-        .select('*, module:modules(id, product:products(code))')
+        .from('Lesson')
+        .select('*, module:Module(id, product:Product(code))')
         .eq('id', lessonId)
         .single();
 
@@ -247,49 +248,35 @@ export async function POST(request: NextRequest) {
 
       // Mark lesson as completed
       const { error: progressError } = await supabase
-        .from('lesson_progress')
+        .from('LessonProgress')
         .upsert({
-          user_id: user.id,
-          lesson_id: lessonId,
-          purchase_id: purchase.id,
+          userId: user.id,
+          lessonId: lessonId,
+          purchaseId: purchase.id,
           completed: true,
-          completed_at: new Date().toISOString(),
-          xp_earned: lesson.xp_reward || 100,
-          updated_at: new Date().toISOString()
+          completedAt: new Date().toISOString(),
+          xpEarned: lesson.xpReward || 100,
+          updatedAt: new Date().toISOString()
         });
 
       if (progressError) throw progressError;
 
-      // Add to P2 completions table
-      const { error: completionError } = await supabase
-        .from('p2_completions')
-        .upsert({
-          user_id: user.id,
-          lesson_id: lessonId,
-          module_id: lesson.module_id,
-          completed_at: new Date().toISOString(),
-          time_spent: data?.timeSpent || lesson.estimated_time,
-          score: data?.score || null,
-          notes: data?.notes || null
-        });
-
-      if (completionError) throw completionError;
-
       // Award XP
       const { error: xpError } = await supabase
-        .from('p2_xp_events')
+        .from('XPEvent')
         .insert({
-          user_id: user.id,
-          event_type: 'lesson_complete',
-          event_id: lessonId,
-          xp_earned: lesson.xp_reward || 100
+          userId: user.id,
+          type: 'lesson_complete',
+          points: lesson.xpReward || 100,
+          description: `Completed lesson: ${lesson.title}`,
+          metadata: { lessonId, productCode: 'P2' }
         });
 
       if (xpError) throw xpError;
 
-      return NextResponse.json({ 
-        success: true, 
-        xpEarned: lesson.xp_reward || 100 
+      return NextResponse.json({
+        success: true,
+        xpEarned: lesson.xpReward || 100
       });
     }
 

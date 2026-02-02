@@ -85,7 +85,7 @@ export default function TermsOfServicePage() {
               <strong>Access Period:</strong> Your subscription provides access for 365 days from the date of purchase.
             </Text>
             <Text className="mb-4">
-              <strong>Refund Policy:</strong> We offer a 7-day money-back guarantee. Request refunds by contacting support@theindianstartup.in.
+              <strong>Refund Policy:</strong> We offer a 3-day money-back guarantee. Request refunds by contacting support@theindianstartup.in.
             </Text>
             <Text className="mb-4">
               <strong>Payment Processing:</strong> Payments are processed securely through Razorpay. We do not store credit card information.

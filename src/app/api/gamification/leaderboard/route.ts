@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
       }, { status: 401 });
     }
 
-    let leaderboard = [];
-    let userPosition = null;
+    let leaderboard: any[] = [];
+    let userPosition: number | null = null;
 
     if (category === 'xp') {
       if (period === 'all_time') {

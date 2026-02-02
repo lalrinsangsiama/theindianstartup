@@ -293,7 +293,7 @@ export const ResponsivePricingCard: React.FC<ResponsivePricingCardProps> = ({
         )}>
           <div className="flex items-center gap-1">
             <Shield className="w-3 h-3" />
-            <Text size="xs">7-day guarantee</Text>
+            <Text size="xs">3-day guarantee</Text>
           </div>
           {!isMobile && (
             <div className="flex items-center gap-1">

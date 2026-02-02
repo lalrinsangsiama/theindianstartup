@@ -2,25 +2,69 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { createServerClient } from '@supabase/ssr'
 import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
-import { apiRateLimit, authRateLimit } from '@/lib/rate-limit'
+import { apiRateLimit, authRateLimit, paymentRateLimit } from '@/lib/rate-limit'
+
+// Use Node.js runtime for Supabase compatibility
+export const runtime = 'nodejs'
+
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  'https://theindianstartup.in',
+  'https://www.theindianstartup.in',
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+].filter(Boolean) as string[]
 
 export async function middleware(request: NextRequest) {
+  const origin = request.headers.get('origin')
+  const pathname = request.nextUrl.pathname
+
+  // CORS validation for API routes
+  if (pathname.startsWith('/api/') && origin) {
+    if (!ALLOWED_ORIGINS.includes(origin)) {
+      logSecurityEvent({
+        type: 'cors_violation',
+        ip: request.ip || 'unknown',
+        userAgent: request.headers.get('user-agent') || undefined,
+        details: `Blocked request from origin: ${origin} to ${pathname}`,
+      })
+      return new NextResponse(
+        JSON.stringify({ error: 'CORS policy violation' }),
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+
   // Apply security headers
   const response = await updateSession(request)
-  
+
   // Add security headers
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
     response.headers.set(key, value)
   })
-  
-  const pathname = request.nextUrl.pathname
+
+  // Add CORS headers for allowed origins
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    response.headers.set('Access-Control-Allow-Origin', origin)
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  }
+
   const clientIP = request.ip || 'unknown'
-  
+
   // Rate limiting for API routes
   if (pathname.startsWith('/api/')) {
     const isAuthAPI = pathname.includes('/auth/') || pathname.includes('/login') || pathname.includes('/signup')
-    const rateLimit = isAuthAPI ? authRateLimit : apiRateLimit
-    
+    const isPaymentAPI = pathname.includes('/purchase/') || pathname.includes('/payment/')
+
+    // Select appropriate rate limiter
+    let rateLimit = apiRateLimit
+    if (isAuthAPI) {
+      rateLimit = authRateLimit
+    } else if (isPaymentAPI) {
+      rateLimit = paymentRateLimit
+    }
+
     const rateLimitResult = rateLimit(request)
     
     // Add rate limit headers

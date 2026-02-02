@@ -263,7 +263,7 @@ export default function MarketingMasteryPage() {
     const fetchProgress = async () => {
       try {
         // Fetch actual P12 progress from backend
-        const response = await fetch('/api/products/p12_marketing/progress', {
+        const response = await fetch('/api/products/p12/progress', {
           method: 'GET',
           credentials: 'include'
         });
@@ -316,11 +316,11 @@ export default function MarketingMasteryPage() {
     logger.info(`Starting P12 module: ${moduleId}`);
     
     // Find the module to get the day range
-    const module = modules.find(m => m.id === moduleId);
-    if (module) {
+    const foundModule = modules.find(m => m.id === moduleId);
+    if (foundModule) {
       // Extract first day from the days string (e.g., "Days 1-5" -> 1)
-      const firstDay = parseInt(module.days.split(' ')[1].split('-')[0]);
-      router.push(`/products/p12_marketing/lessons/${firstDay}`);
+      const firstDay = parseInt(foundModule.days.split(' ')[1].split('-')[0]);
+      router.push(`/products/p12/lessons/${firstDay}`);
     }
   };
 
@@ -337,7 +337,7 @@ export default function MarketingMasteryPage() {
   const progressPercentage = progress ? (progress.completedLessons / progress.totalLessons) * 100 : 0;
 
   return (
-    <ProductProtectedRoute productCode="p12_marketing">
+    <ProductProtectedRoute productCode="P12">
       <DashboardLayout>
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
@@ -432,33 +432,33 @@ export default function MarketingMasteryPage() {
           {/* Course Modules */}
           <div className="space-y-4">
             <Heading as="h2" variant="h4" className="mb-6">Course Modules</Heading>
-            {modules.map((module, index) => {
-              const isExpanded = expandedModules.includes(module.id);
-              const moduleProgress = progress?.moduleProgress[module.id] || 0;
+            {modules.map((courseModule, index) => {
+              const isExpanded = expandedModules.includes(courseModule.id);
+              const moduleProgress = progress?.moduleProgress[courseModule.id] || 0;
               
               return (
-                <Card key={module.id} className="overflow-hidden">
-                  <div 
+                <Card key={courseModule.id} className="overflow-hidden">
+                  <div
                     className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => toggleModule(module.id)}
+                    onClick={() => toggleModule(courseModule.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-lg ${module.color} text-white`}>
-                          <module.icon className="w-6 h-6" />
+                        <div className={`p-3 rounded-lg ${courseModule.color} text-white`}>
+                          <courseModule.icon className="w-6 h-6" />
                         </div>
                         <div>
                           <div className="flex items-center gap-3 mb-1">
-                            <Heading as="h3" variant="h6">{module.title}</Heading>
-                            <Badge variant="outline" size="sm">{module.days}</Badge>
-                            <Badge variant="default" size="sm">{module.lessons} Lessons</Badge>
+                            <Heading as="h3" variant="h6">{courseModule.title}</Heading>
+                            <Badge variant="outline" size="sm">{courseModule.days}</Badge>
+                            <Badge variant="default" size="sm">{courseModule.lessons} Lessons</Badge>
                           </div>
-                          <Text color="muted">{module.description}</Text>
+                          <Text color="muted">{courseModule.description}</Text>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <Text size="sm" color="muted">+{module.xpReward} XP</Text>
+                          <Text size="sm" color="muted">+{courseModule.xpReward} XP</Text>
                           {moduleProgress > 0 && (
                             <Text size="sm" weight="medium">{Math.round(moduleProgress)}% Complete</Text>
                           )}
@@ -478,7 +478,7 @@ export default function MarketingMasteryPage() {
                         <div>
                           <Heading as="h4" variant="h6" className="mb-3">Topics Covered</Heading>
                           <ul className="space-y-2">
-                            {module.topics.map((topic, topicIndex) => (
+                            {courseModule.topics.map((topic, topicIndex) => (
                               <li key={topicIndex} className="flex items-start gap-2">
                                 <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                                 <Text size="sm">{topic}</Text>
@@ -490,14 +490,14 @@ export default function MarketingMasteryPage() {
                           <div className="space-y-3">
                             {moduleProgress > 0 ? (
                               <Button 
-                                onClick={() => startModule(module.id)} 
+                                onClick={() => startModule(courseModule.id)}
                                 className="w-full"
                               >
                                 Continue Module <ArrowRight className="w-4 h-4 ml-2" />
                               </Button>
                             ) : (
-                              <Button 
-                                onClick={() => startModule(module.id)} 
+                              <Button
+                                onClick={() => startModule(courseModule.id)} 
                                 variant="outline"
                                 className="w-full"
                               >

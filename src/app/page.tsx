@@ -13,13 +13,6 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null);
   
   useEffect(() => {
-    // Performance optimization: Preload critical routes
-    if (typeof window !== 'undefined') {
-      const router = require('next/router');
-      router.prefetch?.('/pricing');
-      router.prefetch?.('/get-started');
-    }
-    
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);

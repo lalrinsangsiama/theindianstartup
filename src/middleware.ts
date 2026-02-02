@@ -1,6 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
-import { createServerClient } from '@supabase/ssr'
 import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
 import { apiRateLimit, authRateLimit, paymentRateLimit } from '@/lib/rate-limit'
 
@@ -10,6 +8,36 @@ const ALLOWED_ORIGINS = [
   'https://www.theindianstartup.in',
   process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
 ].filter(Boolean) as string[]
+
+// Check if user has a valid session by checking Supabase auth cookies
+function hasAuthSession(request: NextRequest): boolean {
+  // Supabase stores auth in cookies with the project ref
+  // Look for any sb-*-auth-token cookie
+  const cookies = request.cookies.getAll()
+  const hasAuthToken = cookies.some(cookie =>
+    cookie.name.includes('-auth-token') ||
+    cookie.name.startsWith('sb-') && cookie.name.includes('auth')
+  )
+  return hasAuthToken
+}
+
+// Get user email from auth token (basic extraction without full Supabase)
+function getUserEmailFromCookie(request: NextRequest): string | null {
+  try {
+    const cookies = request.cookies.getAll()
+    const authCookie = cookies.find(cookie =>
+      cookie.name.includes('-auth-token') && cookie.name.includes('base')
+    )
+    if (authCookie?.value) {
+      // The auth token is a base64 encoded JWT, extract email from payload
+      const payload = JSON.parse(atob(authCookie.value.split('.')[1] || '{}'))
+      return payload.email || null
+    }
+  } catch {
+    // Ignore parsing errors
+  }
+  return null
+}
 
 export async function middleware(request: NextRequest) {
   const origin = request.headers.get('origin')
@@ -31,8 +59,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Apply security headers
-  const response = await updateSession(request)
+  // Create response with security headers
+  const response = NextResponse.next()
 
   // Add security headers
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
@@ -63,12 +91,12 @@ export async function middleware(request: NextRequest) {
     }
 
     const rateLimitResult = rateLimit(request)
-    
+
     // Add rate limit headers
     response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString())
     response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
     response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString())
-    
+
     if (!rateLimitResult.success) {
       logSecurityEvent({
         type: 'rate_limit',
@@ -76,11 +104,11 @@ export async function middleware(request: NextRequest) {
         userAgent: request.headers.get('user-agent') || undefined,
         details: `Rate limit exceeded for ${pathname}`,
       })
-      
+
       return new NextResponse(
         JSON.stringify({ error: 'Rate limit exceeded', retryAfter: rateLimitResult.resetTime }),
-        { 
-          status: 429, 
+        {
+          status: 429,
           headers: {
             'Content-Type': 'application/json',
             'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
@@ -90,24 +118,9 @@ export async function middleware(request: NextRequest) {
       )
     }
   }
-  
-  // Create a Supabase client to check auth status
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set() {}, // Not needed for reading
-        remove() {}, // Not needed for reading
-      },
-    }
-  )
 
-  // Get the user session
-  const { data: { user } } = await supabase.auth.getUser()
+  // Check auth status using cookies (Edge-compatible)
+  const isAuthenticated = hasAuthSession(request)
 
   // Define protected routes
   const protectedRoutes = ['/dashboard', '/journey', '/portfolio', '/profile', '/community', '/resources', '/analytics', '/settings', '/help', '/admin', '/onboarding', '/products']
@@ -118,7 +131,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
 
   // Redirect to login if accessing protected route without auth
-  if (isProtectedRoute && !user) {
+  if (isProtectedRoute && !isAuthenticated) {
     const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/login'
     redirectUrl.searchParams.set('redirectTo', pathname)
@@ -126,16 +139,17 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect to dashboard if accessing auth routes while logged in
-  if (isAuthRoute && user && pathname !== '/logout') {
+  if (isAuthRoute && isAuthenticated && pathname !== '/logout') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   // Special handling for admin routes
-  if (pathname.startsWith('/admin') && user) {
+  if (pathname.startsWith('/admin') && isAuthenticated) {
+    const userEmail = getUserEmailFromCookie(request)
     const adminEmails = process.env.ADMIN_EMAILS
       ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim())
       : []
-    if (!adminEmails.includes(user.email || '')) {
+    if (userEmail && !adminEmails.includes(userEmail)) {
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
   }

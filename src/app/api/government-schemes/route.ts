@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getUser } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 
 interface SchemeFilters {
@@ -17,8 +16,8 @@ interface SchemeFilters {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -27,7 +26,7 @@ export async function GET(request: NextRequest) {
     const { data: purchases } = await supabase
       .from('Purchase')
       .select('*')
-      .eq('userId', session.user.id)
+      .eq('userId', user.id)
       .or('productCode.eq.P9,productCode.eq.P7,productCode.eq.ALL_ACCESS')
       .eq('isActive', true)
       .gte('expiresAt', new Date().toISOString());
@@ -151,8 +150,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

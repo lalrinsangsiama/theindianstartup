@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getUser } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
     const { data: purchases } = await supabase
       .from('Purchase')
       .select('*')
-      .eq('userId', session.user.id)
+      .eq('userId', user.id)
       .or('productCode.eq.P9,productCode.eq.ALL_ACCESS')
       .eq('isActive', true)
       .gte('expiresAt', new Date().toISOString());
@@ -60,7 +59,7 @@ export async function GET(request: NextRequest) {
     const { data: allApps } = await supabase
       .from('ApplicationTracker')
       .select('status, amount')
-      .eq('userId', session.user.id);
+      .eq('userId', user.id);
 
     const statistics = {
       total: allApps?.length || 0,
@@ -92,8 +91,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -105,7 +104,7 @@ export async function POST(request: NextRequest) {
         const { data: newApplication, error: createError } = await supabase
           .from('ApplicationTracker')
           .insert({
-            userId: session.user.id,
+            userId: user.id,
             schemeId: data.schemeId,
             schemeName: data.schemeName,
             ministry: data.ministry,
@@ -145,7 +144,7 @@ export async function POST(request: NextRequest) {
             updatedAt: new Date().toISOString()
           })
           .eq('id', data.id)
-          .eq('userId', session.user.id)
+          .eq('userId', user.id)
           .select()
           .single();
 
@@ -261,7 +260,7 @@ export async function POST(request: NextRequest) {
           .from('ApplicationTracker')
           .delete()
           .eq('id', data.applicationId)
-          .eq('userId', session.user.id);
+          .eq('userId', user.id);
 
         if (deleteError) {
           logger.error('Error deleting application:', deleteError);

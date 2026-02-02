@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getUser } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -35,7 +34,7 @@ export async function GET(request: NextRequest) {
     const { data: purchases } = await supabase
       .from('Purchase')
       .select('*')
-      .eq('userId', session.user.id)
+      .eq('userId', user.id)
       .or('productCode.eq.P9,productCode.eq.ALL_ACCESS')
       .eq('isActive', true)
       .gte('expiresAt', new Date().toISOString());
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest) {
       const { data: progress } = await supabase
         .from('LessonProgress')
         .select('*')
-        .eq('userId', session.user.id)
+        .eq('userId', user.id)
         .in('lessonId', product.modules.flatMap((m: any) => m.lessons.map((l: any) => l.id)));
 
       userProgress = progress?.reduce((acc: any, p: any) => {
@@ -71,8 +70,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -85,7 +84,7 @@ export async function POST(request: NextRequest) {
         const { data: progressData, error: progressError } = await supabase
           .from('LessonProgress')
           .upsert({
-            userId: session.user.id,
+            userId: user.id,
             lessonId: data.lessonId,
             completed: data.completed || false,
             completedAt: data.completed ? new Date().toISOString() : null,

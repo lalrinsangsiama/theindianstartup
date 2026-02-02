@@ -59,7 +59,7 @@ export async function GET(
     // Use service role for lesson data access
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
     // Fetch lesson data from proper Lesson table with relationships

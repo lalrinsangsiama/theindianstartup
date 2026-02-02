@@ -109,6 +109,10 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.posthog.com https://*.razorpay.com https://*.sentry.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co https://*.razorpay.com https://*.posthog.com https://*.sentry.io wss://*.supabase.co; frame-src 'self' https://*.razorpay.com; object-src 'none'; base-uri 'self'; form-action 'self'",
+          },
         ],
       },
       {

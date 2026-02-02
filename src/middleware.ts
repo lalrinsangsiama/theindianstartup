@@ -21,22 +21,51 @@ function hasAuthSession(request: NextRequest): boolean {
   return hasAuthToken
 }
 
-// Get user email from auth token (basic extraction without full Supabase)
-function getUserEmailFromCookie(request: NextRequest): string | null {
+/**
+ * SECURITY WARNING: This function extracts email from JWT WITHOUT signature verification.
+ * It is ONLY used for UX optimization (early redirect of non-admins).
+ *
+ * NEVER use this for actual authorization decisions - all real auth happens server-side
+ * via requireAdmin() which validates against the database role field.
+ *
+ * Returns null on ANY parsing error - FAIL CLOSED approach.
+ */
+function getUnverifiedEmailFromCookie(request: NextRequest): string | null {
   try {
     const cookies = request.cookies.getAll()
     const authCookie = cookies.find(cookie =>
       cookie.name.includes('-auth-token') && cookie.name.includes('base')
     )
-    if (authCookie?.value) {
-      // The auth token is a base64 encoded JWT, extract email from payload
-      const payload = JSON.parse(atob(authCookie.value.split('.')[1] || '{}'))
-      return payload.email || null
+
+    if (!authCookie?.value) {
+      return null
     }
+
+    const parts = authCookie.value.split('.')
+    // Valid JWT must have exactly 3 parts
+    if (parts.length !== 3) {
+      return null
+    }
+
+    const payloadBase64 = parts[1]
+    if (!payloadBase64) {
+      return null
+    }
+
+    // Decode base64 (handle URL-safe base64)
+    const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
+    const payload = JSON.parse(payloadJson)
+
+    // Strict validation: email must be a non-empty string with @
+    if (typeof payload.email !== 'string' || !payload.email || !payload.email.includes('@')) {
+      return null
+    }
+
+    return payload.email.toLowerCase().trim()
   } catch {
-    // Ignore parsing errors
+    // FAIL CLOSED: Any parsing error returns null, which triggers access denial
+    return null
   }
-  return null
 }
 
 export async function middleware(request: NextRequest) {
@@ -78,7 +107,9 @@ export async function middleware(request: NextRequest) {
   const clientIP = request.ip || 'unknown'
 
   // Rate limiting for API routes
-  if (pathname.startsWith('/api/')) {
+  // IMPORTANT: Exclude webhook routes - they are protected by signature verification
+  // and need to handle high volumes during payment events
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/webhooks/')) {
     const isAuthAPI = pathname.includes('/auth/') || pathname.includes('/login') || pathname.includes('/signup')
     const isPaymentAPI = pathname.includes('/purchase/') || pathname.includes('/payment/')
 
@@ -153,42 +184,46 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl)
     }
 
-    // For admin routes, we do a preliminary check in middleware
-    // The real authorization happens at the API/page level with database role check
-    // This is just a UX optimization to redirect non-admins early
-    const userEmail = getUserEmailFromCookie(request)
+    // ========================================================================
+    // SECURITY: MIDDLEWARE ADMIN CHECK IS UX OPTIMIZATION ONLY
+    // ========================================================================
+    // This check redirects non-admins early for better UX, but does NOT
+    // provide security. The real authorization happens server-side via
+    // requireAdmin() which validates against the database role field.
+    //
+    // Even if someone bypasses this middleware check, they will be blocked
+    // by requireAdmin() at the API/page level.
+    // ========================================================================
+
+    const userEmail = getUnverifiedEmailFromCookie(request)
     const adminEmails = process.env.ADMIN_EMAILS
-      ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim())
+      ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim().toLowerCase())
       : []
 
-    // FAIL CLOSED: If we can't determine admin status, deny access
-    // This is the key security fix - we deny by default, not allow
+    // FAIL CLOSED: If we can't extract email, deny access at middleware level
+    // User will see /unauthorized page, but even if bypassed, requireAdmin() blocks them
     if (!userEmail) {
-      // Can't extract email - could be tampered token or format change
-      // Log and deny access
       logSecurityEvent({
         type: 'admin_access_blocked',
         ip: clientIP,
         userAgent: request.headers.get('user-agent') || undefined,
-        details: `Admin access blocked - could not verify email from token for ${pathname}`,
+        details: `[MIDDLEWARE] Admin access blocked - could not parse email from token for ${pathname}`,
       })
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
+    // FAIL CLOSED: If email not in allowlist, deny access
     if (!adminEmails.includes(userEmail)) {
-      // User is authenticated but not an admin
       logSecurityEvent({
         type: 'admin_access_denied',
         ip: clientIP,
         userAgent: request.headers.get('user-agent') || undefined,
-        details: `Non-admin user ${userEmail} attempted to access ${pathname}`,
+        details: `[MIDDLEWARE] Non-admin email ${userEmail} attempted to access ${pathname}`,
       })
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
-    // Note: This middleware check is a UX optimization only.
-    // The actual admin authorization is enforced at the API/page level
-    // using requireAdmin() which checks the database role field.
+    // Middleware check passed, but real authorization happens at API/page level via requireAdmin()
   }
 
   return response

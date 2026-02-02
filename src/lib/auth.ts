@@ -9,9 +9,11 @@ export type UserRole = 'user' | 'admin' | 'support' | 'moderator';
 // Roles that have admin access
 const ADMIN_ROLES: UserRole[] = ['admin'];
 
-// Fallback admin emails (only used if role column doesn't exist yet)
-const FALLBACK_ADMIN_EMAILS = process.env.ADMIN_EMAILS
-  ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim())
+// SECURITY: Admin email allowlist - ONLY used as a secondary check when DB role is already 'admin'
+// This is NOT a fallback to grant admin access. It's a safeguard to prevent rogue DB entries.
+// If a user has role='admin' in DB but their email is NOT in this list, access is DENIED.
+const ADMIN_EMAIL_ALLOWLIST = process.env.ADMIN_EMAILS
+  ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim().toLowerCase())
   : [];
 
 export async function getUser() {
@@ -45,7 +47,8 @@ export async function getUserFromRequest(request: NextRequest) {
 
 /**
  * Check if current user has admin role
- * Uses database role field, falls back to email list for backwards compatibility
+ * SECURITY: Requires BOTH database role='admin' AND email in allowlist (if allowlist is configured)
+ * This fail-closed approach ensures no unauthorized admin access through DB tampering or email mismatch
  */
 export async function isAdmin(): Promise<boolean> {
   const user = await getUser();
@@ -54,21 +57,27 @@ export async function isAdmin(): Promise<boolean> {
     return false;
   }
 
-  // Primary check: database role field
-  if (user.role && ADMIN_ROLES.includes(user.role as UserRole)) {
-    return true;
+  // FAIL CLOSED: Must have admin role in database
+  const hasAdminRole = user.role && ADMIN_ROLES.includes(user.role as UserRole);
+  if (!hasAdminRole) {
+    return false;
   }
 
-  // Fallback: email-based check (for migration period)
-  if (FALLBACK_ADMIN_EMAILS.includes(user.email)) {
-    logger.warn('Admin access via email fallback - migrate to role field', {
-      userId: user.id,
-      email: user.email,
-    });
-    return true;
+  // SECURITY: If email allowlist is configured, user's email must also be in it
+  // This prevents unauthorized admin access if someone tampers with the database
+  if (ADMIN_EMAIL_ALLOWLIST.length > 0) {
+    const emailInAllowlist = ADMIN_EMAIL_ALLOWLIST.includes(user.email?.toLowerCase() || '');
+    if (!emailInAllowlist) {
+      logger.warn('Admin role found but email not in allowlist - access DENIED', {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+      return false;
+    }
   }
 
-  return false;
+  return true;
 }
 
 /**
@@ -91,56 +100,63 @@ export async function requireAuth() {
 }
 
 /**
- * Require admin access - fails closed with audit logging
+ * Require admin access - FAIL CLOSED with audit logging
+ * SECURITY: Database role is the source of truth. Email allowlist is a secondary safeguard.
+ * Access is DENIED if:
+ * - User is not authenticated
+ * - User profile is not found
+ * - User does not have role='admin' in database
+ * - Email allowlist is configured AND user's email is not in it
  */
 export async function requireAdmin(options?: { ipAddress?: string }) {
   const supabase = createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
 
-  // No authenticated user
-  if (!authUser) {
+  // FAIL CLOSED: No authenticated user
+  if (authError || !authUser) {
     await createAuditLog({
       eventType: 'security_event',
       action: 'admin_access_denied',
       details: {
         reason: 'not_authenticated',
+        authError: authError?.message,
         ipAddress: options?.ipAddress,
       },
     });
     throw new Error('Authentication required');
   }
 
-  // Fetch user profile with role
-  const { data: user } = await supabase
+  // Fetch user profile with role - MUST succeed
+  const { data: user, error: profileError } = await supabase
     .from('User')
     .select('id, email, role')
     .eq('id', authUser.id)
     .single();
 
-  if (!user) {
+  // FAIL CLOSED: Profile must exist
+  if (profileError || !user) {
     await createAuditLog({
       eventType: 'security_event',
       userId: authUser.id,
       action: 'admin_access_denied',
       details: {
         reason: 'user_profile_not_found',
+        profileError: profileError?.message,
         ipAddress: options?.ipAddress,
       },
     });
     throw new Error('User profile not found');
   }
 
-  // Check role-based admin access
+  // FAIL CLOSED: Must have admin role in database (source of truth)
   const hasAdminRole = user.role && ADMIN_ROLES.includes(user.role as UserRole);
-  const hasAdminEmail = FALLBACK_ADMIN_EMAILS.includes(user.email);
-
-  if (!hasAdminRole && !hasAdminEmail) {
+  if (!hasAdminRole) {
     await createAuditLog({
       eventType: 'security_event',
       userId: user.id,
       action: 'admin_access_denied',
       details: {
-        reason: 'insufficient_role',
+        reason: 'no_admin_role',
         userRole: user.role,
         email: user.email,
         ipAddress: options?.ipAddress,
@@ -149,19 +165,47 @@ export async function requireAdmin(options?: { ipAddress?: string }) {
     throw new Error('Admin access required');
   }
 
-  // Log successful admin access (for audit trail)
-  if (hasAdminEmail && !hasAdminRole) {
-    logger.warn('Admin access via email fallback', {
-      userId: user.id,
-      email: user.email,
-    });
+  // FAIL CLOSED: If email allowlist is configured, email must be in it
+  // This prevents unauthorized access even if someone tampers with the database
+  if (ADMIN_EMAIL_ALLOWLIST.length > 0) {
+    const emailInAllowlist = ADMIN_EMAIL_ALLOWLIST.includes(user.email?.toLowerCase() || '');
+    if (!emailInAllowlist) {
+      await createAuditLog({
+        eventType: 'security_event',
+        userId: user.id,
+        action: 'admin_access_denied',
+        details: {
+          reason: 'email_not_in_allowlist',
+          userRole: user.role,
+          email: user.email,
+          ipAddress: options?.ipAddress,
+        },
+      });
+      logger.error('SECURITY: Admin role found but email not in allowlist', {
+        userId: user.id,
+        email: user.email,
+      });
+      throw new Error('Admin access required');
+    }
   }
+
+  // Access granted - log for audit trail
+  await createAuditLog({
+    eventType: 'admin_action',
+    userId: user.id,
+    action: 'admin_access_granted',
+    details: {
+      email: user.email,
+      ipAddress: options?.ipAddress,
+    },
+  });
 
   return user;
 }
 
 /**
  * Check admin status for a specific user ID (used by API routes)
+ * SECURITY: Returns isAdmin=true ONLY if user has role='admin' AND (no allowlist OR email in allowlist)
  */
 export async function checkAdminStatus(userId: string): Promise<{
   isAdmin: boolean;
@@ -169,21 +213,37 @@ export async function checkAdminStatus(userId: string): Promise<{
 }> {
   const supabase = createClient();
 
-  const { data: user } = await supabase
+  const { data: user, error } = await supabase
     .from('User')
     .select('role, email')
     .eq('id', userId)
     .single();
 
-  if (!user) {
+  // FAIL CLOSED: No user found
+  if (error || !user) {
     return { isAdmin: false, role: null };
   }
 
+  // FAIL CLOSED: Must have admin role in database
   const hasAdminRole = user.role && ADMIN_ROLES.includes(user.role as UserRole);
-  const hasAdminEmail = FALLBACK_ADMIN_EMAILS.includes(user.email);
+  if (!hasAdminRole) {
+    return { isAdmin: false, role: user.role || 'user' };
+  }
+
+  // FAIL CLOSED: If email allowlist is configured, email must be in it
+  if (ADMIN_EMAIL_ALLOWLIST.length > 0) {
+    const emailInAllowlist = ADMIN_EMAIL_ALLOWLIST.includes(user.email?.toLowerCase() || '');
+    if (!emailInAllowlist) {
+      logger.warn('checkAdminStatus: Admin role but email not in allowlist', {
+        userId,
+        email: user.email,
+      });
+      return { isAdmin: false, role: user.role || 'user' };
+    }
+  }
 
   return {
-    isAdmin: hasAdminRole || hasAdminEmail,
+    isAdmin: true,
     role: user.role || 'user',
   };
 }

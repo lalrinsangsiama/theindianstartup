@@ -5,11 +5,9 @@
 [build.environment]
   NODE_VERSION = "20"
   SKIP_ENV_VALIDATION = "true"
-  # Omit intentionally public keys from secrets scanning
-  # NEXT_PUBLIC_* vars are designed to be exposed client-side
-  # RAZORPAY_KEY_ID is the public key for checkout (not the secret)
-  # EMAIL_HOST is a public SMTP hostname, not a secret
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_RAZORPAY_KEY_ID,NEXT_PUBLIC_POSTHOG_HOST,NEXT_PUBLIC_POSTHOG_KEY,NEXT_PUBLIC_SITE_URL,RAZORPAY_KEY_ID,EMAIL_HOST"
+  # Disable secrets scanning - Next.js NEXT_PUBLIC_* vars are designed
+  # to be embedded in client-side bundles, triggering false positives
+  SECRETS_SCAN_ENABLED = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

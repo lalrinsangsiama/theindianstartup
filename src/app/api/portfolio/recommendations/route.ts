@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     const recommendations = [];
 
     // Check course progression recommendations
-    const courseActivities = activities?.reduce((acc, activity) => {
+    const courseActivities = activities?.reduce((acc, activity: any) => {
       const courseCode = activity.activityType?.id?.substring(0, 2)?.toUpperCase();
       if (!acc[courseCode]) acc[courseCode] = { total: 0, completed: 0 };
       acc[courseCode].total++;
@@ -58,8 +58,8 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, { total: number; completed: number }>);
 
     // P1 -> P2 progression
-    const p1Progress = courseActivities?.P1?.completed / (courseActivities?.P1?.total || 1) || 0;
-    const p2Progress = courseActivities?.P2?.completed / (courseActivities?.P2?.total || 1) || 0;
+    const p1Progress = (courseActivities?.P1?.completed ?? 0) / (courseActivities?.P1?.total || 1);
+    const p2Progress = (courseActivities?.P2?.completed ?? 0) / (courseActivities?.P2?.total || 1);
     if (p1Progress >= 0.7 && p2Progress < 0.3 && (hasAllAccess || accessibleCourses.has('P2'))) {
       recommendations.push({
         type: 'next_course',

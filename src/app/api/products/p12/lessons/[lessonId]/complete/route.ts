@@ -100,41 +100,55 @@ export async function POST(
       );
     }
 
-    // Update user's total XP
-    const { error: xpError } = await supabase
-      .from('User')
-      .update({ 
-        totalXP: supabase.sql`"totalXP" + ${lesson.xpReward}` 
-      })
-      .eq('id', user.id);
+    // Update user's total XP using RPC function or manual increment
+    try {
+      await supabase.rpc('increment_user_xp', {
+        user_id: user.id,
+        xp_amount: lesson.xpReward
+      });
+    } catch (xpError) {
+      // If RPC doesn't exist, try manual update
+      const { data: currentUser } = await supabase
+        .from('User')
+        .select('totalXP')
+        .eq('id', user.id)
+        .single();
 
-    if (xpError) {
-      logger.error('Error updating user XP:', xpError);
+      if (currentUser) {
+        await supabase
+          .from('User')
+          .update({ totalXP: (currentUser.totalXP || 0) + lesson.xpReward })
+          .eq('id', user.id);
+      }
     }
 
-    // Check for module completion
+    // Cast lesson to access nested relations
+    const lessonData = lesson as any;
+
+    // Check for module completion - get module lessons first
+    const { data: moduleLessons } = await supabase
+      .from('Lesson')
+      .select('id')
+      .eq('moduleId', lessonData.module?.id);
+
     const { data: moduleProgress, error: moduleError } = await supabase
       .from('LessonProgress')
       .select('lessonId, completed')
       .eq('userId', user.id)
-      .in('lessonId', supabase
-        .from('Lesson')
-        .select('id')
-        .eq('moduleId', lesson.module.id)
-      );
+      .in('lessonId', moduleLessons?.map((l: any) => l.id) || []);
 
     if (moduleError) {
       logger.error('Error checking module progress:', moduleError);
     } else if (moduleProgress) {
-      const completedInModule = moduleProgress.filter(p => p.completed).length;
+      const completedInModule = moduleProgress.filter((p: any) => p.completed).length;
       const totalInModule = moduleProgress.length;
-      
+
       // Update module progress
       await supabase
         .from('ModuleProgress')
         .upsert({
           userId: user.id,
-          moduleId: lesson.module.id,
+          moduleId: lessonData.module?.id,
           purchaseId: purchase.id,
           completedLessons: completedInModule,
           totalLessons: totalInModule,

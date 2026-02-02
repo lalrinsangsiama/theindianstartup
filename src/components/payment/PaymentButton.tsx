@@ -22,7 +22,7 @@ import { PRODUCTS } from '@/lib/products-catalog';
 interface PaymentButtonProps {
   productCode: string;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
   showPrice?: boolean;
   showDiscount?: boolean;
@@ -227,7 +227,7 @@ export const GiftButton: React.FC<Omit<PaymentButtonProps, 'icon'>> = (props) =>
 // Bundle-specific button
 export const AllAccessButton: React.FC<{
   className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg';
   showSavings?: boolean;
 }> = ({ className, size = 'lg', showSavings = true }) => {
   return (

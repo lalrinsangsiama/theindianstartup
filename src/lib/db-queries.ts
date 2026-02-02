@@ -367,7 +367,7 @@ export async function batchUpdateLessonProgress(
     lessonId: string;
     completedAt?: Date | null;
     xpEarned?: number;
-    purchaseId: string;
+    userId: string;
   }>
 ) {
   // Use transaction for consistency
@@ -377,8 +377,8 @@ export async function batchUpdateLessonProgress(
     for (const update of updates) {
       const result = await tx.lessonProgress.upsert({
         where: {
-          purchaseId_lessonId: {
-            purchaseId: update.purchaseId,
+          userId_lessonId: {
+            userId: update.userId,
             lessonId: update.lessonId,
           },
         },
@@ -387,7 +387,7 @@ export async function batchUpdateLessonProgress(
           xpEarned: update.xpEarned || 0,
         },
         create: {
-          purchaseId: update.purchaseId,
+          userId: update.userId,
           lessonId: update.lessonId,
           completedAt: update.completedAt,
           xpEarned: update.xpEarned || 0,
@@ -397,23 +397,17 @@ export async function batchUpdateLessonProgress(
       results.push(result);
     }
 
-    // Update user XP through purchase relation
+    // Update user XP
     if (updates.some(u => u.xpEarned)) {
       const totalXP = updates.reduce((sum, u) => sum + (u.xpEarned || 0), 0);
-      const purchaseId = updates[0].purchaseId;
-      const purchase = await tx.purchase.findUnique({
-        where: { id: purchaseId },
-        select: { userId: true },
+      const userId = updates[0].userId;
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          totalXP: { increment: totalXP },
+        },
       });
-      
-      if (purchase) {
-        await tx.user.update({
-          where: { id: purchase.userId },
-          data: {
-            totalXP: { increment: totalXP },
-          },
-        });
-      }
     }
 
     return results;

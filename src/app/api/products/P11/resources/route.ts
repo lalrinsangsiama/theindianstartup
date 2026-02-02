@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const { data: resources, error: resourcesError } = await supabase
       .from('Resource')
       .select('*')
-      .in('moduleId', product.modules?.map(m => m.id) || [])
+      .in('moduleId', product.modules?.map((m: any) => m.id) || [])
       .order('createdAt', { ascending: false });
 
     if (resourcesError) {
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     const { data: lessons, error: lessonsError } = await supabase
       .from('Lesson')
       .select('id, day, title, resources, metadata')
-      .in('moduleId', product.modules?.map(m => m.id) || [])
+      .in('moduleId', product.modules?.map((m: any) => m.id) || [])
       .order('day');
 
     if (lessonsError) {
@@ -66,9 +66,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate total resource value
-    const totalLessonValue = lessons.reduce((total, lesson) => {
+    const totalLessonValue = lessons.reduce((total: number, lesson: any) => {
       if (lesson.resources && Array.isArray(lesson.resources)) {
-        const lessonValue = lesson.resources.reduce((lessonTotal, resource) => {
+        const lessonValue = lesson.resources.reduce((lessonTotal: number, resource: any) => {
           return lessonTotal + (resource.value || 0);
         }, 0);
         return total + lessonValue;
@@ -78,12 +78,12 @@ export async function GET(request: NextRequest) {
 
     // Categorize resources
     const categorizedResources = {
-      interactive_tools: resources.filter(r => r.type === 'interactive_tool'),
-      template_libraries: resources.filter(r => r.type === 'template_library'),
-      video_series: resources.filter(r => r.type === 'video_series'),
-      guides: resources.filter(r => r.type.includes('guide')),
-      calculators: resources.filter(r => r.type.includes('calculator')),
-      databases: resources.filter(r => r.type.includes('database'))
+      interactive_tools: resources.filter((r: any) => r.type === 'interactive_tool'),
+      template_libraries: resources.filter((r: any) => r.type === 'template_library'),
+      video_series: resources.filter((r: any) => r.type === 'video_series'),
+      guides: resources.filter((r: any) => r.type.includes('guide')),
+      calculators: resources.filter((r: any) => r.type.includes('calculator')),
+      databases: resources.filter((r: any) => r.type.includes('database'))
     };
 
     // Get interactive tools info
@@ -164,15 +164,15 @@ export async function GET(request: NextRequest) {
       templateLibrary,
       lessons: {
         count: lessons.length,
-        lessonsWithResources: lessons.filter(l => l.resources && Array.isArray(l.resources) && l.resources.length > 0).length,
-        resourcesPerLesson: lessons.map(lesson => ({
+        lessonsWithResources: lessons.filter((l: any) => l.resources && Array.isArray(l.resources) && l.resources.length > 0).length,
+        resourcesPerLesson: lessons.map((lesson: any) => ({
           day: lesson.day,
           title: lesson.title,
           resourceCount: lesson.resources ? lesson.resources.length : 0,
-          resourceValue: lesson.resources ? 
-            lesson.resources.reduce((sum, r) => sum + (r.value || 0), 0) : 0,
-          hasInteractiveTools: lesson.resources ? 
-            lesson.resources.some(r => r.type === 'interactive_tool') : false
+          resourceValue: lesson.resources ?
+            lesson.resources.reduce((sum: number, r: any) => sum + (r.value || 0), 0) : 0,
+          hasInteractiveTools: lesson.resources ?
+            lesson.resources.some((r: any) => r.type === 'interactive_tool') : false
         }))
       },
       accessInfo: {

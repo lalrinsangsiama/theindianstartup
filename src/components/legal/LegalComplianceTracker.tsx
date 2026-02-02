@@ -16,7 +16,7 @@ interface ComplianceItem {
   description: string;
   requiredDocuments: string[];
   penalty: string;
-  frequency: 'One-time' | 'Annual' | 'Quarterly' | 'Monthly';
+  frequency: 'One-time' | 'Annual' | 'Quarterly' | 'Monthly' | 'Every 10 years';
   applicableFrom: string;
   authority: string;
   resources: string[];

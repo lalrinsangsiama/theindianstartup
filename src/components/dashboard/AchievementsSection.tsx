@@ -209,3 +209,5 @@ export function AchievementsSection({
     </div>
   );
 }
+
+export default AchievementsSection;

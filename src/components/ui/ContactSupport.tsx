@@ -96,3 +96,5 @@ export function SupportLink({ className = '' }: { className?: string }) {
     </Text>
   );
 }
+
+export default ContactSupport;

@@ -68,9 +68,9 @@ export async function GET(request: NextRequest) {
     );
 
     // Process modules with progress
-    const modulesWithProgress = modules.map(module => {
+    const modulesWithProgress = modules.map((module: any) => {
       const lessons = module.lessons || [];
-      const completedLessons = lessons.filter(lesson => 
+      const completedLessons = lessons.filter((lesson: any) =>
         progressMap.get(lesson.id) === true
       ).length;
 
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         orderIndex: module.orderIndex,
         lessonCount: lessons.length,
         completedLessons,
-        estimatedTime: lessons.reduce((sum, lesson) => sum + lesson.estimatedTime, 0),
+        estimatedTime: lessons.reduce((sum: number, lesson: any) => sum + lesson.estimatedTime, 0),
         progress: lessons.length > 0 ? Math.round((completedLessons / lessons.length) * 100) : 0
       };
     });
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
       success: true,
       modules: modulesWithProgress,
       totalModules: modules.length,
-      totalLessons: modules.reduce((sum, module) => sum + (module.lessons?.length || 0), 0),
+      totalLessons: modules.reduce((sum: number, module: any) => sum + (module.lessons?.length || 0), 0),
       completedLessons: modulesWithProgress.reduce((sum, module) => sum + module.completedLessons, 0)
     });
 

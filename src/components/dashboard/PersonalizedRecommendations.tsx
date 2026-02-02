@@ -246,3 +246,5 @@ export function PersonalizedRecommendations({
     </div>
   );
 }
+
+export default PersonalizedRecommendations;

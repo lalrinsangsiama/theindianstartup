@@ -403,3 +403,5 @@ export function P9ResourceLibrary({ hasAccess }: P9ResourceLibraryProps) {
     </div>
   );
 }
+
+export default P9ResourceLibrary;

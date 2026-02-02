@@ -25,7 +25,6 @@ import {
   Trophy,
   Brain,
   Lightbulb,
-  CircleCheck,
   Circle
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -233,7 +232,7 @@ export const EnhancedLessonView: React.FC<EnhancedLessonViewProps> = ({
                   <div className="flex items-start gap-4">
                     <div className="mt-1 flex-shrink-0">
                       {completedTasks.has(item.id) ? (
-                        <CircleCheck className="w-6 h-6 text-green-600 transition-all duration-300" />
+                        <CheckCircle className="w-6 h-6 text-green-600 transition-all duration-300" />
                       ) : (
                         <Circle className="w-6 h-6 text-gray-400 group-hover:text-gray-600 transition-colors duration-300" />
                       )}

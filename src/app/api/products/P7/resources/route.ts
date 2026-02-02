@@ -61,12 +61,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Group resources by module
-    const resourcesByModule: Record<string, any[]> = {};
+    const resourcesByModule: Record<string, { moduleTitle: string; resources: any[] }> = {};
     const allResources: any[] = [];
 
-    resources?.forEach(resource => {
-      const moduleTitle = resource.module.title;
-      const moduleOrder = resource.module.orderIndex;
+    resources?.forEach((resource: any) => {
+      const resourceModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+      const moduleTitle = resourceModule?.title;
+      const moduleOrder = resourceModule?.orderIndex;
       
       if (!resourcesByModule[moduleOrder]) {
         resourcesByModule[moduleOrder] = {

@@ -114,7 +114,7 @@ export default function ProgressDemoPage() {
                 <JourneyProgress
                   currentDay={mockData.currentDay}
                   completedDays={mockData.completedDays}
-                  onDayClick={(day) => logger.info('Clicked day:', day)}
+                  onDayClick={(day) => logger.info('Clicked day:', { day })}
                 />
               </CardContent>
             </Card>
@@ -129,7 +129,7 @@ export default function ProgressDemoPage() {
                   currentDay={mockData.currentDay}
                   completedDays={mockData.completedDays}
                   variant="linear"
-                  onDayClick={(day) => logger.info('Clicked day:', day)}
+                  onDayClick={(day) => logger.info('Clicked day:', { day })}
                 />
               </CardContent>
             </Card>

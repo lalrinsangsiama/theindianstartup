@@ -288,3 +288,5 @@ export function PerformanceWidget({ isAdmin = false }: { isAdmin?: boolean }) {
     </div>
   );
 }
+
+export default PerformanceMonitor;

@@ -71,7 +71,7 @@ export function AdminCMS() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="overflow-x-auto">
             <TabsList className="inline-flex w-auto min-w-full p-1">
               <TabsTrigger value="dashboard" className="flex items-center gap-2 whitespace-nowrap">

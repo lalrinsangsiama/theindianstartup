@@ -27,7 +27,15 @@ interface EmptyStateProps {
   className?: string;
 }
 
-const emptyStateConfigs = {
+interface EmptyStateConfig {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  actionLabel: string;
+  actionHref?: string;
+}
+
+const emptyStateConfigs: Record<string, EmptyStateConfig> = {
   'no-courses': {
     icon: <BookOpen className="w-12 h-12 text-gray-400" />,
     title: "No Courses Yet",
@@ -79,13 +87,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
   className = ''
 }) => {
-  const config = type !== 'custom' ? emptyStateConfigs[type] : {};
-  
-  const finalTitle = title || config.title || "No Data Available";
-  const finalDescription = description || config.description || "There's nothing to display here yet";
-  const finalActionLabel = actionLabel || config.actionLabel;
-  const finalActionHref = actionHref || config.actionHref;
-  const finalIcon = icon || config.icon || <Package className="w-12 h-12 text-gray-400" />;
+  const config: EmptyStateConfig | null = type !== 'custom' ? emptyStateConfigs[type] : null;
+
+  const finalTitle = title || config?.title || "No Data Available";
+  const finalDescription = description || config?.description || "There's nothing to display here yet";
+  const finalActionLabel = actionLabel || config?.actionLabel;
+  const finalActionHref = actionHref || config?.actionHref;
+  const finalIcon = icon || config?.icon || <Package className="w-12 h-12 text-gray-400" />;
 
   return (
     <div className={`flex flex-col items-center justify-center py-12 px-4 ${className}`}>

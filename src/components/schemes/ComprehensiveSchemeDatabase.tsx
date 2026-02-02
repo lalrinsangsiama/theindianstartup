@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectItem } from '@/components/ui/select';
 import { 
   Search, 
   Filter, 
@@ -334,47 +334,44 @@ export default function ComprehensiveSchemeDatabase({
             
             {/* Filter Controls */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
-                  {CATEGORIES.map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category.replace('_', ' ').toUpperCase()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+              <Select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="h-11"
+              >
+                <SelectItem value="">All Categories</SelectItem>
+                {CATEGORIES.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category.replace('_', ' ').toUpperCase()}
+                  </SelectItem>
+                ))}
               </Select>
-              
-              <Select value={selectedState} onValueChange={setSelectedState}>
-                <SelectTrigger className="h-11">
-                  <SelectValue placeholder="State/All India" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All India</SelectItem>
-                  <SelectItem value="central">Central Only</SelectItem>
-                  {INDIAN_STATES.map(state => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+
+              <Select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="h-11"
+              >
+                <SelectItem value="">All India</SelectItem>
+                <SelectItem value="central">Central Only</SelectItem>
+                {INDIAN_STATES.map(state => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
+                ))}
               </Select>
-              
-              <Select value={selectedFundingRange} onValueChange={setSelectedFundingRange}>
-                <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Funding Range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Any Amount</SelectItem>
-                  {FUNDING_RANGES.map(range => (
-                    <SelectItem key={range.value} value={range.value}>
-                      {range.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+
+              <Select
+                value={selectedFundingRange}
+                onChange={(e) => setSelectedFundingRange(e.target.value)}
+                className="h-11"
+              >
+                <SelectItem value="">Any Amount</SelectItem>
+                {FUNDING_RANGES.map(range => (
+                  <SelectItem key={range.value} value={range.value}>
+                    {range.label}
+                  </SelectItem>
+                ))}
               </Select>
 
               <Button 

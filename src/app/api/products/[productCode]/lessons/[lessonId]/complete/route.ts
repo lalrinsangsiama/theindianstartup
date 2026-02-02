@@ -105,8 +105,11 @@ export async function POST(
       }, { status: 404 });
     }
 
+    // Cast lesson to any to handle Supabase's nested relation typing
+    const lessonData = lesson as any;
+
     // Verify lesson belongs to the requested product
-    if (lesson.module?.product?.code !== params.productCode) {
+    if (lessonData.module?.product?.code !== params.productCode) {
       return NextResponse.json({
         error: 'Lesson does not belong to this product'
       }, { status: 404 });
@@ -244,7 +247,7 @@ async function updateModuleProgress(
       .eq('userId', userId)
       .eq('purchaseId', purchaseId)
       .not('completedAt', 'is', null)
-      .in('lessonId', moduleLessons?.map(l => l.id) || []);
+      .in('lessonId', moduleLessons?.map((l: { id: string }) => l.id) || []);
 
     const totalLessons = moduleLessons?.length || 0;
     const completedCount = completedLessons?.length || 0;

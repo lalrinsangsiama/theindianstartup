@@ -36,9 +36,9 @@
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **Supabase** | 2.39.x | PostgreSQL database, auth, real-time |
+| **Supabase Auth** | - | Authentication (consolidated from NextAuth) |
 | **Prisma** | 5.11.x | ORM and database toolkit |
 | **Next.js API Routes** | - | Serverless API endpoints |
-| **NextAuth.js** | 4.24.x | Authentication |
 
 ### Payments & Commerce
 | Technology | Purpose |
@@ -374,7 +374,7 @@ GET    /api/health                           // System health check
 - ✅ Idempotent payment verification
 - ✅ Audit trail for all transactions
 
-#### Database (59 Migration Files)
+#### Database (61+ Migration Files)
 ```
 supabase/migrations/
 ├── 000_base_schema.sql
@@ -387,7 +387,8 @@ supabase/migrations/
 ├── 20260130_01x_core_courses.sql (P16-P19)
 ├── 20260130_02x_sector_courses.sql (P20-P30)
 ├── 20260130_030_toolkits.sql (T16-T30)
-└── 20260202_*_content_fixes.sql
+├── 20260202_*_content_fixes.sql
+└── 20260202_02x_security_audit_fixes.sql
 ```
 
 #### Frontend Pages (90+ Routes)
@@ -501,10 +502,20 @@ PGPASSWORD='[YOUR_DB_PASSWORD]' psql \
 ---
 
 **Last Updated:** 2026-02-02
-**Version:** 9.4.0 - Complete 30-Course Platform with Security Infrastructure
+**Version:** 9.5.0 - Security Hardened Platform
 **Status:** 🚀 Production Ready
 
-### Recent Updates (v9.4.0)
+### Recent Updates (v9.5.0)
+- ✅ Consolidated auth to Supabase Auth (removed NextAuth)
+- ✅ Security audit fixes across API routes and components
+- ✅ ESLint warnings resolved platform-wide
+- ✅ Hardened admin authorization to fail-closed
+- ✅ Added new components: AdminDashboard, BlogEditor, MobileNavigation, PatentSearch, PurchaseForm, SalesForecasting
+- ✅ New chart components for analytics
+- ✅ Community enhancements: CommunityPosts, EcosystemDirectory
+- ✅ 61+ database migration files deployed
+
+### Previous Updates (v9.4.0)
 - ✅ Expanded to 30 courses (P1-P30) + 18 toolkits (T13-T30)
 - ✅ Sentry error tracking integration
 - ✅ Payment fraud detection system
@@ -512,7 +523,6 @@ PGPASSWORD='[YOUR_DB_PASSWORD]' psql \
 - ✅ Idempotency for payment operations
 - ✅ Redis-based distributed rate limiting
 - ✅ Razorpay webhook handler
-- ✅ 59 database migration files deployed
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.

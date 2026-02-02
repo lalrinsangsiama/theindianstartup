@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     // If user doesn't exist in our database yet, they haven't completed onboarding
     if (!userProfile) {
-      logger.info('User profile not found in database for user:', user.id);
+      logger.info('User profile not found in database for user:', { userId: user.id });
       return NextResponse.json({
         user: null,
         hasCompletedOnboarding: false,

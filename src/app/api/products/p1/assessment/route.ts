@@ -101,10 +101,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generateRecommendations(categoryScores: any) {
+function generateRecommendations(categoryScores: Record<string, { score: number; max: number }>) {
   const recommendations = [];
-  
-  for (const [category, data] of Object.entries(categoryScores)) {
+
+  for (const [category, data] of Object.entries(categoryScores) as [string, { score: number; max: number }][]) {
     const percentage = Math.round((data.score / data.max) * 100);
     
     if (percentage < 70) {

@@ -438,7 +438,7 @@ export function P3ResourceHub() {
       </div>
 
       {/* Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs defaultValue="templates" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="templates">
             <FileText className="w-4 h-4 mr-2" />
@@ -752,3 +752,5 @@ export function P3ResourceHub() {
     </div>
   );
 }
+
+export default P3ResourceHub;

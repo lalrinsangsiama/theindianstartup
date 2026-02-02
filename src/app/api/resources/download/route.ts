@@ -65,7 +65,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check user access to the product
-    const productCode = resource.module?.product?.code;
+    const resourceModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+    const resourceProduct = Array.isArray(resourceModule?.product) ? resourceModule?.product[0] : resourceModule?.product;
+    const productCode = resourceProduct?.code;
     
     if (productCode && productCode !== 'TEMPLATES') {
       const { data: purchase } = await supabase
@@ -148,11 +150,17 @@ export async function POST(request: NextRequest) {
         });
 
       case 'view':
-        // Increment view count
+        // Increment view count - fetch current count first, then update
+        const { data: currentResource } = await supabase
+          .from('Resource')
+          .select('viewCount')
+          .eq('id', resourceId)
+          .single();
+
         const { error: viewError } = await supabase
           .from('Resource')
-          .update({ 
-            viewCount: supabase.sql`COALESCE("viewCount", 0) + 1`,
+          .update({
+            viewCount: (currentResource?.viewCount || 0) + 1,
             lastAccessedAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           })
@@ -173,11 +181,17 @@ export async function POST(request: NextRequest) {
         });
 
       case 'use':
-        // Track resource usage
+        // Track resource usage - fetch current count first, then update
+        const { data: useCountResource } = await supabase
+          .from('Resource')
+          .select('useCount')
+          .eq('id', resourceId)
+          .single();
+
         const { error: useError } = await supabase
           .from('Resource')
-          .update({ 
-            useCount: supabase.sql`COALESCE("useCount", 0) + 1`,
+          .update({
+            useCount: (useCountResource?.useCount || 0) + 1,
             lastAccessedAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           })
@@ -274,17 +288,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Check access
-    const productCode = resource.module?.product?.code;
+    const detailModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+    const detailProduct = Array.isArray(detailModule?.product) ? detailModule?.product[0] : detailModule?.product;
+    const productCode2 = detailProduct?.code;
     let hasAccess = false;
 
-    if (!productCode || productCode === 'TEMPLATES') {
+    if (!productCode2 || productCode2 === 'TEMPLATES') {
       hasAccess = true; // Free templates
     } else {
       const { data: purchase } = await supabase
         .from('Purchase')
         .select('*')
         .eq('userId', user.id)
-        .or(`productCode.eq.${productCode},productCode.eq.ALL_ACCESS`)
+        .or(`productCode.eq.${productCode2},productCode.eq.ALL_ACCESS`)
         .eq('status', 'completed')
         .gte('expiresAt', new Date().toISOString())
         .maybeSingle();
@@ -296,7 +312,7 @@ export async function GET(request: NextRequest) {
       resource: {
         ...resource,
         hasAccess,
-        productCode: productCode || 'TEMPLATES'
+        productCode: productCode2 || 'TEMPLATES'
       }
     });
 

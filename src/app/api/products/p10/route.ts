@@ -76,12 +76,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate progress statistics
-    const totalLessons = product.modules?.reduce((sum, module) => sum + (module.lessons?.length || 0), 0) || 0;
-    const completedLessons = progress?.filter(p => p.completed).length || 0;
+    const totalLessons = product.modules?.reduce((sum: number, module: any) => sum + (module.lessons?.length || 0), 0) || 0;
+    const completedLessons = progress?.filter((p: any) => p.completed).length || 0;
     const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
     // Get user's XP and achievements
-    const totalXP = progress?.reduce((sum, p) => sum + (p.xpEarned || 0), 0) || 0;
+    const totalXP = progress?.reduce((sum: number, p: any) => sum + (p.xpEarned || 0), 0) || 0;
 
     const response = {
       course: product,

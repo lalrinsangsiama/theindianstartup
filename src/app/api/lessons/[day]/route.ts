@@ -106,7 +106,7 @@ export async function GET(
     try {
       enhancedContent = parseEnhancedContent(dayNumber);
     } catch (error) {
-      logger.info('Using database content for day', dayNumber);
+      logger.info('Using database content for day', { day: dayNumber });
       enhancedContent = null;
     }
     

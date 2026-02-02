@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Tabs } from '@/components/ui/Tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import {
   Target,
   Users,
@@ -182,9 +182,14 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <Tabs items={tabItems} defaultValue="overview">
+        <Tabs defaultValue="overview">
+          <TabsList className="mb-6">
+            {tabItems.map(item => (
+              <TabsTrigger key={item.id} value={item.id}>{item.label}</TabsTrigger>
+            ))}
+          </TabsList>
           {/* Overview Tab */}
-          <div data-value="overview">
+          <TabsContent value="overview">
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               {/* What You Will Achieve */}
               <Card className="p-6">
@@ -234,10 +239,10 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                 ))}
               </div>
             </Card>
-          </div>
+          </TabsContent>
 
           {/* Modules Tab */}
-          <div data-value="modules">
+          <TabsContent value="modules">
             <div className="space-y-4">
               {product?.modules?.map((module, index) => (
                 <Card key={module.id} className="overflow-hidden">
@@ -382,10 +387,10 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                 </Card>
               )}
             </div>
-          </div>
+          </TabsContent>
 
           {/* Resources Tab */}
-          <div data-value="resources">
+          <TabsContent value="resources">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {config.resources.map((resource, index) => (
                 <Card key={index} className="p-6">
@@ -401,10 +406,10 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                 </Card>
               ))}
             </div>
-          </div>
+          </TabsContent>
 
           {/* Community Tab */}
-          <div data-value="community">
+          <TabsContent value="community">
             <Card className="p-8 text-center">
               <Users className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-4">Join Our Community</h3>
@@ -425,7 +430,7 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                 Join Community Discussions
               </Button>
             </Card>
-          </div>
+          </TabsContent>
         </Tabs>
 
         {/* CTA Section */}

@@ -578,7 +578,7 @@ const FinancialModelBuilder: React.FC = () => {
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg">
                     <div className="text-lg font-bold">
-                      {data.reduce((sum, proj) => sum + proj.revenue, 0) > data.reduce((sum, proj) => sum + Object.values(proj.costs).reduce((a, b) => a + b, 0), 0) ? 
+                      {data.reduce((sum: number, proj: any) => sum + proj.revenue, 0) > data.reduce((sum: number, proj: any) => sum + (Object.values(proj.costs) as number[]).reduce((a: number, b: number) => a + b, 0), 0) ?
                         'Profitable' : 'Growth Mode'}
                     </div>
                     <div className="text-sm text-gray-600">Status</div>

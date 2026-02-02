@@ -7,8 +7,8 @@ export async function GET() {
   const dbUrl = process.env.DATABASE_URL;
   const directUrl = process.env.DIRECT_URL;
   
-  logger.info('DATABASE_URL exists:', !!dbUrl);
-  logger.info('DIRECT_URL exists:', !!directUrl);
+  logger.info('DATABASE_URL exists:', { hasValue: !!dbUrl });
+  logger.info('DIRECT_URL exists:', { hasValue: !!directUrl });
   
   const prisma = new PrismaClient({
     log: ['query', 'error', 'warn'],

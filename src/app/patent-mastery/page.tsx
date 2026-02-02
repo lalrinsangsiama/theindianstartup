@@ -219,7 +219,7 @@ export default function PatentMasteryPage() {
 
   const handleStartLesson = (moduleId: string) => {
     // Navigate to first lesson of module
-    logger.info('Starting module:', moduleId);
+    logger.info('Starting module:', { moduleId });
   };
 
   if (loading) {

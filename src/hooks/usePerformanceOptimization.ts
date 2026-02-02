@@ -250,7 +250,7 @@ export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
       });
       
       if (Object.keys(changedProps).length) {
-        logger.info('[why-did-you-update]', name, changedProps);
+        logger.info('[why-did-you-update]', { name, changedProps });
       }
     }
     

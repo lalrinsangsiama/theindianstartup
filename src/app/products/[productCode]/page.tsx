@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { useParams, redirect } from 'next/navigation';
+import React, { useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
+import { Loader2 } from 'lucide-react';
 
 // Map product codes to their corresponding routes
 const PRODUCT_ROUTES: Record<string, string> = {
@@ -21,28 +22,46 @@ const PRODUCT_ROUTES: Record<string, string> = {
   p12: '/marketing-mastery'  // Marketing Mastery
 };
 
+const VALID_PRODUCT_CODES = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12'];
+
 export default function ProductPage() {
   const params = useParams();
+  const router = useRouter();
   const productCode = params.productCode as string;
-  
+
   // Convert to uppercase to match our product codes
   const normalizedCode = productCode?.toUpperCase();
-  
-  // Check if this is a valid product code
-  if (!normalizedCode || !['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12'].includes(normalizedCode)) {
-    redirect('/pricing');
+
+  useEffect(() => {
+    // Check if this is a valid product code
+    if (!normalizedCode || !VALID_PRODUCT_CODES.includes(normalizedCode)) {
+      router.replace('/pricing');
+      return;
+    }
+
+    // Redirect to the corresponding product route
+    const targetRoute = PRODUCT_ROUTES[productCode.toLowerCase()];
+    if (targetRoute) {
+      router.replace(targetRoute);
+    }
+  }, [normalizedCode, productCode, router]);
+
+  // Show loading while redirecting
+  if (!normalizedCode || !VALID_PRODUCT_CODES.includes(normalizedCode)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
   }
-  
-  // For P1, redirect to the existing journey implementation
-  if (normalizedCode === 'P1') {
-    redirect('/journey');
-  }
-  
-  // For other products, redirect to their respective implementations
-  // (These will need to be created as the products are built)
+
   const targetRoute = PRODUCT_ROUTES[productCode.toLowerCase()];
-  if (targetRoute && targetRoute !== '/journey') {
-    redirect(targetRoute);
+  if (targetRoute) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+      </div>
+    );
   }
   
   return (

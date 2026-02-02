@@ -80,8 +80,9 @@ export async function GET(request: NextRequest) {
     );
 
     // Calculate module progress and format response
-    const modules = (product.modules || []).map((module, moduleIndex) => {
-      const moduleLessons = (module.lessons || []).map(lesson => ({
+    // First pass: calculate progress for each module
+    const moduleData = (product.modules || []).map((module: any) => {
+      const moduleLessons = (module.lessons || []).map((lesson: any) => ({
         id: lesson.id,
         day: lesson.day,
         title: lesson.title,
@@ -93,10 +94,10 @@ export async function GET(request: NextRequest) {
         isCompleted: progressMap.get(lesson.id)?.completed || false
       }));
 
-      const completedLessons = moduleLessons.filter(l => l.isCompleted).length;
+      const completedLessons = moduleLessons.filter((l: any) => l.isCompleted).length;
       const totalLessons = moduleLessons.length;
       const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-      const totalXP = moduleLessons.reduce((sum, l) => sum + l.xpReward, 0);
+      const totalXP = moduleLessons.reduce((sum: number, l: any) => sum + l.xpReward, 0);
 
       return {
         id: module.id,
@@ -105,22 +106,27 @@ export async function GET(request: NextRequest) {
         orderIndex: module.orderIndex,
         lessons: moduleLessons,
         totalXP,
-        isUnlocked: moduleIndex === 0 || modules[moduleIndex - 1]?.progress >= 50, // Unlock when previous module is 50% complete
         isCompleted: progress === 100,
         progress
       };
     });
 
+    // Second pass: add isUnlocked based on previous module progress
+    const modules = moduleData.map((module: any, moduleIndex: number) => ({
+      ...module,
+      isUnlocked: moduleIndex === 0 || moduleData[moduleIndex - 1]?.progress >= 50
+    }));
+
     // Calculate overall course progress
-    const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
+    const totalLessons = modules.reduce((sum: number, m: any) => sum + m.lessons.length, 0);
     const completedLessons = modules.reduce(
-      (sum, m) => sum + m.lessons.filter(l => l.isCompleted).length, 
+      (sum: number, m: any) => sum + m.lessons.filter((l: { isCompleted: boolean }) => l.isCompleted).length,
       0
     );
     const courseProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
     // Calculate total XP earned
-    const totalXPEarned = lessonProgress.reduce((sum, p) => sum + (p.xpEarned || 0), 0);
+    const totalXPEarned = (lessonProgress || []).reduce((sum: number, p: any) => sum + (p.xpEarned || 0), 0);
 
     return NextResponse.json({
       success: true,
@@ -129,10 +135,10 @@ export async function GET(request: NextRequest) {
       totalXP: totalXPEarned,
       stats: {
         totalModules: modules.length,
-        completedModules: modules.filter(m => m.isCompleted).length,
+        completedModules: modules.filter((m: any) => m.isCompleted).length,
         totalLessons,
         completedLessons,
-        totalPossibleXP: modules.reduce((sum, m) => sum + m.totalXP, 0),
+        totalPossibleXP: modules.reduce((sum: number, m: any) => sum + m.totalXP, 0),
         earnedXP: totalXPEarned
       }
     });

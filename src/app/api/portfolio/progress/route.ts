@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate course progress
     const courseProgress = allCourses.map(course => {
-      const courseActivities = activities?.filter(a => 
+      const courseActivities = activities?.filter((a: any) =>
         a.activityType?.id?.startsWith(course.code.toLowerCase() + '_')
       ) || [];
       
@@ -103,12 +103,12 @@ export async function GET(request: NextRequest) {
 
     // Calculate portfolio stats
     const totalActivities = activities?.length || 0;
-    const completedActivities = activities?.filter(a => a.isCompleted).length || 0;
+    const completedActivities = activities?.filter((a: any) => a.isCompleted).length || 0;
     
     // Get unique portfolio sections
-    const portfolioSections = [...new Set(activities?.map(a => a.activityType?.portfolioSection).filter(Boolean))];
+    const portfolioSections = [...new Set(activities?.map((a: any) => a.activityType?.portfolioSection).filter(Boolean))];
     const completedSections = [...new Set(
-      activities?.filter(a => a.isCompleted).map(a => a.activityType?.portfolioSection).filter(Boolean)
+      activities?.filter((a: any) => a.isCompleted).map((a: any) => a.activityType?.portfolioSection).filter(Boolean)
     )];
 
     const portfolioScore = totalActivities > 0 
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       : 0;
 
     // Analyze strengths and improvement areas based on categories
-    const categoryStats = activities?.reduce((acc, activity) => {
+    const categoryStats = activities?.reduce((acc, activity: any) => {
       const category = activity.activityType?.category;
       if (!category) return acc;
 

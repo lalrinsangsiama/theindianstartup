@@ -18,9 +18,11 @@ import {
   RefreshCw
 } from 'lucide-react';
 
+type CategoryType = 'strategy' | 'process' | 'team' | 'technology' | 'performance';
+
 interface AssessmentQuestion {
   id: string;
-  category: string;
+  category: CategoryType;
   question: string;
   options: { value: number; label: string }[];
 }
@@ -37,13 +39,20 @@ interface AssessmentResult {
   recommendations: string[];
 }
 
+interface AssessmentSection {
+  title: string;
+  category: CategoryType;
+  icon: React.ReactNode;
+  questions: AssessmentQuestion[];
+}
+
 const SalesReadinessAssessment: React.FC = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const assessmentSections = [
+  const assessmentSections: AssessmentSection[] = [
     {
       title: 'Sales Strategy Foundation',
       category: 'strategy',
@@ -246,7 +255,7 @@ const SalesReadinessAssessment: React.FC = () => {
     }
   ];
 
-  const allQuestions = assessmentSections.flatMap(section => section.questions);
+  const allQuestions = assessmentSections.flatMap(section => section.questions) as AssessmentQuestion[];
   const currentQuestions = assessmentSections[currentSection]?.questions || [];
 
   const handleAnswerChange = (questionId: string, value: number) => {
@@ -257,7 +266,7 @@ const SalesReadinessAssessment: React.FC = () => {
   };
 
   const calculateResults = (): AssessmentResult => {
-    const categoryScores = {
+    const categoryScores: Record<CategoryType, number> = {
       strategy: 0,
       process: 0,
       team: 0,
@@ -265,7 +274,7 @@ const SalesReadinessAssessment: React.FC = () => {
       performance: 0
     };
 
-    const categoryCounts = {
+    const categoryCounts: Record<CategoryType, number> = {
       strategy: 0,
       process: 0,
       team: 0,
@@ -277,12 +286,13 @@ const SalesReadinessAssessment: React.FC = () => {
     Object.entries(answers).forEach(([questionId, score]) => {
       const question = allQuestions.find(q => q.id === questionId);
       if (question) {
-        categoryScores[question.category] += score;
-        categoryCounts[question.category]++;
+        const cat = question.category as CategoryType;
+        categoryScores[cat] += score;
+        categoryCounts[cat]++;
       }
     });
 
-    Object.keys(categoryScores).forEach(category => {
+    (Object.keys(categoryScores) as CategoryType[]).forEach(category => {
       if (categoryCounts[category] > 0) {
         categoryScores[category] = Math.round((categoryScores[category] / categoryCounts[category]) * 25);
       }

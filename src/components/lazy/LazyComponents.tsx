@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { withLazyLoading } from '@/components/performance/LazyLoader';
 
 // Lazy load heavy components to reduce initial bundle size
@@ -42,20 +43,6 @@ export const LazyLegalCertificationAssessment = withLazyLoading(
   () => import('@/components/legal/LegalCertificationAssessment')
 );
 
-export const LazyPatentSearch = withLazyLoading(
-  () => import('@/components/patent/PatentSearch').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Patent Search not available</div>
-  })),
-  {
-    loading: () => (
-      <div className="animate-pulse space-y-4">
-        <div className="h-12 bg-gray-200 rounded"></div>
-        <div className="h-32 bg-gray-200 rounded"></div>
-      </div>
-    )
-  }
-);
-
 export const LazySchemeDatabase = withLazyLoading(
   () => import('@/components/schemes/ComprehensiveSchemeDatabase')
 );
@@ -70,19 +57,6 @@ export const LazyP9ResourceLibrary = withLazyLoading(
 
 export const LazyUniversalResourceHub = withLazyLoading(
   () => import('@/components/resources/UniversalResourceHub')
-);
-
-export const LazySalesForecasting = withLazyLoading(
-  () => import('@/components/sales/SalesForecasting').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Sales Forecasting not available</div>
-  })),
-  {
-    loading: () => (
-      <div className="animate-pulse">
-        <div className="h-96 bg-gray-200 rounded-lg"></div>
-      </div>
-    )
-  }
 );
 
 // Dashboard components (load on demand)
@@ -109,9 +83,7 @@ export const LazyPortfolioRecommendations = withLazyLoading(
 
 // Admin components (rarely used)
 export const LazyAdminDashboard = withLazyLoading(
-  () => import('@/components/admin/AdminDashboard').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Admin Dashboard not available</div>
-  })),
+  () => import('@/components/admin/AdminDashboard'),
   {
     loading: () => (
       <div className="animate-pulse grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -124,35 +96,25 @@ export const LazyAdminDashboard = withLazyLoading(
 );
 
 export const LazyUserManagement = withLazyLoading(
-  () => import('@/components/admin/UserManagement').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">User Management not available</div>
-  }))
+  () => import('@/components/admin/UserManagement')
 );
 
 export const LazyAnalyticsDashboard = withLazyLoading(
-  () => import('@/components/admin/AnalyticsDashboard').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Analytics Dashboard not available</div>
-  }))
+  () => import('@/components/admin/AnalyticsDashboard')
 );
 
 // Community components
 export const LazyCommunityPosts = withLazyLoading(
-  () => import('@/components/community/CommunityPosts').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Community Posts not available</div>
-  }))
+  () => import('@/components/community/CommunityPosts')
 );
 
 export const LazyEcosystemDirectory = withLazyLoading(
-  () => import('@/components/community/EcosystemDirectory').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Ecosystem Directory not available</div>
-  }))
+  () => import('@/components/community/EcosystemDirectory')
 );
 
 // Heavy form components
 export const LazyPurchaseForm = withLazyLoading(
-  () => import('@/components/payment/PurchaseForm').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Purchase Form not available</div>
-  })),
+  () => import('@/components/payment/PurchaseForm'),
   {
     loading: () => (
       <div className="animate-pulse space-y-6">
@@ -179,9 +141,7 @@ export const LazyContactForm = withLazyLoading(
 
 // Chart/visualization components (heavy libraries)
 export const LazyPerformanceChart = withLazyLoading(
-  () => import('@/components/charts/PerformanceChart').catch(() => ({
-    default: () => <div>Charts not available</div>
-  })),
+  () => import('@/components/charts/PerformanceChart'),
   {
     loading: () => (
       <div className="animate-pulse">
@@ -193,15 +153,11 @@ export const LazyPerformanceChart = withLazyLoading(
 
 // Mobile-specific components
 export const LazyMobileDashboard = withLazyLoading(
-  () => import('@/components/dashboard/MobileDashboard').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Mobile Dashboard not available</div>
-  }))
+  () => import('@/components/dashboard/MobileDashboard')
 );
 
 export const LazyMobileNavigation = withLazyLoading(
-  () => import('@/components/mobile/MobileNavigation').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Mobile Navigation not available</div>
-  }))
+  () => import('@/components/mobile/MobileNavigation')
 );
 
 // Feature-specific components that are conditionally loaded
@@ -210,9 +166,7 @@ export const LazyReferralProgram = withLazyLoading(
 );
 
 export const LazyBlogEditor = withLazyLoading(
-  () => import('@/components/blog/BlogEditor').catch(() => ({
-    default: () => <div className="p-4 text-gray-500">Blog Editor not available</div>
-  })),
+  () => import('@/components/blog/BlogEditor'),
   {
     loading: () => (
       <div className="animate-pulse space-y-4">
@@ -225,13 +179,9 @@ export const LazyBlogEditor = withLazyLoading(
 
 // Conditional exports for development tools
 export const LazyDevTools = process.env.NODE_ENV === 'development'
-  ? withLazyLoading(() => import('@/components/dev/DevTools').catch(() => ({
-      default: () => <div className="p-4 text-gray-500">Dev Tools not available</div>
-    })))
+  ? withLazyLoading(() => import('@/components/dev/DevTools'))
   : null;
 
 export const LazyPerformanceMonitor = process.env.NODE_ENV === 'development'
-  ? withLazyLoading(() => import('@/components/performance/PerformanceMonitor').catch(() => ({
-      default: () => <div className="p-4 text-gray-500">Performance Monitor not available</div>
-    })))
+  ? withLazyLoading(() => import('@/components/performance/PerformanceMonitor'))
   : null;

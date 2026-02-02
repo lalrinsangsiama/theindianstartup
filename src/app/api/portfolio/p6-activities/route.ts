@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     // Get portfolio sections affected by P6 activities
     const portfolioSections = [...new Set(activitiesWithProgress.map(a => a.portfolioSection))];
-    const sectionProgress = {};
+    const sectionProgress: Record<string, { total: number; completed: number; percentage: number }> = {};
     
     for (const section of portfolioSections) {
       const sectionActivities = activitiesWithProgress.filter(a => a.portfolioSection === section);
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
 
 // Helper functions
 function getActivityDescription(activityName: string): string {
-  const descriptions = {
+  const descriptions: Record<string, string> = {
     'sales_strategy_development': 'Develop comprehensive sales strategy including target markets, sales channels, pricing, and performance targets.',
     'customer_acquisition_execution': 'Execute customer acquisition campaigns across multiple channels with conversion tracking and optimization.',
     'revenue_operations_setup': 'Establish revenue operations framework with forecasting, billing systems, and retention strategies.',
@@ -224,7 +224,7 @@ function getActivityDescription(activityName: string): string {
 }
 
 function getRelatedTools(activityName: string): string[] {
-  const toolMapping = {
+  const toolMapping: Record<string, string[]> = {
     'sales_strategy_development': ['Sales Readiness Assessment', 'Pricing Calculator'],
     'customer_acquisition_execution': ['Lead Generation Machine', 'Pipeline Manager'],
     'revenue_operations_setup': ['Analytics Suite', 'Customer Success Dashboard'],
@@ -236,7 +236,7 @@ function getRelatedTools(activityName: string): string[] {
 }
 
 function getEstimatedTime(activityName: string): number {
-  const timeMapping = {
+  const timeMapping: Record<string, number> = {
     'sales_strategy_development': 180,
     'customer_acquisition_execution': 150,
     'revenue_operations_setup': 120,
@@ -248,7 +248,7 @@ function getEstimatedTime(activityName: string): number {
 }
 
 function getXPReward(activityName: string): number {
-  const xpMapping = {
+  const xpMapping: Record<string, number> = {
     'sales_strategy_development': 300,
     'customer_acquisition_execution': 250,
     'revenue_operations_setup': 200,

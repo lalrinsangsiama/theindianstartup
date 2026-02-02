@@ -378,7 +378,7 @@ export default function InvestorDetailsPage() {
                             variant="link" 
                             size="sm" 
                             className="p-0 h-auto text-accent"
-                            onClick={() => window.open(investor.website, '_blank')}
+                            onClick={() => investor.website && window.open(investor.website, '_blank')}
                           >
                             Visit Website
                             <ExternalLink className="w-3 h-3 ml-1" />
@@ -397,7 +397,7 @@ export default function InvestorDetailsPage() {
                             variant="link" 
                             size="sm" 
                             className="p-0 h-auto text-accent"
-                            onClick={() => window.open(investor.linkedin, '_blank')}
+                            onClick={() => investor.linkedin && window.open(investor.linkedin, '_blank')}
                           >
                             View Profile
                             <ExternalLink className="w-3 h-3 ml-1" />
@@ -442,19 +442,19 @@ export default function InvestorDetailsPage() {
                   {/* Action Buttons */}
                   <div className="mt-6 space-y-3">
                     {investor.website && (
-                      <Button 
+                      <Button
                         className="w-full"
-                        onClick={() => window.open(investor.website, '_blank')}
+                        onClick={() => investor.website && window.open(investor.website, '_blank')}
                       >
                         <Globe className="w-4 h-4 mr-2" />
                         Visit Website
                       </Button>
                     )}
                     {investor.linkedin && (
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="w-full"
-                        onClick={() => window.open(investor.linkedin, '_blank')}
+                        onClick={() => investor.linkedin && window.open(investor.linkedin, '_blank')}
                       >
                         <Linkedin className="w-4 h-4 mr-2" />
                         LinkedIn Profile

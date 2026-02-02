@@ -14,6 +14,7 @@ interface TabsProps {
   onValueChange?: (value: string) => void;
   children: React.ReactNode;
   className?: string;
+  items?: Array<{ id: string; label: string }>; // Optional for legacy compatibility
 }
 
 export const Tabs: React.FC<TabsProps> = ({
@@ -21,7 +22,8 @@ export const Tabs: React.FC<TabsProps> = ({
   value: controlledValue,
   onValueChange,
   children,
-  className
+  className,
+  items: _items // Accept but don't use - for legacy compatibility
 }) => {
   const [internalValue, setInternalValue] = useState(defaultValue);
   const value = controlledValue ?? internalValue;

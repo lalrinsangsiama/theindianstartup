@@ -122,10 +122,10 @@ export const trackError = (error: Error | TrackableError, additionalContext?: Re
     // Also log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.group('🚨 Error Tracked');
-      logger.error('Error:', error);
-      logger.info('Category:', category);
-      logger.info('Severity:', severity);
-      logger.info('Context:', context);
+      logger.error('Error:', { error });
+      logger.info('Category:', { category });
+      logger.info('Severity:', { severity });
+      logger.info('Context:', { context });
       console.groupEnd();
     }
   } catch (trackingError) {

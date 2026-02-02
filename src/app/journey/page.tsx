@@ -517,7 +517,7 @@ export default function JourneyPage() {
           </div>
 
           {/* Main Content with Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs defaultValue="active" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full max-w-md grid-cols-3">
               <TabsTrigger value="active">Active Courses</TabsTrigger>
               <TabsTrigger value="achievements">Achievements</TabsTrigger>

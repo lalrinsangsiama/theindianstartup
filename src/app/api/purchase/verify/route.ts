@@ -73,7 +73,53 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Update purchase record
+    // First, check if purchase exists and get its current status (for idempotency)
+    const { data: existingPurchase, error: findError } = await supabase
+      .from('Purchase')
+      .select('*, product:Product(*)')
+      .eq('userId', user.id)
+      .eq('razorpayOrderId', razorpay_order_id)
+      .single();
+
+    if (findError || !existingPurchase) {
+      logger.error('Purchase not found:', findError);
+      return NextResponse.json(
+        { error: 'Purchase not found' },
+        { status: 404 }
+      );
+    }
+
+    // IDEMPOTENCY CHECK: If already completed, return success without re-processing
+    if (existingPurchase.status === 'completed') {
+      logger.info('Purchase already completed, returning cached response', {
+        purchaseId: existingPurchase.id,
+        orderId: razorpay_order_id
+      });
+
+      // Determine redirect URL based on product
+      let redirectUrl = '/dashboard';
+      if (existingPurchase.product?.code === 'P1') {
+        redirectUrl = '/journey';
+      } else if (existingPurchase.product?.code && existingPurchase.product.code !== 'ALL_ACCESS') {
+        redirectUrl = `/products/${existingPurchase.product.code.toLowerCase()}`;
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Purchase already completed',
+        purchase: {
+          id: existingPurchase.id,
+          productName: existingPurchase.product?.title,
+          productCode: existingPurchase.product?.code,
+          expiresAt: existingPurchase.expiresAt,
+          status: existingPurchase.status
+        },
+        redirectUrl,
+        coupon: null // Don't regenerate coupon on duplicate calls
+      });
+    }
+
+    // Update purchase record (only if not already completed)
     const { data: purchase, error: updateError } = await supabase
       .from('Purchase')
       .update({
@@ -83,10 +129,48 @@ export async function POST(request: NextRequest) {
       })
       .eq('userId', user.id)
       .eq('razorpayOrderId', razorpay_order_id)
+      .eq('status', 'pending') // Only update if still pending (prevents race conditions)
       .select('*, product:Product(*)')
       .single();
 
     if (updateError || !purchase) {
+      // If update failed because status changed, re-fetch and return
+      const { data: recheckPurchase } = await supabase
+        .from('Purchase')
+        .select('*, product:Product(*)')
+        .eq('userId', user.id)
+        .eq('razorpayOrderId', razorpay_order_id)
+        .single();
+
+      if (recheckPurchase?.status === 'completed') {
+        // Race condition - another request completed it
+        logger.info('Purchase completed by concurrent request', {
+          purchaseId: recheckPurchase.id,
+          orderId: razorpay_order_id
+        });
+
+        let redirectUrl = '/dashboard';
+        if (recheckPurchase.product?.code === 'P1') {
+          redirectUrl = '/journey';
+        } else if (recheckPurchase.product?.code && recheckPurchase.product.code !== 'ALL_ACCESS') {
+          redirectUrl = `/products/${recheckPurchase.product.code.toLowerCase()}`;
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: 'Purchase completed successfully',
+          purchase: {
+            id: recheckPurchase.id,
+            productName: recheckPurchase.product?.title,
+            productCode: recheckPurchase.product?.code,
+            expiresAt: recheckPurchase.expiresAt,
+            status: recheckPurchase.status
+          },
+          redirectUrl,
+          coupon: null
+        });
+      }
+
       logger.error('Update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update purchase' },

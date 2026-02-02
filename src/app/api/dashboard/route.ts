@@ -50,11 +50,11 @@ export async function GET(request: NextRequest) {
         .eq('status', 'completed')
         .gt('expiresAt', new Date().toISOString()),
 
-      // Lesson progress for XP calculation - join through Purchase since LessonProgress uses purchaseId
+      // Lesson progress for XP calculation - LessonProgress has direct userId column
       supabase
         .from('LessonProgress')
-        .select('xpEarned, purchase:Purchase!inner(userId)')
-        .eq('purchase.userId', user.id)
+        .select('xpEarned')
+        .eq('userId', user.id)
         .not('completedAt', 'is', null),
 
       // User portfolio

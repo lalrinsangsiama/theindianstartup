@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     // Get portfolio sections affected by P8 activities
     const portfolioSections = [...new Set(activitiesWithProgress.map(a => a.portfolioSection))];
-    const sectionProgress = {};
+    const sectionProgress: Record<string, { total: number; completed: number; percentage: number }> = {};
     
     for (const section of portfolioSections) {
       const sectionActivities = activitiesWithProgress.filter(a => a.portfolioSection === section);
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
 
 // Helper functions
 function getActivityDescription(activityName: string): string {
-  const descriptions = {
+  const descriptions: Record<string, string> = {
     'data_room_architecture': 'Design and implement professional data room structure with investor-grade organization, security controls, and document categorization.',
     'financial_model_development': 'Build comprehensive financial models with projections, scenario analysis, and investor-ready documentation.',
     'due_diligence_preparation': 'Prepare for investor due diligence with document audits, Q&A preparation, and red flag remediation.',
@@ -229,7 +229,7 @@ function getActivityDescription(activityName: string): string {
 }
 
 function getRelatedTools(activityName: string): string[] {
-  const toolMapping = {
+  const toolMapping: Record<string, string[]> = {
     'data_room_architecture': ['Data Room Architecture Tool', 'Analytics Suite'],
     'financial_model_development': ['Financial Model Builder', 'Cap Table Manager'],
     'due_diligence_preparation': ['Due Diligence Q&A Generator', 'Analytics Suite'],
@@ -241,7 +241,7 @@ function getRelatedTools(activityName: string): string[] {
 }
 
 function getEstimatedTime(activityName: string): number {
-  const timeMapping = {
+  const timeMapping: Record<string, number> = {
     'data_room_architecture': 240,
     'financial_model_development': 300,
     'due_diligence_preparation': 180,
@@ -253,7 +253,7 @@ function getEstimatedTime(activityName: string): number {
 }
 
 function getXPReward(activityName: string): number {
-  const xpMapping = {
+  const xpMapping: Record<string, number> = {
     'data_room_architecture': 400,
     'financial_model_development': 500,
     'due_diligence_preparation': 350,

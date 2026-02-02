@@ -914,7 +914,7 @@ export default function ResourcesPage() {
           </Card>
 
               {/* Resource Tabs */}
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <Tabs defaultValue="p1" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-8">
                   <TabsTrigger value="p1" className="flex items-center gap-2">
                     <Target className="w-4 h-4" />

@@ -343,7 +343,7 @@ const P11ResourceHub: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-3">Template Categories</h4>
               <ul className="space-y-2">
-                {resourceData.templateLibrary.categories.map((category, index) => (
+                {resourceData.templateLibrary.categories.map((category: string, index: number) => (
                   <li key={index} className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     {category}
@@ -354,7 +354,7 @@ const P11ResourceHub: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-3">Available Formats</h4>
               <div className="flex flex-wrap gap-2 mb-4">
-                {resourceData.templateLibrary.formats.map((format, index) => (
+                {resourceData.templateLibrary.formats.map((format: string, index: number) => (
                   <Badge key={index} variant="outline" className="text-xs">
                     {format}
                   </Badge>

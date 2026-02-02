@@ -368,3 +368,5 @@ export function ReferralProgram() {
     </div>
   );
 }
+
+export default ReferralProgram;

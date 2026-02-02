@@ -312,7 +312,7 @@ export default function SettingsPage() {
           )}
 
           {/* Settings Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-8 flex-wrap">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="w-4 h-4" />

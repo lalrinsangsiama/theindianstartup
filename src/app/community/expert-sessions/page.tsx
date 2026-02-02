@@ -146,7 +146,7 @@ export default function ExpertSessionsPage() {
   const handleRegister = async (sessionId: string) => {
     try {
       // In real app, call API to register
-      logger.info('Registering for session:', sessionId);
+      logger.info('Registering for session:', { sessionId });
       
       // Update local state
       setSessions(sessions.map(session =>

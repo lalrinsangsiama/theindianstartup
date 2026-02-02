@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils"
 
 const Select = React.forwardRef<
   React.ElementRef<'select'>,
-  React.ComponentPropsWithoutRef<'select'> & {
+  Omit<React.ComponentPropsWithoutRef<'select'>, 'onChange'> & {
     placeholder?: string;
     children: React.ReactNode;
+    onValueChange?: (value: string) => void;
+    onChange?: React.ChangeEventHandler<HTMLSelectElement>;
   }
->(({ className, children, placeholder, ...props }, ref) => (
+>(({ className, children, placeholder, onValueChange, onChange, ...props }, ref) => (
   <div className="relative">
     <select
       className={cn(
@@ -17,6 +19,10 @@ const Select = React.forwardRef<
         className
       )}
       ref={ref}
+      onChange={(e) => {
+        onValueChange?.(e.target.value);
+        onChange?.(e);
+      }}
       {...props}
     >
       {placeholder && <option value="">{placeholder}</option>}

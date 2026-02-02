@@ -18,7 +18,7 @@ const ALLOWED_TAGS = [
   'header', 'footer', 'main', 'aside', 'time',
 ];
 
-const ALLOWED_ATTRIBUTES = {
+const ALLOWED_ATTRIBUTES: Record<string, string[]> = {
   'a': ['href', 'title', 'target', 'rel'],
   'img': ['src', 'alt', 'title', 'width', 'height', 'loading'],
   'blockquote': ['cite'],
@@ -49,7 +49,7 @@ if (typeof window !== 'undefined') {
     // Configure DOMPurify
     DOMPurify.setConfig({
       ALLOWED_TAGS,
-      ALLOWED_ATTR: Object.keys(ALLOWED_ATTRIBUTES).reduce((acc, tag) => {
+      ALLOWED_ATTR: (Object.keys(ALLOWED_ATTRIBUTES) as Array<keyof typeof ALLOWED_ATTRIBUTES>).reduce((acc, tag) => {
         if (tag === '*') {
           return [...acc, ...ALLOWED_ATTRIBUTES[tag]];
         }

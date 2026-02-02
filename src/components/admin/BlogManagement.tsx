@@ -400,7 +400,7 @@ Different Indian states offer varying benefits for startups. This comprehensive 
     if (!confirm('Are you sure you want to delete this blog post?')) return;
     
     // Here you would call the API to delete the post
-    logger.info('Deleting post:', postId);
+    logger.info('Deleting post:', { postId });
     
     setPosts(posts.filter(p => p.id !== postId));
   };

@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     // Get portfolio sections affected by P11 activities
     const portfolioSections = [...new Set(activitiesWithProgress.map(a => a.portfolioSection))];
-    const sectionProgress = {};
+    const sectionProgress: Record<string, { total: number; completed: number; percentage: number }> = {};
     
     for (const section of portfolioSections) {
       const sectionActivities = activitiesWithProgress.filter(a => a.portfolioSection === section);
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
 
 // Helper functions
 function getActivityDescription(activityName: string): string {
-  const descriptions = {
+  const descriptions: Record<string, string> = {
     'brand_identity_development': 'Create comprehensive brand identity including logo, colors, typography, and brand guidelines using professional tools.',
     'pr_media_coverage': 'Execute PR campaigns and track media coverage, building relationships with journalists and measuring impact.',
     'thought_leadership_content': 'Develop thought leadership content strategy and build personal/company brand through strategic content creation.',
@@ -224,7 +224,7 @@ function getActivityDescription(activityName: string): string {
 }
 
 function getRelatedTools(activityName: string): string[] {
-  const toolMapping = {
+  const toolMapping: Record<string, string[]> = {
     'brand_identity_development': ['Brand Strategy Calculator', 'Brand Asset Generator'],
     'pr_media_coverage': ['PR Campaign Manager', 'Media Relationship Manager'],
     'thought_leadership_content': ['PR Campaign Manager', 'Media Relationship Manager'],
@@ -236,7 +236,7 @@ function getRelatedTools(activityName: string): string[] {
 }
 
 function getEstimatedTime(activityName: string): number {
-  const timeMapping = {
+  const timeMapping: Record<string, number> = {
     'brand_identity_development': 120,
     'pr_media_coverage': 90,
     'thought_leadership_content': 75,
@@ -248,7 +248,7 @@ function getEstimatedTime(activityName: string): number {
 }
 
 function getXPReward(activityName: string): number {
-  const xpMapping = {
+  const xpMapping: Record<string, number> = {
     'brand_identity_development': 200,
     'pr_media_coverage': 250,
     'thought_leadership_content': 180,

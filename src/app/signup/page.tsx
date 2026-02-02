@@ -159,8 +159,8 @@ export default function SignupPage() {
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
-            cart: cart.length > 0 ? JSON.stringify(cart) : undefined,
-            hasEarlyBird: hasEarlyBird ? 'true' : undefined,
+            ...(cart.length > 0 && { cart: JSON.stringify(cart) }),
+            ...(hasEarlyBird && { hasEarlyBird: 'true' }),
           }
         },
       });

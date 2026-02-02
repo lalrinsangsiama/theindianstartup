@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const { data: resources, error: resourcesError } = await supabase
       .from('Resource')
       .select('*')
-      .in('moduleId', product.modules?.map(m => m.id) || [])
+      .in('moduleId', product.modules?.map((m: any) => m.id) || [])
       .order('createdAt', { ascending: false });
 
     if (resourcesError) {
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     const { data: lessons, error: lessonsError } = await supabase
       .from('Lesson')
       .select('id, day, title, resources, metadata')
-      .in('moduleId', product.modules?.map(m => m.id) || [])
+      .in('moduleId', product.modules?.map((m: any) => m.id) || [])
       .order('day');
 
     if (lessonsError) {
@@ -192,14 +192,14 @@ export async function GET(request: NextRequest) {
       lessons: {
         count: lessons.length,
         lessonsWithResources: lessons.filter(l => l.resources && Array.isArray(l.resources) && l.resources.length > 0).length,
-        resourcesPerLesson: lessons.map(lesson => ({
+        resourcesPerLesson: lessons.map((lesson: any) => ({
           day: lesson.day,
           title: lesson.title,
           resourceCount: lesson.resources ? lesson.resources.length : 0,
-          resourceValue: lesson.resources ? 
-            lesson.resources.reduce((sum, r) => sum + (r.value || 0), 0) : 0,
-          hasInteractiveTools: lesson.resources ? 
-            lesson.resources.some(r => r.type === 'interactive_tool') : false
+          resourceValue: lesson.resources ?
+            lesson.resources.reduce((sum: number, r: any) => sum + (r.value || 0), 0) : 0,
+          hasInteractiveTools: lesson.resources ?
+            lesson.resources.some((r: any) => r.type === 'interactive_tool') : false
         }))
       },
       accessInfo: {

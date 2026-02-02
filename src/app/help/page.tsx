@@ -311,7 +311,7 @@ export default function HelpPage() {
               {quickLinks.map((link, index) => {
                 const IconComponent = link.icon;
                 return (
-                  <Card key={index} variant="interactive" className="h-full">
+                  <Card key={index} variant="outline" className="h-full hover:shadow-md transition-shadow cursor-pointer">
                     <a href={link.link} className="block h-full">
                       <CardContent className="p-6 text-center h-full flex flex-col items-center justify-center">
                         <IconComponent className="w-8 h-8 text-blue-600 mb-3" />

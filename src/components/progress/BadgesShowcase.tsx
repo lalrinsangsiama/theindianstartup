@@ -334,7 +334,7 @@ function ListBadges({
         return (
           <Card
             key={badge.id}
-            variant={badge.earned ? "default" : "bordered"}
+            variant={badge.earned ? "default" : "outline"}
             className={cn(
               "cursor-pointer transition-all hover:shadow-md",
               !badge.earned && "opacity-75"

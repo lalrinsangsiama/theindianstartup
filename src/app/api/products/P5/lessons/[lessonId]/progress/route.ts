@@ -211,7 +211,9 @@ export async function POST(
         .eq('completed', true)
         .in('lessonId', allP5Lessons?.map(l => l.id) || []);
 
-      if (allP5Progress?.length === allP5Lessons?.length && allP5Lessons?.length > 0) {
+      const totalP5Lessons = allP5Lessons?.length || 0;
+      const completedP5Lessons = allP5Progress?.length || 0;
+      if (completedP5Lessons === totalP5Lessons && totalP5Lessons > 0) {
         // Award P5 completion badge
         const { data: userBadges } = await supabase
           .from('User')

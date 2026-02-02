@@ -106,9 +106,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Filter resources based on user access
-    const accessibleResources = (allResources || []).filter(resource => {
-      const resourceProductCode = resource.module?.product?.code;
-      
+    const accessibleResources = (allResources || []).filter((resource: any) => {
+      // Handle nested relations that may be arrays
+      const resourceModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+      const resourceProduct = Array.isArray(resourceModule?.product) ? resourceModule?.product[0] : resourceModule?.product;
+      const resourceProductCode = resourceProduct?.code;
+
       // Allow free templates
       if (!resourceProductCode || resourceProductCode === 'TEMPLATES') {
         return true;
@@ -121,9 +124,11 @@ export async function GET(request: NextRequest) {
     // Apply product filter after access filtering
     let filteredResources = accessibleResources;
     if (productCode) {
-      filteredResources = accessibleResources.filter(resource => 
-        resource.module?.product?.code === productCode
-      );
+      filteredResources = accessibleResources.filter((resource: any) => {
+        const resourceModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+        const resourceProduct = Array.isArray(resourceModule?.product) ? resourceModule?.product[0] : resourceModule?.product;
+        return resourceProduct?.code === productCode;
+      });
     }
 
     // Apply category filter from metadata
@@ -138,28 +143,38 @@ export async function GET(request: NextRequest) {
     const paginatedResources = filteredResources.slice(offset, offset + limit);
 
     // Enrich resources with access information
-    const enrichedResources = paginatedResources.map(resource => ({
-      ...resource,
-      hasAccess: true, // All returned resources have access
-      productCode: resource.module?.product?.code || 'TEMPLATES',
-      productTitle: resource.module?.product?.title || 'Professional Templates',
-      moduleTitle: resource.module?.title || '',
-      category: resource.metadata?.category || 'General',
-      difficulty: resource.metadata?.difficulty || 'intermediate',
-      estimatedTime: resource.metadata?.estimatedTime || '30 minutes',
-      format: resource.metadata?.format || 'Unknown'
-    }));
+    const enrichedResources = paginatedResources.map(resource => {
+      const resModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+      const resProduct = Array.isArray(resModule?.product) ? resModule?.product[0] : resModule?.product;
+      return {
+        ...resource,
+        hasAccess: true, // All returned resources have access
+        productCode: resProduct?.code || 'TEMPLATES',
+        productTitle: resProduct?.title || 'Professional Templates',
+        moduleTitle: resModule?.title || '',
+        category: resource.metadata?.category || 'General',
+        difficulty: resource.metadata?.difficulty || 'intermediate',
+        estimatedTime: resource.metadata?.estimatedTime || '30 minutes',
+        format: resource.metadata?.format || 'Unknown'
+      };
+    });
 
     // Get aggregate data for filtering
     const allTags = [...new Set(accessibleResources.flatMap(r => r.tags || []))];
     const categories = [...new Set(accessibleResources.map(r => r.metadata?.category).filter(Boolean))];
-    const products = [...new Set(accessibleResources.map(r => ({
-      code: r.module?.product?.code || 'TEMPLATES',
-      title: r.module?.product?.title || 'Professional Templates'
-    })).map(p => JSON.stringify(p)))].map(p => JSON.parse(p));
+    const products = [...new Set(accessibleResources.map(r => {
+      const rModule = Array.isArray(r.module) ? r.module[0] : r.module;
+      const rProduct = Array.isArray(rModule?.product) ? rModule?.product[0] : rModule?.product;
+      return {
+        code: rProduct?.code || 'TEMPLATES',
+        title: rProduct?.title || 'Professional Templates'
+      };
+    }).map(p => JSON.stringify(p)))].map(p => JSON.parse(p));
 
     const resourcesByProduct = accessibleResources.reduce((acc, resource) => {
-      const productCode = resource.module?.product?.code || 'TEMPLATES';
+      const resMod = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+      const resProd = Array.isArray(resMod?.product) ? resMod?.product[0] : resMod?.product;
+      const productCode = resProd?.code || 'TEMPLATES';
       if (!acc[productCode]) {
         acc[productCode] = [];
       }
@@ -254,13 +269,15 @@ export async function POST(request: NextRequest) {
     const accessibleProducts = purchases?.map(p => p.productCode) || [];
 
     // Filter resources user has access to
-    const accessibleResourceIds = resources.filter(resource => {
-      const productCode = resource.module?.product?.code;
-      return !productCode || 
-             productCode === 'TEMPLATES' || 
-             hasAllAccess || 
-             accessibleProducts.includes(productCode);
-    }).map(r => r.id);
+    const accessibleResourceIds = resources.filter((resource: any) => {
+      const resModule = Array.isArray(resource.module) ? resource.module[0] : resource.module;
+      const resProduct = Array.isArray(resModule?.product) ? resModule?.product[0] : resModule?.product;
+      const prodCode = resProduct?.code;
+      return !prodCode ||
+             prodCode === 'TEMPLATES' ||
+             hasAllAccess ||
+             accessibleProducts.includes(prodCode);
+    }).map((r: any) => r.id);
 
     if (accessibleResourceIds.length === 0) {
       return NextResponse.json({
@@ -270,17 +287,21 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'bulk_download':
-        // Update download counts
-        const { error: downloadError } = await supabase
-          .from('Resource')
-          .update({ 
-            downloadCount: supabase.sql`COALESCE("downloadCount", 0) + 1`,
-            lastDownloadedAt: new Date().toISOString()
-          })
-          .in('id', accessibleResourceIds);
+        // Update download counts - increment each resource individually
+        for (const resourceId of accessibleResourceIds) {
+          const { data: currentResource } = await supabase
+            .from('Resource')
+            .select('downloadCount')
+            .eq('id', resourceId)
+            .single();
 
-        if (downloadError) {
-          logger.error('Error updating download counts:', downloadError);
+          await supabase
+            .from('Resource')
+            .update({
+              downloadCount: (currentResource?.downloadCount || 0) + 1,
+              lastDownloadedAt: new Date().toISOString()
+            })
+            .eq('id', resourceId);
         }
 
         // Award XP for bulk download

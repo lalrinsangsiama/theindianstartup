@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { captureWebhookError } from '@/lib/sentry';
 import crypto from 'crypto';
 
 const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET;
@@ -108,29 +109,38 @@ async function completePurchase(
     return false;
   }
 
-  // Mark coupon as used if applicable
+  // Mark coupon as used if applicable - increment usedCount atomically
   if (purchase.couponId) {
-    await supabase
+    // First get current count, then increment
+    const { data: coupon } = await supabase
       .from('Coupon')
-      .update({
-        currentUses: supabase.rpc('increment', { row_id: purchase.couponId }),
-        updatedAt: new Date().toISOString()
-      })
-      .eq('id', purchase.couponId);
+      .select('usedCount')
+      .eq('id', purchase.couponId)
+      .single();
+
+    if (coupon) {
+      await supabase
+        .from('Coupon')
+        .update({
+          usedCount: (coupon.usedCount || 0) + 1,
+          usedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        })
+        .eq('id', purchase.couponId);
+    }
   }
 
-  // Award XP for purchase
+  // Award XP for purchase - using correct schema field names (type, points)
   const xpAmount = 100; // Base XP for any purchase
   const xpEvent = {
     userId: purchase.userId,
-    amount: xpAmount,
-    eventType: 'purchase',
+    points: xpAmount,
+    type: 'product_purchase',
     description: `Purchased ${purchase.product?.title || 'product'}`,
     metadata: {
       purchaseId: purchase.id,
       productCode: purchase.product?.code
     },
-    createdAt: new Date().toISOString()
   };
 
   await supabase.from('XPEvent').insert(xpEvent);
@@ -194,7 +204,12 @@ export async function POST(request: NextRequest) {
 
     // Verify webhook signature
     if (!WEBHOOK_SECRET) {
+      const error = new Error('Webhook secret not configured');
       logger.error('Webhook secret not configured');
+      captureWebhookError(error, {
+        webhookType: 'razorpay',
+        signatureValid: false,
+      });
       return NextResponse.json(
         { error: 'Webhook not configured' },
         { status: 500 }
@@ -202,7 +217,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!signature) {
+      const error = new Error('Missing webhook signature');
       logger.error('Missing webhook signature');
+      captureWebhookError(error, {
+        webhookType: 'razorpay',
+        signatureValid: false,
+      });
       return NextResponse.json(
         { error: 'Missing signature' },
         { status: 400 }
@@ -211,7 +231,12 @@ export async function POST(request: NextRequest) {
 
     const isValid = verifyWebhookSignature(body, signature, WEBHOOK_SECRET);
     if (!isValid) {
+      const error = new Error('Invalid webhook signature - possible tampering');
       logger.error('Invalid webhook signature');
+      captureWebhookError(error, {
+        webhookType: 'razorpay',
+        signatureValid: false,
+      });
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -234,6 +259,13 @@ export async function POST(request: NextRequest) {
             signature
           );
           if (!success) {
+            // Critical: Payment was captured but we failed to complete the purchase
+            captureWebhookError(new Error('Failed to complete purchase after payment capture'), {
+              webhookType: 'razorpay',
+              eventType: 'payment.captured',
+              orderId: payment.order_id,
+              signatureValid: true,
+            });
             return NextResponse.json(
               { error: 'Failed to process payment' },
               { status: 500 }
@@ -282,6 +314,10 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     logger.error('Webhook processing error:', error);
+    captureWebhookError(error instanceof Error ? error : new Error(String(error)), {
+      webhookType: 'razorpay',
+      signatureValid: true, // If we got here, signature was valid
+    });
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

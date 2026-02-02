@@ -16,14 +16,15 @@ export async function GET(request: NextRequest) {
       return errorResponse('Unauthorized', 401);
     }
 
-    // OPTIMIZED: Run all independent queries in parallel to reduce latency
-    // This eliminates the N+1 query pattern by batching requests
+    // OPTIMIZED: Run ALL independent queries in parallel to eliminate N+1 pattern
+    // ModuleProgress is now included in the initial batch and filtered in memory
     const [
       { data: userProfile },
       { data: allProducts, error: productsError },
       { data: purchases, error: purchasesError },
       { data: lessonProgress },
-      { data: portfolio }
+      { data: portfolio },
+      { data: allModuleProgress }
     ] = await Promise.all([
       // User profile
       supabase
@@ -49,19 +50,28 @@ export async function GET(request: NextRequest) {
         .eq('status', 'completed')
         .gt('expiresAt', new Date().toISOString()),
 
-      // Lesson progress for XP calculation
+      // Lesson progress for XP calculation - join through Purchase since LessonProgress uses purchaseId
       supabase
         .from('LessonProgress')
-        .select('xpEarned')
-        .eq('userId', user.id)
-        .eq('completed', true),
+        .select('xpEarned, purchase:Purchase!inner(userId)')
+        .eq('purchase.userId', user.id)
+        .not('completedAt', 'is', null),
 
       // User portfolio
       supabase
         .from('StartupPortfolio')
         .select('*')
         .eq('userId', user.id)
-        .maybeSingle()
+        .maybeSingle(),
+
+      // ALL module progress for user (filtered in memory to avoid N+1)
+      supabase
+        .from('ModuleProgress')
+        .select(`
+          *,
+          module:Module(*, product:Product(code))
+        `)
+        .eq('userId', user.id)
     ]);
 
     if (!userProfile) {
@@ -84,22 +94,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get module progress for owned products (only if user has purchases)
-    const ownedProductCodes = purchases?.map(p => p.productCode) || [];
-    let moduleProgress: any[] = [];
+    // Filter module progress for owned products (already fetched in parallel)
+    const ownedProductCodes = purchases?.map(p => p.product?.code) || [];
 
-    if (ownedProductCodes.length > 0) {
-      const { data: progress } = await supabase
-        .from('ModuleProgress')
-        .select(`
-          *,
-          module:Module(*)
-        `)
-        .eq('userId', user.id)
-        .in('module.product.code', ownedProductCodes);
-
-      moduleProgress = progress || [];
-    }
+    // Filter pre-fetched module progress by owned product codes (O(n) in memory, not O(n) DB queries)
+    const moduleProgress = (allModuleProgress || []).filter(mp =>
+      mp.module?.product?.code && ownedProductCodes.includes(mp.module.product.code)
+    );
 
     // Calculate total XP from lessons
     const totalXPFromLessons = lessonProgress?.reduce((sum, lesson) => sum + (lesson.xpEarned || 0), 0) || 0;

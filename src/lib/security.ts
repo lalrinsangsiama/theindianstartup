@@ -101,7 +101,7 @@ export function isTrustedDomain(req: NextRequest): boolean {
 
 // Log security events
 export function logSecurityEvent(event: {
-  type: 'auth_failure' | 'rate_limit' | 'suspicious_activity' | 'admin_access';
+  type: 'auth_failure' | 'rate_limit' | 'suspicious_activity' | 'admin_access' | 'cors_violation' | 'admin_access_blocked' | 'admin_access_denied';
   ip: string;
   userAgent?: string;
   userId?: string;

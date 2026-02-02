@@ -31,7 +31,7 @@ import {
   MessageSquare,
   CheckCircle
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+// Canvas-confetti will be dynamically imported in useEffect
 
 function SuccessContent() {
   const router = useRouter();
@@ -46,37 +46,48 @@ function SuccessContent() {
   const paymentId = searchParams.get('paymentId');
 
   useEffect(() => {
-    // Enhanced confetti animation
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    // Dynamic import for canvas-confetti to avoid SSR issues
+    let interval: ReturnType<typeof setInterval>;
 
-    function randomInRange(min: number, max: number) {
-      return Math.random() * (max - min) + min;
-    }
+    import('canvas-confetti').then((confettiModule) => {
+      const confetti = confettiModule.default;
 
-    const interval: any = setInterval(function() {
-      const timeLeft = animationEnd - Date.now();
+      // Enhanced confetti animation
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
+      function randomInRange(min: number, max: number) {
+        return Math.random() * (max - min) + min;
       }
 
-      const particleCount = 50 * (timeLeft / duration);
-      
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-      });
-    }, 250);
+      interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
 
-    return () => clearInterval(interval);
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        });
+      }, 250);
+    }).catch(() => {
+      // Ignore errors if confetti fails to load
+    });
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const copyOrderId = () => {

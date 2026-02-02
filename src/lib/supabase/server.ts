@@ -35,5 +35,17 @@ export function createClient() {
   )
 }
 
-// Default export for compatibility
-export const supabase = createClient;
+// Create a getter that returns a fresh client each time
+// This allows `supabase.from(...)` syntax while ensuring fresh cookies
+export const supabase = {
+  from: (table: string) => createClient().from(table),
+  auth: {
+    getUser: () => createClient().auth.getUser(),
+    getSession: () => createClient().auth.getSession(),
+    signOut: () => createClient().auth.signOut(),
+  },
+  rpc: (fn: string, args?: Record<string, unknown>) => createClient().rpc(fn, args),
+  storage: {
+    from: (bucket: string) => createClient().storage.from(bucket),
+  },
+};

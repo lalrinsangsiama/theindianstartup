@@ -23,6 +23,9 @@ interface FilterState {
   city: string;
   stage: string;
   sector: string;
+  type?: string;
+  minTicket?: string;
+  maxTicket?: string;
 }
 
 interface InvestorFiltersProps {
@@ -47,6 +50,9 @@ const INVESTOR_CATEGORIES = [
   { value: 'accelerator', label: 'Accelerators' },
   { value: 'incubator', label: 'Incubators' }
 ];
+
+// Alias for backward compatibility
+const INVESTOR_TYPES = INVESTOR_CATEGORIES;
 
 const STAGES = [
   { value: 'pre_seed', label: 'Pre-Seed' },
@@ -110,6 +116,13 @@ export function InvestorFilters({
     });
   };
 
+  const selectTicketRange = (range: { min: string; max: string }) => {
+    onFiltersChange({
+      ...filters,
+      minTicket: range.min,
+      maxTicket: range.max
+    });
+  };
 
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
 

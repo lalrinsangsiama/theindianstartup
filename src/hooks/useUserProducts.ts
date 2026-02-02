@@ -61,10 +61,14 @@ export function useUserProducts() {
     return userProducts.some(p => p.productCode === 'ALL_ACCESS');
   };
 
-  return { 
-    userProducts, 
-    isLoading, 
+  return {
+    userProducts,
+    isLoading,
     hasProduct,
-    hasAllAccess 
+    hasAllAccess,
+    // Aliases for backward compatibility
+    hasAccess: hasProduct,
+    loading: isLoading,
+    products: userProducts
   };
 }

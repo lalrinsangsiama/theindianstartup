@@ -75,10 +75,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Find active purchase
-    const activePurchase = purchases?.find(p => 
-      p.status === 'completed' && 
-      p.isActive && 
-      new Date(p.accessEndDate) > new Date()
+    const activePurchase = purchases?.find(p =>
+      p.status === 'completed' &&
+      p.isActive &&
+      new Date(p.expiresAt) > new Date()
     );
 
     return NextResponse.json({
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
         id: activePurchase.id,
         productName: activePurchase.productName,
         purchaseDate: activePurchase.purchaseDate,
-        accessEndDate: activePurchase.accessEndDate,
+        expiresAt: activePurchase.expiresAt,
         status: activePurchase.status
       } : null,
       allPurchases: purchases?.map(p => ({
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
         status: p.status,
         createdAt: p.createdAt,
         purchaseDate: p.purchaseDate,
-        accessEndDate: p.accessEndDate
+        expiresAt: p.expiresAt
       })) || []
     });
 

@@ -1,27 +1,70 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { createFirstPurchaseCoupon, markCouponAsUsed } from '@/lib/coupon-utils';
+import { logPurchaseEvent } from '@/lib/audit-log';
 import crypto from 'crypto';
+
+// Zod schema for verify payment request validation
+const verifyPaymentSchema = z.object({
+  razorpay_order_id: z.string()
+    .min(1, 'Order ID is required')
+    .max(100, 'Order ID too long')
+    .regex(/^order_[a-zA-Z0-9]+$/, 'Invalid order ID format'),
+  razorpay_payment_id: z.string()
+    .min(1, 'Payment ID is required')
+    .max(100, 'Payment ID too long')
+    .regex(/^pay_[a-zA-Z0-9]+$/, 'Invalid payment ID format'),
+  razorpay_signature: z.string()
+    .min(1, 'Signature is required')
+    .max(256, 'Signature too long')
+    .regex(/^[a-f0-9]+$/, 'Invalid signature format'),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
-    const { 
-      razorpay_order_id, 
-      razorpay_payment_id, 
-      razorpay_signature
-    } = await request.json();
 
-    // Verify Razorpay signature
-    const body = razorpay_order_id + '|' + razorpay_payment_id;
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
+
+    const validation = verifyPaymentSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    } = validation.data;
+
+    // Verify Razorpay signature using constant-time comparison to prevent timing attacks
+    const signaturePayload = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
-      .update(body)
+      .update(signaturePayload)
       .digest('hex');
 
-    if (expectedSignature !== razorpay_signature) {
+    // Use timingSafeEqual to prevent timing attacks
+    const signatureBuffer = Buffer.from(razorpay_signature || '', 'utf8');
+    const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+
+    if (signatureBuffer.length !== expectedBuffer.length ||
+        !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)) {
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -125,6 +168,25 @@ export async function POST(request: NextRequest) {
         // Don't fail the purchase verification
       }
     }
+
+    // Get client IP for audit logging
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || request.headers.get('cf-connecting-ip')
+      || 'unknown';
+
+    // Audit log the successful purchase
+    await logPurchaseEvent(
+      'purchase_complete',
+      user.id,
+      purchase.id,
+      {
+        productCode: purchase.product?.code,
+        amount: purchase.amount,
+        paymentId: razorpay_payment_id,
+      },
+      ipAddress
+    );
 
     // Determine redirect URL based on product
     let redirectUrl = '/dashboard';

@@ -96,9 +96,9 @@ export async function hasProductAccess(userId: string, productCode: string) {
       // Direct product access
       if (product.code === productCode) return true;
       
-      // ALL_ACCESS bundle access
+      // ALL_ACCESS bundle access - grants access to all products
       if (product.code === 'ALL_ACCESS' && product.isBundle) {
-        return product.bundleProducts?.includes(productCode) || true; // ALL_ACCESS includes all products
+        return true;
       }
       
       return false;

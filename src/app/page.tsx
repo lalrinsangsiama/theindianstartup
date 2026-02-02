@@ -1224,18 +1224,21 @@ export default function HomePage() {
                 © 2024. Built for Indian founders, by Indian founders.
               </p>
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-4 md:gap-6">
               <a href="/terms" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
                 Terms
               </a>
               <a href="/privacy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
                 Privacy
               </a>
-              <a
-                href="mailto:support@theindianstartup.in"
-                className="text-sm text-gray-600 hover:text-gray-900 hover:underline"
-              >
-                support@theindianstartup.in
+              <a href="/refund-policy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+                Refunds
+              </a>
+              <a href="/shipping-delivery" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+                Shipping
+              </a>
+              <a href="/contact" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+                Contact
               </a>
             </div>
           </div>

@@ -8,20 +8,61 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient();
-    
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return errorResponse('Unauthorized', 401);
     }
 
-    // Get user profile
-    const { data: userProfile, error: profileError } = await supabase
-      .from('User')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
+    // OPTIMIZED: Run all independent queries in parallel to reduce latency
+    // This eliminates the N+1 query pattern by batching requests
+    const [
+      { data: userProfile },
+      { data: allProducts, error: productsError },
+      { data: purchases, error: purchasesError },
+      { data: lessonProgress },
+      { data: portfolio }
+    ] = await Promise.all([
+      // User profile
+      supabase
+        .from('User')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle(),
+
+      // All products
+      supabase
+        .from('Product')
+        .select('*')
+        .order('code'),
+
+      // User's active purchases with product details
+      supabase
+        .from('Purchase')
+        .select(`
+          *,
+          product:Product(*)
+        `)
+        .eq('userId', user.id)
+        .eq('status', 'completed')
+        .gt('expiresAt', new Date().toISOString()),
+
+      // Lesson progress for XP calculation
+      supabase
+        .from('LessonProgress')
+        .select('xpEarned')
+        .eq('userId', user.id)
+        .eq('completed', true),
+
+      // User portfolio
+      supabase
+        .from('StartupPortfolio')
+        .select('*')
+        .eq('userId', user.id)
+        .maybeSingle()
+    ]);
 
     if (!userProfile) {
       return successResponse({
@@ -31,26 +72,9 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get all products from database
-    const { data: allProducts, error: productsError } = await supabase
-      .from('Product')
-      .select('*')
-      .order('code');
-
     if (productsError) {
       return errorResponse('Failed to fetch products', 500, productsError);
     }
-
-    // Get user's purchases
-    const { data: purchases, error: purchasesError } = await supabase
-      .from('Purchase')
-      .select(`
-        *,
-        product:Product(*)
-      `)
-      .eq('userId', user.id)
-      .eq('status', 'completed')
-      .gt('expiresAt', new Date().toISOString());
 
     if (purchasesError) {
       logger.error('Purchases fetch error:', purchasesError);
@@ -60,10 +84,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get module progress for owned products
+    // Get module progress for owned products (only if user has purchases)
     const ownedProductCodes = purchases?.map(p => p.productCode) || [];
-    let moduleProgress = [];
-    
+    let moduleProgress: any[] = [];
+
     if (ownedProductCodes.length > 0) {
       const { data: progress } = await supabase
         .from('ModuleProgress')
@@ -73,36 +97,31 @@ export async function GET(request: NextRequest) {
         `)
         .eq('userId', user.id)
         .in('module.product.code', ownedProductCodes);
-      
+
       moduleProgress = progress || [];
     }
 
-    // Get lesson progress for XP calculation
-    const { data: lessonProgress } = await supabase
-      .from('LessonProgress')
-      .select('xpEarned')
-      .eq('userId', user.id)
-      .eq('completed', true);
-
     // Calculate total XP from lessons
     const totalXPFromLessons = lessonProgress?.reduce((sum, lesson) => sum + (lesson.xpEarned || 0), 0) || 0;
-    
-    // Update user XP if needed
+
+    // Update user XP if needed (fire-and-forget to not block response)
     if (totalXPFromLessons !== userProfile.totalXP) {
-      await supabase
+      supabase
         .from('User')
         .update({ totalXP: totalXPFromLessons })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .then(() => {})
+        .catch(err => logger.error('Failed to update user XP:', err));
       userProfile.totalXP = totalXPFromLessons;
     }
 
     // Build owned products array with real progress
     const ownedProducts = purchases?.map(purchase => {
       const product = purchase.product;
-      const productProgress = moduleProgress.filter(mp => 
+      const productProgress = moduleProgress.filter(mp =>
         mp.module?.productId === product?.id
       );
-      
+
       const completedModules = productProgress.filter(mp => mp.completedAt).length;
       const totalModules = productProgress.length || product?.modules || 0;
       const progress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
@@ -127,7 +146,7 @@ export async function GET(request: NextRequest) {
     // Find recommended next product
     const ownedCodes = ownedProducts.map(p => p.code);
     const unownedProducts = allProducts?.filter(p => !ownedCodes.includes(p.code)) || [];
-    
+
     // Recommend P1 first if not owned, then sequential products
     let recommendedProduct = null;
     if (!ownedCodes.includes('P1')) {
@@ -142,13 +161,6 @@ export async function GET(request: NextRequest) {
         }
       }
     }
-
-    // Get user portfolio
-    const { data: portfolio } = await supabase
-      .from('StartupPortfolio')
-      .select('*')
-      .eq('userId', user.id)
-      .maybeSingle();
 
     // Build all products array with access status
     const allProductsWithAccess = allProducts?.map(product => ({
@@ -174,9 +186,9 @@ export async function GET(request: NextRequest) {
       return acc + Math.round((p.estimatedDays || 30) * progress);
     }, 0);
 
-    const skillsMapping = {
+    const skillsMapping: Record<string, string> = {
       'P1': 'Launch Strategy',
-      'P2': 'Legal Compliance', 
+      'P2': 'Legal Compliance',
       'P3': 'Funding Mastery',
       'P4': 'Financial Management',
       'P5': 'Legal Framework',
@@ -191,7 +203,7 @@ export async function GET(request: NextRequest) {
 
     const skillsAcquired = ownedProducts
       .filter(p => p.progress >= 50) // Only count skills where 50%+ progress
-      .map(p => skillsMapping[p.code as keyof typeof skillsMapping])
+      .map(p => skillsMapping[p.code as string])
       .filter(Boolean);
 
     // Calculate user level based on XP
@@ -214,7 +226,7 @@ export async function GET(request: NextRequest) {
       totalInvestedTime,
       skillsAcquired,
       totalProductsOwned: ownedProducts.length,
-      averageProgress: ownedProducts.length > 0 
+      averageProgress: ownedProducts.length > 0
         ? Math.round(ownedProducts.reduce((acc, p) => acc + p.progress, 0) / ownedProducts.length)
         : 0,
       recommendedProduct: recommendedProduct ? {
@@ -238,7 +250,7 @@ export async function GET(request: NextRequest) {
 
     const response = NextResponse.json(dashboardData);
     response.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
-    
+
     return response;
   } catch (error) {
     logger.error('Dashboard API error:', error);

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Typography';
 import { X, Trophy, Star } from 'lucide-react';
-import confetti from 'canvas-confetti';
+// Canvas-confetti will be dynamically imported when needed
 
 interface Achievement {
   id: string;
@@ -31,14 +31,17 @@ export function AchievementNotification({ achievement, onClose }: AchievementNot
   useEffect(() => {
     if (achievement) {
       setShow(true);
-      
-      // Trigger confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#FFD700', '#FFA500', '#FF6347']
-      });
+
+      // Dynamic import and trigger confetti
+      import('canvas-confetti').then((confettiModule) => {
+        const confetti = confettiModule.default;
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FFA500', '#FF6347']
+        });
+      }).catch(() => {});
 
       // Auto hide after 5 seconds
       const timer = setTimeout(() => {

@@ -145,6 +145,9 @@ export default function DailyLessonPage() {
     fetchLessonData();
   }, [day, fetchLessonData]);
 
+  // Compute whether all tasks are completed
+  const allTasksCompleted = tasks.length > 0 && tasks.every(task => task.completed);
+
   const handleTaskToggle = (taskId: string) => {
     setTasks(prevTasks => 
       prevTasks.map(task => 

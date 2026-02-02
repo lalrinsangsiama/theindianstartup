@@ -103,10 +103,17 @@ export async function POST(
 
     // Update user's total XP if lesson was completed
     if (xpEarned > 0) {
+      // Get current XP first
+      const { data: currentUser } = await supabase
+        .from('User')
+        .select('totalXP')
+        .eq('id', user.id)
+        .single();
+
       const { error: xpError } = await supabase
         .from('User')
         .update({
-          totalXP: supabase.raw('COALESCE("totalXP", 0) + ?', [xpEarned])
+          totalXP: (currentUser?.totalXP || 0) + xpEarned
         })
         .eq('id', user.id);
 
@@ -215,16 +222,19 @@ export async function POST(
         const badges = userBadges?.badges || [];
         if (!badges.includes('p5_legal_master')) {
           badges.push('p5_legal_master');
-          await supabase
-            .from('User')
-            .update({ badges })
-            .eq('id', user.id);
 
-          // Award bonus XP for course completion
+          // Get current XP for bonus award
+          const { data: currentUserData } = await supabase
+            .from('User')
+            .select('totalXP')
+            .eq('id', user.id)
+            .single();
+
           await supabase
             .from('User')
             .update({
-              totalXP: supabase.raw('COALESCE("totalXP", 0) + ?', [500])
+              badges,
+              totalXP: (currentUserData?.totalXP || 0) + 500
             })
             .eq('id', user.id);
 

@@ -25,23 +25,30 @@ export async function POST(request: NextRequest) {
     const bonusXp = percentageScore >= 80 ? 100 : percentageScore >= 60 ? 50 : 0;
     const totalXp = xpReward + bonusXp;
 
-    // Update user XP
+    // Get current user data first
+    const { data: userData } = await supabase
+      .from('User')
+      .select('totalXP, metadata')
+      .eq('id', user.id)
+      .single();
+
+    const currentXP = userData?.totalXP || 0;
+    const currentMetadata = userData?.metadata || {};
+    const readinessLevel = percentageScore >= 80 ? 'high' :
+                          percentageScore >= 60 ? 'medium' :
+                          percentageScore >= 40 ? 'developing' : 'early';
+
+    // Update user XP and metadata
     await supabase
       .from('User')
-      .update({ 
-        totalXP: supabase.raw(`"totalXP" + ${totalXp}`),
-        metadata: supabase.raw(`
-          COALESCE(metadata, '{}'::jsonb) || 
-          jsonb_build_object(
-            'assessmentScore', ${percentageScore},
-            'assessmentDate', '${new Date().toISOString()}',
-            'readinessLevel', '${
-              percentageScore >= 80 ? 'high' : 
-              percentageScore >= 60 ? 'medium' : 
-              percentageScore >= 40 ? 'developing' : 'early'
-            }'
-          )
-        `)
+      .update({
+        totalXP: currentXP + totalXp,
+        metadata: {
+          ...currentMetadata,
+          assessmentScore: percentageScore,
+          assessmentDate: new Date().toISOString(),
+          readinessLevel
+        }
       })
       .eq('id', user.id);
 

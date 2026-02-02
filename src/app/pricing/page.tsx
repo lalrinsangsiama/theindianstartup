@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { BUNDLES } from '@/lib/bundles';
+import { PRODUCTS } from '@/lib/products-catalog';
 
 declare global {
   interface Window {
@@ -630,7 +631,7 @@ export default function PricingPage() {
       ]
     },
     {
-      code: 'p12_marketing',
+      code: 'P12',
       title: 'Marketing Mastery - Complete Growth Engine',
       description: 'Build data-driven marketing machine generating predictable growth with expert guidance from Flipkart, Zomato, and Nykaa leadership teams',
       price: 9999,
@@ -657,11 +658,98 @@ export default function PricingPage() {
         'Industry-recognized certifications and career acceleration',
         'Complete marketing technology stack mastery'
       ]
+    },
+    {
+      code: 'P13',
+      title: 'Food Processing Mastery',
+      description: 'Complete guide to food processing business - FSSAI compliance, manufacturing setup, quality certifications, cold chain, government subsidies',
+      price: 7999,
+      duration: '50 days',
+      modules: 10,
+      isAvailable: true,
+      category: 'Sector',
+      icon: Target,
+      features: [
+        'Complete FSSAI licensing system',
+        'Manufacturing setup and licensing',
+        'ISO 22000 and HACCP certifications',
+        'Cold chain infrastructure planning',
+        'PMFME, PMKSY, PLI subsidies access',
+        'APEDA registration and exports',
+        'Packaging and labeling compliance',
+        'Distribution channel strategies'
+      ],
+      outcomes: [
+        'Complete FSSAI compliance system',
+        'Manufacturing facility ready',
+        'Quality certifications achieved',
+        'Government subsidies accessed',
+        'Export documentation complete',
+        'Profitable food processing business'
+      ]
+    },
+    {
+      code: 'P14',
+      title: 'Impact & CSR Mastery',
+      description: 'Master India\'s ₹25,000 Cr CSR ecosystem with Schedule VII compliance, social enterprise registration, and corporate partnerships',
+      price: 8999,
+      duration: '55 days',
+      modules: 11,
+      isAvailable: true,
+      category: 'Sector',
+      icon: Users,
+      features: [
+        'Schedule VII compliance mastery',
+        'Section 8/Trust/Society registration',
+        'IRIS+ impact measurement framework',
+        'CSR proposal and pitch templates',
+        'Corporate partnership development',
+        'SROI calculation methodology',
+        'ESG integration and BRSR support',
+        'Impact investing navigation'
+      ],
+      outcomes: [
+        'Compliant CSR engagement capability',
+        'Registered social enterprise',
+        'Impact measurement system',
+        'Active corporate partnerships',
+        'ESG reporting capability',
+        'Sustainable funding pipeline'
+      ]
+    },
+    {
+      code: 'P15',
+      title: 'Carbon Credits & Sustainability',
+      description: 'Build a carbon business with GHG Protocol accounting, Verra/Gold Standard certifications, trading, and Net Zero strategies',
+      price: 9999,
+      duration: '60 days',
+      modules: 12,
+      isAvailable: true,
+      category: 'Sector',
+      icon: TrendingUp,
+      features: [
+        'GHG Protocol carbon accounting',
+        'Verra VCS project development',
+        'Gold Standard certification',
+        'Carbon credit trading mastery',
+        'Green finance and climate funds',
+        'Net Zero strategy with SBTi',
+        'SEBI BRSR compliance',
+        'Carbon business building'
+      ],
+      outcomes: [
+        'Professional carbon accounting capability',
+        'Carbon credit project development',
+        'Trading and ERPA structuring skills',
+        'Green finance access',
+        'Net Zero strategy expertise',
+        'Sustainable consulting business'
+      ]
     }
   ];
 
-  const bundles = Object.values(BUNDLES).filter(bundle => 
-    ['FOUNDATION', 'GROWTH_ENGINE', 'COMPLIANCE_MASTER', 'FUNDING_READY', 'MARKET_DOMINATION', 'ALL_ACCESS'].includes(
+  const bundles = Object.values(BUNDLES).filter(bundle =>
+    ['FOUNDATION', 'GROWTH_ENGINE', 'COMPLIANCE_MASTER', 'FUNDING_READY', 'MARKET_DOMINATION', 'SECTOR', 'ALL_ACCESS'].includes(
       bundle.id.replace('bundle_', '').toUpperCase()
     )
   ).map(bundle => ({
@@ -1216,6 +1304,36 @@ export default function PricingPage() {
         </div>
       </div>
 
+      {/* Legal Footer */}
+      <div className="border-t border-gray-200 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left">
+              <Text size="sm" color="muted">
+                By purchasing, you agree to our policies. All products are digital with instant access.
+              </Text>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link href="/terms" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
+                Terms
+              </Link>
+              <Link href="/privacy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
+                Privacy
+              </Link>
+              <Link href="/refund-policy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
+                Refund Policy
+              </Link>
+              <Link href="/shipping-delivery" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
+                Shipping
+              </Link>
+              <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
+                Contact
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Multi-Product Cart Checkout Section */}
       {(() => {
         if (typeof window === 'undefined') return null;
@@ -1225,6 +1343,7 @@ export default function PricingPage() {
         const dashboardCart = fromCart ? JSON.parse(localStorage.getItem('dashboardCart') || '[]') : [];
         
         if (dashboardCart.length > 1) {
+          const selectedProducts: string[] = dashboardCart.map((item: any) => item.productCode || item.code).filter(Boolean);
           const total = dashboardCart.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
           const allAccessPrice = 54999;
           const savings = total - allAccessPrice;
@@ -1275,7 +1394,7 @@ export default function PricingPage() {
                             // Multi-product checkout - redirect to bundle for better value
                             const bundlePrice = 54999;
                             const selectedPrice = selectedProducts.reduce((sum, code) => {
-                              const product = PRODUCTS.find(p => p.code === code);
+                              const product = PRODUCTS[code];
                               return sum + (product?.price || 0);
                             }, 0);
                             
@@ -1284,7 +1403,8 @@ export default function PricingPage() {
                               alert(`Selected products cost ₹${selectedPrice.toLocaleString()}. The All-Access bundle at ₹${bundlePrice.toLocaleString()} gives you all 12 products - better value!`);
                             } else {
                               // For now, direct to individual purchases
-                              const firstProduct = PRODUCTS.find(p => p.code === selectedProducts[0]);
+                              const firstProductCode = selectedProducts[0];
+                              const firstProduct = firstProductCode ? PRODUCTS[firstProductCode] : undefined;
                               if (firstProduct) {
                                 router.push(`/purchase?product=${firstProduct.code}`);
                               }

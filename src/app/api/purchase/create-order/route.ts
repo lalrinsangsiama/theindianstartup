@@ -1,10 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { validateCoupon } from '@/lib/coupon-utils';
+import { checkIdempotency, storeIdempotencyResponse, checkPendingOrder } from '@/lib/idempotency';
+import { checkPaymentFraud } from '@/lib/fraud-detection';
+import { logPurchaseEvent } from '@/lib/audit-log';
 import Razorpay from 'razorpay';
 import { PRODUCTS } from '@/lib/product-access';
+
+// Zod schema for create order request validation
+const createOrderSchema = z.object({
+  productType: z.string()
+    .min(1, 'Product type is required')
+    .max(20, 'Product type too long')
+    .regex(/^[A-Z0-9_]+$/, 'Invalid product type format'),
+  amount: z.number()
+    .int('Amount must be an integer')
+    .positive('Amount must be positive')
+    .max(10000000, 'Amount exceeds maximum'), // Max 1 lakh INR in paise
+  couponCode: z.string()
+    .max(50, 'Coupon code too long')
+    .regex(/^[A-Z0-9_-]*$/, 'Invalid coupon format')
+    .optional()
+    .nullable(),
+});
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -14,7 +35,27 @@ const razorpay = new Razorpay({
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth();
-    const { productType, amount, couponCode } = await request.json();
+
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
+
+    const validation = createOrderSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { productType, amount, couponCode } = validation.data;
 
     // Validate product exists
     const product = PRODUCTS[productType];
@@ -23,6 +64,69 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid product type' },
         { status: 400 }
       );
+    }
+
+    // Check for idempotency (prevent rapid double-clicks)
+    const idempotencyCheck = await checkIdempotency(user.id, 'create-order', {
+      productType,
+      amount,
+      couponCode
+    });
+
+    if (!idempotencyCheck.isNew && idempotencyCheck.existingResponse) {
+      logger.info('Returning cached idempotent response', {
+        userId: user.id,
+        productType
+      });
+      return NextResponse.json(idempotencyCheck.existingResponse);
+    }
+
+    // Check for existing pending orders for this product
+    const pendingCheck = await checkPendingOrder(user.id, productType);
+    if (pendingCheck.hasPending && pendingCheck.pendingOrder) {
+      logger.info('Returning existing pending order', {
+        userId: user.id,
+        productType
+      });
+      return NextResponse.json(pendingCheck.pendingOrder);
+    }
+
+    // Get client IP for fraud detection
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || request.headers.get('cf-connecting-ip')
+      || 'unknown';
+
+    // Fraud detection check
+    const fraudCheck = await checkPaymentFraud({
+      userId: user.id,
+      email: user.email || '',
+      ipAddress,
+      amount,
+      productCode: productType,
+      userAgent: request.headers.get('user-agent') || undefined,
+    });
+
+    if (!fraudCheck.allowed) {
+      logger.warn('Payment blocked by fraud detection', {
+        userId: user.id,
+        riskScore: fraudCheck.riskScore,
+        reasons: fraudCheck.reasons,
+      });
+      return NextResponse.json(
+        { error: 'Payment could not be processed. Please contact support.' },
+        { status: 403 }
+      );
+    }
+
+    // Log if payment requires manual review
+    if (fraudCheck.requiresReview) {
+      logger.info('Payment flagged for review', {
+        userId: user.id,
+        riskScore: fraudCheck.riskScore,
+        riskLevel: fraudCheck.riskLevel,
+        reasons: fraudCheck.reasons,
+      });
     }
 
     // Validate coupon if provided
@@ -168,13 +272,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
+    const responseData = {
       orderId: razorpayOrder.id,
       amount: amount,
       currency: 'INR',
       productName: product.title,
       purchaseId: purchase.id
-    });
+    };
+
+    // Store idempotency response for future duplicate requests
+    if (idempotencyCheck.key) {
+      await storeIdempotencyResponse(idempotencyCheck.key, responseData);
+    }
+
+    // Audit log the purchase creation
+    await logPurchaseEvent(
+      'purchase_create',
+      user.id,
+      purchase.id,
+      {
+        productCode: productType,
+        amount: finalAmount,
+        orderId: razorpayOrder.id,
+        fraudRiskLevel: fraudCheck.riskLevel,
+        fraudRiskScore: fraudCheck.riskScore,
+      },
+      ipAddress
+    );
+
+    return NextResponse.json(responseData);
 
   } catch (error) {
     logger.error('Create order error:', error);

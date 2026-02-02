@@ -11,7 +11,7 @@ import { CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { BadgesShowcase } from '@/components/progress';
-import confetti from 'canvas-confetti';
+// Canvas-confetti will be dynamically imported when needed
 import { 
   Trophy,
   Zap,
@@ -34,13 +34,16 @@ export default function LessonCompletePage() {
 
   useEffect(() => {
     if (showConfetti) {
-      // Trigger confetti animation
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      
+      // Dynamic import and trigger confetti animation
+      import('canvas-confetti').then((confettiModule) => {
+        const confetti = confettiModule.default;
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }).catch(() => {});
+
       // Stop confetti after 3 seconds
       setTimeout(() => setShowConfetti(false), 3000);
     }

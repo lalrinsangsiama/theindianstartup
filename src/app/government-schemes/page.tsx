@@ -63,7 +63,7 @@ export default function StateSchemeMapPage() {
   useEffect(() => {
     const fetchP7Progress = async () => {
       try {
-        const response = await fetch('/api/products/P7/progress', {
+        const response = await fetch('/api/products/p7/progress', {
           method: 'GET',
           credentials: 'include'
         });

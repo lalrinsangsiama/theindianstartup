@@ -188,11 +188,18 @@ async function completeLesson(userId: string, purchaseId: string, data: any) {
       return NextResponse.json({ error: 'Failed to save progress' }, { status: 500 });
     }
 
-    // Update user's total XP
+    // Update user's total XP using RPC or direct query
+    // First get current XP, then update
+    const { data: userData } = await supabase
+      .from('User')
+      .select('totalXP')
+      .eq('id', userId)
+      .single();
+
     const { error: userError } = await supabase
       .from('User')
       .update({
-        totalXP: supabase.raw(`"totalXP" + ${xpEarned || 0}`),
+        totalXP: (userData?.totalXP || 0) + (xpEarned || 0),
         updatedAt: new Date().toISOString()
       })
       .eq('id', userId);
@@ -326,12 +333,18 @@ async function addPatentApplication(userId: string, data: any) {
       return NextResponse.json({ error: 'Failed to add application' }, { status: 500 });
     }
 
-    // Update portfolio stats
+    // Update portfolio stats - get current values first
+    const { data: portfolioData } = await supabase
+      .from('PatentPortfolio')
+      .select('totalPatents, pendingApplications')
+      .eq('id', portfolioId)
+      .single();
+
     const { error: portfolioError } = await supabase
       .from('PatentPortfolio')
       .update({
-        totalPatents: supabase.raw('"totalPatents" + 1'),
-        pendingApplications: supabase.raw('"pendingApplications" + 1'),
+        totalPatents: (portfolioData?.totalPatents || 0) + 1,
+        pendingApplications: (portfolioData?.pendingApplications || 0) + 1,
         updatedAt: new Date().toISOString()
       })
       .eq('id', portfolioId);

@@ -62,7 +62,7 @@ export default function P7ResourcesPage() {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const response = await fetch('/api/products/P7/resources', {
+        const response = await fetch('/api/products/p7/resources', {
           credentials: 'include'
         });
 

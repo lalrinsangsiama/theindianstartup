@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 interface EligibilityRequest {
   sector: string;
@@ -19,6 +21,8 @@ interface EligibilityRequest {
 }
 
 export async function POST(request: NextRequest) {
+  const supabase = getSupabaseClient();
+
   try {
     const eligibilityData: EligibilityRequest = await request.json();
 

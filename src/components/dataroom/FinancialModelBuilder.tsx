@@ -142,11 +142,14 @@ const FinancialModelBuilder: React.FC = () => {
       const totalOpex = costs.sales + costs.marketing + costs.rd + costs.admin;
       const netIncome = grossProfit - totalOpex;
 
+      // Check if any revenue stream is recurring
+      const hasRecurringStream = revenueStreams.some(s => s.type === 'recurring');
+
       const metrics = {
         grossMargin: (grossProfit / totalRevenue) * 100,
         burnRate: totalOpex / 12,
         runway: netIncome < 0 ? Math.abs(netIncome) / (totalOpex / 12) : 0,
-        ltv: stream.type === 'recurring' ? calculateLTV(totalRevenue / revenueStreams.length) : 0,
+        ltv: hasRecurringStream ? calculateLTV(totalRevenue / revenueStreams.length) : 0,
         cac: costs.sales + costs.marketing > 0 ? (costs.sales + costs.marketing) / (totalRevenue / 1000) : 0
       };
 

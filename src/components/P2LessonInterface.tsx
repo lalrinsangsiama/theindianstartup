@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { P2ActivityCapture } from '@/components/portfolio/P2ActivityCapture';
 import { useRouter } from 'next/navigation';
+import { sanitizeHTML } from '@/lib/sanitize';
 
 interface P2LessonInterfaceProps {
   lessonId: string;
@@ -248,8 +249,8 @@ Rahul ran his consultancy as sole proprietorship. When a client sued for ₹15 l
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm">
-                    <div dangerouslySetInnerHTML={{ 
-                      __html: lessonData.content.caseStudy.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+                    <div dangerouslySetInnerHTML={{
+                      __html: sanitizeHTML(lessonData.content.caseStudy.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'))
                     }} />
                   </div>
                 </CardContent>

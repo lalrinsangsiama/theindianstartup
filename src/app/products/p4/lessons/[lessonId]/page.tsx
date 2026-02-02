@@ -1,14 +1,46 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import P4ActivityCapture, { 
-  FinancialHealthAssessment, 
-  FinancialModelBuilder, 
-  GSTComplianceTracker, 
-  ImplementationChecklist 
+import P4ActivityCapture, {
+  FinancialHealthAssessment,
+  FinancialModelBuilder,
+  GSTComplianceTracker,
+  ImplementationChecklist
 } from '@/components/P4ActivityCapture';
+import { sanitizeHTML } from '@/lib/sanitize';
+
+// Type definitions for P4 lessons
+interface ActionItem {
+  title: string;
+  duration: string;
+  description: string;
+}
+
+interface Section {
+  title: string;
+  content: string;
+}
+
+interface LessonContent {
+  brief: string;
+  objectives?: string[];
+  keyInsights?: string[];
+  sections?: Section[];
+  actionItems?: ActionItem[];
+  resources?: string[];
+}
+
+interface P4Lesson {
+  id: string;
+  title: string;
+  module: string;
+  dayNumber: number;
+  estimatedTime: string;
+  xpReward: number;
+  content: LessonContent;
+}
 
 // P4 Course Lessons Data
-const p4Lessons = {
+const p4Lessons: Record<string, P4Lesson> = {
   "day-1": {
     id: "day-1",
     title: "CFO Mindset Transformation",
@@ -373,11 +405,11 @@ export default function P4LessonPage({ params }: Props) {
                   <h2 className="text-xl font-bold">{section.title}</h2>
                 </div>
                 <div className="p-6">
-                  <div 
+                  <div
                     className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ 
-                      __html: section.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    }} 
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeHTML(section.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'))
+                    }}
                   />
                 </div>
               </div>

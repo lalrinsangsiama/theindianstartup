@@ -11,10 +11,10 @@ import { Button } from '@/components/ui/Button';
 import { Heading, Text } from '@/components/ui/Typography';
 import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { 
-  MapPin, 
-  Clock, 
-  Award, 
+import {
+  MapPin,
+  Clock,
+  Award,
   CheckCircle,
   ArrowLeft,
   ArrowRight,
@@ -23,6 +23,7 @@ import {
   Download,
   Play
 } from 'lucide-react';
+import { sanitizeHTML } from '@/lib/sanitize';
 
 interface LessonData {
   id: string;
@@ -58,7 +59,7 @@ export default function P7LessonPage() {
   useEffect(() => {
     const fetchLesson = async () => {
       try {
-        const response = await fetch(`/api/products/P7/lessons/${lessonId}`, {
+        const response = await fetch(`/api/products/p7/lessons/${lessonId}`, {
           credentials: 'include'
         });
 
@@ -85,7 +86,7 @@ export default function P7LessonPage() {
 
     setCompleting(true);
     try {
-      const response = await fetch(`/api/products/P7/lessons/${lessonId}`, {
+      const response = await fetch(`/api/products/p7/lessons/${lessonId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -212,7 +213,7 @@ export default function P7LessonPage() {
           {/* Lesson Content */}
           <Card className="p-6">
             <div className="prose max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: lesson.briefContent }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(lesson.briefContent || '', { allowLinks: true, allowStyles: true }) }} />
             </div>
           </Card>
 

@@ -171,23 +171,198 @@ export const BUNDLES: Record<string, Bundle> = {
     id: "bundle_all_access",
     name: "All-Access Mastermind",
     tagline: "Complete Founder Education",
-    products: ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"],
-    price: 54999,
-    originalPrice: 80985,
-    savings: 25986,
-    savingsPercent: 32,
+    products: ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12", "P13", "P14", "P15", "P16", "P17", "P18", "P19", "P20", "P21", "P22", "P23", "P24", "P25", "P26", "P27", "P28", "P29", "P30"],
+    price: 149999,
+    originalPrice: 224970,
+    savings: 74971,
+    savingsPercent: 33,
     recommended: true,
     targetAudience: "serious-founders",
-    description: "Get lifetime access to all 12 courses and build your billion-dollar startup with India's most comprehensive founder education.",
+    description: "Get lifetime access to all 30 courses - complete startup mastery from idea to global scale. India's ONLY comprehensive platform covering every startup function, sector, and market.",
     outcomes: [
-      "All 12 comprehensive courses",
-      "₹25,986 in total savings",
+      "All 30 comprehensive courses",
+      "₹74,971 in total savings",
       "Priority support access",
       "Quarterly content updates",
-      "Exclusive mastermind community"
+      "Exclusive mastermind community",
+      "Every function, sector, and market covered"
     ],
     icon: "🏆",
     color: "black"
+  },
+
+  CORE_FUNCTIONS: {
+    id: "bundle_core_functions",
+    name: "Core Functions Bundle",
+    tagline: "Build Your Team & Product",
+    products: ["P16", "P17", "P18", "P19"],
+    price: 19999,
+    originalPrice: 25996,
+    savings: 5997,
+    savingsPercent: 23,
+    targetAudience: "scaling-founders",
+    description: "Master the four pillars of startup operations - HR, product development, operations, and technology infrastructure.",
+    outcomes: [
+      "Complete HR and team building systems",
+      "Product-market fit methodology",
+      "Scalable operations framework",
+      "CTO-level technology decisions",
+      "Save ₹5,997 on individual prices"
+    ],
+    icon: "⚙️",
+    color: "slate"
+  },
+
+  FINTECH_COMPLETE: {
+    id: "bundle_fintech",
+    name: "FinTech Complete Bundle",
+    tagline: "Master Financial Services",
+    products: ["P3", "P4", "P5", "P20"],
+    price: 24999,
+    originalPrice: 30996,
+    savings: 5997,
+    savingsPercent: 19,
+    targetAudience: "fintech-founders",
+    description: "Everything you need to build and scale a compliant FinTech startup in India - funding, finance, legal, and RBI regulations.",
+    outcomes: [
+      "Complete funding strategy",
+      "CFO-level financial systems",
+      "Bulletproof legal framework",
+      "RBI compliance mastery",
+      "Save ₹5,997 on individual prices"
+    ],
+    icon: "💳",
+    color: "blue"
+  },
+
+  HEALTHTECH_COMPLETE: {
+    id: "bundle_healthtech",
+    name: "HealthTech Complete Bundle",
+    tagline: "Build in Healthcare",
+    products: ["P2", "P5", "P10", "P21"],
+    price: 27999,
+    originalPrice: 28996,
+    savings: 997,
+    savingsPercent: 3,
+    targetAudience: "healthtech-founders",
+    description: "Complete healthcare startup toolkit - incorporation, legal protection, IP strategy, and CDSCO compliance.",
+    outcomes: [
+      "Healthcare entity structure",
+      "Medical device compliance",
+      "IP protection for innovations",
+      "CDSCO regulatory pathway",
+      "Save on individual prices"
+    ],
+    icon: "🏥",
+    color: "red"
+  },
+
+  ECOMMERCE_COMPLETE: {
+    id: "bundle_ecommerce",
+    name: "E-commerce Complete Bundle",
+    tagline: "Sell Online Successfully",
+    products: ["P6", "P12", "P22"],
+    price: 19999,
+    originalPrice: 24997,
+    savings: 4998,
+    savingsPercent: 20,
+    targetAudience: "ecommerce-founders",
+    description: "Everything to build a profitable e-commerce business - sales mastery, marketing engine, and D2C/marketplace operations.",
+    outcomes: [
+      "Complete sales organization",
+      "Data-driven marketing machine",
+      "E-commerce operations mastery",
+      "Omnichannel strategy",
+      "Save ₹4,998 on individual prices"
+    ],
+    icon: "🛒",
+    color: "orange"
+  },
+
+  GREEN_ECONOMY: {
+    id: "bundle_green",
+    name: "Green Economy Bundle",
+    tagline: "Build Sustainable Businesses",
+    products: ["P15", "P23", "P24"],
+    price: 22999,
+    originalPrice: 27997,
+    savings: 4998,
+    savingsPercent: 18,
+    targetAudience: "sustainability-founders",
+    description: "Master the green economy - carbon credits, EV mobility, and sustainable manufacturing with PLI scheme access.",
+    outcomes: [
+      "Carbon credit business setup",
+      "EV/Clean mobility expertise",
+      "PLI scheme navigation",
+      "Green finance access",
+      "Save ₹4,998 on individual prices"
+    ],
+    icon: "🌱",
+    color: "green"
+  },
+
+  DEEP_TECH: {
+    id: "bundle_deep_tech",
+    name: "Deep Tech Bundle",
+    tagline: "Build Tech Companies",
+    products: ["P10", "P19", "P28", "P29"],
+    price: 27999,
+    originalPrice: 32996,
+    savings: 4997,
+    savingsPercent: 15,
+    targetAudience: "deep-tech-founders",
+    description: "For serious tech founders - patents, infrastructure, biotech, and global SaaS expertise.",
+    outcomes: [
+      "Complete IP strategy",
+      "CTO-level tech decisions",
+      "Biotech regulatory pathway",
+      "Global SaaS scaling",
+      "Save ₹4,997 on individual prices"
+    ],
+    icon: "🔬",
+    color: "purple"
+  },
+
+  SECTOR_MASTERY: {
+    id: "bundle_sector",
+    name: "Sector Mastery Bundle",
+    tagline: "Specialized Industry Expertise",
+    products: ["P13", "P14", "P15"],
+    price: 20999,
+    originalPrice: 26997,
+    savings: 5998,
+    savingsPercent: 22,
+    targetAudience: "sector-focused",
+    description: "Master specialized sectors with deep expertise in Food Processing, Impact/CSR, and Carbon Credits - India's fastest growing opportunities.",
+    outcomes: [
+      "Complete food processing mastery with FSSAI & export",
+      "Access ₹25,000 Cr CSR market",
+      "Build carbon credit business with Verra/Gold Standard",
+      "Save ₹5,998 on individual prices"
+    ],
+    icon: "🌱",
+    color: "emerald"
+  },
+
+  SUSTAINABILITY_IMPACT: {
+    id: "bundle_sustainability",
+    name: "Sustainability & Impact Bundle",
+    tagline: "Build for Good & Profit",
+    products: ["P14", "P15", "P9"],
+    price: 18999,
+    originalPrice: 23997,
+    savings: 4998,
+    savingsPercent: 21,
+    targetAudience: "impact-founders",
+    description: "Combine impact measurement, carbon credits, and government funding for maximum social and environmental returns.",
+    outcomes: [
+      "Master CSR & impact measurement",
+      "Build carbon credit revenue streams",
+      "Access government sustainability schemes",
+      "Save ₹4,998 on individual prices"
+    ],
+    icon: "🌍",
+    color: "green"
   }
 };
 

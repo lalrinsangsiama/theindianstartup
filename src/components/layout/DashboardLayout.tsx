@@ -46,14 +46,15 @@ interface NavItem {
   icon: React.ElementType;
   badge?: string;
   disabled?: boolean;
+  dataTour?: string;
 }
 
 const navigation: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: Home },
-  { label: 'My Journey', href: '/journey', icon: BookOpen },
-  { label: 'Startup Portfolio', href: '/portfolio', icon: Target },
+  { label: 'My Journey', href: '/journey', icon: BookOpen, dataTour: 'courses-section' },
+  { label: 'Startup Portfolio', href: '/portfolio', icon: Target, dataTour: 'portfolio-link' },
   { label: 'Government Schemes', href: '/government-schemes', icon: Building, badge: 'Updated' },
-  { label: 'Community', href: '/community', icon: Users, badge: 'New' },
+  { label: 'Community', href: '/community', icon: Users, badge: 'New', dataTour: 'community-link' },
   { label: 'Resources', href: '/resources', icon: FileText },
 ];
 
@@ -120,6 +121,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
           "hover:bg-gray-100 group",
           active && "bg-black text-white hover:bg-gray-900"
         )}
+        {...(item.dataTour && { 'data-tour': item.dataTour })}
       >
         <Icon className={cn(
           "w-5 h-5 flex-shrink-0",
@@ -127,8 +129,8 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         )} />
         <span className="flex-1">{item.label}</span>
         {item.badge && (
-          <Badge 
-            size="sm" 
+          <Badge
+            size="sm"
             variant={active ? "outline" : "default"}
           >
             {item.badge}
@@ -306,6 +308,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                 variant="ghost"
                 onClick={() => setShowCart(!showCart)}
                 className="relative"
+                data-tour="cart-button"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cart.length > 0 && (

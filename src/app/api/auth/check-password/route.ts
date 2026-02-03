@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       // Don't fail if HIBP is unavailable
-      logger.warn('HIBP API unavailable:', response.status);
+      logger.warn(`HIBP API unavailable: ${response.status}`);
       return NextResponse.json({
         isBreached: false,
         breachCount: null,

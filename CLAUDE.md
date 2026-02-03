@@ -529,3 +529,13 @@ Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+## NO FAKE DATA POLICY
+**CRITICAL: Never add fake/fabricated data to the codebase.** This includes:
+- Fake testimonials or reviews
+- Made-up platform metrics (e.g., "2,000+ founders", "₹50Cr+ raised", "4.8/5 rating")
+- Fabricated success stories or case studies
+- Invented user counts, satisfaction rates, or completion rates
+- Any social proof that is not based on real, verified data
+
+Only display metrics, testimonials, or social proof when there is actual data to support them. If the platform is new and doesn't have real user data yet, do not invent numbers - either leave the section empty or omit it entirely.

@@ -24,7 +24,8 @@ export async function GET(request: NextRequest) {
       { data: purchases, error: purchasesError },
       { data: lessonProgress },
       { data: portfolio },
-      { data: allModuleProgress }
+      { data: allModuleProgress },
+      { data: portfolioActivities }
     ] = await Promise.all([
       // User profile
       supabase
@@ -71,6 +72,12 @@ export async function GET(request: NextRequest) {
           *,
           module:Module(*, product:Product(code))
         `)
+        .eq('userId', user.id),
+
+      // Portfolio activities for completion calculation
+      supabase
+        .from('PortfolioActivity')
+        .select('activityType, completedAt')
         .eq('userId', user.id)
     ]);
 
@@ -147,17 +154,37 @@ export async function GET(request: NextRequest) {
     const ownedCodes = ownedProducts.map(p => p.code);
     const unownedProducts = allProducts?.filter(p => !ownedCodes.includes(p.code)) || [];
 
-    // Recommend P1 first if not owned, then sequential products
+    // Recommend P1 first if not owned, then sequential products including P13-P30
     let recommendedProduct = null;
     if (!ownedCodes.includes('P1')) {
       recommendedProduct = allProducts?.find(p => p.code === 'P1');
     } else {
-      // Find the next sequential product
-      const nextProductNumbers = ['P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12'];
-      for (const code of nextProductNumbers) {
+      // Foundation courses (P1-P12)
+      const foundationCodes = ['P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12'];
+
+      // Find the next sequential foundation product
+      for (const code of foundationCodes) {
         if (!ownedCodes.includes(code)) {
           recommendedProduct = allProducts?.find(p => p.code === code);
           break;
+        }
+      }
+
+      // If all foundation courses owned, recommend sector-specific courses (P13-P30)
+      if (!recommendedProduct) {
+        const sectorCodes = [
+          'P13', 'P14', 'P15',  // Sector-Specific
+          'P16', 'P17', 'P18', 'P19',  // Core Functions
+          'P20', 'P21', 'P22', 'P23', 'P24',  // High-Growth Sectors
+          'P25', 'P26', 'P27', 'P28',  // Emerging Sectors
+          'P29', 'P30'  // Advanced & Global
+        ];
+
+        for (const code of sectorCodes) {
+          if (!ownedCodes.includes(code)) {
+            recommendedProduct = allProducts?.find(p => p.code === code);
+            break;
+          }
         }
       }
     }
@@ -198,7 +225,25 @@ export async function GET(request: NextRequest) {
       'P9': 'Grant Applications',
       'P10': 'IP Management',
       'P11': 'Brand Building',
-      'P12': 'Growth Marketing'
+      'P12': 'Growth Marketing',
+      'P13': 'Food Processing',
+      'P14': 'Impact & CSR',
+      'P15': 'Sustainability',
+      'P16': 'HR & Team Building',
+      'P17': 'Product Development',
+      'P18': 'Operations Excellence',
+      'P19': 'Technology Leadership',
+      'P20': 'FinTech Mastery',
+      'P21': 'HealthTech Innovation',
+      'P22': 'E-commerce & D2C',
+      'P23': 'EV & Clean Mobility',
+      'P24': 'Manufacturing',
+      'P25': 'EdTech Innovation',
+      'P26': 'AgriTech',
+      'P27': 'PropTech',
+      'P28': 'Biotech & Life Sciences',
+      'P29': 'SaaS & B2B',
+      'P30': 'Global Expansion'
     };
 
     const skillsAcquired = ownedProducts
@@ -239,13 +284,24 @@ export async function GET(request: NextRequest) {
         estimatedDays: recommendedProduct.estimatedDays,
         hasAccess: false
       } : null,
-      portfolioCompletion: portfolio ? {
-        hasPortfolio: true,
-        completionPercentage: 0 // This would be calculated based on portfolio activities
-      } : {
-        hasPortfolio: false,
-        completionPercentage: 0
-      }
+      portfolioCompletion: (() => {
+        // Calculate actual portfolio completion based on activities
+        const requiredActivities = ['idea_vision', 'market_research', 'business_model', 'product', 'go_to_market', 'pitch'];
+        const completedActivitiesCount = portfolioActivities?.filter(a => a.completedAt).length || 0;
+        const portfolioCompletionPercentage = Math.round((completedActivitiesCount / requiredActivities.length) * 100);
+
+        return portfolio ? {
+          hasPortfolio: true,
+          completionPercentage: portfolioCompletionPercentage,
+          activitiesCompleted: completedActivitiesCount,
+          totalActivities: requiredActivities.length
+        } : {
+          hasPortfolio: false,
+          completionPercentage: 0,
+          activitiesCompleted: 0,
+          totalActivities: requiredActivities.length
+        };
+      })()
     };
 
     const response = NextResponse.json(dashboardData);

@@ -180,11 +180,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Redirect to dashboard if accessing auth routes while logged in
-  // But allow /signup/verify-email even when logged in (user needs to verify email)
-  if (isAuthRoute && isAuthenticated && pathname !== '/logout' && !pathname.startsWith('/signup/verify-email')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
+  // NOTE: We no longer redirect authenticated users away from auth routes in middleware.
+  // The pages themselves handle this check with proper session validation.
+  // The hasAuthSession() check only looks for cookie presence, not validity,
+  // which can cause redirect loops with expired sessions.
 
   // Special handling for admin routes - FAIL CLOSED
   if (pathname.startsWith('/admin')) {

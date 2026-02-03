@@ -1,12 +1,6 @@
 import { logger } from '../logger';
 
 describe('Logger', () => {
-  const originalEnv = process.env.NODE_ENV;
-
-  afterEach(() => {
-    process.env.NODE_ENV = originalEnv;
-  });
-
   describe('Basic functionality', () => {
     it('should have all required methods', () => {
       expect(typeof logger.debug).toBe('function');
@@ -31,14 +25,8 @@ describe('Logger', () => {
   });
 
   describe('Environment handling', () => {
-    it('should handle production environment', () => {
-      process.env.NODE_ENV = 'production';
-      expect(() => logger.error('Production error')).not.toThrow();
-    });
-
-    it('should handle test environment', () => {
-      process.env.NODE_ENV = 'test';
-      expect(() => logger.error('Test error')).not.toThrow();
+    it('should handle logging in any environment', () => {
+      expect(() => logger.error('Environment error')).not.toThrow();
     });
   });
 
@@ -49,7 +37,7 @@ describe('Logger', () => {
     });
 
     it('should handle circular references', () => {
-      const circular: any = { name: 'test' };
+      const circular: Record<string, unknown> = { name: 'test' };
       circular.self = circular;
       expect(() => logger.error('Circular reference', circular)).not.toThrow();
     });

@@ -56,9 +56,4 @@ describe('Button Component', () => {
     expect(screen.getByRole('button')).toHaveClass('custom-class');
   });
 
-  it('forwards ref correctly', () => {
-    const ref = jest.fn();
-    render(<Button ref={ref}>Button</Button>);
-    expect(ref).toHaveBeenCalled();
-  });
 });

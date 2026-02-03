@@ -202,7 +202,7 @@ function SuccessContent() {
                 <div>
                   <Text weight="bold" className="mb-2">Join the Community</Text>
                   <Text size="sm" color="muted" className="mb-3">
-                    Connect with 2,500+ founders, share progress, and get help when you need it.
+                    Connect with fellow founders, share progress, and get help when you need it.
                   </Text>
                   <Button
                     variant="ghost"

@@ -78,11 +78,11 @@ const p26Config: CourseConfig = {
   ],
   communityStats: [
     { value: '300+', label: 'AgriTech Founders', color: 'green' },
-    { value: '50+', label: 'FPOs Formed', color: 'orange' },
-    { value: 'Rs 100Cr+', label: 'Farmer Income', color: 'cyan' }
+    { value: '9', label: 'Complete Modules', color: 'orange' },
+    { value: '130+', label: 'Templates & Tools', color: 'cyan' }
   ],
   ctaText: 'Ready to Transform Agriculture?',
-  ctaSubtext: 'Join 300+ AgriTech founders connecting farmers to markets.',
+  ctaSubtext: 'Master AgriTech with FPO formation, e-NAM integration, and APEDA export guidance.',
   price: 'Rs 6,999'
 };
 

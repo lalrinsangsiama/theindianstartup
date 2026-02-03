@@ -81,12 +81,12 @@ const p13Config: CourseConfig = {
     }
   ],
   communityStats: [
-    { value: '500+', label: 'Food Entrepreneurs', color: 'green' },
-    { value: 'Rs 50Cr+', label: 'Subsidies Accessed', color: 'blue' },
-    { value: '100+', label: 'Exports Started', color: 'purple' }
+    { value: '60', label: 'Days Duration', color: 'green' },
+    { value: '150+', label: 'Templates & Tools', color: 'blue' },
+    { value: '10', label: 'Complete Modules', color: 'purple' }
   ],
   ctaText: 'Ready to Master Food Processing?',
-  ctaSubtext: 'Join 500+ food entrepreneurs who have successfully built compliant, profitable food processing businesses.',
+  ctaSubtext: 'Build a compliant, profitable food processing business with India-specific guidance on FSSAI, manufacturing, and subsidies.',
   price: 'Rs 7,999'
 };
 

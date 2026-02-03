@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import { PRODUCTS } from '@/lib/products-catalog';
 import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBanner';
+import { COURSE_CONTENT_STATS, calculateBundleStats } from '@/components/courses/CourseContentBreakdown';
 
 declare global {
   interface Window {
@@ -712,13 +713,50 @@ function CheckoutContent() {
                   </div>
                 </div>
 
-                {/* Value Summary Card */}
+                {/* Enhanced Value Summary Card */}
                 <div className="p-4 bg-gradient-to-br from-green-50 to-blue-50 border border-green-200 rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <TrendingUp className="w-4 h-4 text-green-600" />
-                    <Text size="sm" weight="bold" className="text-green-800">Value You're Getting</Text>
+                    <Text size="sm" weight="bold" className="text-green-800">What You're Getting</Text>
                   </div>
-                  <div className="space-y-2">
+
+                  {/* Content Breakdown */}
+                  {(() => {
+                    const productCodes = cart.map(item => item.productCode);
+                    const isAllAccess = productCodes.includes('ALL_ACCESS');
+                    const bundleStats = isAllAccess
+                      ? calculateBundleStats(['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P20', 'P21', 'P22', 'P23', 'P24', 'P25', 'P26', 'P27', 'P28', 'P29', 'P30'])
+                      : calculateBundleStats(productCodes.filter(c => c.startsWith('P')));
+
+                    return (
+                      <div className="space-y-2 mb-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center gap-2 text-xs p-2 bg-white rounded">
+                            <span className="font-bold text-purple-700">{isAllAccess ? 30 : bundleStats.totalCourses}</span>
+                            <span className="text-gray-600">Courses</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs p-2 bg-white rounded">
+                            <span className="font-bold text-blue-700">{bundleStats.totalModules}</span>
+                            <span className="text-gray-600">Modules</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs p-2 bg-white rounded">
+                            <span className="font-bold text-green-700">{bundleStats.totalLessons}</span>
+                            <span className="text-gray-600">Lessons</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs p-2 bg-white rounded">
+                            <span className="font-bold text-orange-700">{bundleStats.totalTemplates}+</span>
+                            <span className="text-gray-600">Templates</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between p-2 bg-white rounded text-xs">
+                          <span className="text-gray-600">Estimated Learning</span>
+                          <span className="font-bold text-gray-900">{bundleStats.totalHours} hours</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="space-y-2 border-t border-green-200 pt-2">
                     <div className="flex justify-between text-sm">
                       <Text color="muted">Template & Tool Value</Text>
                       <Text className="text-green-700 font-medium">

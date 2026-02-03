@@ -166,15 +166,6 @@ function LoginContent() {
       localStorage.removeItem('loginAttempts');
       localStorage.removeItem('loginLockoutUntil');
 
-      // Check if user needs onboarding
-      const response = await fetch('/api/user/profile');
-      const profileData = await response.json();
-
-      if (!profileData.hasCompletedOnboarding) {
-        router.push('/onboarding');
-        return;
-      }
-
       // Check if there's a redirect URL
       const redirectTo = searchParams.get('redirectTo');
 

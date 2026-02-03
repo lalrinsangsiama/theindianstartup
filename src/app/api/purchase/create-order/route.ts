@@ -54,6 +54,15 @@ export async function POST(request: NextRequest) {
 
     const user = await requireAuth();
 
+    // Check if email is verified
+    if (!user.email_confirmed_at) {
+      logger.warn('Purchase blocked: email not verified', { userId: user.id });
+      return NextResponse.json(
+        { error: 'Please verify your email address before making a purchase' },
+        { status: 403 }
+      );
+    }
+
     // Parse and validate request body
     let body: unknown;
     try {

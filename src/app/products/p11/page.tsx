@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -25,7 +26,7 @@ import {
   Crown,
   Sparkles
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useUserProducts } from '@/hooks/useUserProducts';
 import BrandStrategyCalculator from '@/components/branding/BrandStrategyCalculator';
 import PRCampaignManager from '@/components/branding/PRCampaignManager';
@@ -61,7 +62,7 @@ interface Lesson {
 }
 
 const P11BrandingPRPage: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuthContext();
   const { hasAccess, loading: accessLoading } = useUserProducts();
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
@@ -81,7 +82,7 @@ const P11BrandingPRPage: React.FC = () => {
 
   const fetchModules = async () => {
     try {
-      const response = await fetch('/api/products/P11/modules');
+      const response = await fetch('/api/products/p11/modules');
       if (!response.ok) throw new Error('Failed to fetch modules');
       
       const data = await response.json();
@@ -90,7 +91,7 @@ const P11BrandingPRPage: React.FC = () => {
       }
     } catch (err) {
       setError('Failed to load course modules');
-      console.error('Error fetching modules:', err);
+      logger.error('Error fetching modules:', err);
     } finally {
       setLoading(false);
     }
@@ -99,7 +100,7 @@ const P11BrandingPRPage: React.FC = () => {
   const fetchModuleLessons = async (moduleId: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/products/P11/modules/${moduleId}/lessons`);
+      const response = await fetch(`/api/products/p11/modules/${moduleId}/lessons`);
       if (!response.ok) throw new Error('Failed to fetch lessons');
       
       const data = await response.json();
@@ -109,7 +110,7 @@ const P11BrandingPRPage: React.FC = () => {
       }
     } catch (err) {
       setError('Failed to load module lessons');
-      console.error('Error fetching lessons:', err);
+      logger.error('Error fetching lessons:', err);
     } finally {
       setLoading(false);
     }

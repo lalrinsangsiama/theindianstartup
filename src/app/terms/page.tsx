@@ -79,7 +79,7 @@ export default function TermsOfServicePage() {
           <section>
             <Heading as="h2" variant="h4" className="mb-4">4. Payment and Subscription</Heading>
             <Text className="mb-4">
-              <strong>Pricing:</strong> Access to educational products ranges from ₹4,999 to ₹9,999 per product, or ₹54,999 for the All-Access Bundle.
+              <strong>Pricing:</strong> Access to educational products ranges from ₹3,499 to ₹9,999 per product, or ₹1,49,999 for the All-Access Bundle (30 courses).
             </Text>
             <Text className="mb-4">
               <strong>Access Period:</strong> Your subscription provides access for 365 days from the date of purchase.

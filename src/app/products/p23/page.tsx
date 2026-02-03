@@ -78,11 +78,11 @@ const p23Config: CourseConfig = {
   ],
   communityStats: [
     { value: '200+', label: 'EV Founders', color: 'lime' },
-    { value: 'Rs 500Cr+', label: 'Subsidies Accessed', color: 'green' },
-    { value: '50+', label: 'Vehicles Homologated', color: 'blue' }
+    { value: '11', label: 'Complete Modules', color: 'green' },
+    { value: '150+', label: 'Templates & Tools', color: 'blue' }
   ],
   ctaText: 'Ready to Drive the EV Revolution?',
-  ctaSubtext: 'Join 200+ EV founders who have accessed PLI schemes and government incentives.',
+  ctaSubtext: 'Master EV manufacturing with PLI scheme access, FAME II benefits, and battery supply chain.',
   price: 'Rs 8,999'
 };
 

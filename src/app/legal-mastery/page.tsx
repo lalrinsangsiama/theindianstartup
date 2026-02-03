@@ -566,7 +566,7 @@ export default function LegalMasteryPage() {
                 Ready to Build Bulletproof Legal Protection?
               </Heading>
               <Text color="muted" className="mb-6">
-                Join 200+ founders who have protected their startups legally
+                Protect your startup with bulletproof legal infrastructure
               </Text>
               <Button 
                 size="lg"

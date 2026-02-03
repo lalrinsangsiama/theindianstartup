@@ -255,6 +255,58 @@ export async function GET(request: NextRequest) {
     const userLevel = Math.floor(userProfile.totalXP / 100) + 1;
     const nextLevelXP = (userLevel * 100) - userProfile.totalXP;
 
+    // Calculate value metrics for ROI dashboard
+    // Value multiplier: courses provide 3x value through templates, tools, and knowledge
+    const VALUE_MULTIPLIER = 3;
+    const ALL_ACCESS_PRICE = 149999;
+
+    // Calculate total invested (sum of purchased product prices)
+    const totalInvested = ownedProducts.reduce((sum, p) => sum + (p.price || 0), 0);
+
+    // Calculate total value received (original prices * value multiplier for completed content)
+    // Plus additional value from templates and tools
+    const averageProductProgress = ownedProducts.length > 0
+      ? ownedProducts.reduce((sum, p) => sum + p.progress, 0) / ownedProducts.length
+      : 0;
+    const progressMultiplier = 1 + (averageProductProgress / 100); // 1x to 2x based on progress
+    const totalValueReceived = Math.round(totalInvested * VALUE_MULTIPLIER * progressMultiplier);
+
+    // Calculate savings
+    const savingsAmount = totalValueReceived - totalInvested;
+    const savingsPercentage = totalInvested > 0 ? Math.round((savingsAmount / totalValueReceived) * 100) : 0;
+
+    // Calculate ROI multiplier
+    const roiMultiplier = totalInvested > 0 ? Math.round((totalValueReceived / totalInvested) * 10) / 10 : 0;
+
+    // Calculate Founder Readiness Score (0-100)
+    // Based on: courses owned (40%), completion progress (30%), skills acquired (20%), XP (10%)
+    const coursesScore = Math.min(40, (ownedProducts.length / 30) * 40);
+    const completionScore = (averageProductProgress / 100) * 30;
+    const skillsScore = Math.min(20, (skillsAcquired.length / 15) * 20);
+    const xpScore = Math.min(10, (userProfile.totalXP / 5000) * 10);
+    const founderReadinessScore = Math.round(coursesScore + completionScore + skillsScore + xpScore);
+
+    // Calculate percentile ranking (simplified - based on products owned)
+    // In a real implementation, this would query against all users
+    const percentileRanking = Math.min(99, Math.max(1, 100 - (ownedProducts.length * 8)));
+
+    // Calculate bundle savings available (if not ALL_ACCESS owner)
+    const hasAllAccess = ownedCodes.includes('ALL_ACCESS');
+    const allCoursesTotal = allProducts?.filter(p => p.code !== 'ALL_ACCESS').reduce((sum, p) => sum + (p.price || 0), 0) || 0;
+    const bundleSavingsAvailable = hasAllAccess ? 0 : Math.max(0, allCoursesTotal - ALL_ACCESS_PRICE);
+
+    const valueMetrics = {
+      totalInvested,
+      totalValueReceived,
+      savingsAmount,
+      savingsPercentage,
+      roiMultiplier,
+      founderReadinessScore,
+      percentileRanking,
+      bundleSavingsAvailable,
+      hasAllAccess
+    };
+
     // Build dashboard data
     const dashboardData = {
       userName: userProfile.name || user.email?.split('@')[0] || 'Founder',
@@ -301,7 +353,8 @@ export async function GET(request: NextRequest) {
           activitiesCompleted: 0,
           totalActivities: requiredActivities.length
         };
-      })()
+      })(),
+      valueMetrics
     };
 
     const response = NextResponse.json(dashboardData);

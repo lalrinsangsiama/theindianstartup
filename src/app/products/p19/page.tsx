@@ -78,11 +78,11 @@ const p19Config: CourseConfig = {
   ],
   communityStats: [
     { value: '500+', label: 'CTOs & Tech Leads', color: 'blue' },
-    { value: 'Rs 100Cr+', label: 'Cloud Costs Saved', color: 'cyan' },
-    { value: '200+', label: 'Architectures Built', color: 'purple' }
+    { value: '9', label: 'Complete Modules', color: 'cyan' },
+    { value: '140+', label: 'Templates & Tools', color: 'purple' }
   ],
   ctaText: 'Ready to Build World-Class Tech?',
-  ctaSubtext: 'Join 500+ tech leaders who have built scalable, secure infrastructures.',
+  ctaSubtext: 'Master architecture, cloud strategy, DevOps, and security for your startup.',
   price: 'Rs 6,999'
 };
 

@@ -39,6 +39,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '2fa': 'Two-Factor Auth',
   sessions: 'Active Sessions',
   billing: 'Billing',
+  refunds: 'Refund History',
   notifications: 'Notifications',
   email: 'Email Preferences',
   data: 'Data & Export',

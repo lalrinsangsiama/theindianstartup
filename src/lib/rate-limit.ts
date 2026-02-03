@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { redis, incrementRateLimit } from './redis-client';
 import { logger } from './logger';
 
@@ -15,6 +15,64 @@ interface RateLimitResult {
   limit: number;
   remaining: number;
   resetTime: number;
+  backoffMs?: number; // Exponential backoff time for repeated violations
+  violationCount?: number; // Number of consecutive violations
+}
+
+// Track repeated violations for exponential backoff
+const violationTracker = new Map<string, { count: number; lastViolation: number }>();
+
+// Cleanup violation tracker every 30 minutes
+setInterval(() => {
+  const now = Date.now();
+  const entries = Array.from(violationTracker.entries());
+  for (const [key, value] of entries) {
+    // Remove entries older than 1 hour
+    if (now - value.lastViolation > 60 * 60 * 1000) {
+      violationTracker.delete(key);
+    }
+  }
+}, 30 * 60 * 1000);
+
+/**
+ * Calculate exponential backoff time based on violation count
+ * Base: 1 minute, doubles each time, max: 1 hour
+ */
+function calculateBackoff(violationCount: number): number {
+  const baseMs = 60 * 1000; // 1 minute
+  const maxMs = 60 * 60 * 1000; // 1 hour
+  const backoffMs = Math.min(baseMs * Math.pow(2, violationCount - 1), maxMs);
+  return backoffMs;
+}
+
+/**
+ * Track a rate limit violation for exponential backoff
+ */
+function trackViolation(key: string): { count: number; backoffMs: number } {
+  const existing = violationTracker.get(key);
+  const now = Date.now();
+
+  if (existing) {
+    // Reset count if last violation was more than 30 minutes ago
+    if (now - existing.lastViolation > 30 * 60 * 1000) {
+      existing.count = 1;
+    } else {
+      existing.count++;
+    }
+    existing.lastViolation = now;
+    violationTracker.set(key, existing);
+    return { count: existing.count, backoffMs: calculateBackoff(existing.count) };
+  }
+
+  violationTracker.set(key, { count: 1, lastViolation: now });
+  return { count: 1, backoffMs: calculateBackoff(1) };
+}
+
+/**
+ * Clear violation tracking for a key (e.g., after successful request)
+ */
+export function clearViolation(key: string): void {
+  violationTracker.delete(key);
 }
 
 // In-memory fallback store (used when Redis is unavailable)
@@ -45,6 +103,7 @@ async function isRedisHealthy(): Promise<boolean> {
 /**
  * Distributed rate limiter using Redis (with in-memory fallback)
  * IMPORTANT: Use this for production to ensure rate limits work across multiple instances
+ * Now includes exponential backoff for repeated violations
  */
 export async function distributedRateLimit(
   key: string,
@@ -63,11 +122,26 @@ export async function distributedRateLimit(
       const ttl = await redis.ttl(fullKey);
       const resetTime = now + (ttl > 0 ? ttl * 1000 : config.windowMs);
 
+      if (count <= config.maxRequests) {
+        // Success - clear any violation tracking
+        clearViolation(fullKey);
+        return {
+          success: true,
+          limit: config.maxRequests,
+          remaining: Math.max(0, config.maxRequests - count),
+          resetTime,
+        };
+      }
+
+      // Rate limit exceeded - track violation and calculate backoff
+      const violation = trackViolation(fullKey);
       return {
-        success: count <= config.maxRequests,
+        success: false,
         limit: config.maxRequests,
-        remaining: Math.max(0, config.maxRequests - count),
+        remaining: 0,
         resetTime,
+        backoffMs: violation.backoffMs,
+        violationCount: violation.count,
       };
     }
   } catch (error) {
@@ -83,6 +157,7 @@ export async function distributedRateLimit(
       resetTime: now + config.windowMs,
     };
     fallbackStore.set(fullKey, current);
+    clearViolation(fullKey);
 
     return {
       success: true,
@@ -93,16 +168,21 @@ export async function distributedRateLimit(
   }
 
   if (current.count >= config.maxRequests) {
+    // Rate limit exceeded - track violation and calculate backoff
+    const violation = trackViolation(fullKey);
     return {
       success: false,
       limit: config.maxRequests,
       remaining: 0,
       resetTime: current.resetTime,
+      backoffMs: violation.backoffMs,
+      violationCount: violation.count,
     };
   }
 
   current.count++;
   fallbackStore.set(fullKey, current);
+  clearViolation(fullKey);
 
   return {
     success: true,
@@ -242,6 +322,62 @@ export const RATE_LIMIT_CONFIGS = {
     maxRequests: 100, // 100 per minute (Razorpay can send many)
     prefix: 'webhook',
   },
+
+  // Admin SQL page access (strict limit for sensitive operations)
+  adminSql: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 10, // 10 page loads per hour
+    prefix: 'admin-sql',
+  },
+
+  // Admin actions (moderate limit)
+  adminAction: {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 50, // 50 admin actions per 15 min
+    prefix: 'admin-action',
+  },
+
+  // Profile updates (prevent abuse)
+  profileUpdate: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 10, // 10 profile updates per hour
+    prefix: 'profile-update',
+  },
+
+  // Settings updates
+  settingsUpdate: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 20, // 20 settings updates per hour
+    prefix: 'settings-update',
+  },
+
+  // Portfolio updates
+  portfolioUpdate: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 50, // 50 portfolio updates per hour
+    prefix: 'portfolio-update',
+  },
+
+  // Feedback submission
+  feedback: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 5, // 5 feedback submissions per hour
+    prefix: 'feedback',
+  },
+
+  // Support tickets
+  supportTicket: {
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 10, // 10 tickets per day
+    prefix: 'support-ticket',
+  },
+
+  // Data export requests
+  dataExport: {
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 3, // 3 exports per day
+    prefix: 'data-export',
+  },
 } as const;
 
 /**
@@ -337,3 +473,146 @@ export const paymentRateLimit = rateLimit({
   maxRequests: 10, // 10 payment attempts per hour
   prefix: 'payment',
 });
+
+// ============================================================================
+// USER-FACING RATE LIMIT ERROR HELPERS
+// ============================================================================
+
+/**
+ * Format time remaining for user display
+ */
+function formatTimeRemaining(ms: number): string {
+  const seconds = Math.ceil(ms / 1000);
+  if (seconds < 60) {
+    return `${seconds} second${seconds === 1 ? '' : 's'}`;
+  }
+  const minutes = Math.ceil(seconds / 60);
+  if (minutes < 60) {
+    return `${minutes} minute${minutes === 1 ? '' : 's'}`;
+  }
+  const hours = Math.ceil(minutes / 60);
+  return `${hours} hour${hours === 1 ? '' : 's'}`;
+}
+
+/**
+ * Get user-friendly message for rate limit type
+ */
+function getRateLimitMessage(configKey: keyof typeof RATE_LIMIT_CONFIGS): string {
+  const messages: Record<keyof typeof RATE_LIMIT_CONFIGS, string> = {
+    api: 'Too many requests',
+    auth: 'Too many login attempts',
+    email: 'Too many email requests',
+    payment: 'Too many payment attempts',
+    communityPost: 'Too many posts',
+    communityComment: 'Too many comments',
+    lessonComplete: 'Too many lesson completions',
+    webhook: 'Too many webhook requests',
+    adminSql: 'Too many admin requests',
+    adminAction: 'Too many admin actions',
+    profileUpdate: 'Too many profile updates',
+    settingsUpdate: 'Too many settings updates',
+    portfolioUpdate: 'Too many portfolio updates',
+    feedback: 'Too many feedback submissions',
+    supportTicket: 'Too many support tickets',
+    dataExport: 'Too many data export requests',
+  };
+  return messages[configKey] || 'Too many requests';
+}
+
+/**
+ * Create a user-friendly rate limit error response
+ */
+export function createRateLimitResponse(
+  result: RateLimitResult,
+  configKey: keyof typeof RATE_LIMIT_CONFIGS
+): NextResponse {
+  const now = Date.now();
+  const timeRemaining = result.resetTime - now;
+  const retryAfterSeconds = Math.ceil(timeRemaining / 1000);
+
+  const message = getRateLimitMessage(configKey);
+  const timeStr = formatTimeRemaining(timeRemaining);
+
+  // Build user-friendly error message
+  let userMessage = `${message}. Please try again in ${timeStr}.`;
+
+  // Add warning for repeated violations
+  if (result.violationCount && result.violationCount > 1) {
+    const backoffTimeStr = formatTimeRemaining(result.backoffMs || 0);
+    userMessage += ` Warning: Repeated violations may result in longer wait times (currently ${backoffTimeStr}).`;
+  }
+
+  // Add specific guidance based on type
+  const guidance: Partial<Record<keyof typeof RATE_LIMIT_CONFIGS, string>> = {
+    auth: 'If you forgot your password, try the password reset option.',
+    payment: 'If you are having payment issues, please contact support.',
+    email: 'Check your inbox and spam folder for previous emails.',
+    supportTicket: 'Our support team typically responds within 24 hours.',
+    dataExport: 'Data exports are limited to 3 per day for security.',
+  };
+
+  if (guidance[configKey]) {
+    userMessage += ` ${guidance[configKey]}`;
+  }
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'X-RateLimit-Limit': result.limit.toString(),
+    'X-RateLimit-Remaining': '0',
+    'X-RateLimit-Reset': result.resetTime.toString(),
+    'Retry-After': retryAfterSeconds.toString(),
+  };
+
+  // Add backoff header if applicable
+  if (result.backoffMs) {
+    headers['X-RateLimit-Backoff'] = Math.ceil(result.backoffMs / 1000).toString();
+  }
+
+  return new NextResponse(
+    JSON.stringify({
+      error: 'Rate limit exceeded',
+      message: userMessage,
+      retryAfter: retryAfterSeconds,
+      resetTime: result.resetTime,
+      violationCount: result.violationCount,
+      backoffSeconds: result.backoffMs ? Math.ceil(result.backoffMs / 1000) : undefined,
+    }),
+    {
+      status: 429,
+      headers,
+    }
+  );
+}
+
+/**
+ * Apply rate limit and return error response if exceeded
+ * Returns null if rate limit not exceeded, NextResponse if exceeded
+ */
+export async function checkRateLimit(
+  req: NextRequest,
+  configKey: keyof typeof RATE_LIMIT_CONFIGS
+): Promise<NextResponse | null> {
+  const { allowed, result } = await applyRateLimit(req, configKey);
+
+  if (!allowed) {
+    return createRateLimitResponse(result, configKey);
+  }
+
+  return null;
+}
+
+/**
+ * Apply user-specific rate limit and return error response if exceeded
+ */
+export async function checkUserRateLimit(
+  userId: string,
+  configKey: keyof typeof RATE_LIMIT_CONFIGS
+): Promise<NextResponse | null> {
+  const { allowed, result } = await applyUserRateLimit(userId, configKey);
+
+  if (!allowed) {
+    return createRateLimitResponse(result, configKey);
+  }
+
+  return null;
+}

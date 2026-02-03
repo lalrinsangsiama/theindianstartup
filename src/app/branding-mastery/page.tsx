@@ -559,7 +559,7 @@ export default function BrandingMasteryPage() {
                 Ready to Build Your Brand Empire?
               </Heading>
               <Text color="muted" className="mb-6">
-                Join 200+ founders who have built powerful brands and media presence
+                Build a powerful brand and media presence with our step-by-step framework
               </Text>
               <Button 
                 size="lg"

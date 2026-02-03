@@ -80,11 +80,11 @@ const p2Config: CourseConfig = {
   ],
   communityStats: [
     { value: '1500+', label: 'Companies Incorporated', color: 'blue' },
-    { value: '₹10L+', label: 'Penalties Avoided', color: 'green' },
-    { value: '99%', label: 'Compliance Score', color: 'purple' }
+    { value: '150+', label: 'Templates Included', color: 'green' },
+    { value: '10', label: 'Complete Modules', color: 'purple' }
   ],
   ctaText: 'Ready to Incorporate Your Company?',
-  ctaSubtext: 'Join 1500+ founders who built bulletproof legal foundations for their startups.',
+  ctaSubtext: 'Build a bulletproof legal foundation with our step-by-step incorporation guide.',
   price: '₹4,999'
 };
 
@@ -96,7 +96,7 @@ export default function P2CoursePage() {
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
-        const response = await fetch('/api/products/P2', {
+        const response = await fetch('/api/products/p2', {
           credentials: 'include'
         });
 

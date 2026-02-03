@@ -78,11 +78,11 @@ const p29Config: CourseConfig = {
   ],
   communityStats: [
     { value: '500+', label: 'SaaS Founders', color: 'sky' },
-    { value: '$100M+', label: 'ARR Generated', color: 'purple' },
-    { value: '100+', label: 'Global Customers', color: 'green' }
+    { value: '10', label: 'Complete Modules', color: 'purple' },
+    { value: '150+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Build Global SaaS?',
-  ctaSubtext: 'Join 500+ SaaS founders building world-class B2B products from India.',
+  ctaSubtext: 'Master SaaS metrics, product-led growth, SOC 2 compliance, and GDPR readiness.',
   price: 'Rs 7,999'
 };
 

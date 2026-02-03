@@ -81,11 +81,11 @@ const p15Config: CourseConfig = {
   ],
   communityStats: [
     { value: '200+', label: 'Carbon Professionals', color: 'teal' },
-    { value: '50+', label: 'Projects Registered', color: 'blue' },
-    { value: 'Rs 500Cr+', label: 'Green Finance Accessed', color: 'green' }
+    { value: '12', label: 'Complete Modules', color: 'blue' },
+    { value: '140+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Build Your Carbon Business?',
-  ctaSubtext: 'Join 200+ professionals who have successfully developed carbon projects, accessed green finance, and built sustainability consulting businesses.',
+  ctaSubtext: 'Master carbon credits with GHG Protocol, Verra VCS certification, and Net Zero strategy.',
   price: 'Rs 9,999'
 };
 

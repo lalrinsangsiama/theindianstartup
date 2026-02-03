@@ -78,11 +78,11 @@ const p30Config: CourseConfig = {
   ],
   communityStats: [
     { value: '300+', label: 'Global Founders', color: 'rose' },
-    { value: '50+', label: 'Countries Entered', color: 'blue' },
-    { value: '$500M+', label: 'International Revenue', color: 'green' }
+    { value: '11', label: 'Complete Modules', color: 'blue' },
+    { value: '200+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Go Global?',
-  ctaSubtext: 'Join 300+ founders who have successfully expanded internationally.',
+  ctaSubtext: 'Master international expansion with FEMA compliance, US/EU/MENA market entry strategies.',
   price: 'Rs 9,999'
 };
 

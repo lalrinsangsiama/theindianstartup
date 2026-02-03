@@ -81,11 +81,11 @@ const p14Config: CourseConfig = {
   ],
   communityStats: [
     { value: '300+', label: 'NGOs & Social Enterprises', color: 'purple' },
-    { value: 'Rs 100Cr+', label: 'CSR Partnerships Facilitated', color: 'blue' },
-    { value: '50+', label: 'Impact Investments', color: 'green' }
+    { value: '11', label: 'Complete Modules', color: 'blue' },
+    { value: '150+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Master Impact & CSR?',
-  ctaSubtext: 'Join 300+ social enterprises who have successfully built corporate CSR partnerships and scaled their impact.',
+  ctaSubtext: 'Master the ₹25,000 Cr CSR ecosystem, Schedule VII compliance, and ESG integration.',
   price: 'Rs 8,999'
 };
 

@@ -584,7 +584,7 @@ export default function FinanceMasteryPage() {
                 Ready to Build World-Class Finance?
               </Heading>
               <Text color="muted" className="mb-6">
-                Join 300+ founders who have transformed their financial operations
+                Transform your financial operations with CFO-level guidance
               </Text>
               <Button 
                 size="lg"

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Shield, Target, Briefcase, BookOpen, Users, Star, TrendingUp } from "lucide-react";
+import { ArrowRight, CheckCircle, Shield, Target, Briefcase, BookOpen, TrendingUp } from "lucide-react";
 import { Button } from '@/components/ui/Button';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { createClient } from '@/lib/supabase/client';
@@ -89,34 +89,34 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Trust Badges - Enhanced with social proof */}
+            {/* Trust Badges - Factual content metrics only */}
             <div className="flex flex-wrap justify-center gap-4 text-sm mb-6">
-              <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2 rounded-full">
-                <Users className="h-4 w-4" />
-                <span className="font-medium">{PLATFORM_METRICS.foundersEnrolledDisplay} founders</span>
-              </div>
-              <div className="flex items-center gap-2 text-yellow-700 bg-yellow-50 px-4 py-2 rounded-full">
-                <Star className="h-4 w-4 fill-yellow-500" />
-                <span className="font-medium">{PLATFORM_METRICS.avgRating}/5 rating</span>
-              </div>
               <div className="flex items-center gap-2 text-blue-700 bg-blue-50 px-4 py-2 rounded-full">
-                <TrendingUp className="h-4 w-4" />
-                <span className="font-medium">{PLATFORM_METRICS.fundingRaisedDisplay} raised by alumni</span>
+                <BookOpen className="h-4 w-4" />
+                <span className="font-medium">{PLATFORM_METRICS.totalCourses} comprehensive courses</span>
+              </div>
+              <div className="flex items-center gap-2 text-purple-700 bg-purple-50 px-4 py-2 rounded-full">
+                <Target className="h-4 w-4" />
+                <span className="font-medium">{PLATFORM_METRICS.totalModules} expert modules</span>
+              </div>
+              <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2 rounded-full">
+                <Briefcase className="h-4 w-4" />
+                <span className="font-medium">{PLATFORM_METRICS.totalTemplates}+ templates</span>
               </div>
             </div>
 
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2 rounded-full">
                 <Shield className="h-4 w-4" />
-                <span className="font-medium">3-day guarantee</span>
+                <span className="font-medium">{PLATFORM_METRICS.moneyBackGuarantee}-day money back guarantee</span>
               </div>
               <div className="flex items-center gap-2 text-blue-700 bg-blue-50 px-4 py-2 rounded-full">
-                <BookOpen className="h-4 w-4" />
-                <span className="font-medium">30 courses</span>
+                <TrendingUp className="h-4 w-4" />
+                <span className="font-medium">{PLATFORM_METRICS.totalLessons}+ lessons</span>
               </div>
-              <div className="flex items-center gap-2 text-purple-700 bg-purple-50 px-4 py-2 rounded-full">
-                <Briefcase className="h-4 w-4" />
-                <span className="font-medium">450+ templates</span>
+              <div className="flex items-center gap-2 text-orange-700 bg-orange-50 px-4 py-2 rounded-full">
+                <CheckCircle className="h-4 w-4" />
+                <span className="font-medium">{PLATFORM_METRICS.accessDuration} days access</span>
               </div>
             </div>
           </div>

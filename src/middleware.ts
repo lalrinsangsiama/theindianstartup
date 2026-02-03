@@ -6,8 +6,13 @@ import { apiRateLimit, authRateLimit, paymentRateLimit } from '@/lib/rate-limit'
 const ALLOWED_ORIGINS = [
   'https://theindianstartup.in',
   'https://www.theindianstartup.in',
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
 ].filter(Boolean) as string[]
+
+// Check if origin is localhost in development (any port)
+function isLocalhostOrigin(origin: string | null): boolean {
+  if (process.env.NODE_ENV !== 'development' || !origin) return false
+  return /^http:\/\/localhost:\d+$/.test(origin)
+}
 
 // Check if user has a valid session by checking Supabase auth cookies
 function hasAuthSession(request: NextRequest): boolean {
@@ -74,7 +79,8 @@ export async function middleware(request: NextRequest) {
 
   // CORS validation for API routes
   if (pathname.startsWith('/api/') && origin) {
-    if (!ALLOWED_ORIGINS.includes(origin)) {
+    const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin) || isLocalhostOrigin(origin)
+    if (!isAllowedOrigin) {
       logSecurityEvent({
         type: 'cors_violation',
         ip: request.ip || 'unknown',
@@ -97,7 +103,7 @@ export async function middleware(request: NextRequest) {
   })
 
   // Add CORS headers for allowed origins
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  if (origin && (ALLOWED_ORIGINS.includes(origin) || isLocalhostOrigin(origin))) {
     response.headers.set('Access-Control-Allow-Origin', origin)
     response.headers.set('Access-Control-Allow-Credentials', 'true')
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
@@ -153,9 +159,14 @@ export async function middleware(request: NextRequest) {
   // Check auth status using cookies (Edge-compatible)
   const isAuthenticated = hasAuthSession(request)
 
-  // Define protected routes
-  const protectedRoutes = ['/dashboard', '/journey', '/portfolio', '/profile', '/community', '/resources', '/analytics', '/settings', '/help', '/admin', '/onboarding', '/products']
+  // Define protected routes (onboarding removed - redirects to dashboard)
+  const protectedRoutes = ['/dashboard', '/journey', '/portfolio', '/profile', '/community', '/resources', '/analytics', '/settings', '/help', '/admin', '/products']
   const authRoutes = ['/login', '/signup', '/forgot-password', '/reset-password']
+
+  // Redirect /onboarding to /dashboard
+  if (pathname.startsWith('/onboarding')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
@@ -170,7 +181,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect to dashboard if accessing auth routes while logged in
-  if (isAuthRoute && isAuthenticated && pathname !== '/logout') {
+  // But allow /signup/verify-email even when logged in (user needs to verify email)
+  if (isAuthRoute && isAuthenticated && pathname !== '/logout' && !pathname.startsWith('/signup/verify-email')) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 

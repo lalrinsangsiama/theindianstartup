@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/textarea';
@@ -313,7 +314,7 @@ export function QuickFeedbackButton({
         'ui',
         { component, quickFeedback: true }
       );
-      alert('Thank you for your feedback!');
+      toast.success('Thank you for your feedback!');
     }
   };
 

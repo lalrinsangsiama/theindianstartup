@@ -3,7 +3,8 @@ import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { errorResponse, successResponse } from '@/lib/api-utils';
 import { PURCHASE_STATUS } from '@/lib/constants';
-import { validateName, validatePhone, validateURL } from '@/lib/validation';
+import { userProfileUpdateSchema, validateRequest, validationErrorResponse } from '@/lib/validation-schemas';
+import { applyUserRateLimit } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,19 +28,18 @@ export async function GET(request: NextRequest) {
 
     // Removed debug logging
 
-    // If user doesn't exist in our database yet, they haven't completed onboarding
+    // If user doesn't exist in our database yet, return minimal profile
     if (!userProfile) {
       logger.info('User profile not found in database for user:', { userId: user.id });
       return NextResponse.json({
         user: null,
-        hasCompletedOnboarding: false,
-        needsOnboarding: true,
+        hasCompletedOnboarding: true, // Onboarding skipped - always true
+        needsOnboarding: false,
       });
     }
 
-    // Check if user has completed onboarding
-    // User has completed onboarding if they have a name set
-    const hasCompletedOnboarding = !!(userProfile && userProfile.name);
+    // Onboarding is always considered complete (onboarding flow removed)
+    const hasCompletedOnboarding = true;
 
     // Check for active purchases
     const activePurchases = userProfile?.purchases?.filter((purchase: any) => 
@@ -74,27 +74,48 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const supabase = createClient();
-    
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return errorResponse('Unauthorized', 401);
     }
 
-    // Parse request body
-    const body = await request.json();
+    // Apply rate limiting: 10 profile updates per hour
+    const { allowed, headers } = await applyUserRateLimit(user.id, 'api');
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Too many profile updates. Please try again later.' },
+        { status: 429, headers }
+      );
+    }
 
-    // Update user profile
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = validateRequest(userProfileUpdateSchema, body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        validationErrorResponse(validation),
+        { status: 400 }
+      );
+    }
+
+    const validatedData = validation.data;
+
+    // Update user profile with validated data
     const { data: updatedUser, error: updateError } = await supabase
       .from('User')
       .update({
-        name: body.name,
-        phone: body.phone,
-        bio: body.bio || null,
-        linkedinUrl: body.linkedinUrl || null,
-        twitterUrl: body.twitterUrl || null,
-        websiteUrl: body.websiteUrl || null,
+        name: validatedData.name,
+        phone: validatedData.phone,
+        bio: validatedData.bio || null,
+        linkedinUrl: validatedData.linkedinUrl || null,
+        twitterUrl: validatedData.twitterUrl || null,
+        websiteUrl: validatedData.websiteUrl || null,
+        avatar: validatedData.avatar || null,
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', user.id)
       .select('*, StartupPortfolio(*)')

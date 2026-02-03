@@ -79,12 +79,12 @@ const p1Config: CourseConfig = {
     }
   ],
   communityStats: [
-    { value: '2000+', label: 'Founders Launched', color: 'orange' },
-    { value: '500+', label: 'Companies Incorporated', color: 'blue' },
-    { value: '85%', label: 'Completion Rate', color: 'green' }
+    { value: '30', label: 'Days to Launch', color: 'orange' },
+    { value: '100+', label: 'Templates Included', color: 'blue' },
+    { value: '4', label: 'Complete Modules', color: 'green' }
   ],
   ctaText: 'Ready to Launch Your Startup?',
-  ctaSubtext: 'Join 2000+ founders who went from idea to incorporated startup in just 30 days.',
+  ctaSubtext: 'Go from idea to incorporated startup in just 30 days with our step-by-step framework.',
   price: '₹4,999'
 };
 

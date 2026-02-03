@@ -31,7 +31,7 @@ const p3Config: CourseConfig = {
     { value: '12', label: 'Modules' },
     { value: '45', label: 'Days' },
     { value: '22+', label: 'Investors' },
-    { value: '₹5Cr+', label: 'Avg Raised' }
+    { value: '200+', label: 'Templates' }
   ],
   achievements: [
     'Master bootstrapping and revenue-first growth',
@@ -79,12 +79,12 @@ const p3Config: CourseConfig = {
     }
   ],
   communityStats: [
-    { value: '₹500Cr+', label: 'Total Raised', color: 'green' },
-    { value: '300+', label: 'Funded Startups', color: 'blue' },
-    { value: '22+', label: 'Investor Network', color: 'purple' }
+    { value: '12', label: 'Complete Modules', color: 'green' },
+    { value: '200+', label: 'Templates & Tools', color: 'blue' },
+    { value: '45', label: 'Days of Content', color: 'purple' }
   ],
   ctaText: 'Ready to Raise Funding?',
-  ctaSubtext: 'Join 300+ founders who successfully raised from ₹50L to ₹50Cr using our proven framework.',
+  ctaSubtext: 'Master the complete Indian funding ecosystem from grants to VC with our proven framework.',
   price: '₹5,999'
 };
 

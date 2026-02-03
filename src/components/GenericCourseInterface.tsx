@@ -24,8 +24,11 @@ import {
   MessageSquare,
   Clock,
   Star,
-  Zap
+  Zap,
+  Layers,
+  GraduationCap
 } from 'lucide-react';
+import { COURSE_CONTENT_STATS, ContentStatsRow } from '@/components/courses/CourseContentBreakdown';
 
 // Product-specific configurations
 export interface CourseConfig {
@@ -128,6 +131,12 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
   const totalLessons = product?.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
   const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
+  // Get course content stats
+  const courseStats = product?.code ? COURSE_CONTENT_STATS[product.code] : null;
+  const totalModules = product?.modules?.length || courseStats?.moduleCount || 0;
+  const templateCount = courseStats?.templateCount || 50;
+  const estimatedDays = courseStats?.estimatedDays || 30;
+
   const tabItems = [
     { id: 'overview', label: 'Overview' },
     { id: 'modules', label: 'Course Content' },
@@ -190,6 +199,58 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
           </TabsList>
           {/* Overview Tab */}
           <TabsContent value="overview">
+            {/* What's Included Section */}
+            <Card className="p-6 mb-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-blue-600" />
+                What's Included in This Course
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center p-4 bg-white rounded-xl shadow-sm">
+                  <Layers className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-purple-700">{totalModules}</div>
+                  <div className="text-sm text-gray-600">Modules</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-xl shadow-sm">
+                  <BookOpen className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-blue-700">{totalLessons || courseStats?.lessonCount || 0}</div>
+                  <div className="text-sm text-gray-600">Lessons</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-xl shadow-sm">
+                  <FileText className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-green-700">{templateCount}+</div>
+                  <div className="text-sm text-gray-600">Templates</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-xl shadow-sm">
+                  <Clock className="w-6 h-6 text-orange-600 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-orange-700">{Math.round((totalLessons || courseStats?.lessonCount || 30) * 1.5)}</div>
+                  <div className="text-sm text-gray-600">Hours</div>
+                </div>
+              </div>
+
+              {/* Additional Value Info */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="p-4 bg-white rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <GraduationCap className="w-5 h-5 text-blue-600" />
+                    <span className="font-medium">Learning Duration</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Complete in <span className="font-semibold text-gray-900">{estimatedDays} days</span> with daily action plans
+                  </p>
+                </div>
+                <div className="p-4 bg-white rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Download className="w-5 h-5 text-green-600" />
+                    <span className="font-medium">Downloadable Resources</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-900">{templateCount + (courseStats?.toolCount || 10)}+</span> templates, tools, and checklists included
+                  </p>
+                </div>
+              </div>
+            </Card>
+
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               {/* What You Will Achieve */}
               <Card className="p-6">

@@ -77,12 +77,12 @@ const p18Config: CourseConfig = {
     }
   ],
   communityStats: [
-    { value: '400+', label: 'Ops Leaders', color: 'slate' },
-    { value: 'Rs 50Cr+', label: 'Costs Saved', color: 'green' },
-    { value: '100+', label: 'Supply Chains Built', color: 'blue' }
+    { value: '45', label: 'Days Duration', color: 'slate' },
+    { value: '100+', label: 'Templates & Tools', color: 'green' },
+    { value: '8', label: 'Complete Modules', color: 'blue' }
   ],
   ctaText: 'Ready to Build Scalable Operations?',
-  ctaSubtext: 'Join 400+ operations leaders who have built efficient, scalable systems.',
+  ctaSubtext: 'Build efficient, scalable operations and supply chain systems for your startup.',
   price: 'Rs 5,999'
 };
 

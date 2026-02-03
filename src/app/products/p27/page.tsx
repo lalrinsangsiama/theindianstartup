@@ -78,11 +78,11 @@ const p27Config: CourseConfig = {
   ],
   communityStats: [
     { value: '200+', label: 'PropTech Founders', color: 'stone' },
-    { value: '500+', label: 'Projects Registered', color: 'blue' },
-    { value: 'Rs 500Cr+', label: 'Transactions', color: 'green' }
+    { value: '10', label: 'Complete Modules', color: 'blue' },
+    { value: '140+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Transform Real Estate?',
-  ctaSubtext: 'Join 200+ PropTech founders building the future of real estate.',
+  ctaSubtext: 'Master PropTech with RERA compliance and smart city integration strategies.',
   price: 'Rs 7,999'
 };
 

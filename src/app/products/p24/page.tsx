@@ -78,11 +78,11 @@ const p24Config: CourseConfig = {
   ],
   communityStats: [
     { value: '300+', label: 'Manufacturers', color: 'amber' },
-    { value: 'Rs 1000Cr+', label: 'PLI Benefits', color: 'blue' },
-    { value: '100+', label: 'Factories Set Up', color: 'green' }
+    { value: '11', label: 'Complete Modules', color: 'blue' },
+    { value: '180+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready for Make in India?',
-  ctaSubtext: 'Join 300+ manufacturers who have accessed PLI benefits and scaled production.',
+  ctaSubtext: 'Master manufacturing with access to 13 PLI schemes worth ₹1.97 lakh crore.',
   price: 'Rs 8,999'
 };
 

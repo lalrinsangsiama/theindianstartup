@@ -70,6 +70,8 @@ import { PersonalizedRecommendations } from '@/components/dashboard/Personalized
 import { QuickWins } from '@/components/dashboard/QuickWins';
 import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBanner';
 import { ValueDashboard, ValueMetrics, PotentialValueCard } from '@/components/dashboard/ValueDashboard';
+import { LearningPathRecommendations } from '@/components/courses/LearningPathRecommendations';
+import { COURSE_CONTENT_STATS } from '@/components/courses/CourseContentBreakdown';
 
 // Lazy load heavy components
 const XPDisplay = dynamic(() => import('@/components/progress').then(mod => ({ default: mod.XPDisplay })), {
@@ -1245,12 +1247,30 @@ function DashboardContent() {
           />
         </div>
 
+        {/* Learning Path Guide */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <Heading as="h2" variant="h4">
+              Your Learning Path
+            </Heading>
+          </div>
+          <LearningPathRecommendations
+            ownedCourses={dashboardData.ownedProducts.map(p => p.code)}
+            currentStage={
+              dashboardData.ownedProducts.length === 0 ? 'idea' :
+              dashboardData.ownedProducts.length < 5 ? 'launch' :
+              dashboardData.ownedProducts.length < 10 ? 'growth' :
+              dashboardData.ownedProducts.length < 20 ? 'scale' : 'global'
+            }
+          />
+        </div>
+
         {/* Personalized Recommendations */}
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
               <Heading as="h2" variant="h4">
-                Your Personalized Learning Path
+                Personalized Recommendations
               </Heading>
             </div>
             <PersonalizedRecommendations
@@ -1271,31 +1291,69 @@ function DashboardContent() {
             />
           </div>
 
-          {/* Quick Stats Sidebar */}
+          {/* Enhanced Quick Stats Sidebar */}
           <div className="space-y-4">
-            <Card>
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
               <CardHeader>
-                <CardTitle className="text-lg">Your Stats</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                  Your Progress
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Text size="sm" color="muted">Learning Streak</Text>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Text size="xl" weight="bold">
-                      {dashboardData.currentStreak}
+                {/* Total Lessons Completed */}
+                <div className="p-3 bg-white rounded-lg">
+                  <Text size="sm" color="muted">Lessons Completed</Text>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <Text size="xl" weight="bold" className="text-blue-700">
+                      {dashboardData.lessonProgress?.filter((p: any) => p.completed).length || 0}
                     </Text>
-                    <Text size="sm">days 🔥</Text>
+                    <Text size="sm" color="muted">
+                      / {(() => {
+                        let total = 0;
+                        dashboardData.ownedProducts.forEach(p => {
+                          const stats = COURSE_CONTENT_STATS[p.code];
+                          if (stats) total += stats.lessonCount;
+                        });
+                        return total || 'N/A';
+                      })()}
+                    </Text>
                   </div>
                 </div>
-                <div>
-                  <Text size="sm" color="muted">Courses Owned</Text>
-                  <Text size="xl" weight="bold">
-                    {dashboardData.ownedProducts.length}/30
-                  </Text>
+
+                {/* Learning Streak */}
+                <div className="p-3 bg-white rounded-lg">
+                  <Text size="sm" color="muted">Learning Streak</Text>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Text size="xl" weight="bold" className="text-orange-600">
+                      {dashboardData.currentStreak}
+                    </Text>
+                    <Text size="sm">days</Text>
+                    {dashboardData.currentStreak > 0 && <span className="text-xl">🔥</span>}
+                  </div>
                 </div>
-                <div>
+
+                {/* Courses Owned */}
+                <div className="p-3 bg-white rounded-lg">
+                  <Text size="sm" color="muted">Courses Owned</Text>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <Text size="xl" weight="bold" className="text-purple-700">
+                      {dashboardData.ownedProducts.length}
+                    </Text>
+                    <Text size="sm" color="muted">/ 30</Text>
+                  </div>
+                  <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-purple-500 rounded-full"
+                      style={{ width: `${(dashboardData.ownedProducts.length / 30) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Total XP */}
+                <div className="p-3 bg-white rounded-lg">
                   <Text size="sm" color="muted">Total XP Earned</Text>
-                  <Text size="xl" weight="bold">
+                  <Text size="xl" weight="bold" className="text-green-600">
                     {dashboardData.totalXP.toLocaleString()}
                   </Text>
                 </div>

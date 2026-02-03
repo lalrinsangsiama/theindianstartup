@@ -119,7 +119,205 @@ export const ACHIEVEMENT_SYSTEM: Record<string, Achievement> = {
     category: "completion",
     condition: { type: "course_complete", value: 1, metadata: { course: "P3" } }
   },
-  
+
+  "food_processing_expert": {
+    id: "food_processing_expert",
+    title: "Food Industry Expert",
+    description: "Complete the Food Processing Mastery course",
+    xp: 1500,
+    badge: "🍽️",
+    icon: "utensils",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P13" } }
+  },
+
+  "impact_leader": {
+    id: "impact_leader",
+    title: "Impact Leader",
+    description: "Complete the Impact & CSR Mastery course",
+    xp: 1500,
+    badge: "💚",
+    icon: "heart",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P14" } }
+  },
+
+  "sustainability_champion": {
+    id: "sustainability_champion",
+    title: "Sustainability Champion",
+    description: "Complete the Carbon Credits course",
+    xp: 1500,
+    badge: "🌱",
+    icon: "leaf",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P15" } }
+  },
+
+  "hr_master": {
+    id: "hr_master",
+    title: "People Leader",
+    description: "Complete HR & Team Building Mastery",
+    xp: 1500,
+    badge: "👥",
+    icon: "users",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P16" } }
+  },
+
+  "product_guru": {
+    id: "product_guru",
+    title: "Product Guru",
+    description: "Complete Product Development course",
+    xp: 1500,
+    badge: "💡",
+    icon: "lightbulb",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P17" } }
+  },
+
+  "ops_excellence": {
+    id: "ops_excellence",
+    title: "Operations Excellence",
+    description: "Complete Operations & Supply Chain",
+    xp: 1500,
+    badge: "⚙️",
+    icon: "settings",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P18" } }
+  },
+
+  "tech_architect": {
+    id: "tech_architect",
+    title: "Tech Architect",
+    description: "Complete Technology Stack course",
+    xp: 1500,
+    badge: "🖥️",
+    icon: "server",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P19" } }
+  },
+
+  "fintech_pioneer": {
+    id: "fintech_pioneer",
+    title: "FinTech Pioneer",
+    description: "Complete FinTech Mastery course",
+    xp: 2000,
+    badge: "💳",
+    icon: "credit-card",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P20" } }
+  },
+
+  "healthtech_innovator": {
+    id: "healthtech_innovator",
+    title: "HealthTech Innovator",
+    description: "Complete HealthTech course",
+    xp: 2000,
+    badge: "🏥",
+    icon: "heart-pulse",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P21" } }
+  },
+
+  "ecommerce_mogul": {
+    id: "ecommerce_mogul",
+    title: "E-commerce Mogul",
+    description: "Complete E-commerce & D2C Mastery",
+    xp: 1500,
+    badge: "🛒",
+    icon: "shopping-cart",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P22" } }
+  },
+
+  "ev_pioneer": {
+    id: "ev_pioneer",
+    title: "EV Pioneer",
+    description: "Complete EV & Clean Mobility course",
+    xp: 2000,
+    badge: "⚡",
+    icon: "zap",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P23" } }
+  },
+
+  "manufacturing_master": {
+    id: "manufacturing_master",
+    title: "Make in India Master",
+    description: "Complete Manufacturing course",
+    xp: 2000,
+    badge: "🏭",
+    icon: "factory",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P24" } }
+  },
+
+  "edtech_innovator": {
+    id: "edtech_innovator",
+    title: "EdTech Innovator",
+    description: "Complete EdTech Mastery course",
+    xp: 1500,
+    badge: "🎓",
+    icon: "graduation-cap",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P25" } }
+  },
+
+  "agritech_champion": {
+    id: "agritech_champion",
+    title: "AgriTech Champion",
+    description: "Complete AgriTech & Farm-to-Fork",
+    xp: 1500,
+    badge: "🌾",
+    icon: "wheat",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P26" } }
+  },
+
+  "proptech_expert": {
+    id: "proptech_expert",
+    title: "PropTech Expert",
+    description: "Complete Real Estate & PropTech",
+    xp: 1500,
+    badge: "🏠",
+    icon: "building",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P27" } }
+  },
+
+  "biotech_pioneer": {
+    id: "biotech_pioneer",
+    title: "Biotech Pioneer",
+    description: "Complete Biotech & Life Sciences",
+    xp: 2000,
+    badge: "🧬",
+    icon: "dna",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P28" } }
+  },
+
+  "saas_master": {
+    id: "saas_master",
+    title: "SaaS Master",
+    description: "Complete SaaS & B2B Tech Mastery",
+    xp: 1500,
+    badge: "☁️",
+    icon: "cloud",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P29" } }
+  },
+
+  "global_entrepreneur": {
+    id: "global_entrepreneur",
+    title: "Global Entrepreneur",
+    description: "Complete International Expansion",
+    xp: 2000,
+    badge: "🌍",
+    icon: "globe",
+    category: "completion",
+    condition: { type: "course_complete", value: 1, metadata: { course: "P30" } }
+  },
+
   // Portfolio Achievements
   "portfolio_complete": {
     id: "portfolio_complete",
@@ -210,7 +408,40 @@ export const ACHIEVEMENT_SYSTEM: Record<string, Achievement> = {
     category: "milestone",
     condition: { type: "custom", value: 1, metadata: { product: "ALL_ACCESS" } }
   },
-  
+
+  "sector_specialist": {
+    id: "sector_specialist",
+    title: "Sector Specialist",
+    description: "Complete 3 sector-specific courses (P13-P28)",
+    xp: 3000,
+    badge: "🎯",
+    icon: "target",
+    category: "milestone",
+    condition: { type: "products_owned", value: 3, metadata: { codes: ["P13","P14","P15","P20","P21","P22","P23","P24","P25","P26","P27","P28"] } }
+  },
+
+  "full_stack_founder": {
+    id: "full_stack_founder",
+    title: "Full-Stack Founder",
+    description: "Complete all core function courses (P16-P19)",
+    xp: 5000,
+    badge: "🏅",
+    icon: "award",
+    category: "milestone",
+    condition: { type: "course_complete", value: 4, metadata: { codes: ["P16","P17","P18","P19"] } }
+  },
+
+  "ultimate_founder": {
+    id: "ultimate_founder",
+    title: "Ultimate Founder",
+    description: "Complete all 30 courses",
+    xp: 10000,
+    badge: "👑",
+    icon: "crown",
+    category: "milestone",
+    condition: { type: "course_complete", value: 30 }
+  },
+
   // Social & Community
   "community_starter": {
     id: "community_starter",

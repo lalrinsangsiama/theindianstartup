@@ -78,11 +78,11 @@ const p21Config: CourseConfig = {
   ],
   communityStats: [
     { value: '250+', label: 'HealthTech Founders', color: 'red' },
-    { value: '100+', label: 'Devices Approved', color: 'blue' },
-    { value: 'Rs 300Cr+', label: 'Raised', color: 'green' }
+    { value: '11', label: 'Complete Modules', color: 'blue' },
+    { value: '160+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Build in HealthTech?',
-  ctaSubtext: 'Join 250+ HealthTech founders who have navigated CDSCO regulations successfully.',
+  ctaSubtext: 'Master HealthTech with CDSCO compliance, telemedicine regulations, and ABDM integration.',
   price: 'Rs 8,999'
 };
 

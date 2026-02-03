@@ -23,10 +23,10 @@ export const landingPageLinks: PageLink[] = [
   { text: "What's Included", url: '#value', type: 'anchor', section: 'header', critical: false },
   { text: 'Pricing', url: '/pricing', type: 'internal', section: 'header', critical: true },
   { text: 'Dashboard', url: '/dashboard', type: 'internal', section: 'header', critical: true },
-  { text: 'Get Started', url: '/get-started', type: 'internal', section: 'header', critical: true },
+  { text: 'Get Started', url: '/signup', type: 'internal', section: 'header', critical: true },
   
   // Hero Section CTAs
-  { text: 'Start Your 30-Day Journey', url: '/get-started', type: 'internal', section: 'hero', critical: true },
+  { text: 'Start Your 30-Day Journey', url: '/signup', type: 'internal', section: 'hero', critical: true },
   
   // Portfolio Demo
   { text: 'View Portfolio Demo', url: '/portfolio', type: 'internal', section: 'portfolio', critical: false },
@@ -35,7 +35,7 @@ export const landingPageLinks: PageLink[] = [
   { text: 'View All Products', url: '/pricing', type: 'internal', section: 'products', critical: true },
   
   // Final CTA Section
-  { text: 'Get Started Now', url: '/get-started', type: 'internal', section: 'cta', critical: true },
+  { text: 'Get Started Now', url: '/signup', type: 'internal', section: 'cta', critical: true },
   { text: 'View All Products', url: '/pricing', type: 'internal', section: 'cta', critical: true },
   
   // Footer Legal
@@ -59,7 +59,7 @@ export function checkRouteExists(path: string): boolean {
     '/',
     '/pricing',
     '/dashboard',
-    '/get-started',
+    '/signup',
     '/portfolio',
     '/terms',
     '/privacy',

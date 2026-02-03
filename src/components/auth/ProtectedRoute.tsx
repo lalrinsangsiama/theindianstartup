@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
   allowedRoles?: string[];
+  /** @deprecated Onboarding flow removed - this prop has no effect */
   skipOnboardingCheck?: boolean;
 }
 
@@ -21,7 +22,7 @@ export function ProtectedRoute({
   children,
   redirectTo = '/login',
   allowedRoles = [],
-  skipOnboardingCheck = false
+  skipOnboardingCheck: _skipOnboardingCheck = false // deprecated, no effect
 }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -113,9 +114,9 @@ export function ProtectedRoute({
           return;
         }
 
-        // Fetch profile for role checking and onboarding status
+        // Fetch profile for role checking
         // SECURITY: Always use server-side profile data for role, not client metadata
-        let profileData: { role?: string; hasCompletedOnboarding?: boolean } | null = null;
+        let profileData: { role?: string } | null = null;
 
         try {
           const controller = new AbortController();
@@ -168,17 +169,7 @@ export function ProtectedRoute({
           }
         }
 
-        // Check onboarding status (unless explicitly skipped)
-        if (!skipOnboardingCheck && !pathname.includes('/onboarding') && profileData) {
-          // If user needs onboarding and we're not already on onboarding page
-          if (!profileData.hasCompletedOnboarding && !redirectHandled.current && mounted.current) {
-            redirectHandled.current = true;
-            logger.info('ProtectedRoute: User needs onboarding, redirecting');
-            setCheckingAccess(false);
-            router.push('/onboarding');
-            return;
-          }
-        }
+        // Onboarding check removed - users go straight to dashboard
 
         // All checks passed
         if (mounted.current) {
@@ -205,7 +196,7 @@ export function ProtectedRoute({
       redirectHandled.current = false;
     }
     checkAccess();
-  }, [user, session, authLoading, initialized, pathname, router, redirectTo, allowedRoles, skipOnboardingCheck]);
+  }, [user, session, authLoading, initialized, pathname, router, redirectTo, allowedRoles]);
 
   // Show loading state while checking authentication (with timeout protection)
   if ((authLoading || checkingAccess || !initialized) && !hasAccess) {

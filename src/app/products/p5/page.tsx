@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -21,7 +22,7 @@ import {
   Download,
   Star
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useUserProducts } from '@/hooks/useUserProducts';
 import { P5ResourceHub } from '@/components/legal/P5ResourceHub';
 import { useRouter } from 'next/navigation';
@@ -48,8 +49,8 @@ interface Lesson {
 }
 
 const P5LegalStackPage: React.FC = () => {
-  const { user } = useAuth();
-  const { products, hasAccess, loading } = useUserProducts();
+  const { user } = useAuthContext();
+  const { hasAccess, loading } = useUserProducts();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'modules' | 'resources' | 'tools' | 'certification'>('overview');
   const [modules, setModules] = useState<Module[]>([]);
@@ -73,7 +74,7 @@ const P5LegalStackPage: React.FC = () => {
 
   const fetchModules = async () => {
     try {
-      const response = await fetch('/api/products/P5/modules');
+      const response = await fetch('/api/products/p5/modules');
       if (response.ok) {
         const data = await response.json();
         setModules(data.modules || []);
@@ -92,19 +93,19 @@ const P5LegalStackPage: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching modules:', error);
+      logger.error('Error fetching modules:', error);
     }
   };
 
   const fetchLessons = async (moduleId: string) => {
     try {
-      const response = await fetch(`/api/products/P5/modules/${moduleId}/lessons`);
+      const response = await fetch(`/api/products/p5/modules/${moduleId}/lessons`);
       if (response.ok) {
         const data = await response.json();
         setLessons(data.lessons || []);
       }
     } catch (error) {
-      console.error('Error fetching lessons:', error);
+      logger.error('Error fetching lessons:', error);
     }
   };
 

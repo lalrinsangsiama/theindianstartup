@@ -78,11 +78,11 @@ const p20Config: CourseConfig = {
   ],
   communityStats: [
     { value: '300+', label: 'FinTech Founders', color: 'emerald' },
-    { value: '50+', label: 'Licenses Obtained', color: 'blue' },
-    { value: 'Rs 500Cr+', label: 'Raised', color: 'purple' }
+    { value: '11', label: 'Complete Modules', color: 'blue' },
+    { value: '170+', label: 'Templates & Tools', color: 'purple' }
   ],
   ctaText: 'Ready to Build in FinTech?',
-  ctaSubtext: 'Join 300+ FinTech founders who have navigated RBI regulations successfully.',
+  ctaSubtext: 'Master FinTech with RBI regulations, PA/PG licensing, NBFC setup, and crypto compliance.',
   price: 'Rs 8,999'
 };
 

@@ -4,7 +4,7 @@ import { Heading, Text } from '@/components/ui';
 import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
-import { Database, Copy, ExternalLink } from 'lucide-react';
+import { Database, Copy, ExternalLink, AlertTriangle, Shield } from 'lucide-react';
 import { useState } from 'react';
 
 export default function SQLCommandsClient() {
@@ -104,6 +104,37 @@ export default function SQLCommandsClient() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Security Warning Banner */}
+        <div className="mb-6 bg-amber-50 border-2 border-amber-400 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <Text weight="bold" className="text-amber-800 mb-1">
+                Sensitive Admin Area
+              </Text>
+              <Text size="sm" className="text-amber-700">
+                This page contains database schema commands. All access to this page is logged
+                for security auditing. Only execute SQL commands if you understand their impact.
+                Never share these commands or your Supabase credentials.
+              </Text>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Info */}
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <Text size="sm" className="text-blue-700">
+                <strong>Security Note:</strong> This page only displays SQL commands for manual execution.
+                No direct database access is provided through this interface.
+                Always verify commands before running them in your Supabase dashboard.
+              </Text>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-8">
           <Heading as="h1" className="mb-2 flex items-center gap-2">
             <Database className="w-8 h-8" />

@@ -1,53 +1,101 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
 import { Heading } from '@/components/ui/Typography';
 import { Alert } from '@/components/ui/Alert';
-import { createClient } from '@/lib/supabase/client';
-import { Mail, CheckCircle, Sparkles, Clock, RefreshCw } from 'lucide-react';
+import { Mail, CheckCircle, Sparkles, Clock, RefreshCw, AlertCircle } from 'lucide-react';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const supabase = createClient();
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendError, setResendError] = useState('');
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+
+  // Check verification status periodically
+  const checkVerificationStatus = useCallback(async () => {
+    try {
+      const res = await fetch('/api/user/email/verify-status');
+      const data = await res.json();
+
+      if (data.email) {
+        setUserEmail(data.email);
+      }
+
+      if (data.verified) {
+        // Email verified, redirect to dashboard
+        router.push('/dashboard');
+      }
+    } catch {
+      // Ignore errors
+    }
+  }, [router]);
+
+  // Check status on mount and every 5 seconds
+  useEffect(() => {
+    checkVerificationStatus();
+    const interval = setInterval(checkVerificationStatus, 5000);
+    return () => clearInterval(interval);
+  }, [checkVerificationStatus]);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(prev => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   const handleResendEmail = async () => {
+    if (resendCooldown > 0) return;
+
     setIsResending(true);
     setResendError('');
     setResendSuccess(false);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user?.email) {
-        setResendError('No email found. Please sign up again.');
+      const res = await fetch('/api/user/email/resend-verification', {
+        method: 'POST',
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          // Rate limited
+          setResendError(data.message || 'Too many requests. Please wait before trying again.');
+          if (data.retryAfter) {
+            setResendCooldown(data.retryAfter);
+          }
+        } else {
+          setResendError(data.error || 'Failed to resend email.');
+        }
         return;
       }
 
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: user.email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
+      setResendSuccess(true);
+      setResendCooldown(60); // 60 second cooldown after success
 
-      if (error) {
-        setResendError(error.message);
-      } else {
-        setResendSuccess(true);
+      if (data.rateLimit?.remaining !== undefined) {
+        setRemainingAttempts(data.rateLimit.remaining);
       }
-    } catch (error) {
+    } catch {
       setResendError('Failed to resend email. Please try again.');
     } finally {
       setIsResending(false);
     }
+  };
+
+  const maskEmail = (email: string) => {
+    const [local, domain] = email.split('@');
+    if (local.length <= 2) return email;
+    return `${local[0]}${'*'.repeat(local.length - 2)}${local[local.length - 1]}@${domain}`;
   };
 
   return (
@@ -76,7 +124,12 @@ export default function VerifyEmailPage() {
             Check your inbox! 📧
           </Text>
           <Text>
-            We've sent a verification email to your registered email address.
+            We've sent a verification email to{' '}
+            {userEmail ? (
+              <span className="font-medium text-black">{maskEmail(userEmail)}</span>
+            ) : (
+              'your registered email address'
+            )}.
           </Text>
           <Text color="muted" size="sm">
             Click the link in the email to verify your account and start building your startup empire.
@@ -130,10 +183,21 @@ export default function VerifyEmailPage() {
             onClick={handleResendEmail}
             isLoading={isResending}
             loadingText="Resending..."
+            disabled={resendCooldown > 0}
           >
-            <RefreshCw className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
-            Resend Verification Email
+            <RefreshCw className={`w-4 h-4 mr-2 ${resendCooldown === 0 ? 'group-hover:rotate-180 transition-transform duration-300' : ''}`} />
+            {resendCooldown > 0
+              ? `Resend in ${resendCooldown}s`
+              : 'Resend Verification Email'
+            }
           </Button>
+
+          {remainingAttempts !== null && remainingAttempts <= 2 && (
+            <div className="flex items-center gap-2 text-sm text-amber-600 justify-center">
+              <AlertCircle className="w-4 h-4" />
+              <span>{remainingAttempts} resend attempt{remainingAttempts !== 1 ? 's' : ''} remaining this hour</span>
+            </div>
+          )}
 
           <Button
             variant="primary"

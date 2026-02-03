@@ -97,8 +97,8 @@ export default function ExpertSessionsPage() {
           id: '3',
           title: 'Digital Marketing for Indian Startups',
           description: 'Master cost-effective digital marketing strategies tailored for the Indian market. From SEO and content marketing to social media and paid advertising.',
-          expertName: 'Rahul Sharma',
-          expertBio: 'Head of Growth at Unacademy. Scaled user base from 1M to 50M+. Ex-Google, specialized in growth hacking and performance marketing.',
+          expertName: 'Expert Speaker',
+          expertBio: 'Growth marketing specialist with experience in scaling startups.',
           scheduledAt: '2024-01-15T16:00:00Z',
           duration: 50,
           maxAttendees: 60,
@@ -111,8 +111,8 @@ export default function ExpertSessionsPage() {
           id: '4',
           title: 'Legal Essentials for Indian Startups',
           description: 'Navigate the complex legal landscape of starting a business in India. Cover company registration, compliance requirements, and intellectual property protection.',
-          expertName: 'Anjali Gupta',
-          expertBio: 'Senior Partner at LegalTech Associates. 15+ years experience in startup law. Helped 200+ startups with legal setup and compliance.',
+          expertName: 'Expert Speaker',
+          expertBio: 'Startup law specialist with experience in company registration and compliance.',
           scheduledAt: '2024-01-12T11:00:00Z',
           duration: 40,
           maxAttendees: 30,
@@ -292,9 +292,9 @@ export default function ExpertSessionsPage() {
                   <CardContent className="p-4 text-center">
                     <Star className="w-6 h-6 text-green-600 mx-auto mb-2" />
                     <Text className="font-heading text-xl font-bold text-green-600">
-                      4.8/5
+                      Live
                     </Text>
-                    <Text size="sm" color="muted">Average Rating</Text>
+                    <Text size="sm" color="muted">Expert Sessions</Text>
                   </CardContent>
                 </Card>
               </div>

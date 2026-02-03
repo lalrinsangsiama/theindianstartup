@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -255,7 +256,7 @@ export default function HelpPage() {
         break;
       case 'chat':
         // Implement chat functionality
-        alert('Live chat will be available soon!');
+        toast.info('Live chat will be available soon!');
         break;
     }
   };

@@ -5,6 +5,7 @@ import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
 import { MobileNav } from '@/components/navigation/MobileNav';
+import { Toaster } from 'sonner';
 import "./globals.css";
 
 const inter = Inter({ 
@@ -125,6 +126,7 @@ export default function RootLayout({
                 {children}
               </div>
               <FeedbackWidget />
+              <Toaster richColors position="top-center" />
             </PostHogProvider>
           </AuthProvider>
         </ErrorBoundary>

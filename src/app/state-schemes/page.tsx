@@ -528,7 +528,7 @@ export default function StateSchemesPage() {
                 Ready to Unlock State Benefits?
               </Heading>
               <Text color="muted" className="mb-6">
-                Join 400+ founders who have optimized their business locations
+                Optimize your business location and access state-specific benefits
               </Text>
               <Button 
                 size="lg"

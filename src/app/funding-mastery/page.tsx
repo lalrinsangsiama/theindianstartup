@@ -703,7 +703,7 @@ export default function FundingMasteryPage() {
                 Ready to Master Funding?
               </Heading>
               <Text color="muted" className="mb-6">
-                Join 500+ founders who have successfully raised capital
+                Master the complete Indian funding ecosystem with our step-by-step guide
               </Text>
               <Button 
                 size="lg"

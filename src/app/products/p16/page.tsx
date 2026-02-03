@@ -80,11 +80,11 @@ const p16Config: CourseConfig = {
   ],
   communityStats: [
     { value: '800+', label: 'HR Leaders', color: 'indigo' },
-    { value: '50K+', label: 'Hires Made', color: 'green' },
-    { value: '200+', label: 'ESOP Plans', color: 'purple' }
+    { value: '9', label: 'Complete Modules', color: 'green' },
+    { value: '120+', label: 'Templates & Tools', color: 'purple' }
   ],
   ctaText: 'Ready to Build Your A-Team?',
-  ctaSubtext: 'Join 800+ founders who have built world-class teams with structured HR systems.',
+  ctaSubtext: 'Master HR with hiring frameworks, compensation structures, ESOPs, and POSH compliance.',
   price: 'Rs 5,999'
 };
 

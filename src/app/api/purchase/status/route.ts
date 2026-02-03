@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const user = await requireAuth();
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get('orderId');
-    const productType = searchParams.get('productType') || '30_day_guide';
+    const productCode = searchParams.get('productCode') || searchParams.get('productType');
 
     const supabase = createClient();
 
@@ -37,27 +37,45 @@ export async function GET(request: NextRequest) {
         paymentId: purchase.razorpayPaymentId,
         status: purchase.status,
         amount: purchase.amount,
-        currency: purchase.currency,
-        productName: purchase.productName,
-        productCode: purchase.productCode,
+        currency: 'INR',
+        productName: purchase.product?.title || 'Course',
+        productCode: purchase.product?.code || purchase.productId,
         purchaseDate: purchase.createdAt,
         expiresAt: purchase.expiresAt,
         product: purchase.product,
-        isActive: purchase.isActive
+        isActive: purchase.status === 'completed' && new Date(purchase.expiresAt) > new Date()
       });
     }
 
-    // Otherwise get all purchases for product type
-    const { data: purchases, error } = await supabase
+    // Otherwise get all purchases (optionally filtered by product code)
+    let query = supabase
       .from('Purchase')
-      .select('*')
+      .select(`
+        *,
+        product:Product(*)
+      `)
       .eq('userId', user.id)
-      .eq('productType', productType)
       .order('createdAt', { ascending: false });
+
+    // Filter by product code if provided
+    if (productCode) {
+      // First get the product ID
+      const { data: product } = await supabase
+        .from('Product')
+        .select('id')
+        .eq('code', productCode)
+        .single();
+
+      if (product) {
+        query = query.eq('productId', product.id);
+      }
+    }
+
+    const { data: purchases, error } = await query;
 
     if (error) {
       logger.error('Database error:', error);
-      
+
       // If table doesn't exist, return no access
       if (error.code === 'PGRST205') {
         return NextResponse.json({
@@ -67,7 +85,7 @@ export async function GET(request: NextRequest) {
           warning: 'Purchase tracking not yet configured'
         });
       }
-      
+
       return NextResponse.json(
         { error: 'Failed to fetch purchase status' },
         { status: 500 }
@@ -77,7 +95,6 @@ export async function GET(request: NextRequest) {
     // Find active purchase
     const activePurchase = purchases?.find(p =>
       p.status === 'completed' &&
-      p.isActive &&
       new Date(p.expiresAt) > new Date()
     );
 
@@ -85,18 +102,20 @@ export async function GET(request: NextRequest) {
       hasAccess: !!activePurchase,
       activePurchase: activePurchase ? {
         id: activePurchase.id,
-        productName: activePurchase.productName,
-        purchaseDate: activePurchase.purchaseDate,
+        productName: activePurchase.product?.title || 'Course',
+        productCode: activePurchase.product?.code,
+        purchaseDate: activePurchase.createdAt,
         expiresAt: activePurchase.expiresAt,
         status: activePurchase.status
       } : null,
       allPurchases: purchases?.map(p => ({
         id: p.id,
-        productName: p.productName,
+        productName: p.product?.title || 'Course',
+        productCode: p.product?.code,
         amount: p.amount,
         status: p.status,
         createdAt: p.createdAt,
-        purchaseDate: p.purchaseDate,
+        purchaseDate: p.createdAt,
         expiresAt: p.expiresAt
       })) || []
     });

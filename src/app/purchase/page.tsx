@@ -55,11 +55,12 @@ export default function PurchasePage() {
         throw new Error('Failed to load payment gateway');
       }
 
-      // Create order
+      // Create order - productType P1 price is ₹4,999 (499900 paise)
+      // The API will fetch the correct price from the product catalog
       const orderResponse = await fetch('/api/purchase/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productType: 'P1', amount: 100 }),
+        body: JSON.stringify({ productType: 'P1' }),
       });
 
       if (!orderResponse.ok) {
@@ -268,15 +269,15 @@ export default function PurchasePage() {
             <Card>
               <CardContent className="p-6 text-center">
                 <Users className="w-8 h-8 mx-auto mb-2 text-gray-600" />
-                <Text weight="medium">100+</Text>
-                <Text size="sm" color="muted">Active Founders</Text>
+                <Text weight="medium">1000+</Text>
+                <Text size="sm" color="muted">Templates</Text>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
                 <Award className="w-8 h-8 mx-auto mb-2 text-gray-600" />
-                <Text weight="medium">10+</Text>
-                <Text size="sm" color="muted">Success Stories</Text>
+                <Text weight="medium">30</Text>
+                <Text size="sm" color="muted">Courses</Text>
               </CardContent>
             </Card>
             <Card>

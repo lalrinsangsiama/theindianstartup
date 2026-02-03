@@ -78,11 +78,11 @@ const p25Config: CourseConfig = {
   ],
   communityStats: [
     { value: '400+', label: 'EdTech Founders', color: 'violet' },
-    { value: '1M+', label: 'Students Reached', color: 'blue' },
-    { value: '50+', label: 'Accreditations', color: 'green' }
+    { value: '9', label: 'Complete Modules', color: 'blue' },
+    { value: '130+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Transform Education?',
-  ctaSubtext: 'Join 400+ EdTech founders who have built compliant, scalable learning platforms.',
+  ctaSubtext: 'Master EdTech with NEP 2020 compliance, UGC ODL approvals, and LMS technology.',
   price: 'Rs 6,999'
 };
 

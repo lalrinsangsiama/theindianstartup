@@ -78,11 +78,11 @@ const p22Config: CourseConfig = {
   ],
   communityStats: [
     { value: '700+', label: 'E-commerce Founders', color: 'orange' },
-    { value: 'Rs 200Cr+', label: 'GMV Generated', color: 'blue' },
-    { value: '500+', label: 'Brands Launched', color: 'green' }
+    { value: '10', label: 'Complete Modules', color: 'blue' },
+    { value: '150+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Build Your E-commerce Empire?',
-  ctaSubtext: 'Join 700+ e-commerce founders who have built profitable online businesses.',
+  ctaSubtext: 'Master e-commerce with D2C models, Consumer Protection Act compliance, and logistics.',
   price: 'Rs 7,999'
 };
 

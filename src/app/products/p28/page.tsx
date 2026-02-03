@@ -78,11 +78,11 @@ const p28Config: CourseConfig = {
   ],
   communityStats: [
     { value: '150+', label: 'Biotech Founders', color: 'teal' },
-    { value: '30+', label: 'Drugs Approved', color: 'blue' },
-    { value: 'Rs 200Cr+', label: 'Grants Accessed', color: 'green' }
+    { value: '12', label: 'Complete Modules', color: 'blue' },
+    { value: '150+', label: 'Templates & Tools', color: 'green' }
   ],
   ctaText: 'Ready to Build in Biotech?',
-  ctaSubtext: 'Join 150+ biotech founders navigating drug development and approvals.',
+  ctaSubtext: 'Master biotech with CDSCO compliance, clinical trials, GMP, and BIRAC funding.',
   price: 'Rs 9,999'
 };
 

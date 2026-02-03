@@ -79,11 +79,11 @@ const p17Config: CourseConfig = {
   ],
   communityStats: [
     { value: '600+', label: 'Product Managers', color: 'cyan' },
-    { value: '200+', label: 'Products Launched', color: 'teal' },
-    { value: '50+', label: 'PMF Achieved', color: 'blue' }
+    { value: '10', label: 'Complete Modules', color: 'teal' },
+    { value: '120+', label: 'Templates & Tools', color: 'blue' }
   ],
   ctaText: 'Ready to Build Products Users Love?',
-  ctaSubtext: 'Join 600+ product leaders who have achieved product-market fit with our frameworks.',
+  ctaSubtext: 'Master product development with customer discovery, MVP design, and growth experiments.',
   price: 'Rs 6,999'
 };
 

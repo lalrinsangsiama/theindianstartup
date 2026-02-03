@@ -50,11 +50,19 @@ const mobileNavItems = [
   }
 ];
 
+// Pages where mobile nav should be hidden
+const AUTH_PAGES = ['/signup', '/login', '/forgot-password', '/auth/callback', '/signup/verify-email'];
+
 export const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuthContext();
+
+  // Hide on auth pages
+  if (AUTH_PAGES.some(page => pathname?.startsWith(page))) {
+    return null;
+  }
 
   const handleSignOut = async () => {
     await signOut();

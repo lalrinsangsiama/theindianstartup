@@ -17,14 +17,14 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 // import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import Link from 'next/link';
-import { 
-  ArrowRight, 
-  BookOpen, 
-  Trophy, 
-  Users, 
-  Loader2, 
-  Calendar, 
-  Zap, 
+import {
+  ArrowRight,
+  BookOpen,
+  Trophy,
+  Users,
+  Loader2,
+  Calendar,
+  Zap,
   Target,
   Lock,
   CheckCircle,
@@ -45,7 +45,19 @@ import {
   Star,
   AlertCircle,
   Gift,
-  Building
+  Building,
+  Factory,
+  GraduationCap,
+  Wheat,
+  Building2,
+  Microscope,
+  Cloud,
+  Globe,
+  Heart,
+  Settings,
+  Server,
+  CreditCard,
+  Lightbulb
 } from 'lucide-react';
 import { PaymentButton, BuyNowButton, AddToCartButton, AllAccessButton } from '@/components/payment/PaymentButton';
 import { useCart } from '@/context/CartContext';
@@ -56,6 +68,8 @@ import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { AchievementsSection } from '@/components/dashboard/AchievementsSection';
 import { PersonalizedRecommendations } from '@/components/dashboard/PersonalizedRecommendations';
 import { QuickWins } from '@/components/dashboard/QuickWins';
+import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBanner';
+import { ValueDashboard, ValueMetrics, PotentialValueCard } from '@/components/dashboard/ValueDashboard';
 
 // Lazy load heavy components
 const XPDisplay = dynamic(() => import('@/components/progress').then(mod => ({ default: mod.XPDisplay })), {
@@ -100,34 +114,115 @@ interface DashboardData {
   goals?: string[];
   businessStage?: string;
   primaryFocus?: string;
+  valueMetrics?: ValueMetrics;
 }
 
 // Product categories with icons
-const productCategories = {
-  foundation: { 
-    name: 'Foundation', 
+const productCategories: Record<string, { name: string; icon: React.ReactNode; description: string }> = {
+  foundation: {
+    name: 'Foundation',
     icon: <Briefcase className="w-4 h-4" />,
     description: 'Start your journey'
   },
-  funding: { 
-    name: 'Funding & Finance', 
+  funding: {
+    name: 'Funding & Finance',
     icon: <DollarSign className="w-4 h-4" />,
     description: 'Master money matters'
   },
-  legal: { 
-    name: 'Legal & IP', 
+  legal: {
+    name: 'Legal & IP',
     icon: <Scale className="w-4 h-4" />,
     description: 'Protect your business'
   },
-  growth: { 
-    name: 'Growth & Sales', 
+  growth: {
+    name: 'Growth & Sales',
     icon: <Rocket className="w-4 h-4" />,
     description: 'Scale your startup'
   },
-  strategic: { 
-    name: 'Strategic', 
+  strategic: {
+    name: 'Strategic',
     icon: <MapPin className="w-4 h-4" />,
     description: 'Advanced strategies'
+  },
+  sector: {
+    name: 'Sector Specific',
+    icon: <Target className="w-4 h-4" />,
+    description: 'Industry specializations'
+  },
+  hr: {
+    name: 'HR & Team',
+    icon: <Users className="w-4 h-4" />,
+    description: 'Build your team'
+  },
+  product: {
+    name: 'Product',
+    icon: <Lightbulb className="w-4 h-4" />,
+    description: 'Build great products'
+  },
+  operations: {
+    name: 'Operations',
+    icon: <Settings className="w-4 h-4" />,
+    description: 'Scale efficiently'
+  },
+  technology: {
+    name: 'Technology',
+    icon: <Server className="w-4 h-4" />,
+    description: 'Tech infrastructure'
+  },
+  fintech: {
+    name: 'FinTech',
+    icon: <CreditCard className="w-4 h-4" />,
+    description: 'Financial services'
+  },
+  healthtech: {
+    name: 'HealthTech',
+    icon: <Heart className="w-4 h-4" />,
+    description: 'Healthcare innovation'
+  },
+  ecommerce: {
+    name: 'E-commerce',
+    icon: <ShoppingCart className="w-4 h-4" />,
+    description: 'Online retail'
+  },
+  ev: {
+    name: 'EV & Mobility',
+    icon: <Zap className="w-4 h-4" />,
+    description: 'Clean transportation'
+  },
+  manufacturing: {
+    name: 'Manufacturing',
+    icon: <Factory className="w-4 h-4" />,
+    description: 'Make in India'
+  },
+  edtech: {
+    name: 'EdTech',
+    icon: <GraduationCap className="w-4 h-4" />,
+    description: 'Education technology'
+  },
+  agritech: {
+    name: 'AgriTech',
+    icon: <Wheat className="w-4 h-4" />,
+    description: 'Agricultural innovation'
+  },
+  proptech: {
+    name: 'PropTech',
+    icon: <Building2 className="w-4 h-4" />,
+    description: 'Real estate technology'
+  },
+  biotech: {
+    name: 'Biotech',
+    icon: <Microscope className="w-4 h-4" />,
+    description: 'Life sciences'
+  },
+  saas: {
+    name: 'SaaS',
+    icon: <Cloud className="w-4 h-4" />,
+    description: 'Software as a Service'
+  },
+  international: {
+    name: 'Global',
+    icon: <Globe className="w-4 h-4" />,
+    description: 'International expansion'
   }
 };
 
@@ -200,12 +295,128 @@ const enhancedProducts: Record<string, Partial<Product>> = {
     prerequisites: ['P5'],
     outcomes: ['Patent strategy', 'IP portfolio', 'Monetization plan']
   },
-  P11: { 
-    category: 'growth', 
+  P11: {
+    category: 'growth',
     shortTitle: 'Branding & PR',
     icon: <Star className="w-5 h-5" />,
     prerequisites: ['P1'],
     outcomes: ['Brand identity', 'Media presence', 'Industry recognition']
+  },
+  P12: {
+    category: 'growth',
+    shortTitle: 'Marketing',
+    icon: <TrendingUp className="w-5 h-5" />,
+    prerequisites: ['P1', 'P11'],
+    outcomes: ['Marketing engine', 'Predictable CAC/LTV', 'Automation running']
+  },
+  P13: {
+    category: 'sector',
+    shortTitle: 'Food Processing',
+    icon: <Target className="w-5 h-5" />,
+    outcomes: ['FSSAI compliance', 'Quality certifications', 'Export ready']
+  },
+  P14: {
+    category: 'sector',
+    shortTitle: 'Impact & CSR',
+    icon: <Heart className="w-5 h-5" />,
+    outcomes: ['CSR structure', 'Corporate partnerships', 'Impact measurement']
+  },
+  P15: {
+    category: 'sector',
+    shortTitle: 'Carbon Credits',
+    icon: <TrendingUp className="w-5 h-5" />,
+    outcomes: ['Carbon accounting', 'Credit development', 'Net Zero consulting']
+  },
+  P16: {
+    category: 'hr',
+    shortTitle: 'HR & Team',
+    icon: <Users className="w-5 h-5" />,
+    outcomes: ['Hiring systems', 'ESOP structures', 'Labor compliance']
+  },
+  P17: {
+    category: 'product',
+    shortTitle: 'Product Dev',
+    icon: <Lightbulb className="w-5 h-5" />,
+    prerequisites: ['P1'],
+    outcomes: ['Product-market fit', 'Growth experiments', 'Product roadmap']
+  },
+  P18: {
+    category: 'operations',
+    shortTitle: 'Operations',
+    icon: <Package className="w-5 h-5" />,
+    outcomes: ['Scalable processes', 'Supply chain', '30% cost reduction']
+  },
+  P19: {
+    category: 'technology',
+    shortTitle: 'Tech Stack',
+    icon: <Server className="w-5 h-5" />,
+    outcomes: ['System architecture', 'Cloud infrastructure', 'Security framework']
+  },
+  P20: {
+    category: 'fintech',
+    shortTitle: 'FinTech',
+    icon: <CreditCard className="w-5 h-5" />,
+    outcomes: ['RBI compliance', 'Licensing pathway', 'Partnership ready']
+  },
+  P21: {
+    category: 'healthtech',
+    shortTitle: 'HealthTech',
+    icon: <Heart className="w-5 h-5" />,
+    outcomes: ['CDSCO compliance', 'ABDM integration', 'ISO 13485 ready']
+  },
+  P22: {
+    category: 'ecommerce',
+    shortTitle: 'E-commerce',
+    icon: <ShoppingCart className="w-5 h-5" />,
+    outcomes: ['Marketplace presence', 'D2C optimization', 'Logistics network']
+  },
+  P23: {
+    category: 'ev',
+    shortTitle: 'EV & Mobility',
+    icon: <Zap className="w-5 h-5" />,
+    outcomes: ['PLI access', 'FAME II subsidies', 'Homologation certified']
+  },
+  P24: {
+    category: 'manufacturing',
+    shortTitle: 'Manufacturing',
+    icon: <Factory className="w-5 h-5" />,
+    outcomes: ['Factory operations', 'PLI approved', 'Export ready']
+  },
+  P25: {
+    category: 'edtech',
+    shortTitle: 'EdTech',
+    icon: <GraduationCap className="w-5 h-5" />,
+    outcomes: ['NEP 2020 compliance', 'Content platform', 'Accreditation ready']
+  },
+  P26: {
+    category: 'agritech',
+    shortTitle: 'AgriTech',
+    icon: <Wheat className="w-5 h-5" />,
+    outcomes: ['FPO registered', 'Scheme access', 'Export operations']
+  },
+  P27: {
+    category: 'proptech',
+    shortTitle: 'PropTech',
+    icon: <Building2 className="w-5 h-5" />,
+    outcomes: ['RERA compliance', 'PropTech deployed', 'Smart city ready']
+  },
+  P28: {
+    category: 'biotech',
+    shortTitle: 'Biotech',
+    icon: <Microscope className="w-5 h-5" />,
+    outcomes: ['CDSCO pathway', 'Clinical ready', 'BIRAC funded']
+  },
+  P29: {
+    category: 'saas',
+    shortTitle: 'SaaS',
+    icon: <Cloud className="w-5 h-5" />,
+    outcomes: ['SaaS metrics', 'PLG engine', 'SOC 2 compliant']
+  },
+  P30: {
+    category: 'international',
+    shortTitle: 'International',
+    icon: <Globe className="w-5 h-5" />,
+    outcomes: ['FEMA compliant', 'Global entity', 'Export running']
   }
 };
 
@@ -479,8 +690,22 @@ function DashboardContent() {
     );
   }
 
+  // Check if email is verified (Supabase user has email_confirmed_at)
+  const isEmailVerified = !!user?.email_confirmed_at;
+
   return (
     <DashboardLayout>
+      {/* Email Verification Banner */}
+      {user?.email && !isEmailVerified && (
+        <div className="px-6 lg:px-8 pt-6">
+          <EmailVerificationBanner
+            email={user.email}
+            isVerified={isEmailVerified}
+            className="max-w-7xl mx-auto"
+          />
+        </div>
+      )}
+
       {/* Progressive Onboarding Modal */}
       {showProgressiveOnboarding && (
         <ProgressiveOnboarding
@@ -678,6 +903,20 @@ function DashboardContent() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Value Dashboard - Show ROI metrics for users with purchases */}
+        {dashboardData.valueMetrics && dashboardData.valueMetrics.totalInvested > 0 && (
+          <div className="mb-8">
+            <ValueDashboard metrics={dashboardData.valueMetrics} />
+          </div>
+        )}
+
+        {/* Potential Value Card for New Users (no purchases) */}
+        {dashboardData.ownedProducts.length === 0 && (
+          <div className="mb-8">
+            <PotentialValueCard />
+          </div>
+        )}
 
         {/* Quick Wins for New Users */}
         {dashboardData.ownedProducts.length === 0 && (

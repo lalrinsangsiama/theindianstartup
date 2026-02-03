@@ -40,6 +40,7 @@ import {
   MapPin
 } from 'lucide-react';
 import { PRODUCTS } from '@/lib/products-catalog';
+import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBanner';
 
 declare global {
   interface Window {
@@ -158,36 +159,40 @@ function CheckoutContent() {
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
-    
+
     setCouponLoading(true);
     try {
-      // Simulate coupon validation
-      // In production, this would call an API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Example coupons
-      if (couponCode.toUpperCase() === 'FOUNDER50') {
-        setAppliedCoupon({
-          code: 'FOUNDER50',
-          type: 'percentage',
-          discount: 50,
-          description: '50% off for early founders'
-        });
-        setError('');
-      } else if (couponCode.toUpperCase() === 'LAUNCH1000') {
-        setAppliedCoupon({
-          code: 'LAUNCH1000',
-          type: 'fixed',
-          discount: 1000,
-          description: '₹1000 off launch offer'
-        });
-        setError('');
+      // Validate coupon with API
+      const response = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponCode.trim().toUpperCase(),
+          productCodes: cart.map(item => item.productCode)
+        })
+      });
+
+      if (response.ok) {
+        const couponData = await response.json();
+        if (couponData.valid) {
+          setAppliedCoupon({
+            code: couponData.code,
+            type: couponData.type,
+            discount: couponData.discount,
+            description: couponData.description || `${couponData.discount}${couponData.type === 'percentage' ? '%' : '₹'} off`
+          });
+          setError('');
+        } else {
+          setError(couponData.message || 'Invalid coupon code');
+          setAppliedCoupon(null);
+        }
       } else {
         setError('Invalid coupon code');
         setAppliedCoupon(null);
       }
     } catch (err) {
-      setError('Failed to apply coupon');
+      setError('Failed to validate coupon. Please try again.');
+      setAppliedCoupon(null);
     } finally {
       setCouponLoading(false);
     }
@@ -350,6 +355,9 @@ function CheckoutContent() {
 
   const { subtotal, discount, tax, total } = calculatePricing();
 
+  // Check if email is verified
+  const isEmailVerified = !!user?.email_confirmed_at;
+
   if (cart.length === 0) {
     return (
       <DashboardLayout>
@@ -384,6 +392,15 @@ function CheckoutContent() {
           <Heading as="h1" className="mb-2">Complete Your Purchase</Heading>
           <Text color="muted">You're one step away from transforming your startup idea into reality</Text>
         </div>
+
+        {/* Email Verification Warning */}
+        {user?.email && !isEmailVerified && (
+          <EmailVerificationBanner
+            email={user.email}
+            isVerified={isEmailVerified}
+            className="mb-6"
+          />
+        )}
 
         {error && (
           <Alert variant={error.includes('Processing') ? 'info' : 'error'} className="mb-6">
@@ -618,8 +635,8 @@ function CheckoutContent() {
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                 <Users className="w-5 h-5 text-purple-600" />
                 <div>
-                  <Text size="sm" weight="bold">2,500+ Founders</Text>
-                  <Text size="xs" color="muted">Trust us daily</Text>
+                  <Text size="sm" weight="bold">30 Complete Courses</Text>
+                  <Text size="xs" color="muted">India-specific guidance</Text>
                 </div>
               </div>
             </div>
@@ -665,19 +682,19 @@ function CheckoutContent() {
                     <Text size="sm">Subtotal</Text>
                     <Text size="sm">₹{subtotal.toLocaleString('en-IN')}</Text>
                   </div>
-                  
+
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <Text size="sm">Discount</Text>
                       <Text size="sm">-₹{discount.toLocaleString('en-IN')}</Text>
                     </div>
                   )}
-                  
+
                   <div className="flex justify-between">
                     <Text size="sm">Tax (GST)</Text>
                     <Text size="sm">₹{tax}</Text>
                   </div>
-                  
+
                   <div className="border-t pt-2">
                     <div className="flex justify-between">
                       <Text weight="bold" size="lg">Total</Text>
@@ -695,19 +712,57 @@ function CheckoutContent() {
                   </div>
                 </div>
 
+                {/* Value Summary Card */}
+                <div className="p-4 bg-gradient-to-br from-green-50 to-blue-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="w-4 h-4 text-green-600" />
+                    <Text size="sm" weight="bold" className="text-green-800">Value You're Getting</Text>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <Text color="muted">Template & Tool Value</Text>
+                      <Text className="text-green-700 font-medium">
+                        ₹{(total * 3).toLocaleString('en-IN')}+
+                      </Text>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <Text color="muted">Your Investment</Text>
+                      <Text className="text-gray-700">
+                        ₹{total.toLocaleString('en-IN')}
+                      </Text>
+                    </div>
+                    <div className="border-t border-green-200 pt-2">
+                      <div className="flex justify-between">
+                        <Text size="sm" weight="medium" className="text-green-800">ROI</Text>
+                        <Badge className="bg-green-600 text-white">
+                          {Math.round((total * 3) / total)}x Return
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <Text size="xs" className="text-green-600 mt-2">
+                    Compare: Equivalent consulting would cost ₹{(total * 10).toLocaleString('en-IN')}+
+                  </Text>
+                </div>
+
                 {/* Purchase Button */}
                 <Button
                   variant="primary"
                   size="lg"
-                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                  className={`w-full ${isEmailVerified ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
                   onClick={handlePurchase}
                   isLoading={loading}
-                  disabled={loading}
+                  disabled={loading || !isEmailVerified}
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Processing...
+                    </>
+                  ) : !isEmailVerified ? (
+                    <>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Verify Email to Continue
                     </>
                   ) : (
                     <>
@@ -716,6 +771,18 @@ function CheckoutContent() {
                     </>
                   )}
                 </Button>
+
+                {/* Email Verification Required Notice */}
+                {!isEmailVerified && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5" />
+                      <Text size="xs" className="text-yellow-700">
+                        Please verify your email address before making a purchase. Check your inbox for the verification link.
+                      </Text>
+                    </div>
+                  </div>
+                )}
 
                 {/* Guarantee */}
                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">

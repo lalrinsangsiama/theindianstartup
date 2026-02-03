@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { checkRateLimit, createRateLimitResponse, RATE_LIMIT_CONFIGS, distributedRateLimit, getClientIP } from '@/lib/rate-limit';
+import { distributedRateLimit, createRateLimitResponse, RATE_LIMIT_CONFIGS, getClientIP } from '@/lib/rate-limit';
 import { createAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
 
 /**
  * POST /api/user/email/resend-verification
  * Resend email verification with rate limiting
+ * Accepts email from body for unauthenticated users (post-signup)
  */
 export async function POST(request: NextRequest) {
   try {
-    // Apply email rate limiting
     const clientIP = getClientIP(request);
+
+    // Apply strict rate limiting for email resend
     const rateLimitResult = await distributedRateLimit(clientIP, {
       ...RATE_LIMIT_CONFIGS.email,
-      maxRequests: 3, // Only 3 verification emails per hour
+      maxRequests: 3, // Only 3 verification emails per hour per IP
     });
 
     if (!rateLimitResult.success) {
@@ -22,26 +24,47 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Please sign in to resend verification email' },
-        { status: 401 }
-      );
+    // Try to get email from authenticated user first
+    let email: string | null = null;
+    let userId: string | null = null;
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      // User is authenticated
+      email = user.email || null;
+      userId = user.id;
+
+      // Check if already verified
+      if (user.email_confirmed_at) {
+        return NextResponse.json(
+          { error: 'Email is already verified' },
+          { status: 400 }
+        );
+      }
+    } else {
+      // User not authenticated - try to get email from request body
+      try {
+        const body = await request.json();
+        email = body.email;
+      } catch {
+        // No body or invalid JSON
+      }
     }
 
-    // Check if already verified
-    if (user.email_confirmed_at) {
+    if (!email) {
       return NextResponse.json(
-        { error: 'Email is already verified' },
+        { error: 'Email address is required' },
         { status: 400 }
       );
     }
 
-    if (!user.email) {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'No email address found. Please sign up again.' },
+        { error: 'Invalid email format' },
         { status: 400 }
       );
     }
@@ -49,7 +72,7 @@ export async function POST(request: NextRequest) {
     // Resend verification email
     const { error } = await supabase.auth.resend({
       type: 'signup',
-      email: user.email,
+      email: email,
       options: {
         emailRedirectTo: `${request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
       },
@@ -57,8 +80,21 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       logger.error('Failed to resend verification email:', error);
+
+      // Don't reveal if email exists or not for security
+      if (error.message.includes('User not found') || error.message.includes('Email not found')) {
+        return NextResponse.json({
+          success: true,
+          message: 'If an account exists with this email, a verification link will be sent.',
+          rateLimit: {
+            remaining: rateLimitResult.remaining,
+            resetTime: rateLimitResult.resetTime,
+          },
+        });
+      }
+
       return NextResponse.json(
-        { error: error.message },
+        { error: 'Failed to send verification email. Please try again.' },
         { status: 500 }
       );
     }
@@ -66,10 +102,10 @@ export async function POST(request: NextRequest) {
     // Audit log
     await createAuditLog({
       eventType: 'security_event',
-      userId: user.id,
+      userId: userId || undefined,
       action: 'verification_email_resent',
       details: {
-        email: user.email,
+        email: email,
       },
       ipAddress: clientIP,
     });

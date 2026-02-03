@@ -18,6 +18,14 @@ export default function VerifyEmailPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
 
+  // Get email from sessionStorage on mount
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem('pendingVerificationEmail');
+    if (storedEmail) {
+      setUserEmail(storedEmail);
+    }
+  }, []);
+
   // Check verification status periodically
   const checkVerificationStatus = useCallback(async () => {
     try {
@@ -29,7 +37,8 @@ export default function VerifyEmailPage() {
       }
 
       if (data.verified) {
-        // Email verified, redirect to dashboard
+        // Email verified, clear stored email and redirect to dashboard
+        sessionStorage.removeItem('pendingVerificationEmail');
         router.push('/dashboard');
       }
     } catch {
@@ -62,6 +71,10 @@ export default function VerifyEmailPage() {
     try {
       const res = await fetch('/api/user/email/resend-verification', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: userEmail }),
       });
 
       const data = await res.json();

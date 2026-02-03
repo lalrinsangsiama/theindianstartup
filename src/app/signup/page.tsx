@@ -131,6 +131,9 @@ export default function SignupPage() {
         return;
       }
       
+      // Store email for verification page (needed for resend functionality)
+      sessionStorage.setItem('pendingVerificationEmail', formData.email);
+
       // Redirect to email verification page
       router.push('/signup/verify-email');
     } catch (error) {

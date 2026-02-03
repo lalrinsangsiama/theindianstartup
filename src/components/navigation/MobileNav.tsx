@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
+import { Logo } from '@/components/icons/Logo';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { cn } from '@/lib/cn';
 
@@ -83,9 +84,8 @@ export const MobileNav = () => {
       {/* Mobile Header with Glass Effect */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-gray-800 to-black rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300" />
-            <Text weight="bold" size="lg" className="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">TIS</Text>
+          <Link href="/" className="flex items-center group hover:opacity-80 transition-opacity">
+            <Logo variant="full" className="h-8 text-black" />
           </Link>
           
           <Button

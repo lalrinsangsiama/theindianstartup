@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -10,6 +11,12 @@ import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/cn';
+import { CartProvider, useCart } from '@/context/CartContext';
+import { ProductTour } from '@/components/onboarding/ProductTour';
+import { SessionTimeoutWarning } from '@/components/auth/SessionTimeoutWarning';
+import { GlobalSearch } from '@/components/search/GlobalSearch';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { OnboardingReminderBanner } from '@/components/onboarding/OnboardingReminderBanner';
 import {
   Home,
   BookOpen,
@@ -58,96 +65,14 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-interface CartItem {
-  productCode: string;
-  title: string;
-  price: number;
-  quantity: number;
-}
-
-interface CartData {
-  items: CartItem[];
-  timestamp: number;
-  expiresAt: number;
-}
-
-// Cart persistence utility functions
-const CART_EXPIRY_HOURS = 24;
-
-const saveCartToStorage = (cart: CartItem[]) => {
-  const now = Date.now();
-  const cartData: CartData = {
-    items: cart,
-    timestamp: now,
-    expiresAt: now + (CART_EXPIRY_HOURS * 60 * 60 * 1000) // 24 hours
-  };
-  localStorage.setItem('dashboardCart', JSON.stringify(cartData));
-};
-
-const loadCartFromStorage = (): CartItem[] => {
-  try {
-    const stored = localStorage.getItem('dashboardCart');
-    if (!stored) return [];
-    
-    const cartData: CartData = JSON.parse(stored);
-    const now = Date.now();
-    
-    // Check if cart has expired
-    if (now > cartData.expiresAt) {
-      localStorage.removeItem('dashboardCart');
-      return [];
-    }
-    
-    // Return items if cart is still valid
-    return cartData.items || [];
-  } catch (error) {
-    logger.error('Error loading cart from storage:', error);
-    localStorage.removeItem('dashboardCart');
-    return [];
-  }
-};
-
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+// Inner component that uses the cart context
+function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [showCart, setShowCart] = useState(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = useCallback((productCode: string, title: string, price: number) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.productCode === productCode);
-      if (existing) {
-        return prev.map(item => 
-          item.productCode === productCode 
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { productCode, title, price, quantity: 1 }];
-    });
-    setShowCart(true);
-  }, []);
-
-  const removeFromCart = useCallback((productCode: string) => {
-    setCart(prev => prev.filter(item => item.productCode !== productCode));
-  }, []);
-
-  const updateQuantity = useCallback((productCode: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productCode);
-    } else {
-      setCart(prev => prev.map(item => 
-        item.productCode === productCode 
-          ? { ...item, quantity }
-          : item
-      ));
-    }
-  }, [removeFromCart]);
-
-  const calculateTotal = useCallback(() => {
-    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }, [cart]);
+  // Use cart context instead of local state - removes XSS vulnerability
+  const { cart, removeFromCart, updateQuantity, calculateTotal, showCart, setShowCart } = useCart();
 
   useEffect(() => {
     // Fetch user profile for sidebar stats
@@ -162,31 +87,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     };
 
     fetchProfile();
-
-    // Load cart from localStorage with expiry check
-    const savedCart = loadCartFromStorage();
-    setCart(savedCart);
   }, []);
-
-  // Separate useEffect for exposing addToCart to global window
-  useEffect(() => {
-    // Expose addToCart function to global window for dashboard access
-    (window as any).dashboardAddToCart = addToCart;
-
-    // Cleanup function
-    return () => {
-      delete (window as any).dashboardAddToCart;
-    };
-  }, [addToCart]);
-
-  // Save cart to localStorage with expiry
-  useEffect(() => {
-    if (cart.length > 0) {
-      saveCartToStorage(cart);
-    } else {
-      localStorage.removeItem('dashboardCart');
-    }
-  }, [cart]);
 
   const isActive = (href: string) => {
     if (href === '/dashboard') {
@@ -292,7 +193,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* User Stats Card */}
         {userProfile && (
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-gray-200" data-tour="user-stats">
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold">
@@ -349,9 +250,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
 
         {/* Quick Action */}
-        <div className="p-4 border-t border-gray-200">
-          <Link 
-            href={`/journey/day/${userProfile?.currentDay || 1}`} 
+        <div className="p-4 border-t border-gray-200" data-tour="continue-journey">
+          <Link
+            href={`/journey/day/${userProfile?.currentDay || 1}`}
             onClick={() => setSidebarOpen(false)}
           >
             <Button variant="primary" className="w-full group">
@@ -399,6 +300,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </div>
             <div className="flex items-center gap-4">
+              <GlobalSearch />
+              <NotificationCenter />
               <Button
                 variant="ghost"
                 onClick={() => setShowCart(!showCart)}
@@ -415,6 +318,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </header>
+
+        {/* Onboarding Reminder Banner */}
+        <OnboardingReminderBanner />
 
         {/* Page Content */}
         <main className="min-h-[calc(100vh-4rem)]">
@@ -518,14 +424,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 variant="primary"
                 className="w-full"
                 onClick={() => {
-                  try {
-                    // Save cart and redirect to pricing
-                    saveCartToStorage(cart);
-                    window.location.href = '/pricing?fromCart=true';
-                  } catch (error) {
-                    logger.error('Error saving cart:', error);
-                    alert('Failed to save cart. Please try again.');
-                  }
+                  // Cart is automatically persisted via CartContext
+                  window.location.href = '/pricing?fromCart=true';
                 }}
               >
                 Proceed to Checkout
@@ -544,5 +444,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       )}
     </div>
+  );
+}
+
+// Main export - wraps inner component with CartProvider
+export function DashboardLayout({ children }: DashboardLayoutProps) {
+  return (
+    <CartProvider>
+      <DashboardLayoutInner>{children}</DashboardLayoutInner>
+      <ProductTour tourType="dashboard" />
+      <SessionTimeoutWarning />
+    </CartProvider>
   );
 }

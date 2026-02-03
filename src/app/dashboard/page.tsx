@@ -48,12 +48,14 @@ import {
   Building
 } from 'lucide-react';
 import { PaymentButton, BuyNowButton, AddToCartButton, AllAccessButton } from '@/components/payment/PaymentButton';
+import { useCart } from '@/context/CartContext';
 import dynamic from 'next/dynamic';
 import { ProgressiveOnboarding } from '@/components/onboarding/ProgressiveOnboarding';
 import { MobileDashboard } from '@/components/dashboard/MobileDashboard';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { AchievementsSection } from '@/components/dashboard/AchievementsSection';
 import { PersonalizedRecommendations } from '@/components/dashboard/PersonalizedRecommendations';
+import { QuickWins } from '@/components/dashboard/QuickWins';
 
 // Lazy load heavy components
 const XPDisplay = dynamic(() => import('@/components/progress').then(mod => ({ default: mod.XPDisplay })), {
@@ -208,9 +210,9 @@ const enhancedProducts: Record<string, Partial<Product>> = {
 };
 
 function DashboardContent() {
-  logger.info('🚀 NEW ENHANCED DASHBOARD LOADING - Version 2.0')
   const router = useRouter();
   const { user, signOut } = useAuthContext();
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -508,7 +510,7 @@ function DashboardContent() {
                     Start Your Startup Journey Today! 🚀
                   </Heading>
                   <Text size="lg" className="mb-4">
-                    Join 2000+ founders who are building successful startups with our comprehensive course ecosystem.
+                    Build your successful startup with our comprehensive course ecosystem featuring 30 courses and 1000+ templates.
                   </Text>
                   <div className="flex flex-wrap gap-3 mb-4">
                     <Badge className="bg-green-100 text-green-700">
@@ -550,7 +552,7 @@ function DashboardContent() {
                 Welcome back, {dashboardData.userName}!
               </Heading>
               <Text color="muted">
-                {dashboardData.startupName} • {dashboardData.ownedProducts.length}/11 products owned
+                {dashboardData.startupName} • {dashboardData.ownedProducts.length}/30 courses owned
               </Text>
             </div>
             
@@ -560,7 +562,7 @@ function DashboardContent() {
                   <div className="flex items-center gap-3">
                     <Package className="w-5 h-5 text-orange-600" />
                     <div>
-                      <Text weight="medium">Save ₹27,989 with All-Access!</Text>
+                      <Text weight="medium">Save ₹74,971 with All-Access!</Text>
                       <Text size="sm" color="muted">You own {dashboardData.ownedProducts.length} products</Text>
                     </div>
                     <BuyNowButton
@@ -595,14 +597,14 @@ function DashboardContent() {
                     <Text className="font-heading text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                       {dashboardData.ownedProducts.length}
                     </Text>
-                    <Text className="text-2xl text-gray-400">/12</Text>
+                    <Text className="text-2xl text-gray-400">/30</Text>
                   </div>
-                  <Text size="sm" color="muted">Courses Mastered</Text>
+                  <Text size="sm" color="muted">Courses Owned</Text>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-medium">
                     <span className="text-gray-600">Overall Progress</span>
-                    <span className="text-blue-600">{Math.round((dashboardData.ownedProducts.length / 12) * 100)}%</span>
+                    <span className="text-blue-600">{Math.round((dashboardData.ownedProducts.length / 30) * 100)}%</span>
                   </div>
                   <div className="h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                     <div 
@@ -676,6 +678,22 @@ function DashboardContent() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Wins for New Users */}
+        {dashboardData.ownedProducts.length === 0 && (
+          <div className="mb-8">
+            <QuickWins
+              userId={user?.id || ''}
+              onXPEarned={(xp) => {
+                // Update local XP display
+                setDashboardData(prev => prev ? {
+                  ...prev,
+                  totalXP: (prev.totalXP || 0) + xp
+                } : null);
+              }}
+            />
+          </div>
+        )}
 
         {/* Main Content Area */}
         <Card className="border-2 border-black shadow-lg">
@@ -900,13 +918,12 @@ function DashboardContent() {
                       ) : (
                         <>
                           <Text weight="medium">₹{product.price?.toLocaleString('en-IN')}</Text>
-                          <Button 
-                            variant="primary" 
+                          <Button
+                            variant="primary"
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // @ts-ignore - Accessing parent component's addToCart
-                              window.dashboardAddToCart?.(product.code, product.title, product.price);
+                              addToCart(product.code, product.title, product.price);
                             }}
                           >
                             <ShoppingCart className="w-4 h-4" />
@@ -1034,7 +1051,7 @@ function DashboardContent() {
                 <div>
                   <Text size="sm" color="muted">Courses Owned</Text>
                   <Text size="xl" weight="bold">
-                    {dashboardData.ownedProducts.length}/12
+                    {dashboardData.ownedProducts.length}/30
                   </Text>
                 </div>
                 <div>

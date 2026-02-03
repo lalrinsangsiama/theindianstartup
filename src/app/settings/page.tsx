@@ -53,6 +53,7 @@ import {
 } from 'lucide-react';
 import { PaymentButton, BuyNowButton, AllAccessButton, UpgradeButton } from '@/components/payment/PaymentButton';
 import Link from 'next/link';
+import { PageBreadcrumbs } from '@/components/ui/Breadcrumbs';
 
 export default function SettingsPage() {
   const { user } = useAuthContext();
@@ -89,6 +90,54 @@ export default function SettingsPage() {
     unsubscribeAll: false
   });
 
+  // Profile editing state
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    phone: '',
+    startupName: '',
+    industry: ''
+  });
+  const [profileSaving, setProfileSaving] = useState(false);
+
+  // Initialize profile data from user
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.user_metadata?.name || '',
+        phone: user.user_metadata?.phone || '',
+        startupName: user.user_metadata?.startupName || '',
+        industry: user.user_metadata?.industry || ''
+      });
+    }
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    setProfileSaving(true);
+    try {
+      const response = await fetch('/api/user/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'profile',
+          data: profileData
+        })
+      });
+
+      if (response.ok) {
+        setIsEditingProfile(false);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        logger.error('Failed to save profile');
+      }
+    } catch (error) {
+      logger.error('Failed to save profile:', error);
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   // Fetch billing data on component mount
   useEffect(() => {
     const fetchBillingData = async () => {
@@ -121,10 +170,21 @@ export default function SettingsPage() {
   const handleSaveNotifications = async () => {
     setLoading(true);
     try {
-      // Save notification preferences
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      const response = await fetch('/api/user/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'notifications',
+          data: notifications
+        })
+      });
+
+      if (response.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        logger.error('Failed to save notifications');
+      }
     } catch (error) {
       logger.error('Failed to save notifications:', error);
     } finally {
@@ -135,10 +195,21 @@ export default function SettingsPage() {
   const handleSavePrivacy = async () => {
     setLoading(true);
     try {
-      // Save privacy settings
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      const response = await fetch('/api/user/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'privacy',
+          data: privacy
+        })
+      });
+
+      if (response.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        logger.error('Failed to save privacy settings');
+      }
     } catch (error) {
       logger.error('Failed to save privacy settings:', error);
     } finally {
@@ -294,6 +365,8 @@ export default function SettingsPage() {
     <ProtectedRoute >
       <DashboardLayout>
         <div className="p-6 lg:p-8 max-w-4xl mx-auto">
+          <PageBreadcrumbs />
+
           {/* Header */}
           <div className="mb-8">
             <Heading as="h1" className="mb-2">
@@ -355,10 +428,35 @@ export default function SettingsPage() {
                         <User className="w-5 h-5" />
                         Profile Information
                       </span>
-                      <Button variant="outline" size="sm">
-                        <Edit2 className="w-4 h-4 mr-2" />
-                        Edit Profile
-                      </Button>
+                      {isEditingProfile ? (
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsEditingProfile(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={handleSaveProfile}
+                            isLoading={profileSaving}
+                          >
+                            <Save className="w-4 h-4 mr-2" />
+                            Save Changes
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsEditingProfile(true)}
+                        >
+                          <Edit2 className="w-4 h-4 mr-2" />
+                          Edit Profile
+                        </Button>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -374,7 +472,7 @@ export default function SettingsPage() {
                           </button>
                         </div>
                         <div>
-                          <Text size="lg" weight="bold">{user?.user_metadata?.name || 'Founder'}</Text>
+                          <Text size="lg" weight="bold">{profileData.name || user?.user_metadata?.name || 'Founder'}</Text>
                           <Text color="muted">Member since {new Date(user?.created_at || Date.now()).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</Text>
                         </div>
                       </div>
@@ -383,27 +481,31 @@ export default function SettingsPage() {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-sm font-medium mb-2">Full Name</label>
-                          <Input 
-                            type="text" 
-                            value={user?.user_metadata?.name || ''} 
+                          <Input
+                            type="text"
+                            value={isEditingProfile ? profileData.name : (user?.user_metadata?.name || '')}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
                             placeholder="Enter your name"
-                            disabled
+                            disabled={!isEditingProfile}
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-2">Email Address</label>
-                          <Input 
-                            type="email" 
-                            value={user?.email || ''} 
+                          <Input
+                            type="email"
+                            value={user?.email || ''}
                             disabled
                           />
                           <Text size="xs" color="muted" className="mt-1">Email cannot be changed</Text>
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-2">Phone Number</label>
-                          <Input 
-                            type="tel" 
+                          <Input
+                            type="tel"
+                            value={isEditingProfile ? profileData.phone : (user?.user_metadata?.phone || '')}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
                             placeholder="+91 98765 43210"
+                            disabled={!isEditingProfile}
                           />
                         </div>
                         <div>
@@ -430,14 +532,22 @@ export default function SettingsPage() {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium mb-2">Startup Name</label>
-                        <Input 
-                          type="text" 
+                        <Input
+                          type="text"
+                          value={isEditingProfile ? profileData.startupName : (user?.user_metadata?.startupName || '')}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, startupName: e.target.value }))}
                           placeholder="Your Startup Name"
+                          disabled={!isEditingProfile}
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2">Industry</label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                        <select
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          value={isEditingProfile ? profileData.industry : (user?.user_metadata?.industry || '')}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, industry: e.target.value }))}
+                          disabled={!isEditingProfile}
+                        >
                           <option value="">Select Industry</option>
                           <option value="tech">Technology</option>
                           <option value="ecommerce">E-commerce</option>
@@ -450,7 +560,10 @@ export default function SettingsPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2">Stage</label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                        <select
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          disabled={!isEditingProfile}
+                        >
                           <option value="">Select Stage</option>
                           <option value="idea">Idea Stage</option>
                           <option value="mvp">MVP Built</option>
@@ -461,27 +574,29 @@ export default function SettingsPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2">Location</label>
-                        <Input 
-                          type="text" 
+                        <Input
+                          type="text"
                           placeholder="City, State"
+                          disabled={!isEditingProfile}
                         />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium mb-2">Brief Description</label>
-                        <textarea 
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                        <textarea
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                           rows={3}
                           placeholder="What does your startup do?"
+                          disabled={!isEditingProfile}
                         />
                       </div>
                     </div>
-                    <div className="mt-6 flex justify-end gap-3">
-                      <Button variant="outline">Cancel</Button>
-                      <Button variant="primary">
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Changes
-                      </Button>
-                    </div>
+                    {!isEditingProfile && (
+                      <div className="mt-4 pt-4 border-t">
+                        <Text size="sm" color="muted">
+                          Click &quot;Edit Profile&quot; above to modify startup information
+                        </Text>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -638,11 +753,11 @@ export default function SettingsPage() {
                       <div className="bg-white rounded-lg p-4 mb-4">
                         <div className="grid grid-cols-3 gap-4 text-center">
                           <div>
-                            <Text size="xl" weight="bold">12</Text>
+                            <Text size="xl" weight="bold">30</Text>
                             <Text size="sm" color="muted">Total Products</Text>
                           </div>
                           <div>
-                            <Text size="xl" weight="bold" className="text-green-600">₹27,989</Text>
+                            <Text size="xl" weight="bold" className="text-green-600">₹74,971</Text>
                             <Text size="sm" color="muted">You Save</Text>
                           </div>
                           <div>
@@ -1023,40 +1138,73 @@ export default function SettingsPage() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Two-Factor Authentication</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Smartphone className="w-5 h-5" />
+                      Two-Factor Authentication
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-4">
                       <div>
                         <Text weight="medium">2FA Status</Text>
-                        <Text size="sm" color="muted">Add an extra layer of security to your account</Text>
+                        <Text size="sm" color="muted">Add an extra layer of security using an authenticator app</Text>
                       </div>
-                      <Badge variant="outline">Not Enabled</Badge>
                     </div>
-                    <Button variant="outline" className="mt-4">
-                      <Smartphone className="w-4 h-4 mr-2" />
-                      Enable 2FA
-                    </Button>
+                    <Link href="/settings/security/2fa">
+                      <Button variant="outline" className="w-full sm:w-auto">
+                        <Shield className="w-4 h-4 mr-2" />
+                        Manage 2FA Settings
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Active Sessions</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Smartphone className="w-5 h-5" />
+                      Active Sessions
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Text size="sm" color="muted" className="mb-4">
-                      Manage devices where you're currently logged in
+                      Manage devices that have been trusted for 2FA bypass. Revoke sessions you don&apos;t recognize.
                     </Text>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <div>
-                          <Text weight="medium">Current Device</Text>
-                          <Text size="sm" color="muted">Last active: Just now</Text>
-                        </div>
-                        <Badge variant="success">Active</Badge>
-                      </div>
-                    </div>
+                    <Link href="/settings/security/sessions">
+                      <Button variant="outline" className="w-full sm:w-auto">
+                        <Shield className="w-4 h-4 mr-2" />
+                        View Active Sessions
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-amber-600">
+                      <AlertTriangle className="w-5 h-5" />
+                      Security Tips
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li className="flex items-start gap-2">
+                        <span className="text-amber-500">•</span>
+                        <span>Enable 2FA for an extra layer of security</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-amber-500">•</span>
+                        <span>Use a strong, unique password</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-amber-500">•</span>
+                        <span>Regularly review your active sessions</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-amber-500">•</span>
+                        <span>Never share your backup codes with anyone</span>
+                      </li>
+                    </ul>
                   </CardContent>
                 </Card>
               </div>

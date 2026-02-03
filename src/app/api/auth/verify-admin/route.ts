@@ -44,17 +44,25 @@ export async function GET() {
     }
 
     // Check admin access
+    // SECURITY FIX: Require BOTH role AND email allowlist (when allowlist is configured)
+    // This prevents bypassing email allowlist by setting role in database
     const hasAdminRole = user.role && ADMIN_ROLES.includes(user.role);
     const hasAdminEmail = FALLBACK_ADMIN_EMAILS.includes(user.email);
 
-    if (!hasAdminRole && !hasAdminEmail) {
+    // When email allowlist is configured, require both role AND email
+    // When no allowlist, only require role (for backwards compatibility)
+    const allowlistConfigured = FALLBACK_ADMIN_EMAILS.length > 0;
+    const passesAllowlist = !allowlistConfigured || hasAdminEmail;
+
+    if (!hasAdminRole || !passesAllowlist) {
       await createAuditLog({
         eventType: 'security_event',
         userId: user.id,
         action: 'admin_verify_denied',
         details: {
-          reason: 'insufficient_role',
+          reason: !hasAdminRole ? 'insufficient_role' : 'not_in_allowlist',
           role: user.role,
+          allowlistConfigured,
         },
       });
       return new NextResponse(null, { status: 403 });

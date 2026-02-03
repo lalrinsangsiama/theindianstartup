@@ -70,10 +70,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
-      // Clear local storage
+
+      // SECURITY FIX: Selectively clear only auth-related localStorage keys
+      // Preserves cart, preferences, and other user data
       if (typeof window !== 'undefined') {
-        localStorage.clear();
+        const authKeyPrefixes = ['sb-', 'supabase', 'auth', 'loginAttempts', 'loginLockoutUntil'];
+        const keysToRemove: string[] = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && authKeyPrefixes.some((prefix) => key.startsWith(prefix) || key === prefix)) {
+            keysToRemove.push(key);
+          }
+        }
+
+        keysToRemove.forEach((key) => localStorage.removeItem(key));
       }
     } catch (error) {
       logger.error('Error signing out:', error);

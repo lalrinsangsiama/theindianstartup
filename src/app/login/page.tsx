@@ -1,33 +1,88 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Checkbox } from '@/components/ui/Input';
 import { Text } from '@/components/ui/Typography';
 import { Alert } from '@/components/ui/Alert';
 import { createClient } from '@/lib/supabase/client';
-import { Mail, Lock, ArrowRight, CheckCircle, Chrome, Linkedin, Users, Shield, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, CheckCircle, Users, Shield, Sparkles } from 'lucide-react';
+
+// Client-side rate limiting configuration
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+/**
+ * Validates that a redirect path is safe (internal only)
+ * Prevents open redirect vulnerabilities
+ */
+function isValidRedirectPath(path: string | null): boolean {
+  if (!path) return false;
+  // Must start with / but not // (which could be protocol-relative URL)
+  return path.startsWith('/') && !path.startsWith('//');
+}
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false,
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [showVerifiedMessage, setShowVerifiedMessage] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<'google' | 'linkedin' | null>(null);
+
+  // Client-side rate limiting state
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+  const lockoutTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check for stored lockout on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedLockout = localStorage.getItem('loginLockoutUntil');
+      const storedAttempts = localStorage.getItem('loginAttempts');
+
+      if (storedLockout) {
+        const lockoutTime = parseInt(storedLockout, 10);
+        if (lockoutTime > Date.now()) {
+          setLockoutUntil(lockoutTime);
+          setLoginAttempts(parseInt(storedAttempts || '0', 10));
+        } else {
+          // Lockout expired, clear it
+          localStorage.removeItem('loginLockoutUntil');
+          localStorage.removeItem('loginAttempts');
+        }
+      }
+    }
+  }, []);
+
+  // Update lockout timer
+  useEffect(() => {
+    if (lockoutUntil && lockoutUntil > Date.now()) {
+      const updateTimer = () => {
+        if (lockoutUntil <= Date.now()) {
+          setLockoutUntil(null);
+          setLoginAttempts(0);
+          localStorage.removeItem('loginLockoutUntil');
+          localStorage.removeItem('loginAttempts');
+        }
+      };
+
+      lockoutTimerRef.current = setInterval(updateTimer, 1000);
+      return () => {
+        if (lockoutTimerRef.current) clearInterval(lockoutTimerRef.current);
+      };
+    }
+  }, [lockoutUntil]);
 
   useEffect(() => {
     // Check if user just verified their email
@@ -58,52 +113,89 @@ function LoginContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    
+
+    // Check if user is locked out (client-side rate limiting)
+    if (lockoutUntil && lockoutUntil > Date.now()) {
+      const remainingSeconds = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      const remainingMinutes = Math.ceil(remainingSeconds / 60);
+      setLoginError(
+        `Too many login attempts. Please try again in ${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}.`
+      );
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
-      
+
       if (error) {
-        if (error.message.includes('Email not confirmed')) {
+        // Track failed login attempt for rate limiting
+        const newAttempts = loginAttempts + 1;
+        setLoginAttempts(newAttempts);
+        localStorage.setItem('loginAttempts', newAttempts.toString());
+
+        if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+          const lockoutTime = Date.now() + LOCKOUT_DURATION_MS;
+          setLockoutUntil(lockoutTime);
+          localStorage.setItem('loginLockoutUntil', lockoutTime.toString());
+          setLoginError(
+            'Too many failed login attempts. Your account has been temporarily locked for 15 minutes.'
+          );
+        } else if (error.message.includes('Email not confirmed')) {
           router.push('/signup/verify-email');
         } else {
-          setLoginError(error.message);
+          const attemptsRemaining = MAX_LOGIN_ATTEMPTS - newAttempts;
+          setLoginError(
+            `${error.message}${attemptsRemaining <= 2 ? ` (${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining)` : ''}`
+          );
         }
         return;
       }
-      
+
+      // Successful login - reset rate limiting
+      setLoginAttempts(0);
+      setLockoutUntil(null);
+      localStorage.removeItem('loginAttempts');
+      localStorage.removeItem('loginLockoutUntil');
+
       // Check if user needs onboarding
       const response = await fetch('/api/user/profile');
       const profileData = await response.json();
-      
+
       if (!profileData.hasCompletedOnboarding) {
         router.push('/onboarding');
         return;
       }
-      
+
       // Check if there's a redirect URL
       const redirectTo = searchParams.get('redirectTo');
-      
+
       // Get saved redirect from session storage
-      const savedRedirect = typeof window !== 'undefined' 
-        ? sessionStorage.getItem('redirectAfterLogin')
-        : null;
-      
+      const savedRedirect =
+        typeof window !== 'undefined' ? sessionStorage.getItem('redirectAfterLogin') : null;
+
       // Clear session storage
       if (savedRedirect) {
         sessionStorage.removeItem('redirectAfterLogin');
       }
-      
-      // Redirect to saved URL, query param, or dashboard
-      const destination = savedRedirect || redirectTo || '/dashboard';
+
+      // SECURITY FIX: Validate redirect paths to prevent open redirect vulnerability
+      // Only allow internal paths starting with '/' but not '//' (protocol-relative URLs)
+      let destination = '/dashboard';
+      if (savedRedirect && isValidRedirectPath(savedRedirect)) {
+        destination = savedRedirect;
+      } else if (redirectTo && isValidRedirectPath(redirectTo)) {
+        destination = redirectTo;
+      }
+
       router.push(destination);
     } catch (error) {
       setLoginError('An unexpected error occurred. Please try again.');
@@ -112,39 +204,13 @@ function LoginContent() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'linkedin') => {
-    setSocialLoading(provider);
-    setLoginError('');
-    
-    try {
-      const redirectTo = searchParams.get('redirectTo') || 
-                        (typeof window !== 'undefined' ? sessionStorage.getItem('redirectAfterLogin') : null) ||
-                        '/dashboard';
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: provider as any,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
-        },
-      });
-      
-      if (error) {
-        setLoginError(error.message);
-      }
-    } catch (error) {
-      setLoginError('Social login failed. Please try again.');
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -162,61 +228,23 @@ function LoginContent() {
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-blue-600" />
             <div>
-              <Text size="sm" className="font-bold text-blue-800">2,500+</Text>
-              <Text size="xs" color="muted">Founders</Text>
+              <Text size="sm" className="font-bold text-blue-800">30</Text>
+              <Text size="xs" color="muted">Courses</Text>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-green-600" />
             <div>
-              <Text size="sm" className="font-bold text-green-800">₹50L+</Text>
-              <Text size="xs" color="muted">Raised</Text>
+              <Text size="sm" className="font-bold text-green-800">1000+</Text>
+              <Text size="xs" color="muted">Templates</Text>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-purple-600" />
             <div>
-              <Text size="sm" className="font-bold text-purple-800">180+</Text>
-              <Text size="xs" color="muted">Launched</Text>
+              <Text size="sm" className="font-bold text-purple-800">450+</Text>
+              <Text size="xs" color="muted">Action Items</Text>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Social Login */}
-      <div className="space-y-4 mb-6">
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex items-center gap-2 p-3 border-2 hover:border-blue-500 hover:bg-blue-50 transition-all"
-            onClick={() => handleSocialLogin('google')}
-            disabled={socialLoading !== null}
-            isLoading={socialLoading === 'google'}
-          >
-            <Chrome className="w-5 h-5 text-blue-600" />
-            <span className="font-medium">Google</span>
-          </Button>
-          
-          <Button
-            type="button"
-            variant="outline"
-            className="flex items-center gap-2 p-3 border-2 hover:border-blue-700 hover:bg-blue-50 transition-all"
-            onClick={() => handleSocialLogin('linkedin')}
-            disabled={socialLoading !== null}
-            isLoading={socialLoading === 'linkedin'}
-          >
-            <Linkedin className="w-5 h-5 text-blue-700" />
-            <span className="font-medium">LinkedIn</span>
-          </Button>
-        </div>
-        
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-white text-gray-500">or continue with email</span>
           </div>
         </div>
       </div>
@@ -267,13 +295,6 @@ function LoginContent() {
             </Link>
           </div>
         </div>
-        
-        <Checkbox
-          name="rememberMe"
-          checked={formData.rememberMe}
-          onChange={handleChange}
-          label="Remember me for 30 days"
-        />
         
         <Button
           type="submit"

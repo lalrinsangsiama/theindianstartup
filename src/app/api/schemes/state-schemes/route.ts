@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 // State Schemes API - Comprehensive database access for P7 course
 export async function GET(request: NextRequest) {
+  // SECURITY: Apply rate limiting to prevent data scraping
+  const rateLimitResponse = await checkRateLimit(request, 'api');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const stateCode = searchParams.get('state');
@@ -164,6 +171,12 @@ export async function GET(request: NextRequest) {
 
 // Get state-wise summary statistics
 export async function POST(request: NextRequest) {
+  // SECURITY: Apply rate limiting to prevent data scraping
+  const rateLimitResponse = await checkRateLimit(request, 'api');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   try {
     const body = await request.json();
     const { states = [], sectors = [] } = body;

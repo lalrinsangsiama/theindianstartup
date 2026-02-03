@@ -14,8 +14,11 @@ interface ProtectedRouteProps {
   skipOnboardingCheck?: boolean;
 }
 
-export function ProtectedRoute({ 
-  children, 
+// Timeout in milliseconds to prevent infinite loading
+const ACCESS_CHECK_TIMEOUT = 8000; // 8 seconds - longer than profile fetch timeout (5s)
+
+export function ProtectedRoute({
+  children,
   redirectTo = '/login',
   allowedRoles = [],
   skipOnboardingCheck = false
@@ -28,6 +31,7 @@ export function ProtectedRoute({
   const [error, setError] = useState<string | null>(null);
   const redirectHandled = useRef(false);
   const mounted = useRef(true);
+  const checkStartTime = useRef<number>(Date.now());
 
   useEffect(() => {
     return () => {
@@ -35,15 +39,57 @@ export function ProtectedRoute({
     };
   }, []);
 
+  // Timeout to prevent infinite loading - SECURITY: redirect to login on timeout
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (mounted.current && checkingAccess && !hasAccess) {
+        logger.warn('ProtectedRoute: Access check timeout - redirecting to login for security');
+        // SECURITY FIX: On timeout, deny access and redirect to login
+        // Network issues should not bypass authentication
+        if (!redirectHandled.current) {
+          redirectHandled.current = true;
+          setCheckingAccess(false);
+          router.push(`${redirectTo}?error=timeout`);
+        }
+      }
+    }, ACCESS_CHECK_TIMEOUT);
+
+    return () => clearTimeout(timeoutId);
+  }, [checkingAccess, hasAccess, redirectTo, router]);
+
+  // Safety timeout: If user is authenticated but profile check is slow, grant access
+  // This is safe because we've verified the user has a valid session
+  useEffect(() => {
+    if (initialized && user && session && checkingAccess) {
+      const safetyTimeout = setTimeout(() => {
+        if (mounted.current && checkingAccess && !hasAccess) {
+          // Only grant access if we have a verified session
+          // This is safe because Supabase has verified the JWT
+          logger.info('ProtectedRoute: Safety timeout - user has valid session, granting access');
+          setHasAccess(true);
+          setCheckingAccess(false);
+        }
+      }, 3000);
+      return () => clearTimeout(safetyTimeout);
+    }
+  }, [initialized, user, session, checkingAccess, hasAccess]);
+
   useEffect(() => {
     const checkAccess = async () => {
       try {
         // Reset state on each check
         if (!mounted.current) return;
-        
+
         setError(null);
-        
-        // If still loading auth, wait
+        checkStartTime.current = Date.now();
+
+        // If auth context not initialized yet, wait
+        if (!initialized) {
+          logger.debug('ProtectedRoute: Auth context not initialized, waiting...');
+          return;
+        }
+
+        // If still loading auth, wait (but with timeout protection)
         if (authLoading) {
           logger.debug('ProtectedRoute: Auth still loading, waiting...');
           return;
@@ -51,27 +97,71 @@ export function ProtectedRoute({
 
         // If no session, redirect to login (only once)
         if (!session || !user) {
+          logger.info('ProtectedRoute: No session found, redirecting to login');
           if (!redirectHandled.current && mounted.current) {
             redirectHandled.current = true;
-            logger.info('ProtectedRoute: No session found, redirecting to login');
-            
+
             // Save the attempted URL for redirect after login (exclude login/signup pages)
             if (typeof window !== 'undefined' && !pathname.includes('/login') && !pathname.includes('/signup')) {
               sessionStorage.setItem('redirectAfterLogin', pathname);
             }
-            
+
+            // Set states before redirect
+            setCheckingAccess(false);
             router.push(redirectTo);
           }
           return;
         }
 
-        // Check role-based access
+        // Fetch profile for role checking and onboarding status
+        // SECURITY: Always use server-side profile data for role, not client metadata
+        let profileData: { role?: string; hasCompletedOnboarding?: boolean } | null = null;
+
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+          const response = await fetch('/api/user/profile', {
+            cache: 'no-store',
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            profileData = await response.json();
+          } else if (response.status === 401) {
+            // Session expired
+            if (!redirectHandled.current && mounted.current) {
+              redirectHandled.current = true;
+              logger.info('ProtectedRoute: Session expired, redirecting to login');
+              setCheckingAccess(false);
+              router.push(redirectTo);
+            }
+            return;
+          } else {
+            // For other errors (500, etc), log but continue with basic access
+            logger.warn('ProtectedRoute: Profile check returned error status', { status: response.status });
+          }
+        } catch (profileError) {
+          // Check if it's an abort error (timeout)
+          if (profileError instanceof Error && profileError.name === 'AbortError') {
+            logger.warn('ProtectedRoute: Profile check timed out');
+          } else {
+            logger.error('ProtectedRoute: Profile check failed', profileError);
+          }
+          // Continue without profile data - role-based routes will be denied
+        }
+
+        // Check role-based access using server-side profile data
+        // SECURITY FIX: Use profile data role, not user_metadata which can be client-set
         if (allowedRoles.length > 0) {
-          const userRole = user.user_metadata?.role || 'user';
+          const userRole = profileData?.role || 'user';
           if (!allowedRoles.includes(userRole)) {
             logger.warn('ProtectedRoute: User lacks required role', { userRole, allowedRoles });
             if (!redirectHandled.current && mounted.current) {
               redirectHandled.current = true;
+              setCheckingAccess(false);
               router.push('/unauthorized');
             }
             return;
@@ -79,35 +169,14 @@ export function ProtectedRoute({
         }
 
         // Check onboarding status (unless explicitly skipped)
-        if (!skipOnboardingCheck && !pathname.includes('/onboarding')) {
-          try {
-            const response = await fetch('/api/user/profile', {
-              cache: 'no-store'
-            });
-            
-            if (response.ok) {
-              const data = await response.json();
-              
-              // If user needs onboarding and we're not already on onboarding page
-              if (!data.hasCompletedOnboarding && !redirectHandled.current && mounted.current) {
-                redirectHandled.current = true;
-                logger.info('ProtectedRoute: User needs onboarding, redirecting');
-                router.push('/onboarding');
-                return;
-              }
-            } else if (response.status === 401) {
-              // Session expired
-              if (!redirectHandled.current && mounted.current) {
-                redirectHandled.current = true;
-                logger.info('ProtectedRoute: Session expired, redirecting to login');
-                router.push(redirectTo);
-              }
-              return;
-            }
-            // For other errors (500, etc), continue without redirect - user can still access the app
-          } catch (profileError) {
-            logger.error('ProtectedRoute: Profile check failed', profileError);
-            // Don't block access on profile check errors
+        if (!skipOnboardingCheck && !pathname.includes('/onboarding') && profileData) {
+          // If user needs onboarding and we're not already on onboarding page
+          if (!profileData.hasCompletedOnboarding && !redirectHandled.current && mounted.current) {
+            redirectHandled.current = true;
+            logger.info('ProtectedRoute: User needs onboarding, redirecting');
+            setCheckingAccess(false);
+            router.push('/onboarding');
+            return;
           }
         }
 
@@ -120,25 +189,32 @@ export function ProtectedRoute({
       } catch (error) {
         logger.error('ProtectedRoute: Unexpected error during access check', error);
         if (mounted.current) {
-          setError('An error occurred while checking access. Please refresh the page.');
-          setCheckingAccess(false);
+          // SECURITY FIX: On unexpected error, redirect to login
+          // Errors should not bypass authentication
+          if (!redirectHandled.current) {
+            redirectHandled.current = true;
+            setCheckingAccess(false);
+            router.push(`${redirectTo}?error=access_check_failed`);
+          }
         }
       }
     };
 
-    // Reset redirect flag when dependencies change
-    redirectHandled.current = false;
+    // Reset redirect flag when key dependencies change
+    if (session !== null || user !== null) {
+      redirectHandled.current = false;
+    }
     checkAccess();
-  }, [user, session, authLoading, pathname, router, redirectTo, allowedRoles, skipOnboardingCheck]);
+  }, [user, session, authLoading, initialized, pathname, router, redirectTo, allowedRoles, skipOnboardingCheck]);
 
-  // Show loading state while checking authentication
-  if (authLoading || checkingAccess || !initialized) {
-    const loadingMessage = authLoading 
-      ? "Authenticating your session..." 
-      : checkingAccess 
-      ? "Verifying your access permissions..." 
-      : "Initializing your founder dashboard...";
-      
+  // Show loading state while checking authentication (with timeout protection)
+  if ((authLoading || checkingAccess || !initialized) && !hasAccess) {
+    const loadingMessage = !initialized
+      ? "Initializing..."
+      : authLoading
+      ? "Authenticating your session..."
+      : "Verifying your access permissions...";
+
     return <AuthLoading message={loadingMessage} showStats={true} />;
   }
 

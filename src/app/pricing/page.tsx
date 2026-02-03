@@ -49,6 +49,8 @@ import {
   Package
 } from 'lucide-react';
 import Link from 'next/link';
+import { SocialProofBanner, TrustBadges, PLATFORM_METRICS } from '@/components/social-proof/PlatformMetrics';
+import { TestimonialCard, TESTIMONIALS } from '@/components/social-proof/FounderTestimonials';
 
 declare global {
   interface Window {
@@ -1344,20 +1346,23 @@ export default function PricingPage() {
               30 comprehensive courses for Indian founders. Add courses to your cart and checkout when ready.
             </Text>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm mb-6">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-blue-600" />
                 <span>30 courses</span>
               </div>
               <div className="flex items-center gap-2 text-green-700">
                 <CheckCircle className="w-4 h-4" />
-                <span>1000+ templates</span>
+                <span>450+ templates</span>
               </div>
               <div className="flex items-center gap-2 text-blue-700">
                 <Shield className="w-4 h-4" />
                 <span>3-day guarantee</span>
               </div>
             </div>
+
+            {/* Social Proof Banner */}
+            <SocialProofBanner className="max-w-2xl mx-auto" />
           </div>
         </div>
       </section>
@@ -1554,6 +1559,23 @@ export default function PricingPage() {
                 <Text size="sm" className="text-green-600 mt-1">
                   That&apos;s less than 1 month of consultant fees for a lifetime of resources.
                 </Text>
+              </div>
+            </div>
+
+            {/* Testimonials */}
+            <div className="mt-8">
+              <Heading as="h3" variant="h5" className="text-center mb-6">
+                What Founders Are Saying
+              </Heading>
+              <div className="grid md:grid-cols-2 gap-4">
+                {TESTIMONIALS.slice(0, 4).map((testimonial) => (
+                  <TestimonialCard key={testimonial.id} testimonial={testimonial} variant="compact" />
+                ))}
+              </div>
+              <div className="mt-6 text-center">
+                <Link href="/community/success-stories" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                  Read more success stories →
+                </Link>
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle, Shield, Target, Briefcase, BookOpen, TrendingUp } from "lucide-react";
 import { Button } from '@/components/ui/Button';
+import { Logo } from '@/components/icons/Logo';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { createClient } from '@/lib/supabase/client';
 import { TestimonialsSection, TESTIMONIALS } from '@/components/social-proof/FounderTestimonials';
@@ -25,8 +26,8 @@ export default function HomePage() {
       <nav className="border-b border-gray-200 sticky top-0 bg-white z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="font-mono text-xl font-bold">
-              THE INDIAN STARTUP
+            <Link href="/" className="hover:opacity-80 transition-opacity">
+              <Logo variant="full" className="h-8 text-black" />
             </Link>
             <div className="flex items-center gap-6">
               <Link href="/pricing" className="text-sm hover:text-black transition-colors hover:underline hidden sm:block">
@@ -62,7 +63,7 @@ export default function HomePage() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="font-mono text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6">
               The Complete<br />
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Startup Education</span> Platform
+              <span className="text-green-600">Startup Education</span> Platform
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto">
               30 comprehensive courses taking you from idea to global expansion. Built specifically for Indian founders.

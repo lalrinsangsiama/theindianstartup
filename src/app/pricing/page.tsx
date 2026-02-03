@@ -49,6 +49,7 @@ import {
   Package
 } from 'lucide-react';
 import Link from 'next/link';
+import { Logo } from '@/components/icons/Logo';
 import { SocialProofBanner, TrustBadges, PLATFORM_METRICS } from '@/components/social-proof/PlatformMetrics';
 import { TestimonialCard, TESTIMONIALS } from '@/components/social-proof/FounderTestimonials';
 
@@ -1167,8 +1168,8 @@ export default function PricingPage() {
       <nav className="border-b border-gray-200 sticky top-0 bg-white z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="font-mono text-xl font-bold">
-              THE INDIAN STARTUP
+            <Link href="/" className="hover:opacity-80 transition-opacity">
+              <Logo variant="full" className="h-8 text-black" />
             </Link>
             <div className="flex items-center gap-4">
               <Link href="/" className="text-sm hover:text-black transition-colors hover:underline hidden sm:block">
@@ -1529,55 +1530,6 @@ export default function PricingPage() {
               </CardContent>
             </Card>
 
-            {/* Market Comparison */}
-            <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200">
-              <Heading as="h3" variant="h5" className="text-center mb-6">
-                Compare: How Much Would This Cost Otherwise?
-              </Heading>
-              <div className="grid md:grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <Text color="muted">Startup Consultant (3 months)</Text>
-                  <Text className="font-medium line-through text-red-500">₹1,50,000 - ₹6,00,000</Text>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <Text color="muted">MBA/Business Course</Text>
-                  <Text className="font-medium line-through text-red-500">₹5,00,000 - ₹25,00,000</Text>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <Text color="muted">Legal Templates (from lawyers)</Text>
-                  <Text className="font-medium line-through text-red-500">₹50,000 - ₹2,00,000</Text>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <Text color="muted">CA/Financial Advisory</Text>
-                  <Text className="font-medium line-through text-red-500">₹25,000 - ₹1,00,000</Text>
-                </div>
-              </div>
-              <div className="mt-6 p-4 bg-green-50 rounded-lg text-center border border-green-200">
-                <Text className="text-green-800">
-                  <span className="font-bold">The Indian Startup All-Access:</span> ₹1,49,999 for everything, forever.
-                </Text>
-                <Text size="sm" className="text-green-600 mt-1">
-                  That&apos;s less than 1 month of consultant fees for a lifetime of resources.
-                </Text>
-              </div>
-            </div>
-
-            {/* Testimonials */}
-            <div className="mt-8">
-              <Heading as="h3" variant="h5" className="text-center mb-6">
-                What Founders Are Saying
-              </Heading>
-              <div className="grid md:grid-cols-2 gap-4">
-                {TESTIMONIALS.slice(0, 4).map((testimonial) => (
-                  <TestimonialCard key={testimonial.id} testimonial={testimonial} variant="compact" />
-                ))}
-              </div>
-              <div className="mt-6 text-center">
-                <Link href="/community/success-stories" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-                  Read more success stories →
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </section>

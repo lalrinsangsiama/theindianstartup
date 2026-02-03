@@ -51,7 +51,16 @@ const mobileNavItems = [
 ];
 
 // Pages where mobile nav should be hidden
-const AUTH_PAGES = ['/signup', '/login', '/forgot-password', '/auth/callback', '/signup/verify-email'];
+const AUTH_PAGES = [
+  '/signup',
+  '/login',
+  '/forgot-password',
+  '/reset-password',
+  '/auth/callback',
+  '/auth/error',
+  '/signup/verify-email',
+  '/onboarding'
+];
 
 export const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);

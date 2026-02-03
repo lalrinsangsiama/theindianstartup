@@ -206,7 +206,7 @@ export function ProtectedRoute({
       ? "Authenticating your session..."
       : "Verifying your access permissions...";
 
-    return <AuthLoading message={loadingMessage} showStats={true} />;
+    return <AuthLoading message={loadingMessage} />;
   }
 
   // Show error state if there was an error
@@ -232,9 +232,19 @@ export function ProtectedRoute({
     );
   }
 
-  // If user doesn't have access, don't render children (they should be redirected)
+  // If user doesn't have access after checks are done, force redirect to login
+  if (!hasAccess && !checkingAccess && initialized && !authLoading) {
+    // Force redirect if somehow we got here without being redirected
+    if (!redirectHandled.current) {
+      redirectHandled.current = true;
+      router.push(redirectTo);
+    }
+    return <AuthLoading message="Redirecting to login..." />;
+  }
+
+  // Still checking - show loading
   if (!hasAccess) {
-    return <AuthLoading message="Redirecting you to continue your journey..." showStats={false} />;
+    return <AuthLoading message="Verifying your access..." />;
   }
 
   // User has access, render children

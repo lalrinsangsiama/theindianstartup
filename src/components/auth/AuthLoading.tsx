@@ -3,16 +3,14 @@
 import React from 'react';
 import { Logo } from '@/components/icons/Logo';
 import { Text } from '@/components/ui/Typography';
-import { Sparkles, Users, Rocket } from 'lucide-react';
 
 interface AuthLoadingProps {
   message?: string;
   showStats?: boolean;
 }
 
-export const AuthLoading: React.FC<AuthLoadingProps> = ({ 
-  message = "Setting up your founder journey...",
-  showStats = true 
+export const AuthLoading: React.FC<AuthLoadingProps> = ({
+  message = "Setting up your founder journey..."
 }) => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
@@ -32,36 +30,9 @@ export const AuthLoading: React.FC<AuthLoadingProps> = ({
       </div>
 
       {/* Message */}
-      <Text className="text-center mb-8 max-w-md">
+      <Text className="text-center max-w-md">
         {message}
       </Text>
-
-      {/* Quick Stats */}
-      {showStats && (
-        <div className="flex items-center gap-8 text-center">
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-blue-600" />
-            <div>
-              <Text size="sm" className="font-bold">2,500+</Text>
-              <Text size="xs" color="muted">Founders</Text>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-600" />
-            <div>
-              <Text size="sm" className="font-bold">₹50L+</Text>
-              <Text size="xs" color="muted">Raised</Text>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Rocket className="w-4 h-4 text-green-600" />
-            <div>
-              <Text size="sm" className="font-bold">180+</Text>
-              <Text size="xs" color="muted">Launched</Text>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Progress Bar */}
       <div className="w-64 bg-gray-200 rounded-full h-1 mt-8">

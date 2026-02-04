@@ -63,7 +63,7 @@ class DashboardErrorBoundary extends React.Component<
                 Refresh Page
               </button>
               <a
-                href="/support"
+                href="mailto:support@theindianstartup.in?subject=Dashboard%20Error%20-%20Help%20Needed"
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Contact Support

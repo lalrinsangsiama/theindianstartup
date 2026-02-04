@@ -95,7 +95,7 @@ export function XPDisplay({
         <div className="text-center py-2">
           <div className="inline-flex items-baseline gap-2">
             <Text className="font-heading text-4xl font-bold">
-              {totalXP.toLocaleString()}
+              {(totalXP || 0).toLocaleString()}
             </Text>
             <Text color="muted">XP</Text>
           </div>
@@ -157,7 +157,7 @@ function CompactXP({ totalXP, level }: { totalXP: number; level: number }) {
       <Zap className="w-5 h-5 text-yellow-500" />
       <div className="flex items-baseline gap-2">
         <Text weight="bold" className="text-lg">
-          {totalXP.toLocaleString()}
+          {(totalXP || 0).toLocaleString()}
         </Text>
         <Text size="sm" color="muted">XP</Text>
       </div>
@@ -211,7 +211,7 @@ function DetailedXP({
               <Zap className="w-12 h-12 text-yellow-500" />
             </div>
             <Text className="font-heading text-5xl font-bold mb-2">
-              {totalXP.toLocaleString()}
+              {(totalXP || 0).toLocaleString()}
             </Text>
             <Text color="muted">Experience Points</Text>
           </div>
@@ -385,7 +385,7 @@ function XPSource({
           <Icon className="w-4 h-4 text-gray-500" />
           <Text size="sm">{label}</Text>
         </div>
-        <Text size="sm" weight="medium">{xp.toLocaleString()} XP</Text>
+        <Text size="sm" weight="medium">{(xp || 0).toLocaleString()} XP</Text>
       </div>
       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <div 

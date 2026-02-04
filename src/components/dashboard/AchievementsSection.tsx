@@ -91,7 +91,7 @@ export function AchievementsSection({
               <div>
                 <CardTitle>Level {currentLevel} Founder</CardTitle>
                 <Text size="sm" color="muted">
-                  {totalXP.toLocaleString()} XP Total
+                  {(totalXP || 0).toLocaleString()} XP Total
                 </Text>
               </div>
             </div>
@@ -185,7 +185,7 @@ export function AchievementsSection({
         <Card>
           <CardContent className="p-4 text-center">
             <Star className="w-6 h-6 mx-auto mb-2 text-yellow-500" />
-            <Text size="xl" weight="bold">{totalXP.toLocaleString()}</Text>
+            <Text size="xl" weight="bold">{(totalXP || 0).toLocaleString()}</Text>
             <Text size="sm" color="muted">Total XP</Text>
           </CardContent>
         </Card>

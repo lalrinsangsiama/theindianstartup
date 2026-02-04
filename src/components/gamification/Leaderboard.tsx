@@ -125,14 +125,14 @@ export function Leaderboard({
     switch (category) {
       case 'xp':
         return period === 'all_time'
-          ? `${entry.totalXP.toLocaleString()} XP`
+          ? `${(entry.totalXP || 0).toLocaleString()} XP`
           : `${(entry.periodXP || 0).toLocaleString()} XP`;
       case 'streak':
-        return `${entry.currentStreak} day${entry.currentStreak !== 1 ? 's' : ''}`;
+        return `${entry.currentStreak || 0} day${entry.currentStreak !== 1 ? 's' : ''}`;
       case 'badges':
-        return `${entry.badgeCount} badge${entry.badgeCount !== 1 ? 's' : ''}`;
+        return `${entry.badgeCount || 0} badge${entry.badgeCount !== 1 ? 's' : ''}`;
       default:
-        return `${entry.totalXP.toLocaleString()} XP`;
+        return `${(entry.totalXP || 0).toLocaleString()} XP`;
     }
   };
 

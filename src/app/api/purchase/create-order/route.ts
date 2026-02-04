@@ -74,16 +74,6 @@ export async function POST(request: NextRequest) {
 
     const user = await requireAuth();
 
-    // Block purchases from unverified emails for consistency with checkout page
-    // This prevents potential fraud and ensures we can contact the customer
-    if (!user.email_confirmed_at) {
-      logger.warn('Purchase blocked: unverified email', { userId: user.id, email: user.email });
-      return NextResponse.json(
-        { error: 'Please verify your email address before making a purchase.' },
-        { status: 403 }
-      );
-    }
-
     // Parse and validate request body
     let body: unknown;
     try {

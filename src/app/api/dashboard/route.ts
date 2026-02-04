@@ -313,23 +313,23 @@ export async function GET(request: NextRequest) {
       hasAllAccess
     };
 
-    // Build dashboard data
-    // Build user display name with proper fallbacks
-    const getUserName = () => {
-      if (userProfile.name && userProfile.name.trim()) {
-        return userProfile.name.trim();
+    // Build user display name with proper fallbacks - always ensure a non-empty string
+    let userName = 'Founder'; // Default fallback
+    try {
+      const profileName = userProfile?.name?.trim();
+      const emailPrefix = user?.email?.split('@')[0]?.trim();
+
+      if (profileName && profileName.length > 0) {
+        userName = profileName;
+      } else if (emailPrefix && emailPrefix.length > 0) {
+        userName = emailPrefix;
       }
-      if (user.email) {
-        const emailName = user.email.split('@')[0];
-        if (emailName && emailName.trim()) {
-          return emailName.trim();
-        }
-      }
-      return 'Founder';
-    };
+    } catch (e) {
+      logger.error('Error building userName:', e);
+    }
 
     const dashboardData = {
-      userName: getUserName(),
+      userName,
       totalXP: userProfile.totalXP || 0,
       currentStreak: userProfile.currentStreak || 0,
       longestStreak: userProfile.longestStreak || 0,

@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
+  const token_hash = requestUrl.searchParams.get('token_hash');
   const next = requestUrl.searchParams.get('next') || '/dashboard';
   const type = requestUrl.searchParams.get('type');
   const error = requestUrl.searchParams.get('error');
@@ -18,8 +19,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // If no code, redirect to the error page
-  if (!code) {
+  // If no code and no token_hash, redirect to the error page
+  if (!code && !token_hash) {
     return NextResponse.redirect(
       new URL('/auth/error?message=No%20verification%20code%20found', requestUrl.origin)
     );
@@ -89,15 +90,36 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  // Exchange the code for a session
-  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+  // Handle token_hash verification (email verification links opened in different browser/app)
+  // This doesn't require PKCE code verifier, so it works when cookies are missing
+  if (token_hash && type) {
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash,
+      type: type as 'signup' | 'email' | 'recovery' | 'invite' | 'email_change',
+    });
 
-  if (exchangeError) {
-    console.error('Code exchange error:', exchangeError);
-    const errorMessage = encodeURIComponent(exchangeError.message);
-    return NextResponse.redirect(
-      new URL(`/auth/error?message=${errorMessage}`, requestUrl.origin)
-    );
+    if (verifyError) {
+      console.error('Token hash verification error:', verifyError);
+      const errorMessage = encodeURIComponent(verifyError.message);
+      return NextResponse.redirect(
+        new URL(`/auth/error?message=${errorMessage}`, requestUrl.origin)
+      );
+    }
+
+    return response;
+  }
+
+  // Exchange the code for a session (PKCE flow for OAuth)
+  if (code) {
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (exchangeError) {
+      console.error('Code exchange error:', exchangeError);
+      const errorMessage = encodeURIComponent(exchangeError.message);
+      return NextResponse.redirect(
+        new URL(`/auth/error?message=${errorMessage}`, requestUrl.origin)
+      );
+    }
   }
 
   return response;

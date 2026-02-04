@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       type: 'signup',
       email: email,
       options: {
-        emailRedirectTo: `${request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || request.headers.get('origin')}/auth/callback`,
       },
     });
 

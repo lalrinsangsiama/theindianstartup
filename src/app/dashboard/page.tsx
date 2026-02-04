@@ -990,11 +990,11 @@ function DashboardContent() {
                   <Zap className="w-5 h-5 text-yellow-600" />
                 </div>
                 <Badge size="sm" className="bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-0">
-                  Level {dashboardData.userLevel}
+                  Level {dashboardData.userLevel || 1}
                 </Badge>
               </div>
               <Text className="font-heading text-2xl font-bold mb-1 text-gray-900">
-                {dashboardData.totalXP.toLocaleString()}
+                {(dashboardData.totalXP || 0).toLocaleString()}
               </Text>
               <Text size="sm" color="muted">Total XP</Text>
             </CardContent>
@@ -1013,7 +1013,7 @@ function DashboardContent() {
                 )}
               </div>
               <Text className="font-heading text-2xl font-bold mb-1 text-gray-900">
-                {dashboardData.currentStreak}
+                {dashboardData.currentStreak || 0}
               </Text>
               <Text size="sm" color="muted">Day Streak</Text>
             </CardContent>
@@ -1525,7 +1525,7 @@ function DashboardContent() {
                 <div className="p-3 bg-white rounded-lg">
                   <Text size="sm" color="muted">Total XP Earned</Text>
                   <Text size="xl" weight="bold" className="text-green-600">
-                    {dashboardData.totalXP.toLocaleString()}
+                    {(dashboardData.totalXP || 0).toLocaleString()}
                   </Text>
                 </div>
               </CardContent>

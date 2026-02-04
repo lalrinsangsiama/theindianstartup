@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Typography';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/cn';
-import { CartProvider, useCart } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext';
 import { ProductTour } from '@/components/onboarding/ProductTour';
 import { SessionTimeoutWarning } from '@/components/auth/SessionTimeoutWarning';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
@@ -450,13 +450,13 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   );
 }
 
-// Main export - wraps inner component with CartProvider
+// Main export - CartProvider is now in root layout
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <CartProvider>
+    <>
       <DashboardLayoutInner>{children}</DashboardLayoutInner>
       <ProductTour tourType="dashboard" />
       <SessionTimeoutWarning />
-    </CartProvider>
+    </>
   );
 }

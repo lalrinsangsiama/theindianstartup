@@ -20,8 +20,11 @@ function isLocalhostOrigin(origin: string | null): boolean {
 // Check if origin is a Netlify deploy preview or branch deploy
 function isNetlifyOrigin(origin: string | null): boolean {
   if (!origin) return false
-  // Match *.netlify.app domains (deploy previews and branch deploys)
-  return /^https:\/\/[a-z0-9-]+\.netlify\.app$/.test(origin)
+  // Match *.netlify.app domains including:
+  // - Deploy previews: 698302433347ef00087510a3--theindianstartup.netlify.app
+  // - Branch deploys: feature-branch--theindianstartup.netlify.app
+  // - Main site: theindianstartup.netlify.app
+  return /^https:\/\/[a-z0-9-]+(?:--[a-z0-9-]+)?\.netlify\.app$/.test(origin)
 }
 
 // Create Supabase client for middleware with cookie handling

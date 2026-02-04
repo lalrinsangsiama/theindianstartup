@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { AuthProvider } from '@/contexts/AuthContext';
+import { CartProvider } from '@/context/CartContext';
 import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FeedbackWidget } from '@/components/ui/FeedbackWidget';
@@ -120,14 +121,16 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white text-gray-900">
         <ErrorBoundary level="page" showDetails={process.env.NODE_ENV === 'development'}>
           <AuthProvider>
-            <PostHogProvider>
-              <MobileNav />
-              <div className="lg:ml-0 pb-16 lg:pb-0">
-                {children}
-              </div>
-              <FeedbackWidget />
-              <Toaster richColors position="top-center" />
-            </PostHogProvider>
+            <CartProvider>
+              <PostHogProvider>
+                <MobileNav />
+                <div className="lg:ml-0 pb-16 lg:pb-0">
+                  {children}
+                </div>
+                <FeedbackWidget />
+                <Toaster richColors position="top-center" />
+              </PostHogProvider>
+            </CartProvider>
           </AuthProvider>
         </ErrorBoundary>
       </body>

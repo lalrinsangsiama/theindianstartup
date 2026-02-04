@@ -233,6 +233,38 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
+    // CRITICAL FIX: Ensure user profile exists before creating purchase
+    // The Purchase table has a foreign key constraint on userId -> User(id)
+    const { data: existingUser } = await supabase
+      .from('User')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+
+    if (!existingUser) {
+      // Create user profile if it doesn't exist
+      const { error: createUserError } = await supabase
+        .from('User')
+        .insert({
+          id: user.id,
+          email: user.email || '',
+          name: user.email?.split('@')[0] || 'Founder',
+        });
+
+      if (createUserError) {
+        logger.error('Failed to create user profile for purchase:', {
+          error: createUserError,
+          userId: user.id,
+          email: user.email,
+        });
+        return NextResponse.json(
+          { error: 'Failed to initialize user profile' },
+          { status: 500 }
+        );
+      }
+      logger.info('Created user profile for purchase:', { userId: user.id });
+    }
+
     // First, get or create the product in the database
     let { data: dbProduct } = await supabase
       .from('Product')
@@ -333,9 +365,18 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (dbError) {
-      logger.error('Database error:', dbError);
+      logger.error('Purchase insert failed:', {
+        error: dbError,
+        code: dbError.code,
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint,
+        userId: user.id,
+        productId: dbProduct.id,
+        productType,
+      });
       return NextResponse.json(
-        { error: 'Failed to create purchase record' },
+        { error: `Failed to create purchase record: ${dbError.message || 'Unknown error'}` },
         { status: 500 }
       );
     }

@@ -6,6 +6,35 @@ import { calculateLevel, calculateXPForNextLevel } from '@/lib/xp';
 
 export const dynamic = 'force-dynamic';
 
+// Helper function to derive product category from product code
+function getProductCategory(code: string): string {
+  // Foundation courses
+  if (code === 'P1' || code === 'P2') return 'foundation';
+
+  // Funding & Finance
+  if (['P3', 'P4', 'P8', 'P9'].includes(code)) return 'funding';
+
+  // Legal & IP
+  if (['P5', 'P10'].includes(code)) return 'legal';
+
+  // Growth & Sales
+  if (['P6', 'P11', 'P12'].includes(code)) return 'growth';
+
+  // Strategic (Government schemes)
+  if (code === 'P7') return 'strategic';
+
+  // Sector Specific (P13-P30 and bundles)
+  if (code.match(/^P(1[3-9]|2[0-9]|30)$/)) return 'sector';
+
+  // Bundles
+  if (code === 'ALL_ACCESS' || code === 'SECTOR_MASTERY') return 'bundle';
+
+  // Toolkits
+  if (code.startsWith('T')) return 'toolkit';
+
+  return 'other';
+}
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient();
@@ -213,7 +242,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Build all products array with access status
+    // Build all products array with access status and category
     const allProductsWithAccess = allProducts?.map(product => ({
       id: product.id,
       code: product.code,
@@ -223,6 +252,7 @@ export async function GET(request: NextRequest) {
       modules: product.modules,
       estimatedDays: product.estimatedDays,
       hasAccess: ownedCodes.includes(product.code),
+      category: getProductCategory(product.code), // Add category for filtering
       // Add progress for owned products
       ...(ownedCodes.includes(product.code) && {
         progress: ownedProducts.find(op => op.code === product.code)?.progress || 0,

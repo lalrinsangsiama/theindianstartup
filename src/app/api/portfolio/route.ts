@@ -20,6 +20,36 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Ensure user profile exists first (foreign key constraint)
+    const { data: existingUser } = await supabase
+      .from('User')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+
+    if (!existingUser) {
+      // Create user profile if it doesn't exist
+      const { error: createUserError } = await supabase
+        .from('User')
+        .insert({
+          id: user.id,
+          email: user.email || '',
+          name: user.email?.split('@')[0] || 'Founder',
+        });
+
+      if (createUserError) {
+        logger.error('Failed to create user profile for portfolio:', {
+          error: createUserError,
+          userId: user.id,
+        });
+        return NextResponse.json(
+          { error: 'Failed to initialize user profile' },
+          { status: 500 }
+        );
+      }
+      logger.info('Created user profile for portfolio:', { userId: user.id });
+    }
+
     // Get or create user portfolio
     let { data: portfolio, error: portfolioError } = await supabase
       .from('StartupPortfolio')
@@ -46,12 +76,16 @@ export async function GET(request: NextRequest) {
         .single();
 
       if (createError) {
+        logger.error('Failed to create portfolio:', {
+          error: createError,
+          userId: user.id,
+        });
         return NextResponse.json(
           { error: 'Failed to create portfolio' },
           { status: 500 }
         );
       }
-      
+
       portfolio = newPortfolio;
     }
 

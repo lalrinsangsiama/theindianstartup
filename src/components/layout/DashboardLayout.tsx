@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import Link from 'next/link';
@@ -29,10 +29,7 @@ import {
   X,
   ChevronRight,
   Sparkles,
-  Calendar,
   Target,
-  Award,
-  Zap,
   ShoppingCart,
   Plus,
   Minus,
@@ -66,55 +63,13 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string | null;
-  totalXP: number;
-  currentStreak: number;
-  badges: string[];
-  role?: string;
-  portfolio?: {
-    startupName?: string;
-  };
-  hasActiveAccess?: boolean;
-  currentDay?: number;
-}
-
 // Inner component that uses the cart context
 function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
 
   // Use cart context instead of local state - removes XSS vulnerability
   const { cart, removeFromCart, updateQuantity, calculateTotal, showCart, setShowCart } = useCart();
-
-  const fetchProfile = async () => {
-    try {
-      setProfileLoading(true);
-      setProfileError(null);
-      const response = await fetch('/api/user/profile');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch profile: ${response.status}`);
-      }
-      const data = await response.json();
-      setUserProfile(data.user);
-    } catch (error) {
-      logger.error('Failed to fetch profile:', error);
-      setProfileError('Failed to load profile');
-      // Set a minimal fallback profile so sidebar still works
-      setUserProfile(null);
-    } finally {
-      setProfileLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   const isActive = (href: string) => {
     if (href === '/dashboard') {
@@ -224,79 +179,6 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
           </button>
         </div>
 
-        {/* User Stats Card */}
-        <div className="p-4 border-b border-gray-200" data-tour="user-stats">
-          {profileLoading ? (
-            <div className="bg-gray-50 rounded-lg p-4 animate-pulse">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-full" />
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
-                  <div className="h-3 bg-gray-200 rounded w-32" />
-                </div>
-              </div>
-            </div>
-          ) : profileError ? (
-            <div className="bg-red-50 rounded-lg p-4 text-center">
-              <Text size="sm" className="text-red-600 mb-2">{profileError}</Text>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={fetchProfile}
-                className="text-red-600 border-red-300 hover:bg-red-100"
-              >
-                Retry
-              </Button>
-            </div>
-          ) : userProfile ? (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold">
-                  {userProfile.name?.charAt(0) || 'F'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <Text weight="medium" className="truncate">
-                    {userProfile.name || 'Founder'}
-                  </Text>
-                  <Text size="xs" color="muted" className="truncate">
-                    {userProfile.portfolio?.startupName || 'Your Startup'}
-                  </Text>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-white rounded p-2">
-                  <div className="flex items-center justify-center mb-1">
-                    <Zap className="w-4 h-4 text-yellow-500" />
-                  </div>
-                  <Text size="xs" weight="bold">
-                    {userProfile.totalXP || 0}
-                  </Text>
-                  <Text size="xs" color="muted">XP</Text>
-                </div>
-                <div className="bg-white rounded p-2">
-                  <div className="flex items-center justify-center mb-1">
-                    <Calendar className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <Text size="xs" weight="bold">
-                    {userProfile.currentDay || 1}
-                  </Text>
-                  <Text size="xs" color="muted">Day</Text>
-                </div>
-                <div className="bg-white rounded p-2">
-                  <div className="flex items-center justify-center mb-1">
-                    <Award className="w-4 h-4 text-purple-500" />
-                  </div>
-                  <Text size="xs" weight="bold">
-                    {userProfile.badges?.length || 0}
-                  </Text>
-                  <Text size="xs" color="muted">Badges</Text>
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </div>
-
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
           {navigation.map((item) => (
@@ -304,34 +186,19 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
           ))}
         </nav>
 
-        {/* Quick Action - Only show for users with active purchases */}
-        {userProfile?.hasActiveAccess ? (
-          <div className="p-4 border-t border-gray-200" data-tour="continue-journey">
-            <Link
-              href={`/journey/day/${userProfile?.currentDay || 1}`}
-              onClick={() => setSidebarOpen(false)}
-            >
-              <Button variant="primary" className="w-full group">
-                <Sparkles className="w-4 h-4 mr-2" />
-                <span>Continue Journey</span>
-                <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="p-4 border-t border-gray-200">
-            <Link
-              href="/pricing"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <Button variant="primary" className="w-full group">
-                <Sparkles className="w-4 h-4 mr-2" />
-                <span>Start Learning</span>
-                <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </div>
-        )}
+        {/* Quick Action */}
+        <div className="p-4 border-t border-gray-200">
+          <Link
+            href="/pricing"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <Button variant="primary" className="w-full group">
+              <Sparkles className="w-4 h-4 mr-2" />
+              <span>Start Learning</span>
+              <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+        </div>
 
         {/* Bottom Navigation */}
         <div className="border-t border-gray-200 px-2 py-2">
@@ -356,18 +223,13 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
           <div className="px-8 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Text weight="medium" color="muted">
-                {new Date().toLocaleDateString('en-IN', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date().toLocaleDateString('en-IN', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </Text>
-              {userProfile && userProfile.currentStreak && userProfile.currentStreak > 0 && (
-                <Badge variant="warning" size="sm">
-                  🔥 {userProfile.currentStreak} day streak
-                </Badge>
-              )}
             </div>
             <div className="flex items-center gap-4">
               <GlobalSearch />

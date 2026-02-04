@@ -131,7 +131,6 @@ import {
 import { PaymentButton, BuyNowButton, AddToCartButton, AllAccessButton } from '@/components/payment/PaymentButton';
 import { useCart } from '@/context/CartContext';
 import dynamic from 'next/dynamic';
-import { ProgressiveOnboarding } from '@/components/onboarding/ProgressiveOnboarding';
 import { MobileDashboard } from '@/components/dashboard/MobileDashboard';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { AchievementsSection } from '@/components/dashboard/AchievementsSection';
@@ -506,7 +505,6 @@ function DashboardContent() {
   
   // Check if user is coming from completed onboarding
   const [skipOnboardingCheck, setSkipOnboardingCheck] = useState(false);
-  const [showProgressiveOnboarding, setShowProgressiveOnboarding] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   
@@ -517,11 +515,6 @@ function DashboardContent() {
       window.history.replaceState({}, '', '/dashboard');
     }
     
-    // Check if we should show progressive onboarding
-    if (urlParams.get('showOnboarding') === 'true') {
-      setShowProgressiveOnboarding(true);
-      window.history.replaceState({}, '', '/dashboard');
-    }
   }, []);
 
   useEffect(() => {
@@ -571,27 +564,6 @@ function DashboardContent() {
         // Validate response data structure
         if (!data || typeof data !== 'object') {
           throw new Error('Invalid response format from dashboard API');
-        }
-
-        // Check if user needs progressive onboarding (only if not already showing it)
-        if (!showProgressiveOnboarding && (!data.userName || data.userName === data.userEmail?.split('@')[0])) {
-          try {
-            const onboardingResponse = await fetch('/api/user/progressive-onboarding', {
-              cache: 'no-store',
-              signal: abortController.signal
-            });
-            if (!abortController.signal.aborted && onboardingResponse.ok) {
-              const onboardingData = await onboardingResponse.json();
-              if (onboardingData.onboardingStep < 3) {
-                setShowProgressiveOnboarding(true);
-              }
-            }
-          } catch (onboardingError) {
-            if (!abortController.signal.aborted) {
-              logger.error('Failed to check progressive onboarding:', onboardingError);
-            }
-            // Don't block dashboard loading for onboarding check failures
-          }
         }
 
         // Don't update state if aborted
@@ -665,7 +637,7 @@ function DashboardContent() {
         clearTimeout(retryTimeout);
       }
     };
-  }, [user, router, skipOnboardingCheck, retryCount, showProgressiveOnboarding]);
+  }, [user, router, skipOnboardingCheck, retryCount]);
 
   const handleProductClick = useCallback((product: Product) => {
     if (product.hasAccess) {
@@ -822,21 +794,6 @@ function DashboardContent() {
         </div>
       )}
 
-      {/* Progressive Onboarding Modal */}
-      {showProgressiveOnboarding && (
-        <ProgressiveOnboarding
-          onComplete={() => {
-            setShowProgressiveOnboarding(false);
-            // Refresh dashboard data after onboarding
-            window.location.reload();
-          }}
-          onSkip={() => setShowProgressiveOnboarding(false)}
-          initialData={{
-            email: user?.email || '',
-            name: dashboardData.userName || '',
-          }}
-        />
-      )}
       
       <div className="p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Welcome Section */}

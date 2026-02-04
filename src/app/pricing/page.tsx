@@ -46,7 +46,9 @@ import {
   Server,
   CreditCard,
   Lightbulb,
-  Package
+  Package,
+  AlertCircle,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/icons/Logo';
@@ -89,6 +91,39 @@ export default function PricingPage() {
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+
+  // Check if email is verified
+  const isEmailVerified = user?.email_confirmed_at != null;
+
+  // Handle resend verification email
+  const handleResendVerification = async () => {
+    if (!user?.email || isResendingEmail) return;
+
+    setIsResendingEmail(true);
+    setResendSuccess(false);
+
+    try {
+      const response = await fetch('/api/user/email/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      if (response.ok) {
+        setResendSuccess(true);
+        toast.success('Verification email sent! Please check your inbox.');
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to resend verification email');
+      }
+    } catch (error) {
+      toast.error('Failed to resend verification email. Please try again.');
+    } finally {
+      setIsResendingEmail(false);
+    }
+  };
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -1281,6 +1316,51 @@ export default function PricingPage() {
           </div>
         </div>
       </nav>
+
+      {/* Email Verification Banner */}
+      {user && !isEmailVerified && (
+        <div className="bg-amber-50 border-b border-amber-200">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <div>
+                  <Text weight="medium" className="text-amber-800">
+                    Please verify your email address before making a purchase.
+                  </Text>
+                  <Text size="sm" className="text-amber-700">
+                    Check your inbox for the verification link, or click below to resend.
+                  </Text>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResendVerification}
+                disabled={isResendingEmail || resendSuccess}
+                className="border-amber-400 text-amber-800 hover:bg-amber-100 whitespace-nowrap"
+              >
+                {isResendingEmail ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : resendSuccess ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Email Sent!
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Resend Verification Email
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cart Sidebar */}
       {isCartOpen && (

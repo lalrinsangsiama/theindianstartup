@@ -8,12 +8,20 @@ import { ADMIN_EMAIL_ALLOWLIST } from '@/lib/constants'
 const ALLOWED_ORIGINS = [
   'https://theindianstartup.in',
   'https://www.theindianstartup.in',
+  process.env.NEXT_PUBLIC_SITE_URL,
 ].filter(Boolean) as string[]
 
 // Check if origin is localhost in development (any port)
 function isLocalhostOrigin(origin: string | null): boolean {
   if (process.env.NODE_ENV !== 'development' || !origin) return false
   return /^http:\/\/localhost:\d+$/.test(origin)
+}
+
+// Check if origin is a Netlify deploy preview or branch deploy
+function isNetlifyOrigin(origin: string | null): boolean {
+  if (!origin) return false
+  // Match *.netlify.app domains (deploy previews and branch deploys)
+  return /^https:\/\/[a-z0-9-]+\.netlify\.app$/.test(origin)
 }
 
 // Create Supabase client for middleware with cookie handling
@@ -106,7 +114,7 @@ export async function middleware(request: NextRequest) {
 
   // CORS validation for API routes
   if (pathname.startsWith('/api/') && origin) {
-    const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin) || isLocalhostOrigin(origin)
+    const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin) || isLocalhostOrigin(origin) || isNetlifyOrigin(origin)
     if (!isAllowedOrigin) {
       logSecurityEvent({
         type: 'cors_violation',
@@ -139,7 +147,7 @@ export async function middleware(request: NextRequest) {
   })
 
   // Add CORS headers for allowed origins
-  if (origin && (ALLOWED_ORIGINS.includes(origin) || isLocalhostOrigin(origin))) {
+  if (origin && (ALLOWED_ORIGINS.includes(origin) || isLocalhostOrigin(origin) || isNetlifyOrigin(origin))) {
     response.headers.set('Access-Control-Allow-Origin', origin)
     response.headers.set('Access-Control-Allow-Credentials', 'true')
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')

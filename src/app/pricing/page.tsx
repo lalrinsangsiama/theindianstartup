@@ -226,7 +226,14 @@ export default function PricingPage() {
       });
 
       if (!orderResponse.ok) {
-        throw new Error('Failed to create order');
+        const errorData = await orderResponse.json().catch(() => ({}));
+        // Handle specific error cases
+        if (orderResponse.status === 401) {
+          toast.info('Please log in to complete your purchase');
+          router.push('/login?redirectTo=/pricing');
+          return;
+        }
+        throw new Error(errorData.error || 'Failed to create order');
       }
 
       const order = await orderResponse.json();
@@ -272,7 +279,8 @@ export default function PricingPage() {
       }
     } catch (error) {
       logger.error('Purchase error:', error);
-      toast.error('Failed to initiate purchase. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(errorMessage || 'Failed to initiate purchase. Please try again.');
     } finally {
       setIsLoading(false);
       setLoadingProduct(null);

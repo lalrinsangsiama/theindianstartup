@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -10,6 +10,7 @@ import { Text } from '@/components/ui/Typography';
 import { Alert } from '@/components/ui/Alert';
 import { X, ArrowRight, CheckCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { validateEmail, validatePhone } from '@/lib/validation';
 
 interface OnboardingStep {
   step: number;
@@ -81,13 +82,40 @@ export function ProgressiveOnboarding({
   // Get current step configuration
   const currentStepConfig = OnboardingFlow.find(s => s.step === currentStep);
 
-  // Check if step is complete
+  // Validate a specific field
+  const validateField = useCallback((field: string, value: string): string | null => {
+    if (!value || !value.trim()) return null; // Empty is handled by required check
+
+    switch (field) {
+      case 'email':
+        return validateEmail(value);
+      case 'phone':
+        return validatePhone(value);
+      default:
+        return null;
+    }
+  }, []);
+
+  // Check if step is complete (required fields filled + validation passes)
   const isStepComplete = () => {
     if (!currentStepConfig) return false;
-    return currentStepConfig.required.every(field => {
+
+    // Check required fields are present
+    const requiredFilled = currentStepConfig.required.every(field => {
       const value = formData[field as keyof OnboardingData];
       return value && value.trim().length > 0;
     });
+
+    if (!requiredFilled) return false;
+
+    // Check validation passes for required fields
+    const allValid = currentStepConfig.required.every(field => {
+      const value = formData[field as keyof OnboardingData];
+      if (!value) return true; // Empty handled above
+      return validateField(field, value) === null;
+    });
+
+    return allValid;
   };
 
   // Save progress to backend

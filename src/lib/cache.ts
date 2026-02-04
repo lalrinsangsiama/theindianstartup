@@ -5,44 +5,90 @@
 interface CacheEntry<T> {
   data: T;
   expiry: number;
+  lastAccess: number; // For LRU tracking
 }
+
+// Maximum cache entries to prevent memory leaks
+const MAX_CACHE_SIZE = 10000;
+const MAX_TIMER_SIZE = 10000;
 
 class CacheManager {
   private cache: Map<string, CacheEntry<any>> = new Map();
   private timers: Map<string, NodeJS.Timeout> = new Map();
 
+  // Enforce max cache size with LRU eviction
+  private enforceCacheSizeLimit(): void {
+    if (this.cache.size <= MAX_CACHE_SIZE) return;
+
+    // Find and remove oldest entries (LRU eviction)
+    const entries = Array.from(this.cache.entries());
+    entries.sort((a, b) => a[1].lastAccess - b[1].lastAccess);
+
+    // Remove oldest 10% of entries
+    const removeCount = Math.ceil(MAX_CACHE_SIZE * 0.1);
+    for (let i = 0; i < removeCount && i < entries.length; i++) {
+      this.delete(entries[i][0]);
+    }
+  }
+
+  // Enforce max timer size
+  private enforceTimerSizeLimit(): void {
+    if (this.timers.size <= MAX_TIMER_SIZE) return;
+
+    // Clear oldest timers (they will re-create if needed)
+    const keysToRemove: string[] = [];
+    let count = 0;
+    const targetRemove = Math.ceil(MAX_TIMER_SIZE * 0.1);
+
+    for (const key of this.timers.keys()) {
+      if (count >= targetRemove) break;
+      keysToRemove.push(key);
+      count++;
+    }
+
+    keysToRemove.forEach(key => this.clearTimer(key));
+  }
+
   // Set cache with TTL in seconds
   set<T>(key: string, data: T, ttl: number): void {
-    const expiry = Date.now() + ttl * 1000;
-    
+    const now = Date.now();
+    const expiry = now + ttl * 1000;
+
     // Clear existing timer if any
     this.clearTimer(key);
-    
-    // Set new cache entry
-    this.cache.set(key, { data, expiry });
-    
+
+    // Enforce size limits before adding new entry
+    this.enforceCacheSizeLimit();
+    this.enforceTimerSizeLimit();
+
+    // Set new cache entry with LRU tracking
+    this.cache.set(key, { data, expiry, lastAccess: now });
+
     // Set auto-cleanup timer
     const timer = setTimeout(() => {
       this.delete(key);
     }, ttl * 1000);
-    
+
     this.timers.set(key, timer);
   }
 
   // Get from cache
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
-    
+
     // Check if expired
     if (Date.now() > entry.expiry) {
       this.delete(key);
       return null;
     }
-    
+
+    // Update lastAccess for LRU tracking
+    entry.lastAccess = Date.now();
+
     return entry.data as T;
   }
 

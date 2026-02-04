@@ -17,7 +17,7 @@ export function useAchievements() {
   const [achievementQueue, setAchievementQueue] = useState<Achievement[]>([]);
 
   // Check for new achievements
-  const checkAchievements = useCallback(async (trigger: string, metadata?: any) => {
+  const checkAchievements = useCallback(async (trigger: string, metadata?: Record<string, unknown>) => {
     try {
       const response = await fetch('/api/achievements/check', {
         method: 'POST',
@@ -27,10 +27,24 @@ export function useAchievements() {
 
       if (response.ok) {
         const data = await response.json();
-        
-        if (data.newlyUnlocked && data.newlyUnlocked.length > 0) {
-          // Add to queue
-          setAchievementQueue(prev => [...prev, ...data.newlyUnlocked]);
+
+        // Validate response structure before using
+        if (data?.newlyUnlocked && Array.isArray(data.newlyUnlocked) && data.newlyUnlocked.length > 0) {
+          // Validate each achievement has required fields
+          const validAchievements = data.newlyUnlocked.filter(
+            (a: unknown): a is Achievement =>
+              typeof a === 'object' &&
+              a !== null &&
+              'id' in a &&
+              'title' in a &&
+              'description' in a &&
+              'badge' in a &&
+              'xp' in a
+          );
+
+          if (validAchievements.length > 0) {
+            setAchievementQueue(prev => [...prev, ...validAchievements]);
+          }
         }
       }
     } catch (error) {

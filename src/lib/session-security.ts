@@ -25,7 +25,8 @@ interface SessionState {
 }
 
 // Device fingerprint for suspicious activity detection
-function generateDeviceFingerprint(): string {
+// Uses SHA-256 for collision-resistant hashing
+async function generateDeviceFingerprintAsync(): Promise<string> {
   if (typeof window === 'undefined') return 'server';
 
   const components = [
@@ -39,15 +40,60 @@ function generateDeviceFingerprint(): string {
     navigator.platform,
   ];
 
-  // Simple hash function
   const str = components.join('|');
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+
+  // Use Web Crypto API for proper SHA-256 hashing
+  if (crypto.subtle) {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      // Use first 16 bytes for a shorter but still secure fingerprint
+      return hashArray.slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch {
+      // Fallback to simpler hash if crypto.subtle fails
+    }
   }
-  return Math.abs(hash).toString(36);
+
+  // Fallback for environments without crypto.subtle (should be rare)
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) ^ str.charCodeAt(i);
+  }
+  return Math.abs(hash).toString(16).padStart(8, '0');
+}
+
+// Synchronous version for backwards compatibility (uses cached value when possible)
+let cachedFingerprint: string | null = null;
+function generateDeviceFingerprint(): string {
+  if (typeof window === 'undefined') return 'server';
+
+  // Return cached value if available
+  if (cachedFingerprint) return cachedFingerprint;
+
+  // Generate async and cache for next time
+  generateDeviceFingerprintAsync().then(fp => {
+    cachedFingerprint = fp;
+  });
+
+  // Return a temporary sync hash for immediate use
+  const components = [
+    navigator.userAgent,
+    navigator.language,
+    screen.width,
+    screen.height,
+    screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency || 'unknown',
+    navigator.platform,
+  ];
+  const str = components.join('|');
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) ^ str.charCodeAt(i);
+  }
+  return Math.abs(hash).toString(16).padStart(8, '0');
 }
 
 // Generate unique session ID

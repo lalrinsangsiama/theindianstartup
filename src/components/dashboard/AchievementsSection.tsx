@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Text } from '@/components/ui/Typography';
@@ -24,33 +24,28 @@ interface AchievementsSectionProps {
   badges: string[];
 }
 
-export function AchievementsSection({ 
-  userId, 
-  totalXP, 
+export function AchievementsSection({
+  userId,
+  totalXP,
   currentLevel,
-  badges 
+  badges
 }: AchievementsSectionProps) {
   const [achievements, setAchievements] = useState<{
     unlocked: DisplayAchievement[];
     nextUp: DisplayAchievement[];
-    stats: any;
+    stats: Record<string, unknown>;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchAchievements();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
-
-  const fetchAchievements = async () => {
+  const fetchAchievements = useCallback(async () => {
     try {
       const response = await fetch('/api/achievements');
       if (response.ok) {
         const data = await response.json();
-        
+
         // Get next 3 achievable achievements
         const nextAchievements = getNextAchievements(data.stats, badges);
-        
+
         setAchievements({
           unlocked: data.achievements.unlocked.slice(0, 3) as DisplayAchievement[],
           nextUp: nextAchievements as DisplayAchievement[],
@@ -62,7 +57,11 @@ export function AchievementsSection({
     } finally {
       setLoading(false);
     }
-  };
+  }, [badges]);
+
+  useEffect(() => {
+    fetchAchievements();
+  }, [userId, fetchAchievements]);
 
   const nextLevelXP = (currentLevel + 1) * 1000;
   const currentLevelXP = currentLevel * 1000;
@@ -193,15 +192,15 @@ export function AchievementsSection({
         <Card>
           <CardContent className="p-4 text-center">
             <div className="w-6 h-6 mx-auto mb-2 text-2xl">🔥</div>
-            <Text size="xl" weight="bold">{achievements?.stats?.streakDays || 0}</Text>
+            <Text size="xl" weight="bold">{Number(achievements?.stats?.streakDays) || 0}</Text>
             <Text size="sm" color="muted">Day Streak</Text>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4 text-center">
             <div className="w-6 h-6 mx-auto mb-2 text-2xl">📚</div>
-            <Text size="xl" weight="bold">{achievements?.stats?.lessonsCompleted || 0}</Text>
+            <Text size="xl" weight="bold">{Number(achievements?.stats?.lessonsCompleted) || 0}</Text>
             <Text size="sm" color="muted">Lessons Done</Text>
           </CardContent>
         </Card>

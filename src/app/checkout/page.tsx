@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -12,6 +13,30 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
+
+// Billing validation schema
+const billingSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name is too long'),
+  email: z.string()
+    .email('Please enter a valid email address'),
+  phone: z.string()
+    .transform(val => val.replace(/\D/g, '')) // Strip non-digits before validation
+    .refine(val => /^[6-9]\d{9}$/.test(val), 'Please enter a valid 10-digit Indian mobile number'),
+  company: z.string().max(100).optional(),
+  gst: z.string()
+    .regex(/^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})?$/, 'Invalid GST number format')
+    .optional()
+    .or(z.literal('')),
+  address: z.string().max(200).optional(),
+  city: z.string().max(50).optional(),
+  state: z.string().max(50).optional(),
+  pincode: z.string()
+    .regex(/^[1-9][0-9]{5}$/, 'Please enter a valid 6-digit PIN code')
+    .optional()
+    .or(z.literal('')),
+});
 import { 
   CheckCircle, 
   ArrowRight, 
@@ -110,10 +135,16 @@ function CheckoutContent() {
         description: allAccess.description
       }]);
     } else {
-      // Load from localStorage
-      const savedCart = localStorage.getItem('checkoutCart');
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
+      // Load from localStorage (with SSR guard)
+      if (typeof window !== 'undefined') {
+        const savedCart = localStorage.getItem('checkoutCart');
+        if (savedCart) {
+          try {
+            setCart(JSON.parse(savedCart));
+          } catch {
+            // Invalid JSON, ignore
+          }
+        }
       }
     }
   }, [searchParams]);
@@ -122,12 +153,22 @@ function CheckoutContent() {
   const calculatePricing = () => {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     let discount = 0;
-    
-    // Apply bundle discount
+
+    // Apply bundle discount dynamically from product catalog
     if (cart.some(item => item.productCode === 'ALL_ACCESS')) {
-      discount = 25986; // Bundle saves ₹25,986
+      // Calculate total value of all individual products vs ALL_ACCESS price
+      const allProductCodes = Object.keys(PRODUCTS).filter(code =>
+        code !== 'ALL_ACCESS' && code !== 'SECTOR_MASTERY' && code.startsWith('P')
+      );
+      const totalIndividualValue = allProductCodes.reduce((sum, code) => {
+        const product = PRODUCTS[code];
+        return sum + (product?.price || 0);
+      }, 0);
+      const allAccessPrice = PRODUCTS.ALL_ACCESS?.price || 149999;
+      // Bundle discount = total individual value - bundle price
+      discount = Math.max(0, totalIndividualValue - allAccessPrice);
     }
-    
+
     // Apply coupon discount
     if (appliedCoupon) {
       if (appliedCoupon.type === 'percentage') {
@@ -136,10 +177,10 @@ function CheckoutContent() {
         discount += appliedCoupon.discount;
       }
     }
-    
+
     const tax = 0; // No GST for educational content
     const total = subtotal - discount + tax;
-    
+
     return { subtotal, discount, tax, total };
   };
 
@@ -204,9 +245,11 @@ function CheckoutContent() {
       setLoading(true);
       setError('');
 
-      // Validate billing details
-      if (!billingDetails.name || !billingDetails.email || !billingDetails.phone) {
-        setError('Please fill in all required billing details');
+      // Validate billing details with Zod schema
+      const validation = billingSchema.safeParse(billingDetails);
+      if (!validation.success) {
+        const firstError = validation.error.errors[0];
+        setError(firstError.message);
         setLoading(false);
         return;
       }
@@ -233,11 +276,11 @@ function CheckoutContent() {
         }),
       });
 
-      if (!orderResponse.ok) {
-        throw new Error('Failed to create order');
-      }
-
       const orderData = await orderResponse.json();
+
+      if (!orderResponse.ok) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
 
       // Initialize Razorpay with enhanced options
       const options = {
@@ -273,7 +316,7 @@ function CheckoutContent() {
           try {
             // Show processing state
             setLoading(true);
-            setError('Processing your payment...');
+            setError(''); // Clear any previous errors
             
             // Verify payment
             const verifyResponse = await fetch('/api/purchase/verify', {

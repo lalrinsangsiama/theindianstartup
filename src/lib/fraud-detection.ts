@@ -89,10 +89,11 @@ export async function checkPaymentFraud(
     // Determine risk level
     const riskLevel = getRiskLevel(riskScore);
 
-    // Log suspicious activity if risk is high
-    if (riskLevel === 'high' || riskLevel === 'critical') {
+    // Log suspicious activity for medium, high, or critical risk
+    // Medium risk logging helps identify patterns before they become high risk
+    if (riskLevel === 'medium' || riskLevel === 'high' || riskLevel === 'critical') {
       await logSuspiciousActivity(
-        'high_risk_payment_attempt',
+        riskLevel === 'medium' ? 'medium_risk_payment_attempt' : 'high_risk_payment_attempt',
         {
           riskScore,
           riskLevel,

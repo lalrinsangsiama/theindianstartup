@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 
@@ -15,6 +15,9 @@ export function useUserProducts() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Use AbortController to cancel fetch on unmount/user change (prevents race conditions)
+    const abortController = new AbortController();
+
     const fetchUserProducts = async () => {
       if (!user) {
         setUserProducts([]);
@@ -23,32 +26,48 @@ export function useUserProducts() {
       }
 
       try {
-        const response = await fetch('/api/user/profile');
+        const response = await fetch('/api/user/profile', {
+          signal: abortController.signal,
+        });
+
+        // Check if request was aborted before processing response
+        if (abortController.signal.aborted) return;
+
         if (response.ok) {
           const data = await response.json();
           const purchases = data.user?.activePurchases || [];
-          
+
           // Map purchases to a simple product list
           const products = purchases
-            .filter((p: any) => p.status === 'completed' && new Date(p.expiresAt) > new Date())
-            .map((p: any) => ({
+            .filter((p: { status: string; expiresAt: string }) =>
+              p.status === 'completed' && new Date(p.expiresAt) > new Date()
+            )
+            .map((p: { product?: { code: string }; productId: string; expiresAt: string }) => ({
               productCode: p.product?.code,
               productId: p.productId,
               hasAccess: true,
               expiresAt: p.expiresAt
             }));
-          
+
           setUserProducts(products);
         }
       } catch (error) {
+        // Ignore abort errors
+        if (error instanceof Error && error.name === 'AbortError') return;
         logger.error('Failed to fetch user products:', error);
         setUserProducts([]);
       } finally {
-        setIsLoading(false);
+        if (!abortController.signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchUserProducts();
+
+    return () => {
+      abortController.abort();
+    };
   }, [user]);
 
   const hasProduct = (productCode: string) => {

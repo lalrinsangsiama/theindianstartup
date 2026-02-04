@@ -4,7 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 import { captureWebhookError } from '@/lib/sentry';
 import crypto from 'crypto';
 
-const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET;
+// SECURITY: Require explicit RAZORPAY_WEBHOOK_SECRET configuration
+// Do not use fallbacks as this could lead to security vulnerabilities
+const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET;
 
 interface RazorpayWebhookPayload {
   entity: string;
@@ -136,26 +138,39 @@ async function completePurchase(
     }
   }
 
-  // Award XP for purchase - using correct schema field names (type, points)
-  const xpAmount = 100; // Base XP for any purchase
-  const xpEvent = {
-    userId: purchase.userId,
-    points: xpAmount,
-    type: 'product_purchase',
-    description: `Purchased ${purchase.product?.title || 'product'}`,
-    metadata: {
-      purchaseId: purchase.id,
-      productCode: purchase.product?.code
-    },
-  };
+  // Award XP for purchase - but check if already awarded for this purchase (idempotency)
+  // This prevents duplicate XP if both webhook and client verify process the same payment
+  const { data: existingXpEvent } = await supabase
+    .from('XPEvent')
+    .select('id')
+    .eq('userId', purchase.userId)
+    .eq('type', 'product_purchase')
+    .contains('metadata', { purchaseId: purchase.id })
+    .maybeSingle();
 
-  await supabase.from('XPEvent').insert(xpEvent);
+  if (!existingXpEvent) {
+    const xpAmount = 100; // Base XP for any purchase
+    const xpEvent = {
+      userId: purchase.userId,
+      points: xpAmount,
+      type: 'product_purchase',
+      description: `Purchased ${purchase.product?.title || 'product'}`,
+      metadata: {
+        purchaseId: purchase.id,
+        productCode: purchase.product?.code
+      },
+    };
 
-  // Update user's total XP
-  await supabase.rpc('increment_user_xp', {
-    user_id: purchase.userId,
-    xp_amount: xpAmount
-  });
+    await supabase.from('XPEvent').insert(xpEvent);
+
+    // Update user's total XP
+    await supabase.rpc('increment_user_xp', {
+      user_id: purchase.userId,
+      xp_amount: xpAmount
+    });
+  } else {
+    logger.info('XP already awarded for this purchase, skipping', { purchaseId: purchase.id });
+  }
 
   logger.info('Purchase completed successfully via webhook', {
     purchaseId: purchase.id,

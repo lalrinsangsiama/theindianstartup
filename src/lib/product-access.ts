@@ -13,32 +13,45 @@ export interface ProductAccess {
 // Re-export for backward compatibility
 export { Product, PRODUCTS };
 
+// Products included in SECTOR_MASTERY bundle
+const SECTOR_MASTERY_PRODUCTS = ['P13', 'P14', 'P15'];
+
 /**
  * Check if user has access to a specific product
  */
 export async function checkProductAccess(userId: string, productCode: string): Promise<ProductAccess> {
   try {
     const supabase = createClient();
-    
-    // Check for direct product purchase or ALL_ACCESS bundle
+
+    // Build OR conditions for access check
+    // Include SECTOR_MASTERY bundle for P13, P14, P15
+    const includeSectorMastery = SECTOR_MASTERY_PRODUCTS.includes(productCode);
+    const orConditions = includeSectorMastery
+      ? `product.code.eq.${productCode},product.code.eq.ALL_ACCESS,product.code.eq.SECTOR_MASTERY`
+      : `product.code.eq.${productCode},product.code.eq.ALL_ACCESS`;
+
+    // Check for direct product purchase, ALL_ACCESS bundle, or SECTOR_MASTERY bundle
     const { data: purchases } = await supabase
       .from('Purchase')
       .select('*, product:Product(*)')
       .eq('userId', userId)
       .eq('status', 'completed')
       .gte('expiresAt', new Date().toISOString())
-      .or(`product.code.eq.${productCode},product.code.eq.ALL_ACCESS`);
+      .or(orConditions);
 
     if (!purchases || purchases.length === 0) {
       return { hasAccess: false };
     }
 
-    // Check if user has direct access to the product or ALL_ACCESS
+    // Check if user has direct access, ALL_ACCESS, or SECTOR_MASTERY bundle
     const directAccess = purchases.find(p => p.product?.code === productCode);
-    const bundleAccess = purchases.find(p => p.product?.code === 'ALL_ACCESS');
-    
-    const activePurchase = directAccess || bundleAccess;
-    
+    const allAccessBundle = purchases.find(p => p.product?.code === 'ALL_ACCESS');
+    const sectorMasteryBundle = includeSectorMastery
+      ? purchases.find(p => p.product?.code === 'SECTOR_MASTERY')
+      : null;
+
+    const activePurchase = directAccess || allAccessBundle || sectorMasteryBundle;
+
     if (!activePurchase) {
       return { hasAccess: false };
     }

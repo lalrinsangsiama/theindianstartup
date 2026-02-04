@@ -25,6 +25,7 @@ import {
 import { P2ActivityCapture } from '@/components/portfolio/P2ActivityCapture';
 import { useRouter } from 'next/navigation';
 import { sanitizeHTML } from '@/lib/sanitize';
+import { logger } from '@/lib/logger';
 
 interface P2LessonInterfaceProps {
   lessonId: string;
@@ -33,14 +34,40 @@ interface P2LessonInterfaceProps {
   onComplete: (lessonId: string) => void;
 }
 
-export default function P2LessonInterface({ 
-  lessonId, 
-  day, 
-  isUnlocked, 
-  onComplete 
+interface LessonContent {
+  overview: string;
+  keyPoints: string[];
+  caseStudy: string;
+}
+
+interface LessonResource {
+  title: string;
+  type: string;
+  size: string;
+  icon: React.ReactNode;
+  description: string;
+}
+
+interface LessonData {
+  id: string;
+  day: number;
+  title: string;
+  moduleTitle: string;
+  content: LessonContent;
+  resources: LessonResource[];
+  xpReward: number;
+  estimatedTime: number;
+}
+
+
+export default function P2LessonInterface({
+  lessonId,
+  day,
+  isUnlocked,
+  onComplete
 }: P2LessonInterfaceProps) {
   const router = useRouter();
-  const [lessonData, setLessonData] = useState<any>(null);
+  const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [loading, setLoading] = useState(true);
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [currentSection, setCurrentSection] = useState('content');
@@ -63,7 +90,7 @@ export default function P2LessonInterface({
         estimatedTime: 45
       });
     } catch (error) {
-      console.error('Error fetching lesson:', error);
+      logger.error('Error fetching lesson:', error);
     } finally {
       setLoading(false);
     }

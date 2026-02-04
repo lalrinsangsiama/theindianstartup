@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
+import { PaymentButton } from '@/components/payment/PaymentButton';
 import {
   Target,
   Users,
@@ -260,11 +261,11 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                   <Target className="w-5 h-5 text-green-600" />
                   What You Will Achieve
                 </h3>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {config.achievements.map((achievement, index) => (
-                    <li key={index} className="flex items-start gap-2">
+                    <li key={index} className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>{achievement}</span>
+                      <span className="text-base leading-relaxed">{achievement}</span>
                     </li>
                   ))}
                 </ul>
@@ -276,11 +277,11 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                   <Award className="w-5 h-5 text-blue-600" />
                   Exclusive Features
                 </h3>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {config.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2">
+                    <li key={index} className="flex items-start gap-3">
                       {feature.icon}
-                      <span>{feature.text}</span>
+                      <span className="text-base leading-relaxed">{feature.text}</span>
                     </li>
                   ))}
                 </ul>
@@ -291,15 +292,37 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
             <Card className="p-6 mb-8">
               <h3 className="text-xl font-bold mb-6">Your Learning Journey</h3>
               <div className="grid md:grid-cols-4 gap-4">
-                {config.journeySteps.map((step, index) => (
-                  <div key={index} className="text-center">
-                    <div className={`bg-${step.color}-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3`}>
-                      <span className={`text-2xl font-bold text-${step.color}-600`}>{index + 1}</span>
+                {config.journeySteps.map((step, index) => {
+                  // Map color names to static Tailwind classes to ensure they are compiled
+                  const colorClasses: Record<string, { bg: string; text: string }> = {
+                    orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
+                    amber: { bg: 'bg-amber-100', text: 'text-amber-600' },
+                    yellow: { bg: 'bg-yellow-100', text: 'text-yellow-600' },
+                    green: { bg: 'bg-green-100', text: 'text-green-600' },
+                    emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600' },
+                    teal: { bg: 'bg-teal-100', text: 'text-teal-600' },
+                    cyan: { bg: 'bg-cyan-100', text: 'text-cyan-600' },
+                    blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+                    indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+                    violet: { bg: 'bg-violet-100', text: 'text-violet-600' },
+                    purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
+                    fuchsia: { bg: 'bg-fuchsia-100', text: 'text-fuchsia-600' },
+                    pink: { bg: 'bg-pink-100', text: 'text-pink-600' },
+                    rose: { bg: 'bg-rose-100', text: 'text-rose-600' },
+                    red: { bg: 'bg-red-100', text: 'text-red-600' },
+                  };
+                  const colors = colorClasses[step.color] || { bg: 'bg-gray-100', text: 'text-gray-600' };
+
+                  return (
+                    <div key={index} className="text-center">
+                      <div className={`${colors.bg} rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3`}>
+                        <span className={`text-2xl font-bold ${colors.text}`}>{index + 1}</span>
+                      </div>
+                      <h4 className="font-semibold mb-1">{step.title}</h4>
+                      <p className="text-sm text-gray-600">{step.description}</p>
                     </div>
-                    <h4 className="font-semibold mb-1">{step.title}</h4>
-                    <p className="text-sm text-gray-600">{step.description}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </Card>
           </TabsContent>
@@ -360,14 +383,14 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
                                     <span className="text-xs font-medium text-gray-500">
-                                      Day {lesson.day}
+                                      Day {lesson.day ?? (lesson as any).order ?? '-'}
                                     </span>
                                     <Badge variant="outline" className="text-xs">
-                                      {lesson.xpReward} XP
+                                      {lesson.xpReward ?? 50} XP
                                     </Badge>
                                   </div>
                                   <h4 className="font-medium mb-2">{lesson.title}</h4>
-                                  <p className="text-sm text-gray-600 mb-3">{lesson.briefContent}</p>
+                                  <p className="text-sm text-gray-600 mb-3 leading-relaxed">{lesson.briefContent}</p>
 
                                   {!isLocked && (
                                     <Button
@@ -446,10 +469,28 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
               {(!product?.modules || product.modules.length === 0) && (
                 <Card className="p-8 text-center">
                   <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Course Content Loading</h3>
-                  <p className="text-gray-600">
-                    Course modules and lessons are being prepared. Check back soon!
+                  <h3 className="text-lg font-semibold mb-2">Course Content</h3>
+                  <p className="text-gray-600 mb-4">
+                    {hasAccess
+                      ? 'Course modules are being loaded. If this persists, please try refreshing the page.'
+                      : 'Purchase this course to unlock all modules and lessons.'}
                   </p>
+                  {hasAccess ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => window.location.reload()}
+                      className="mx-auto"
+                    >
+                      Refresh Page
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => router.push('/pricing')}
+                      className="mx-auto"
+                    >
+                      View Pricing
+                    </Button>
+                  )}
                 </Card>
               )}
             </div>
@@ -484,12 +525,34 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                   Course Details
                 </h3>
                 <div className="grid md:grid-cols-3 gap-4">
-                  {config.communityStats.map((stat, index) => (
-                    <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className={`text-2xl font-bold text-${stat.color}-600`}>{stat.value}</div>
-                      <div className="text-sm text-gray-600">{stat.label}</div>
-                    </div>
-                  ))}
+                  {config.communityStats.map((stat, index) => {
+                    // Map color names to static Tailwind classes
+                    const textColorMap: Record<string, string> = {
+                      orange: 'text-orange-600',
+                      amber: 'text-amber-600',
+                      yellow: 'text-yellow-600',
+                      green: 'text-green-600',
+                      emerald: 'text-emerald-600',
+                      teal: 'text-teal-600',
+                      cyan: 'text-cyan-600',
+                      blue: 'text-blue-600',
+                      indigo: 'text-indigo-600',
+                      violet: 'text-violet-600',
+                      purple: 'text-purple-600',
+                      fuchsia: 'text-fuchsia-600',
+                      pink: 'text-pink-600',
+                      rose: 'text-rose-600',
+                      red: 'text-red-600',
+                    };
+                    const textColor = textColorMap[stat.color] || 'text-gray-600';
+
+                    return (
+                      <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className={`text-2xl font-bold ${textColor}`}>{stat.value}</div>
+                        <div className="text-sm text-gray-600">{stat.label}</div>
+                      </div>
+                    );
+                  })}
                 </div>
               </Card>
 
@@ -497,7 +560,7 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
               <Card className="p-8 text-center">
                 <Users className="w-16 h-16 text-blue-600 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold mb-4">Connect with Fellow Founders</h3>
-                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto text-base leading-relaxed">
                   Get access to our founder community where you can share experiences,
                   ask questions, and connect with entrepreneurs on the same journey.
                 </p>
@@ -521,12 +584,17 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
           <Card className={`mt-8 p-8 bg-gradient-to-r ${config.gradientFrom.replace('from-', 'from-')}-50 to-blue-50 border-blue-200`}>
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-4">{config.ctaText}</h3>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              <p className="text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
                 {config.ctaSubtext}
               </p>
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                Get Instant Access - {config.price}
-              </Button>
+              <PaymentButton
+                productCode={product?.code || ''}
+                size="lg"
+                quickBuy={true}
+                showPrice={true}
+                ctaStyle="gradient"
+                customText={`Get Instant Access - ${config.price}`}
+              />
               <p className="text-sm text-gray-500 mt-4">
                 30-day money-back guarantee • Lifetime updates included
               </p>

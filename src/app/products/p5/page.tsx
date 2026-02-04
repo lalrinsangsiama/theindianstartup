@@ -252,10 +252,10 @@ const P5LegalStackPage: React.FC = () => {
               <p className="text-xl mb-6 opacity-90">
                 Save ₹8,50,000+ annually in legal costs while building bulletproof protection
               </p>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
-                onClick={() => window.location.href = '/purchase?product=P5'}
+                onClick={() => router.push('/purchase?product=P5')}
               >
                 Start Your Legal Mastery Journey
               </Button>

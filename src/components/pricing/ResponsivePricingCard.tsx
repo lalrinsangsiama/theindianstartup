@@ -295,29 +295,7 @@ export const ResponsivePricingCard: React.FC<ResponsivePricingCardProps> = ({
             <Shield className="w-3 h-3" />
             <Text size="xs">3-day guarantee</Text>
           </div>
-          {!isMobile && (
-            <div className="flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              <Text size="xs">2,847 enrolled</Text>
-            </div>
-          )}
         </div>
-
-        {/* Social Proof - Mobile */}
-        {isMobile && mostPopular && (
-          <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-            <div className="flex items-center gap-1 justify-center">
-              <Star className="w-4 h-4 text-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500" />
-              <Star className="w-4 h-4 text-yellow-500" />
-              <Text size="xs" weight="medium" className="ml-1">
-                4.8/5 (847 reviews)
-              </Text>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

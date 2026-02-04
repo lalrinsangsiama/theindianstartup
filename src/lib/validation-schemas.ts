@@ -403,6 +403,71 @@ export const supportTicketSchema = z.object({
 export type SupportTicket = z.infer<typeof supportTicketSchema>;
 
 // ============================================================================
+// ADMIN SCHEMAS
+// ============================================================================
+
+export const adminLessonSchema = z.object({
+  moduleId: z.string().min(1, 'Module ID is required').max(50),
+  order: z.number().int().min(1).max(100),
+  title: z.string().min(3, 'Title must be at least 3 characters').max(200),
+  briefContent: z.string().max(5000).optional().nullable(),
+  detailedContent: z.string().max(50000).optional().nullable(),
+  videoUrl: urlSchema,
+  duration: z.number().int().min(0).max(600).optional().nullable(),
+  isPreview: z.boolean().optional().default(false),
+  xpReward: z.number().int().min(0).max(1000).optional().default(10),
+});
+
+export type AdminLesson = z.infer<typeof adminLessonSchema>;
+
+export const adminProductSchema = z.object({
+  code: z.string()
+    .min(2, 'Product code must be at least 2 characters')
+    .max(20, 'Product code too long')
+    .regex(/^[A-Z][A-Z0-9_]*$/, 'Product code must start with uppercase letter and contain only uppercase letters, numbers, and underscores'),
+  title: z.string().min(5, 'Title must be at least 5 characters').max(200),
+  shortTitle: z.string().max(50).optional().nullable(),
+  description: safeTextSchema(2000).optional().nullable(),
+  price: z.number().int().min(0).max(100000000), // Max 10 lakh INR
+  originalPrice: z.number().int().min(0).max(100000000).optional().nullable(),
+  duration: z.string().max(50).optional().nullable(),
+  modules: z.number().int().min(0).max(100).optional().nullable(),
+  isActive: z.boolean().optional().default(true),
+  isBundle: z.boolean().optional().default(false),
+  bundleProducts: z.array(z.string().max(20)).max(50).optional().nullable(),
+  category: z.string().max(50).optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  tagline: z.string().max(200).optional().nullable(),
+  features: z.array(z.string().max(200)).max(20).optional().nullable(),
+});
+
+export type AdminProduct = z.infer<typeof adminProductSchema>;
+
+export const portfolioUpdateSchema = startupPortfolioSchema.partial();
+export type PortfolioUpdate = z.infer<typeof portfolioUpdateSchema>;
+
+// Allowed fields for portfolio updates (whitelist)
+export const ALLOWED_PORTFOLIO_FIELDS = [
+  'startupName',
+  'tagline',
+  'logo',
+  'problemStatement',
+  'solution',
+  'valueProposition',
+  'domain',
+  'entityType',
+  'socialHandles',
+  'targetMarket',
+  'competitors',
+  'marketSize',
+  'revenueStreams',
+  'mvpDescription',
+  'features',
+  'fundingNeeds',
+  'projections',
+] as const;
+
+// ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 

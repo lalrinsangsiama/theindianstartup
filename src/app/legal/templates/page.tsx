@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -199,6 +200,7 @@ const LEGAL_TEMPLATES: Template[] = [
 ];
 
 const LegalTemplatesPage: React.FC = () => {
+  const router = useRouter();
   const { user } = useAuth();
   const { hasAccess } = useUserProducts();
   const [searchTerm, setSearchTerm] = useState('');
@@ -341,7 +343,7 @@ const LegalTemplatesPage: React.FC = () => {
                 </div>
                 <Button 
                   className="bg-blue-600 hover:bg-blue-700"
-                  onClick={() => window.location.href = '/purchase?product=P5'}
+                  onClick={() => router.push('/purchase?product=P5')}
                 >
                   Upgrade to P5
                 </Button>
@@ -455,7 +457,7 @@ const LegalTemplatesPage: React.FC = () => {
               <Button 
                 size="lg" 
                 className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
-                onClick={() => window.location.href = '/purchase?product=P5'}
+                onClick={() => router.push('/purchase?product=P5')}
               >
                 Get P5 Legal Stack for ₹7,999
               </Button>

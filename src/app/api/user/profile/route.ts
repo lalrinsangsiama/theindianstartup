@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
         return errorResponse('Failed to create profile', 500);
       }
 
+      // New users haven't completed onboarding yet
       return NextResponse.json({
         user: {
           ...newProfile,
@@ -70,12 +71,16 @@ export async function GET(request: NextRequest) {
           activePurchases: [],
           hasActiveAccess: false
         },
-        hasCompletedOnboarding: true,
+        hasCompletedOnboarding: false,
       });
     }
 
-    // Onboarding is always considered complete (onboarding flow removed)
-    const hasCompletedOnboarding = true;
+    // Check if user has completed onboarding:
+    // - Has a startedAt timestamp (set when onboarding is completed)
+    // - OR has a StartupPortfolio record
+    const hasPortfolio = userProfile.StartupPortfolio && userProfile.StartupPortfolio.length > 0;
+    const hasStartedAt = !!userProfile.startedAt;
+    const hasCompletedOnboarding = hasStartedAt || hasPortfolio;
 
     // Check for active purchases
     const activePurchases = (userProfile?.purchases as PurchaseRecord[] | undefined)?.filter((purchase) =>

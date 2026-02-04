@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email';
+import { escapeHTML } from '@/lib/sanitize';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -45,6 +46,10 @@ export async function POST(request: NextRequest) {
 
     const { subject, message, urgency } = validation.data;
 
+    // Escape user inputs for safe HTML embedding (XSS prevention)
+    const escapedSubject = escapeHTML(subject);
+    const escapedMessage = escapeHTML(message);
+
     // Get user profile for context
     const { data: userProfile } = await supabase
       .from('User')
@@ -52,8 +57,8 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
       .maybeSingle();
 
-    const userName = userProfile?.name || 'User';
-    const userEmail = userProfile?.email || user.email || 'Unknown';
+    const userName = escapeHTML(userProfile?.name || 'User');
+    const userEmail = escapeHTML(userProfile?.email || user.email || 'Unknown');
 
     // Create support ticket ID
     const ticketId = `TIS-${Date.now().toString().slice(-6)}`;
@@ -73,13 +78,13 @@ export async function POST(request: NextRequest) {
           </p>
           <p style="margin: 5px 0;"><strong>From:</strong> ${userName} (${userEmail})</p>
           <p style="margin: 5px 0;"><strong>User ID:</strong> ${user.id}</p>
-          <p style="margin: 5px 0;"><strong>Subject:</strong> ${subject}</p>
+          <p style="margin: 5px 0;"><strong>Subject:</strong> ${escapedSubject}</p>
           <p style="margin: 5px 0;"><strong>Submitted:</strong> ${new Date().toLocaleString('en-IN')}</p>
         </div>
         
         <div style="background: white; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
           <h3 style="margin-top: 0; color: #333;">Message:</h3>
-          <p style="line-height: 1.6; white-space: pre-wrap;">${message}</p>
+          <p style="line-height: 1.6; white-space: pre-wrap;">${escapedMessage}</p>
         </div>
         
         <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px;">
@@ -102,7 +107,7 @@ export async function POST(request: NextRequest) {
         
         <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <p style="margin: 5px 0;"><strong>Ticket ID:</strong> ${ticketId}</p>
-          <p style="margin: 5px 0;"><strong>Subject:</strong> ${subject}</p>
+          <p style="margin: 5px 0;"><strong>Subject:</strong> ${escapedSubject}</p>
           <p style="margin: 5px 0;"><strong>Priority:</strong> ${urgency.charAt(0).toUpperCase() + urgency.slice(1)}</p>
           <p style="margin: 5px 0;"><strong>Expected Response:</strong> 
             ${urgency === 'urgent' ? 'Within 2 hours' : 

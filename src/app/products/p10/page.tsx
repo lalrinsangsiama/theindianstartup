@@ -22,6 +22,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { logger } from '@/lib/logger';
 
 interface LoadingState {
@@ -31,6 +32,7 @@ interface LoadingState {
 }
 
 export default function P10PatentMasteryPage() {
+  const router = useRouter();
   const [loadingState, setLoadingState] = useState<LoadingState>({
     isLoading: true,
     error: null,
@@ -47,11 +49,11 @@ export default function P10PatentMasteryPage() {
 
       // Check access to P10
       const response = await fetch('/api/products/p10/access');
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           // User not logged in - redirect to login
-          window.location.href = '/login?redirect=/products/p10';
+          router.push('/login?redirect=/products/p10');
           return;
         } else if (response.status === 403) {
           // User doesn't have access to P10
@@ -316,11 +318,11 @@ export default function P10PatentMasteryPage() {
 
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  Or get access to all courses with the 
+                  Or get access to all courses with the
                   <Link href="/pricing" className="text-blue-600 hover:underline font-medium mx-1">
-                    All-Access Bundle (₹54,999)
-                  </Link> 
-                  - Save ₹25,986
+                    All-Access Bundle (₹1,49,999)
+                  </Link>
+                  - Save ₹74,971
                 </p>
               </div>
             </div>

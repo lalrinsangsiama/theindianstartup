@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  CreditCard, 
-  ShoppingCart, 
-  Zap, 
-  Lock, 
+import {
+  CreditCard,
+  ShoppingCart,
+  Zap,
+  Lock,
   Loader2,
   ArrowRight,
   Sparkles,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { quickCheckout, addToCartAndCheckout, formatPrice, isProductOnSale } from '@/lib/payment-utils';
 import { PRODUCTS } from '@/lib/products-catalog';
+import { logger } from '@/lib/logger';
 
 interface PaymentButtonProps {
   productCode: string;
@@ -65,11 +66,13 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   const handleClick = async () => {
     // Check if user is logged in
     if (!user) {
-      // Save intent for after login
+      // Save purchase intent for after login
       localStorage.setItem('purchaseIntent', JSON.stringify({
         productCode,
         returnUrl: window.location.pathname
       }));
+      // Also save redirect URL that login page will check
+      sessionStorage.setItem('redirectAfterLogin', `/checkout?product=${productCode}`);
       router.push('/login');
       return;
     }
@@ -85,6 +88,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
           amount: salePrice,
           description: product.description,
           onSuccess: (response) => {
+            setLoading(false);
             if (onSuccess) {
               onSuccess();
             } else {
@@ -92,9 +96,11 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
             }
           },
           onFailure: (error) => {
+            setLoading(false);
             if (onFailure) {
               onFailure();
-            } else {
+            } else if (error.reason !== 'cancelled') {
+              // Only redirect to failed page for actual failures, not user cancellations
               router.push(`/purchase/failed?error=${error.code || 'UNKNOWN'}`);
             }
           }
@@ -102,9 +108,10 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       } else {
         // Add to cart and go to checkout
         addToCartAndCheckout(productCode, product.title, salePrice);
+        setLoading(false);
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      logger.error('Payment error:', error);
       setLoading(false);
     }
   };
@@ -175,6 +182,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
         onClick={handleClick}
         disabled={loading}
         className={getButtonStyles()}
+        aria-label={`Purchase ${product?.title || productCode} for ${formatPrice(onSale ? salePrice : (product?.price || 0))}`}
       >
         {ctaStyle === 'animated' && (
           <span className="absolute inset-0 bg-white opacity-25 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></span>
@@ -236,7 +244,7 @@ export const AllAccessButton: React.FC<{
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
           <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-3 py-1 text-xs font-bold whitespace-nowrap">
             <Sparkles className="w-3 h-3 mr-1 inline" />
-            SAVE ₹25,986
+            SAVE ₹74,971
           </Badge>
         </div>
       )}
@@ -245,7 +253,7 @@ export const AllAccessButton: React.FC<{
         variant="primary"
         size={size}
         className={`bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600 hover:from-yellow-500 hover:via-red-600 hover:to-purple-700 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ${className}`}
-        customText="Get All-Access Bundle - ₹54,999"
+        customText="Get All-Access Bundle - ₹1,49,999"
         icon={<Sparkles className="w-5 h-5" />}
         quickBuy={true}
         fullWidth={true}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
@@ -10,8 +10,11 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   initialized: boolean;
+  error: Error | null;
+  isAuthenticated: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  updateProfile: (data: { name?: string; phone?: string }) => Promise<void>;
   checkOnboardingStatus: () => Promise<{ hasCompletedOnboarding: boolean; needsOnboarding: boolean }>;
 }
 
@@ -22,23 +25,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
-  
-  const supabase = createClient();
+  const [error, setError] = useState<Error | null>(null);
+
+  // Memoize Supabase client to prevent recreation on each render (memory leak fix)
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     // Get initial session
     const initAuth = async () => {
       try {
         logger.info('AuthProvider: Initializing auth state...');
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          setError(sessionError);
+        }
+
         setSession(session);
         setUser(session?.user ?? null);
-        logger.info('AuthProvider: Auth state initialized', { 
-          hasSession: !!session, 
-          userId: session?.user?.id 
+        logger.info('AuthProvider: Auth state initialized', {
+          hasSession: !!session,
+          userId: session?.user?.id
         });
-      } catch (error) {
-        logger.error('Error getting session:', error);
+      } catch (err) {
+        logger.error('Error getting session:', err);
+        setError(err as Error);
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -53,6 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.info('AuthProvider: Auth state changed', { event, userId: session?.user?.id });
         setSession(session);
         setUser(session?.user ?? null);
+        setError(null);
         setLoading(false);
         if (!initialized) {
           setInitialized(true);
@@ -63,13 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, initialized]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
 
       // SECURITY FIX: Selectively clear only auth-related localStorage keys
       // Preserves cart, preferences, and other user data
@@ -86,57 +98,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         keysToRemove.forEach((key) => localStorage.removeItem(key));
       }
-    } catch (error) {
-      logger.error('Error signing out:', error);
-      throw error;
+    } catch (err) {
+      logger.error('Error signing out:', err);
+      setError(err as Error);
+      throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase]);
 
-  const refreshSession = async () => {
+  const refreshSession = useCallback(async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.refreshSession();
-      if (error) throw error;
-      
+      const { data: { session }, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) throw refreshError;
+
       setSession(session);
       setUser(session?.user ?? null);
-    } catch (error) {
-      logger.error('Error refreshing session:', error);
-      throw error;
+      setError(null);
+    } catch (err) {
+      logger.error('Error refreshing session:', err);
+      setError(err as Error);
+      throw err;
     }
-  };
+  }, [supabase]);
 
-  const checkOnboardingStatus = async () => {
+  const updateProfile = useCallback(async (data: { name?: string; phone?: string }) => {
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        data,
+      });
+
+      if (updateError) throw updateError;
+
+      // Refresh session to get updated user data
+      const { data: { session: refreshedSession } } = await supabase.auth.refreshSession();
+
+      setSession(refreshedSession);
+      setUser(refreshedSession?.user ?? null);
+      setError(null);
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    }
+  }, [supabase]);
+
+  const checkOnboardingStatus = useCallback(async () => {
     try {
       const response = await fetch('/api/user/profile');
       if (!response.ok) {
         throw new Error('Failed to fetch profile');
       }
       const profileData = await response.json();
-      
+
       return {
         hasCompletedOnboarding: profileData.hasCompletedOnboarding || false,
         needsOnboarding: !profileData.hasCompletedOnboarding
       };
-    } catch (error) {
-      logger.error('Error checking onboarding status:', error);
+    } catch (err) {
+      logger.error('Error checking onboarding status:', err);
       return {
         hasCompletedOnboarding: false,
         needsOnboarding: true
       };
     }
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     session,
     loading,
     initialized,
+    error,
+    isAuthenticated: !!session,
     signOut,
     refreshSession,
+    updateProfile,
     checkOnboardingStatus,
-  };
+  }), [user, session, loading, initialized, error, signOut, refreshSession, updateProfile, checkOnboardingStatus]);
 
   return (
     <AuthContext.Provider value={value}>

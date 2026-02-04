@@ -31,8 +31,6 @@ interface Resource {
   description: string;
   tags: string[];
   category: string;
-  downloadCount: number;
-  rating: number;
   isPremium: boolean;
   fileType?: string;
   estimatedTime?: number;
@@ -53,8 +51,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/business-model-canvas.pdf',
     description: 'Professional Business Model Canvas template with Indian startup examples and guidance notes.',
     tags: ['business model', 'planning', 'strategy', 'canvas'],
-    downloadCount: 1247,
-    rating: 4.8,
     isPremium: false,
     fileType: 'PDF',
     estimatedTime: 45
@@ -67,8 +63,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/mvp-checklist.pdf',
     description: '30-point checklist for building your Minimum Viable Product with validation framework.',
     tags: ['MVP', 'product', 'development', 'checklist'],
-    downloadCount: 892,
-    rating: 4.7,
     isPremium: true,
     fileType: 'PDF',
     estimatedTime: 30
@@ -81,8 +75,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/customer-interview-guide.pdf',
     description: '50+ validated questions for customer discovery interviews with analysis framework.',
     tags: ['customer research', 'interviews', 'validation', 'discovery'],
-    downloadCount: 1034,
-    rating: 4.9,
     isPremium: true,
     fileType: 'PDF',
     estimatedTime: 60
@@ -95,8 +87,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/pitch-deck-template.pptx',
     description: '15-slide pitch deck template used by successful Indian startups to raise ₹1Cr+ funding.',
     tags: ['pitch deck', 'funding', 'investors', 'presentation'],
-    downloadCount: 2156,
-    rating: 4.8,
     isPremium: true,
     fileType: 'PPTX',
     estimatedTime: 120
@@ -109,8 +99,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/financial-projections.xlsx',
     description: '3-year financial projection template with Indian tax calculations and funding scenarios.',
     tags: ['financial planning', 'projections', 'revenue', 'costs'],
-    downloadCount: 1543,
-    rating: 4.6,
     isPremium: true,
     fileType: 'XLSX',
     estimatedTime: 90
@@ -123,8 +111,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/market-analysis-framework.pdf',
     description: 'Complete framework for TAM, SAM, SOM analysis with Indian market data sources.',
     tags: ['market research', 'TAM', 'SAM', 'analysis'],
-    downloadCount: 768,
-    rating: 4.7,
     isPremium: true,
     fileType: 'PDF',
     estimatedTime: 75
@@ -137,8 +123,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/templates/legal-documents-pack.zip',
     description: 'Essential legal templates: NDA, Employment Agreement, Founder Agreement, Terms of Service.',
     tags: ['legal', 'contracts', 'agreements', 'compliance'],
-    downloadCount: 1432,
-    rating: 4.8,
     isPremium: true,
     fileType: 'ZIP',
     estimatedTime: 60
@@ -153,8 +137,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/tools/name-generator',
     description: 'AI-powered tool to generate unique startup names with domain availability check.',
     tags: ['naming', 'branding', 'AI', 'domains'],
-    downloadCount: 3421,
-    rating: 4.5,
     isPremium: false,
     estimatedTime: 15
   },
@@ -166,8 +148,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/tools/incorporation-calculator',
     description: 'Calculate exact incorporation costs for different business structures in India.',
     tags: ['incorporation', 'legal', 'costs', 'calculator'],
-    downloadCount: 1876,
-    rating: 4.8,
     isPremium: false,
     estimatedTime: 10
   },
@@ -179,8 +159,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/tools/competitor-analysis',
     description: 'Interactive tool to analyze competitors with pricing, features, and market positioning.',
     tags: ['competition', 'analysis', 'research', 'positioning'],
-    downloadCount: 1234,
-    rating: 4.6,
     isPremium: true,
     estimatedTime: 45
   },
@@ -192,8 +170,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/tools/unit-economics-calculator',
     description: 'Calculate CAC, LTV, churn rate, and unit economics for your startup.',
     tags: ['unit economics', 'CAC', 'LTV', 'metrics'],
-    downloadCount: 2134,
-    rating: 4.9,
     isPremium: true,
     estimatedTime: 30
   },
@@ -207,8 +183,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/guides/startup-legal-guide.pdf',
     description: '50-page comprehensive guide covering incorporation, contracts, IP, and compliance.',
     tags: ['legal', 'incorporation', 'contracts', 'IP'],
-    downloadCount: 2341,
-    rating: 4.9,
     isPremium: true,
     fileType: 'PDF',
     estimatedTime: 180
@@ -221,8 +195,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/guides/digital-marketing-playbook.pdf',
     description: 'Step-by-step playbook for startup digital marketing with ₹10K-₹1L budget strategies.',
     tags: ['marketing', 'digital', 'social media', 'SEO'],
-    downloadCount: 1789,
-    rating: 4.7,
     isPremium: true,
     fileType: 'PDF',
     estimatedTime: 120
@@ -235,8 +207,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/guides/fundraising-strategy.pdf',
     description: 'Complete guide to raising funding in India from angels to VCs with term sheet analysis.',
     tags: ['fundraising', 'investors', 'strategy', 'term sheets'],
-    downloadCount: 2987,
-    rating: 4.8,
     isPremium: true,
     fileType: 'PDF',
     estimatedTime: 150
@@ -251,8 +221,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/videos/mvp-masterclass',
     description: '2-hour masterclass on building MVPs with real startup examples and code walkthrough.',
     tags: ['MVP', 'development', 'product', 'masterclass'],
-    downloadCount: 1456,
-    rating: 4.9,
     isPremium: true,
     estimatedTime: 120
   },
@@ -264,8 +232,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/videos/customer-validation',
     description: '90-minute workshop on validating your startup idea with real customer feedback.',
     tags: ['validation', 'customer research', 'workshop', 'feedback'],
-    downloadCount: 934,
-    rating: 4.7,
     isPremium: true,
     estimatedTime: 90
   },
@@ -277,8 +243,6 @@ const P1_RESOURCES: Resource[] = [
     url: '/videos/pitch-deck-review',
     description: 'Live review of 5 successful pitch decks with expert commentary and improvement tips.',
     tags: ['pitch deck', 'review', 'funding', 'tips'],
-    downloadCount: 1678,
-    rating: 4.8,
     isPremium: true,
     estimatedTime: 75
   }
@@ -536,27 +500,6 @@ export function P1ResourceLibrary({ hasAccess }: P1ResourceLibraryProps) {
                 )}
               </div>
               
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Download className="w-4 h-4" />
-                  <span>{resource.downloadCount.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-3 h-3 ${
-                        i < Math.floor(resource.rating) 
-                          ? 'text-yellow-500 fill-current' 
-                          : 'text-gray-300'
-                      }`}
-                    >
-                      ⭐
-                    </div>
-                  ))}
-                  <span className="text-sm text-gray-600 ml-1">{resource.rating}</span>
-                </div>
-              </div>
 
               <div className="flex gap-2 mb-3">
                 {resource.tags.slice(0, 3).map(tag => (
@@ -602,21 +545,17 @@ export function P1ResourceLibrary({ hasAccess }: P1ResourceLibraryProps) {
         </Card>
       )}
 
-      {/* Stats Footer */}
+      {/* Resource Summary */}
       <Card className="bg-gray-50">
         <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-gray-900">24,500+</div>
-              <div className="text-sm text-gray-600">Total Downloads</div>
+              <div className="text-2xl font-bold text-gray-900">{P1_RESOURCES.length}</div>
+              <div className="text-sm text-gray-600">Resources</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">4.8★</div>
-              <div className="text-sm text-gray-600">Average Rating</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">89%</div>
-              <div className="text-sm text-gray-600">Success Rate</div>
+              <div className="text-2xl font-bold text-gray-900">{P1_RESOURCES.filter(r => r.isPremium).length}</div>
+              <div className="text-sm text-gray-600">Premium Resources</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">24/7</div>

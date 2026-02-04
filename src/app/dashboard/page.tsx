@@ -548,11 +548,18 @@ function DashboardContent() {
           return;
         }
 
-        if (response.status === 404 || (response.status === 500 && !skipOnboardingCheck)) {
+        if (response.status === 404) {
           // User not found in DB, needs onboarding
           logger.info('Dashboard: User profile not found, redirecting to onboarding');
           router.push('/onboarding');
           return;
+        }
+
+        // SECURITY FIX: Don't redirect to onboarding on 500 errors
+        // 500 errors should show retry UI, not assume user needs onboarding
+        if (response.status === 500) {
+          logger.error('Dashboard: Server error (500), showing retry UI');
+          throw new Error('Server error. Please try again.');
         }
 
         if (!response.ok) {
@@ -568,6 +575,13 @@ function DashboardContent() {
 
         // Don't update state if aborted
         if (abortController.signal.aborted) return;
+
+        // Check if user needs onboarding (user profile not found)
+        if (data.needsOnboarding || data.user === null) {
+          logger.info('Dashboard: User needs onboarding, redirecting');
+          router.push('/onboarding');
+          return;
+        }
 
         // Enhance products with additional data
         const enhancedOwnedProducts = (data.ownedProducts || []).map((product: Product) => ({
@@ -714,14 +728,14 @@ function DashboardContent() {
               <Text className="text-gray-600 mb-4">{error}</Text>
             </div>
             <div className="flex gap-3">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
+                  // Use state-based retry instead of page reload to prevent infinite loops
                   setError(null);
                   setLoading(true);
-                  setRetryCount(0);
-                  // Trigger refetch
-                  setTimeout(() => window.location.reload(), 100);
+                  // Increment retry counter to trigger useEffect fetch
+                  setRetryCount(prev => prev + 1);
                 }}
               >
                 Try Again
@@ -1199,10 +1213,6 @@ function DashboardContent() {
                             className="flex-1"
                             showPrice={false}
                             customText="Add to Cart"
-                            onSuccess={() => {
-                              // Refresh dashboard data after purchase
-                              window.location.reload();
-                            }}
                           />
                           <Button 
                             variant="outline" 
@@ -1658,10 +1668,6 @@ function DashboardContent() {
                           size="sm"
                           showPrice={false}
                           customText="Add"
-                          onSuccess={() => {
-                            // Refresh dashboard data after purchase
-                            window.location.reload();
-                          }}
                         />
                         <Button 
                           variant="outline" 
@@ -1729,7 +1735,7 @@ function DashboardContent() {
                         ₹{getAllAccessOriginalPrice().toLocaleString('en-IN')}
                       </Text>
                       <Text className="font-bold text-3xl">
-                        ₹54,999
+                        ₹1,49,999
                       </Text>
                     </div>
                     <AllAccessButton 

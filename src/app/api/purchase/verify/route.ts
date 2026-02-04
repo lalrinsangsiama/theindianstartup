@@ -188,32 +188,52 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Award XP for purchase
+    // Award XP for purchase - but check if already awarded for this purchase (idempotency)
+    // This prevents duplicate XP if both client verify and webhook process the same payment
     try {
-      await supabase
+      const { data: existingXpEvent } = await supabase
         .from('XPEvent')
-        .insert({
-          userId: user.id,
-          type: 'product_purchase',
-          points: 100,
-          description: `Purchased ${purchase.product?.title || 'Product'}`
+        .select('id')
+        .eq('userId', user.id)
+        .eq('type', 'product_purchase')
+        .contains('metadata', { purchaseId: purchase.id })
+        .maybeSingle();
+
+      if (!existingXpEvent) {
+        await supabase
+          .from('XPEvent')
+          .insert({
+            userId: user.id,
+            type: 'product_purchase',
+            points: 100,
+            description: `Purchased ${purchase.product?.title || 'Product'}`,
+            metadata: {
+              purchaseId: purchase.id,
+              productCode: purchase.product?.code
+            }
+          });
+
+        // Get current user XP
+        const { data: currentUser } = await supabase
+          .from('User')
+          .select('totalXP')
+          .eq('id', user.id)
+          .single();
+
+        // Update user's total XP
+        await supabase
+          .from('User')
+          .update({
+            totalXP: (currentUser?.totalXP || 0) + 100,
+            updatedAt: new Date().toISOString()
+          })
+          .eq('id', user.id);
+      } else {
+        logger.info('XP already awarded for this purchase, skipping', {
+          purchaseId: purchase.id,
+          userId: user.id
         });
-
-      // Get current user XP
-      const { data: currentUser } = await supabase
-        .from('User')
-        .select('totalXP')
-        .eq('id', user.id)
-        .single();
-
-      // Update user's total XP
-      await supabase
-        .from('User')
-        .update({
-          totalXP: (currentUser?.totalXP || 0) + 100,
-          updatedAt: new Date().toISOString()
-        })
-        .eq('id', user.id);
+      }
     } catch (xpError) {
       logger.error('Failed to award XP:', xpError);
       // Don't fail the purchase verification

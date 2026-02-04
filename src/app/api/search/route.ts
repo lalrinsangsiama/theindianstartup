@@ -3,6 +3,17 @@ import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
 
+/**
+ * Escape special characters in LIKE patterns to prevent SQL injection
+ * PostgreSQL LIKE special characters: % _ \
+ */
+function escapeLikePattern(pattern: string): string {
+  return pattern
+    .replace(/\\/g, '\\\\')  // Escape backslashes first
+    .replace(/%/g, '\\%')    // Escape percent
+    .replace(/_/g, '\\_');   // Escape underscore
+}
+
 const searchSchema = z.object({
   q: z.string().min(2).max(100),
   type: z.enum(['all', 'courses', 'lessons', 'community', 'resources']).optional().default('all'),
@@ -43,6 +54,8 @@ export async function GET(request: NextRequest) {
     const supabase = createClient();
     const results: SearchResult[] = [];
     const searchTerm = query.toLowerCase().trim();
+    // Escape special LIKE characters to prevent SQL injection
+    const escapedSearchTerm = escapeLikePattern(searchTerm);
 
     // Helper to highlight matching text
     const getHighlight = (text: string, maxLength: number = 150): string => {
@@ -65,7 +78,7 @@ export async function GET(request: NextRequest) {
       const { data: courses } = await supabase
         .from('Product')
         .select('code, title, description, price, isBundle')
-        .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+        .or(`title.ilike.%${escapedSearchTerm}%,description.ilike.%${escapedSearchTerm}%`)
         .eq('isActive', true)
         .limit(limit);
 
@@ -99,12 +112,22 @@ export async function GET(request: NextRequest) {
           moduleId,
           Module:Module(productCode)
         `)
-        .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`)
+        .or(`title.ilike.%${escapedSearchTerm}%,description.ilike.%${escapedSearchTerm}%,content.ilike.%${escapedSearchTerm}%`)
         .limit(limit);
 
       if (lessons) {
-        lessons.forEach((lesson: any) => {
-          const productCode = lesson.Module?.productCode || 'p1';
+        interface LessonResult {
+          id: string;
+          title: string;
+          description: string | null;
+          content: string | null;
+          moduleId: string;
+          Module: { productCode: string }[] | { productCode: string } | null;
+        }
+        lessons.forEach((lesson: LessonResult) => {
+          // Handle Module as either array or single object
+          const moduleData = Array.isArray(lesson.Module) ? lesson.Module[0] : lesson.Module;
+          const productCode = moduleData?.productCode || 'p1';
           results.push({
             id: lesson.id,
             type: 'lesson',
@@ -125,7 +148,7 @@ export async function GET(request: NextRequest) {
       const { data: posts } = await supabase
         .from('CommunityPost')
         .select('id, title, content, authorName, category, createdAt')
-        .or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`)
+        .or(`title.ilike.%${escapedSearchTerm}%,content.ilike.%${escapedSearchTerm}%`)
         .eq('status', 'published')
         .order('createdAt', { ascending: false })
         .limit(limit);
@@ -153,7 +176,7 @@ export async function GET(request: NextRequest) {
       const { data: schemes } = await supabase
         .from('GovernmentScheme')
         .select('id, name, description, category, eligibility')
-        .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+        .or(`name.ilike.%${escapedSearchTerm}%,description.ilike.%${escapedSearchTerm}%`)
         .limit(limit);
 
       if (schemes) {

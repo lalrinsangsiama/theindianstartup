@@ -40,30 +40,17 @@ export function generateSecureToken(length: number = 32): string {
 }
 
 // Hash sensitive data (using Web Crypto API)
+// Throws error if crypto.subtle is not available - we require proper cryptography
 export async function hashSensitiveData(data: string): Promise<string> {
-  if (typeof crypto !== 'undefined' && crypto.subtle) {
-    const encoder = new TextEncoder();
-    const dataBuffer = encoder.encode(data);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  if (typeof crypto === 'undefined' || !crypto.subtle) {
+    throw new Error('Web Crypto API (crypto.subtle) is required for secure hashing. This environment does not support it.');
   }
-  // Fallback using a simple hash function when crypto.subtle is not available
-  // This provides better security than btoa() which is just base64 encoding
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  // Create a more secure-looking hash by combining multiple passes
-  const salt = data.length.toString(16);
-  let result = Math.abs(hash).toString(16).padStart(8, '0');
-  for (let i = 0; i < 4; i++) {
-    hash = ((hash << 5) - hash) + (data.charCodeAt(i % data.length) || 0);
-    result += Math.abs(hash & 0xFFFFFFFF).toString(16).padStart(8, '0');
-  }
-  return salt + result;
+
+  const encoder = new TextEncoder();
+  const dataBuffer = encoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // Verify webhook signatures using HMAC-SHA256

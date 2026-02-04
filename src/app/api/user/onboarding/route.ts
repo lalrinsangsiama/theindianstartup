@@ -8,7 +8,10 @@ export const dynamic = 'force-dynamic';
 
 const onboardingSchema = z.object({
   founderName: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long'),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number'),
+  // Allow phone with spaces/dashes - will be normalized to digits only
+  phone: z.string()
+    .transform(val => val.replace(/\D/g, '')) // Strip non-digits
+    .refine(val => /^[6-9]\d{9}$/.test(val), 'Invalid Indian mobile number'),
   startupName: z.string().min(2, 'Startup name must be at least 2 characters').max(100, 'Startup name too long'),
   startupIdea: z.string().min(10, 'Please provide a detailed startup idea').max(500, 'Startup idea too long'),
   targetMarket: z.string().max(200, 'Target market description too long').optional(),
@@ -172,11 +175,12 @@ export async function POST(request: NextRequest) {
       // Don't throw error here, as the main onboarding is successful
     }
 
-    // Update user's total XP
+    // Update user's total XP - increment instead of overwrite
+    const currentXP = existingUser?.totalXP || 0;
     const { error: xpUpdateError } = await supabase
       .from('User')
       .update({
-        totalXP: 50,
+        totalXP: currentXP + 50,
       })
       .eq('id', user.id);
 

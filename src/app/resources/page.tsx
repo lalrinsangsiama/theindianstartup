@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { logger } from '@/lib/logger';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -307,6 +308,7 @@ interface ResourceData {
 }
 
 export default function ResourcesPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -585,10 +587,10 @@ export default function ResourcesPage() {
                     </div>
                   </div>
 
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="lg"
-                    onClick={() => window.location.href = '/pricing'}
+                    onClick={() => router.push('/pricing')}
                     className="mb-3"
                   >
                     <Sparkles className="w-5 h-5 mr-2" />

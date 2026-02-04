@@ -42,8 +42,6 @@ interface P6Resource {
   url?: string;
   fileUrl?: string;
   value: number;
-  downloads: number;
-  rating: number;
   difficulty: 'Basic' | 'Intermediate' | 'Advanced' | 'Expert';
   estimatedTime: string;
   tags: string[];
@@ -64,8 +62,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'playbook',
     url: '/templates/p6-complete-sales-playbook.pdf',
     value: 50000,
-    downloads: 3247,
-    rating: 4.9,
     difficulty: 'Advanced',
     estimatedTime: '8-12 hours',
     tags: ['Sales Strategy', 'B2B', 'B2C', 'Indian Market'],
@@ -81,8 +77,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'template',
     url: '/templates/p6-cold-outreach-mastery.zip',
     value: 25000,
-    downloads: 4521,
-    rating: 4.8,
     difficulty: 'Intermediate',
     estimatedTime: '4-6 hours',
     tags: ['Cold Email', 'LinkedIn', 'Cold Calling', 'Outreach'],
@@ -98,8 +92,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'tool',
     url: '/tools/p6-sales-pipeline-builder',
     value: 35000,
-    downloads: 2876,
-    rating: 4.7,
     difficulty: 'Advanced',
     estimatedTime: '3-4 hours',
     tags: ['CRM', 'Pipeline Management', 'Lead Scoring', 'Analytics'],
@@ -114,8 +106,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'framework',
     url: '/templates/p6-customer-persona-framework.xlsx',
     value: 20000,
-    downloads: 3654,
-    rating: 4.6,
     difficulty: 'Intermediate',
     estimatedTime: '2-3 hours',
     tags: ['Customer Research', 'Buyer Personas', 'Market Research'],
@@ -133,8 +123,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'calculator',
     url: '/tools/p6-dynamic-pricing-calculator',
     value: 40000,
-    downloads: 2134,
-    rating: 4.8,
     difficulty: 'Expert',
     estimatedTime: '2-3 hours',
     tags: ['Pricing Strategy', 'Value Pricing', 'Competitor Analysis'],
@@ -149,8 +137,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'calculator',
     url: '/tools/p6-revenue-forecasting-model',
     value: 30000,
-    downloads: 1987,
-    rating: 4.7,
     difficulty: 'Expert',
     estimatedTime: '4-5 hours',
     tags: ['Revenue Forecasting', 'Financial Planning', 'Growth Modeling'],
@@ -165,8 +151,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'tool',
     url: '/tools/p6-commission-structure-designer',
     value: 25000,
-    downloads: 1654,
-    rating: 4.5,
     difficulty: 'Advanced',
     estimatedTime: '2-3 hours',
     tags: ['Sales Compensation', 'Team Management', 'Incentive Design'],
@@ -183,8 +167,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'automation',
     url: '/templates/p6-customer-onboarding-system.zip',
     value: 35000,
-    downloads: 2453,
-    rating: 4.8,
     difficulty: 'Advanced',
     estimatedTime: '6-8 hours',
     tags: ['Customer Onboarding', 'Automation', 'Email Marketing'],
@@ -200,8 +182,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'dashboard',
     url: '/tools/p6-churn-prediction-toolkit',
     value: 45000,
-    downloads: 1321,
-    rating: 4.9,
     difficulty: 'Expert',
     estimatedTime: '4-6 hours',
     tags: ['Churn Analysis', 'Customer Retention', 'Predictive Analytics'],
@@ -216,8 +196,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'dashboard',
     url: '/tools/p6-customer-success-dashboard',
     value: 30000,
-    downloads: 1876,
-    rating: 4.6,
     difficulty: 'Advanced',
     estimatedTime: '3-4 hours',
     tags: ['Customer Health', 'Success Metrics', 'Dashboard'],
@@ -234,8 +212,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'framework',
     url: '/templates/p6-sales-team-hiring-system.zip',
     value: 40000,
-    downloads: 2198,
-    rating: 4.7,
     difficulty: 'Advanced',
     estimatedTime: '8-10 hours',
     tags: ['Team Building', 'Hiring', 'Training', 'Sales Management'],
@@ -251,8 +227,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'dashboard',
     url: '/tools/p6-performance-analytics-suite',
     value: 35000,
-    downloads: 1543,
-    rating: 4.8,
     difficulty: 'Expert',
     estimatedTime: '5-6 hours',
     tags: ['Performance Management', 'Analytics', 'Team Coaching'],
@@ -269,8 +243,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'framework',
     url: '/templates/p6-sales-marketing-alignment.pdf',
     value: 30000,
-    downloads: 2876,
-    rating: 4.5,
     difficulty: 'Advanced',
     estimatedTime: '4-5 hours',
     tags: ['Sales-Marketing Alignment', 'Lead Management', 'Attribution'],
@@ -286,8 +258,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'template',
     url: '/templates/p6-content-sales-enablement.zip',
     value: 35000,
-    downloads: 3421,
-    rating: 4.9,
     difficulty: 'Intermediate',
     estimatedTime: '3-4 hours',
     tags: ['Sales Enablement', 'Content Marketing', 'Case Studies'],
@@ -305,8 +275,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'playbook',
     url: '/templates/p6-saas-sales-playbook-india.pdf',
     value: 45000,
-    downloads: 1987,
-    rating: 4.8,
     difficulty: 'Advanced',
     estimatedTime: '6-8 hours',
     tags: ['SaaS', 'Subscription Sales', 'Enterprise Sales'],
@@ -322,8 +290,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'tool',
     url: '/tools/p6-ecommerce-conversion-optimizer',
     value: 40000,
-    downloads: 2543,
-    rating: 4.7,
     difficulty: 'Advanced',
     estimatedTime: '4-5 hours',
     tags: ['E-commerce', 'Conversion Optimization', 'Funnel Analysis'],
@@ -340,8 +306,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'automation',
     url: '/tools/p6-sales-automation-builder',
     value: 50000,
-    downloads: 1432,
-    rating: 4.9,
     difficulty: 'Expert',
     estimatedTime: '6-8 hours',
     tags: ['Sales Automation', 'Workflow', 'Lead Nurturing'],
@@ -356,8 +320,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'dashboard',
     url: '/tools/p6-sales-kpi-dashboard',
     value: 35000,
-    downloads: 1765,
-    rating: 4.6,
     difficulty: 'Advanced',
     estimatedTime: '3-4 hours',
     tags: ['Sales Reporting', 'KPIs', 'Executive Dashboard'],
@@ -374,8 +336,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'framework',
     url: '/templates/p6-negotiation-mastery-system.pdf',
     value: 40000,
-    downloads: 2987,
-    rating: 4.8,
     difficulty: 'Expert',
     estimatedTime: '5-6 hours',
     tags: ['Negotiation', 'Closing Techniques', 'Psychology'],
@@ -391,8 +351,6 @@ const P6_SALES_RESOURCES: P6Resource[] = [
     type: 'template',
     url: '/templates/p6-contract-proposal-library.zip',
     value: 30000,
-    downloads: 3865,
-    rating: 4.5,
     difficulty: 'Intermediate',
     estimatedTime: '2-3 hours',
     tags: ['Contracts', 'Proposals', 'Legal Templates'],
@@ -543,10 +501,6 @@ const P6ResourceHub: React.FC<P6ResourceHubProps> = ({ hasAccess: hasAccessProp 
                 <div className="text-2xl font-bold">{P6_SALES_RESOURCES.length}</div>
                 <div className="text-sm">Resources</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">{P6_SALES_RESOURCES.reduce((sum, r) => sum + r.downloads, 0).toLocaleString()}</div>
-                <div className="text-sm">Downloads</div>
-              </div>
             </div>
           </div>
         </CardContent>
@@ -632,15 +586,7 @@ const P6ResourceHub: React.FC<P6ResourceHubProps> = ({ hasAccess: hasAccessProp 
               <h3 className="font-semibold mb-2">{resource.title}</h3>
               <p className="text-sm text-gray-600 mb-3">{resource.description}</p>
               
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                <div className="flex items-center gap-1">
-                  <Star className="w-3 h-3 text-yellow-500" />
-                  {resource.rating}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Download className="w-3 h-3" />
-                  {resource.downloads.toLocaleString()}
-                </div>
+              <div className="flex items-center text-sm text-gray-500 mb-3">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {resource.estimatedTime}
@@ -708,21 +654,15 @@ const P6ResourceHub: React.FC<P6ResourceHubProps> = ({ hasAccess: hasAccessProp 
         </CardContent>
       </Card>
 
-      {/* Usage Stats */}
+      {/* Resource Summary */}
       <Card className="bg-gradient-to-r from-orange-50 to-red-50">
         <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-gray-900">
-                {P6_SALES_RESOURCES.reduce((sum, r) => sum + r.downloads, 0).toLocaleString()}
+                {P6_SALES_RESOURCES.length}
               </div>
-              <div className="text-sm text-gray-600">Total Downloads</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">
-                {(P6_SALES_RESOURCES.reduce((sum, r) => sum + r.rating, 0) / P6_SALES_RESOURCES.length).toFixed(1)}★
-              </div>
-              <div className="text-sm text-gray-600">Average Rating</div>
+              <div className="text-sm text-gray-600">Resources</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">

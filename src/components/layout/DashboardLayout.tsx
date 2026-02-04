@@ -66,27 +66,53 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+interface UserProfile {
+  id: string;
+  email: string;
+  name: string | null;
+  totalXP: number;
+  currentStreak: number;
+  badges: string[];
+  role?: string;
+  portfolio?: {
+    startupName?: string;
+  };
+  hasActiveAccess?: boolean;
+  currentDay?: number;
+}
+
 // Inner component that uses the cart context
 function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   // Use cart context instead of local state - removes XSS vulnerability
   const { cart, removeFromCart, updateQuantity, calculateTotal, showCart, setShowCart } = useCart();
 
-  useEffect(() => {
-    // Fetch user profile for sidebar stats
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/user/profile');
-        const data = await response.json();
-        setUserProfile(data.user);
-      } catch (error) {
-        logger.error('Failed to fetch profile:', error);
+  const fetchProfile = async () => {
+    try {
+      setProfileLoading(true);
+      setProfileError(null);
+      const response = await fetch('/api/user/profile');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch profile: ${response.status}`);
       }
-    };
+      const data = await response.json();
+      setUserProfile(data.user);
+    } catch (error) {
+      logger.error('Failed to fetch profile:', error);
+      setProfileError('Failed to load profile');
+      // Set a minimal fallback profile so sidebar still works
+      setUserProfile(null);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProfile();
   }, []);
 
@@ -104,8 +130,13 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
     // Handle disabled items (like Analytics with "Soon" badge)
     if (item.disabled || (item.badge === 'Soon' && item.href === '/analytics')) {
       return (
-        <div className="relative px-3 py-2 flex items-center gap-3 text-gray-400 cursor-not-allowed">
-          <Icon className="w-5 h-5 flex-shrink-0" />
+        <div
+          role="link"
+          aria-disabled="true"
+          aria-label={`${item.label} - Coming Soon`}
+          className="relative px-3 py-2 flex items-center gap-3 text-gray-400 cursor-not-allowed"
+        >
+          <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
           <span className="flex-1">{item.label}</span>
           {item.badge && <Badge size="sm" variant="default">{item.badge}</Badge>}
         </div>
@@ -194,8 +225,30 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         </div>
 
         {/* User Stats Card */}
-        {userProfile && (
-          <div className="p-4 border-b border-gray-200" data-tour="user-stats">
+        <div className="p-4 border-b border-gray-200" data-tour="user-stats">
+          {profileLoading ? (
+            <div className="bg-gray-50 rounded-lg p-4 animate-pulse">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
+                  <div className="h-3 bg-gray-200 rounded w-32" />
+                </div>
+              </div>
+            </div>
+          ) : profileError ? (
+            <div className="bg-red-50 rounded-lg p-4 text-center">
+              <Text size="sm" className="text-red-600 mb-2">{profileError}</Text>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchProfile}
+                className="text-red-600 border-red-300 hover:bg-red-100"
+              >
+                Retry
+              </Button>
+            </div>
+          ) : userProfile ? (
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold">
@@ -210,7 +263,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                   </Text>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-white rounded p-2">
                   <div className="flex items-center justify-center mb-1">
@@ -241,8 +294,8 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          ) : null}
+        </div>
 
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
@@ -310,7 +363,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
                   day: 'numeric' 
                 })}
               </Text>
-              {userProfile?.currentStreak > 0 && (
+              {userProfile && userProfile.currentStreak && userProfile.currentStreak > 0 && (
                 <Badge variant="warning" size="sm">
                   🔥 {userProfile.currentStreak} day streak
                 </Badge>

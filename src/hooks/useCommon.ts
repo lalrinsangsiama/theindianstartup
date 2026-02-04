@@ -247,6 +247,18 @@ export function useFetch<T>(url: string, options?: RequestInit) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Use ref to store options and avoid creating new string every render
+  const optionsRef = useRef(options);
+  const optionsHash = useRef<string>('');
+
+  // Only update optionsHash if options actually changed
+  useEffect(() => {
+    const newHash = options ? JSON.stringify(options) : '';
+    if (newHash !== optionsHash.current) {
+      optionsHash.current = newHash;
+      optionsRef.current = options;
+    }
+  }, [options]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -255,7 +267,7 @@ export function useFetch<T>(url: string, options?: RequestInit) {
       try {
         setLoading(true);
         const response = await fetch(url, {
-          ...options,
+          ...optionsRef.current,
           signal: abortController.signal,
         });
 
@@ -263,8 +275,8 @@ export function useFetch<T>(url: string, options?: RequestInit) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
-        setData(data);
+        const fetchedData = await response.json();
+        setData(fetchedData);
         setError(null);
       } catch (err) {
         if (err instanceof Error && err.name !== 'AbortError') {
@@ -280,7 +292,7 @@ export function useFetch<T>(url: string, options?: RequestInit) {
     return () => {
       abortController.abort();
     };
-  }, [url, JSON.stringify(options)]);
+  }, [url, optionsHash.current]);
 
   return { data, loading, error, refetch: () => window.location.reload() };
 }

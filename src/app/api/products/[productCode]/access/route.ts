@@ -5,11 +5,16 @@ import { PRODUCTS } from '@/lib/product-access';
 
 export const dynamic = 'force-dynamic';
 
+// Products included in SECTOR_MASTERY bundle
+const SECTOR_MASTERY_PRODUCTS = ['P13', 'P14', 'P15'];
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { productCode: string } }
 ) {
   try {
+    // Normalize product code to uppercase for consistent comparison
+    const productCode = params.productCode.toUpperCase();
     const supabase = createClient();
     
     // Get authenticated user
@@ -18,12 +23,12 @@ export async function GET(
     if (authError || !user) {
       return NextResponse.json({
         hasAccess: false,
-        productTitle: PRODUCTS[params.productCode]?.title,
-        productPrice: PRODUCTS[params.productCode]?.price
+        productTitle: PRODUCTS[productCode]?.title,
+        productPrice: PRODUCTS[productCode]?.price
       });
     }
 
-    // Check for purchases (direct product or ALL_ACCESS bundle)
+    // Check for purchases (direct product, ALL_ACCESS bundle, or SECTOR_MASTERY bundle)
     const { data: purchases } = await supabase
       .from('Purchase')
       .select('*, product:Product(*)')
@@ -34,22 +39,25 @@ export async function GET(
     if (!purchases || purchases.length === 0) {
       return NextResponse.json({
         hasAccess: false,
-        productTitle: PRODUCTS[params.productCode]?.title,
-        productPrice: PRODUCTS[params.productCode]?.price
+        productTitle: PRODUCTS[productCode]?.title,
+        productPrice: PRODUCTS[productCode]?.price
       });
     }
 
-    // Check if user has direct access to the product or ALL_ACCESS
-    const directAccess = purchases.find(p => p.product?.code === params.productCode);
-    const bundleAccess = purchases.find(p => p.product?.code === 'ALL_ACCESS');
-    
-    const activePurchase = directAccess || bundleAccess;
-    
+    // Check if user has direct access, ALL_ACCESS, or SECTOR_MASTERY bundle
+    const directAccess = purchases.find(p => p.product?.code === productCode);
+    const allAccessBundle = purchases.find(p => p.product?.code === 'ALL_ACCESS');
+    const sectorMasteryBundle = SECTOR_MASTERY_PRODUCTS.includes(productCode)
+      ? purchases.find(p => p.product?.code === 'SECTOR_MASTERY')
+      : null;
+
+    const activePurchase = directAccess || allAccessBundle || sectorMasteryBundle;
+
     if (!activePurchase) {
       return NextResponse.json({
         hasAccess: false,
-        productTitle: PRODUCTS[params.productCode]?.title,
-        productPrice: PRODUCTS[params.productCode]?.price
+        productTitle: PRODUCTS[productCode]?.title,
+        productPrice: PRODUCTS[productCode]?.price
       });
     }
 
@@ -62,8 +70,8 @@ export async function GET(
       hasAccess: true,
       expiresAt: activePurchase.expiresAt,
       daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
-      productTitle: activePurchase.product?.title || PRODUCTS[params.productCode]?.title,
-      productPrice: PRODUCTS[params.productCode]?.price
+      productTitle: activePurchase.product?.title || PRODUCTS[productCode]?.title,
+      productPrice: PRODUCTS[productCode]?.price
     });
 
   } catch (error) {

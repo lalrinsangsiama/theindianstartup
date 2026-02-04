@@ -163,7 +163,7 @@ export function useAnalytics() {
     });
   }, [track]);
 
-  // Error tracking methods
+  // Error tracking methods - renamed to avoid shadowing imported functions
   const trackErrorEvent = useCallback((error: Error | string, category?: ErrorCategory, severity?: ErrorSeverity, context?: Record<string, any>) => {
     if (typeof error === 'string') {
       trackError(new TrackableError(error, category, severity, { userId: user?.id, ...context }));
@@ -172,23 +172,23 @@ export function useAnalytics() {
     }
   }, [user?.id]);
 
-  const trackAuthError = useCallback((message: string, context?: Record<string, any>) => {
+  const handleAuthError = useCallback((message: string, context?: Record<string, any>) => {
     trackAuthError(message, { userId: user?.id, ...context });
   }, [user?.id]);
 
-  const trackPaymentError = useCallback((message: string, context?: Record<string, any>) => {
+  const handlePaymentError = useCallback((message: string, context?: Record<string, any>) => {
     trackPaymentError(message, { userId: user?.id, ...context });
   }, [user?.id]);
 
-  const trackAPIError = useCallback((message: string, endpoint: string, statusCode?: number, context?: Record<string, any>) => {
+  const handleAPIError = useCallback((message: string, endpoint: string, statusCode?: number, context?: Record<string, any>) => {
     trackAPIError(message, endpoint, statusCode, { userId: user?.id, ...context });
   }, [user?.id]);
 
-  const trackValidationError = useCallback((message: string, field?: string, context?: Record<string, any>) => {
+  const handleValidationError = useCallback((message: string, field?: string, context?: Record<string, any>) => {
     trackValidationError(message, field, { userId: user?.id, ...context });
   }, [user?.id]);
 
-  const trackUIError = useCallback((message: string, component?: string, context?: Record<string, any>) => {
+  const handleUIError = useCallback((message: string, component?: string, context?: Record<string, any>) => {
     trackUIError(message, component, { userId: user?.id, ...context });
   }, [user?.id]);
 
@@ -218,11 +218,11 @@ export function useAnalytics() {
     
     // Error tracking
     trackError: trackErrorEvent,
-    trackAuthError,
-    trackPaymentError,
-    trackAPIError,
-    trackValidationError,
-    trackUIError,
+    trackAuthError: handleAuthError,
+    trackPaymentError: handlePaymentError,
+    trackAPIError: handleAPIError,
+    trackValidationError: handleValidationError,
+    trackUIError: handleUIError,
     reportUserIssue,
     
     // Feature flags

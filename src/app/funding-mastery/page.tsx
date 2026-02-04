@@ -403,13 +403,13 @@ export default function FundingMasteryPage() {
 
   const handleStartModule = (moduleId: string) => {
     if (!productData) return;
-    
+
     // Find the module and its first lesson
     const targetModule = productData.modules.find(m => m.id === moduleId);
     if (targetModule && targetModule.lessons.length > 0) {
       const firstLesson = targetModule.lessons.sort((a, b) => a.orderIndex - b.orderIndex)[0];
       // Navigate to lesson page
-      window.location.href = `/funding-mastery/lessons/${firstLesson.id}`;
+      router.push(`/funding-mastery/lessons/${firstLesson.id}`);
     }
   };
 

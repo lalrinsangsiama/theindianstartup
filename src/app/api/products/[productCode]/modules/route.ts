@@ -10,11 +10,13 @@ export async function GET(
   { params }: { params: { productCode: string } }
 ) {
   try {
+    // Normalize product code to uppercase for case-insensitive handling
+    const productCode = params.productCode.toUpperCase();
     const supabase = createClient();
-    
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return NextResponse.json({
         error: 'Unauthorized'
@@ -22,7 +24,7 @@ export async function GET(
     }
 
     // Check if product exists in catalog
-    const productCatalog = PRODUCTS[params.productCode];
+    const productCatalog = PRODUCTS[productCode];
     if (!productCatalog) {
       return NextResponse.json({
         error: 'Product not found'
@@ -44,10 +46,18 @@ export async function GET(
       }, { status: 403 });
     }
 
-    // Check if user has direct access to the product or ALL_ACCESS
-    const directAccess = purchases.find(p => p.product?.code === params.productCode);
-    const bundleAccess = purchases.find(p => p.product?.code === 'ALL_ACCESS');
-    
+    // Check if user has direct access to the product or bundle access
+    const directAccess = purchases.find(p => p.product?.code === productCode);
+    const allAccessBundle = purchases.find(p => p.product?.code === 'ALL_ACCESS');
+
+    // Check SECTOR_MASTERY bundle access for P13, P14, P15
+    const SECTOR_MASTERY_PRODUCTS = ['P13', 'P14', 'P15'];
+    const sectorMasteryBundle = SECTOR_MASTERY_PRODUCTS.includes(productCode)
+      ? purchases.find(p => p.product?.code === 'SECTOR_MASTERY')
+      : null;
+
+    const bundleAccess = allAccessBundle || sectorMasteryBundle;
+
     if (!directAccess && !bundleAccess) {
       return NextResponse.json({
         hasAccess: false,
@@ -59,7 +69,7 @@ export async function GET(
     const { data: product, error: productError } = await supabase
       .from('Product')
       .select('id')
-      .eq('code', params.productCode)
+      .eq('code', productCode)
       .single() as { data: { id: string } | null; error: any };
 
     if (productError || !product) {
@@ -133,7 +143,7 @@ export async function GET(
     return NextResponse.json({
       hasAccess: true,
       product: {
-        code: params.productCode,
+        code: productCode,
         title: productCatalog.title,
         description: productCatalog.description
       },

@@ -47,8 +47,11 @@ export async function POST(
 
     const { tasksCompleted, reflection, proofUploads, timeSpent }: LessonCompletionRequest = await request.json();
 
+    // Normalize product code to uppercase for case-insensitive handling
+    const productCode = params.productCode.toUpperCase();
+
     // Check access to product
-    const product = PRODUCTS[params.productCode];
+    const product = PRODUCTS[productCode];
     if (!product) {
       return NextResponse.json({
         error: 'Product not found'
@@ -63,9 +66,17 @@ export async function POST(
       .eq('status', 'completed')
       .gte('expiresAt', new Date().toISOString());
 
-    const directAccess = purchases?.find(p => p.product?.code === params.productCode);
-    const bundleAccess = purchases?.find(p => p.product?.code === 'ALL_ACCESS');
-    
+    const directAccess = purchases?.find(p => p.product?.code === productCode);
+    const allAccessBundle = purchases?.find(p => p.product?.code === 'ALL_ACCESS');
+
+    // Check SECTOR_MASTERY bundle access for P13, P14, P15
+    const SECTOR_MASTERY_PRODUCTS = ['P13', 'P14', 'P15'];
+    const sectorMasteryBundle = SECTOR_MASTERY_PRODUCTS.includes(productCode)
+      ? purchases?.find(p => p.product?.code === 'SECTOR_MASTERY')
+      : null;
+
+    const bundleAccess = allAccessBundle || sectorMasteryBundle;
+
     if (!directAccess && !bundleAccess) {
       return NextResponse.json({
         hasAccess: false,
@@ -109,7 +120,7 @@ export async function POST(
     const lessonData = lesson as any;
 
     // Verify lesson belongs to the requested product
-    if (lessonData.module?.product?.code !== params.productCode) {
+    if (lessonData.module?.product?.code !== productCode) {
       return NextResponse.json({
         error: 'Lesson does not belong to this product'
       }, { status: 404 });
@@ -168,7 +179,7 @@ export async function POST(
             metadata: {
               day: lesson.day,
               lessonId: params.lessonId,
-              productCode: params.productCode,
+              productCode: productCode,
               moduleId: lesson.moduleId,
             },
           }),
@@ -193,6 +204,44 @@ export async function POST(
       .eq('id', user.id)
       .single();
 
+    // Calculate new badges locally if XP service didn't return them
+    // This ensures badge notifications work even if XP service is slow/unavailable
+    let newBadges: string[] = [];
+    if (isFirstCompletion) {
+      // Get count of completed lessons for this user/product
+      const { count: completedCount } = await supabase
+        .from('LessonProgress')
+        .select('*', { count: 'exact', head: true })
+        .eq('userId', user.id)
+        .not('completedAt', 'is', null);
+
+      const totalCompleted = completedCount || 0;
+
+      // Badge unlock logic (mirrored from XP service)
+      const BADGE_THRESHOLDS = [
+        { count: 1, badge: 'FIRST_LESSON' },
+        { count: 7, badge: 'WEEK_WARRIOR' },
+        { count: 30, badge: 'MONTH_MASTER' },
+        { count: 100, badge: 'CENTURY_CLUB' },
+      ];
+
+      const existingBadges = (userStats?.badges as string[]) || [];
+      for (const threshold of BADGE_THRESHOLDS) {
+        if (totalCompleted >= threshold.count && !existingBadges.includes(threshold.badge)) {
+          // Check if this badge was just earned
+          if (totalCompleted === threshold.count ||
+              (totalCompleted > threshold.count && totalCompleted - 1 < threshold.count)) {
+            newBadges.push(threshold.badge);
+          }
+        }
+      }
+
+      // Use XP response badges if available (more authoritative)
+      if (xpResponse?.badges && xpResponse.badges.length > 0) {
+        newBadges = xpResponse.badges;
+      }
+    }
+
     return NextResponse.json({
       success: true,
       lesson: {
@@ -210,6 +259,7 @@ export async function POST(
         badges: xpResponse?.badges || null,
         streak: xpResponse?.streak || null,
       },
+      newBadges, // Include newly unlocked badges for notification display
       user: {
         totalXP: userStats?.total_xp || 0,
         currentStreak: userStats?.current_streak || 0,

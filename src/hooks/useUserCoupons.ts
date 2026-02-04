@@ -29,7 +29,22 @@ export function useUserCoupons() {
         const response = await fetch('/api/user/coupons');
         if (response.ok) {
           const data = await response.json();
-          setCoupons(data.coupons || []);
+          // Validate response structure - ensure coupons is an array
+          const rawCoupons = data?.coupons;
+          if (Array.isArray(rawCoupons)) {
+            // Filter to only valid coupon objects
+            const validCoupons = rawCoupons.filter(
+              (c: unknown): c is UserCoupon =>
+                typeof c === 'object' &&
+                c !== null &&
+                'id' in c &&
+                'code' in c &&
+                typeof (c as UserCoupon).code === 'string'
+            );
+            setCoupons(validCoupons);
+          } else {
+            setCoupons([]);
+          }
         }
       } catch (error) {
         logger.error('Failed to fetch coupons:', error);

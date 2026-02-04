@@ -46,10 +46,10 @@ export default function VerifyEmailPage() {
     }
   }, [router]);
 
-  // Check status on mount and every 5 seconds
+  // Check status on mount and every 2 seconds for faster response after email click
   useEffect(() => {
     checkVerificationStatus();
-    const interval = setInterval(checkVerificationStatus, 5000);
+    const interval = setInterval(checkVerificationStatus, 2000);
     return () => clearInterval(interval);
   }, [checkVerificationStatus]);
 
@@ -107,7 +107,13 @@ export default function VerifyEmailPage() {
 
   const maskEmail = (email: string) => {
     const [local, domain] = email.split('@');
-    if (local.length <= 2) return email;
+    // Always mask at least one character, even for short emails
+    if (local.length <= 1) {
+      return `*@${domain}`;
+    }
+    if (local.length <= 3) {
+      return `${local[0]}${'*'.repeat(local.length - 1)}@${domain}`;
+    }
     return `${local[0]}${'*'.repeat(local.length - 2)}${local[local.length - 1]}@${domain}`;
   };
 

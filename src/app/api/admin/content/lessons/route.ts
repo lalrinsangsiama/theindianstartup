@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { requireAdmin } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
+import { adminLessonSchema, validateRequest, validationErrorResponse } from '@/lib/validation-schemas';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,12 +12,24 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = createClient();
-  const lessonData = await request.json();
+
+  let rawData;
+  try {
+    rawData = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  // Validate input
+  const validation = validateRequest(adminLessonSchema, rawData);
+  if (!validation.success) {
+    return NextResponse.json(validationErrorResponse(validation), { status: 400 });
+  }
 
   try {
     const { data: lesson, error } = await supabase
       .from('Lesson')
-      .insert([lessonData])
+      .insert([validation.data])
       .select()
       .single();
 

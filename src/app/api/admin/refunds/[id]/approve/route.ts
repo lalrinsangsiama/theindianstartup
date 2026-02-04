@@ -130,20 +130,28 @@ export async function POST(
           amount: finalAmount,
         });
       } catch (razorpayError) {
-        logger.error('Razorpay refund failed:', razorpayError);
+        // Log the full error internally for debugging
+        const errorMessage = razorpayError instanceof Error ? razorpayError.message : 'Unknown error';
+        logger.error('Razorpay refund failed:', {
+          refundId,
+          paymentId: purchase.razorpayPaymentId,
+          error: errorMessage,
+        });
 
-        // Update refund request to failed
+        // Update refund request to failed - store error internally but don't expose
         await supabase
           .from('RefundRequest')
           .update({
             status: 'failed',
-            adminNotes: `${adminNotes || ''}\n\nRazorpay Error: ${razorpayError instanceof Error ? razorpayError.message : 'Unknown error'}`,
+            // Store error reference internally, not the actual error message
+            adminNotes: `${adminNotes || ''}\n\nRefund processing failed. Check logs for details.`,
             updatedAt: new Date().toISOString(),
           })
           .eq('id', refundId);
 
+        // Return generic error to client - don't expose internal payment gateway details
         return NextResponse.json(
-          { error: 'Failed to process refund with payment gateway' },
+          { error: 'Failed to process refund with payment gateway. Please try again or contact support.' },
           { status: 500 }
         );
       }

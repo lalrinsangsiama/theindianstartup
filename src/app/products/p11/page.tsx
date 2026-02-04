@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -62,6 +63,7 @@ interface Lesson {
 }
 
 const P11BrandingPRPage: React.FC = () => {
+  const router = useRouter();
   const { user, loading: authLoading } = useAuthContext();
   const { hasAccess, loading: accessLoading } = useUserProducts();
   const [modules, setModules] = useState<Module[]>([]);
@@ -134,7 +136,7 @@ const P11BrandingPRPage: React.FC = () => {
           <CardContent className="p-8 text-center">
             <h2 className="text-xl font-bold mb-4">Authentication Required</h2>
             <p className="text-gray-600 mb-4">Please sign in to access the P11 Branding & PR Mastery course.</p>
-            <Button onClick={() => window.location.href = '/login'}>
+            <Button onClick={() => router.push('/login')}>
               Sign In
             </Button>
           </CardContent>
@@ -154,10 +156,10 @@ const P11BrandingPRPage: React.FC = () => {
               Get access to P11 Branding & PR Mastery with 93 lessons, 12 modules, and premium resources for incredible value.
             </p>
             <div className="space-y-2 mb-4">
-              <Button onClick={() => window.location.href = '/pricing'} className="w-full">
+              <Button onClick={() => router.push('/pricing')} className="w-full">
                 Unlock P11 Premium - ₹7,999
               </Button>
-              <Button variant="outline" onClick={() => window.location.href = '/pricing'} className="w-full">
+              <Button variant="outline" onClick={() => router.push('/pricing')} className="w-full">
                 View All Products
               </Button>
             </div>

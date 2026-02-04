@@ -68,7 +68,7 @@ export function useRedisCache<T>(
                 if (isMountedRef.current) {
                   redis.setex(key, ttl, freshData);
                 }
-              }).catch(console.error);
+              }).catch(err => logger.error('Background refresh failed:', err));
             }
           }
           
@@ -134,20 +134,41 @@ export function useRedisCache<T>(
 export function useCachedDashboard() {
   const { user } = useAuthContext();
   const key = user ? cacheKeys.dashboard(user.id) : '';
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Create abort-aware fetcher
+  const fetcher = useCallback(async () => {
+    if (!user) throw new Error('User not authenticated');
+
+    // Abort previous request if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
+    const response = await fetch('/api/dashboard/cached', {
+      signal: abortControllerRef.current.signal,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch dashboard');
+    }
+
+    const result = await response.json();
+    return result.data;
+  }, [user]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return useRedisCache(
     key,
-    async () => {
-      if (!user) throw new Error('User not authenticated');
-      
-      const response = await fetch('/api/dashboard/cached');
-      if (!response.ok) {
-        throw new Error('Failed to fetch dashboard');
-      }
-      
-      const result = await response.json();
-      return result.data;
-    },
+    fetcher,
     {
       ttl: CACHE_TTL.MEDIUM,
       staleWhileRevalidate: true,
@@ -159,19 +180,40 @@ export function useCachedDashboard() {
 export function useCachedProductAccess(productCode: string) {
   const { user } = useAuthContext();
   const key = user ? cacheKeys.productAccess(user.id, productCode) : '';
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Create abort-aware fetcher
+  const fetcher = useCallback(async () => {
+    if (!user) return { hasAccess: false, expiresAt: null };
+
+    // Abort previous request if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
+    const response = await fetch(`/api/products/${productCode}/access`, {
+      signal: abortControllerRef.current.signal,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to check product access');
+    }
+
+    return response.json();
+  }, [user, productCode]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return useRedisCache(
     key,
-    async () => {
-      if (!user) return { hasAccess: false, expiresAt: null };
-      
-      const response = await fetch(`/api/products/${productCode}/access`);
-      if (!response.ok) {
-        throw new Error('Failed to check product access');
-      }
-      
-      return response.json();
-    },
+    fetcher,
     {
       ttl: CACHE_TTL.SHORT, // Shorter TTL for access control
       fallback: { hasAccess: false, expiresAt: null },

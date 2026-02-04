@@ -21,7 +21,7 @@ const createOrderSchema = z.object({
   amount: z.number()
     .int('Amount must be an integer')
     .positive('Amount must be positive')
-    .max(10000000, 'Amount exceeds maximum'), // Max 1 lakh INR in paise
+    .max(15000000, 'Amount exceeds maximum'), // Max 1.5 lakh INR in paise (supports All-Access at ₹1,49,999)
   couponCode: z.string()
     .max(50, 'Coupon code too long')
     .regex(/^[A-Z0-9_-]*$/, 'Invalid coupon format')
@@ -74,10 +74,14 @@ export async function POST(request: NextRequest) {
 
     const user = await requireAuth();
 
-    // Log if email is not verified but allow purchase to proceed
-    // Email verification can be requested separately after purchase
+    // Block purchases from unverified emails for consistency with checkout page
+    // This prevents potential fraud and ensures we can contact the customer
     if (!user.email_confirmed_at) {
-      logger.info('Purchase from unverified email', { userId: user.id, email: user.email });
+      logger.warn('Purchase blocked: unverified email', { userId: user.id, email: user.email });
+      return NextResponse.json(
+        { error: 'Please verify your email address before making a purchase.' },
+        { status: 403 }
+      );
     }
 
     // Parse and validate request body
@@ -173,35 +177,66 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Validate coupon if provided
-    let finalAmount = product.price * 100; // Convert to paise
+    // SECURITY FIX: Server-side price calculation
+    // Calculate the expected price server-side first, then validate against frontend amount
+    const catalogPriceInPaise = product.price * 100;
+    let serverCalculatedAmount = catalogPriceInPaise;
     let couponData = null;
     let discountAmount = 0;
-    
+
+    // Validate coupon FIRST before accepting any amount (security fix for coupon bypass)
     if (couponCode) {
       const couponResult = await validateCoupon(
         couponCode,
         user.id,
         productType,
-        finalAmount
+        catalogPriceInPaise
       );
-      
+
       if (!couponResult.valid) {
         return NextResponse.json(
           { error: couponResult.error || 'Invalid coupon' },
           { status: 400 }
         );
       }
-      
+
       couponData = couponResult.coupon;
       discountAmount = couponResult.discountAmount || 0;
-      finalAmount = couponResult.finalAmount || finalAmount;
+      serverCalculatedAmount = couponResult.finalAmount || catalogPriceInPaise;
     }
-    
-    // Validate amount matches expected amount
-    if (amount !== finalAmount) {
+
+    // SECURITY FIX: Compare frontend amount with server calculation
+    // Allow small tolerance (₹1) for rounding differences
+    const amountTolerance = 100; // 100 paise = ₹1
+    if (Math.abs(amount - serverCalculatedAmount) > amountTolerance) {
+      logger.warn('Price mismatch detected', {
+        userId: user.id,
+        productType,
+        frontendAmount: amount,
+        serverAmount: serverCalculatedAmount,
+        couponCode,
+      });
       return NextResponse.json(
-        { error: 'Invalid amount for product' },
+        { error: 'Price mismatch. Please refresh and try again.' },
+        { status: 400 }
+      );
+    }
+
+    // Use server-calculated amount for the order (never trust frontend amount)
+    const finalAmount = serverCalculatedAmount;
+
+    // Validate that final amount is reasonable
+    const minAllowedAmount = Math.floor(catalogPriceInPaise * 0.5); // Allow up to 50% discount
+    if (finalAmount > catalogPriceInPaise) {
+      return NextResponse.json(
+        { error: 'Amount exceeds product price' },
+        { status: 400 }
+      );
+    }
+    if (finalAmount < minAllowedAmount && !couponData) {
+      // Only block if no valid coupon (coupon can give > 50% discount if configured)
+      return NextResponse.json(
+        { error: 'Amount below minimum allowed' },
         { status: 400 }
       );
     }
@@ -267,9 +302,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create Razorpay order
+    // Create Razorpay order with server-calculated amount (not frontend amount)
     const orderOptions = {
-      amount: amount,
+      amount: finalAmount,
       currency: 'INR',
       receipt: `receipt_${Date.now()}`,
       notes: {
@@ -290,7 +325,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       productId: dbProduct.id,
       amount: finalAmount,
-      originalAmount: product.price * 100,
+      originalAmount: catalogPriceInPaise,
       status: 'pending',
       razorpayOrderId: razorpayOrder.id,
       expiresAt: expiresAt.toISOString(),
@@ -317,7 +352,8 @@ export async function POST(request: NextRequest) {
 
     const responseData = {
       orderId: razorpayOrder.id,
-      amount: amount,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: finalAmount, // Use server-calculated amount
       currency: 'INR',
       productName: product.title,
       purchaseId: purchase.id

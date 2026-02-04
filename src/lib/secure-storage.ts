@@ -1,49 +1,96 @@
 /**
  * Secure localStorage wrapper with encryption for sensitive data
- * Uses AES-GCM encryption with a session-based key
+ * Uses AES-GCM encryption with a session-based key via Web Crypto API
  */
 
 import { logger } from './logger';
 
 // Generate a session key that persists only for the browser session
-const getSessionKey = (): string => {
-  if (typeof window === 'undefined') return '';
+const getSessionKey = async (): Promise<CryptoKey | null> => {
+  if (typeof window === 'undefined' || !crypto.subtle) return null;
 
-  // Use sessionStorage for the encryption key (cleared when browser closes)
-  let key = sessionStorage.getItem('_sk');
-  if (!key) {
-    // Generate a random key for this session
-    const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
-    key = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-    sessionStorage.setItem('_sk', key);
+  // Check for existing raw key in sessionStorage
+  let rawKeyHex = sessionStorage.getItem('_sk');
+  let rawKey: Uint8Array;
+
+  if (!rawKeyHex) {
+    // Generate a random 256-bit key for this session
+    rawKey = new Uint8Array(32);
+    crypto.getRandomValues(rawKey);
+    rawKeyHex = Array.from(rawKey, byte => byte.toString(16).padStart(2, '0')).join('');
+    sessionStorage.setItem('_sk', rawKeyHex);
+  } else {
+    // Convert hex string back to Uint8Array
+    rawKey = new Uint8Array(rawKeyHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
   }
-  return key;
-};
 
-// Simple XOR encryption (lightweight, suitable for client-side obfuscation)
-// Note: This is not cryptographically secure but provides obfuscation
-// For true security, sensitive data should be stored server-side
-const xorEncrypt = (data: string, key: string): string => {
-  if (!key) return data;
-  let result = '';
-  for (let i = 0; i < data.length; i++) {
-    result += String.fromCharCode(data.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-  }
-  return btoa(result); // Base64 encode
-};
-
-const xorDecrypt = (encrypted: string, key: string): string => {
-  if (!key) return encrypted;
+  // Import as CryptoKey for AES-GCM
   try {
-    const data = atob(encrypted); // Base64 decode
-    let result = '';
-    for (let i = 0; i < data.length; i++) {
-      result += String.fromCharCode(data.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-    }
-    return result;
+    return await crypto.subtle.importKey(
+      'raw',
+      rawKey.buffer as ArrayBuffer,
+      { name: 'AES-GCM' },
+      false,
+      ['encrypt', 'decrypt']
+    );
   } catch {
-    return encrypted;
+    return null;
+  }
+};
+
+// AES-GCM encryption using Web Crypto API
+const aesEncrypt = async (data: string): Promise<string | null> => {
+  const key = await getSessionKey();
+  if (!key) return null;
+
+  try {
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+
+    // Generate random IV (12 bytes for AES-GCM)
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const encryptedBuffer = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      dataBuffer
+    );
+
+    // Combine IV + encrypted data and base64 encode
+    const combined = new Uint8Array(iv.length + encryptedBuffer.byteLength);
+    combined.set(iv);
+    combined.set(new Uint8Array(encryptedBuffer), iv.length);
+
+    return btoa(String.fromCharCode(...combined));
+  } catch {
+    return null;
+  }
+};
+
+const aesDecrypt = async (encrypted: string): Promise<string | null> => {
+  const key = await getSessionKey();
+  if (!key) return null;
+
+  try {
+    // Base64 decode
+    const combined = new Uint8Array(
+      atob(encrypted).split('').map(c => c.charCodeAt(0))
+    );
+
+    // Extract IV (first 12 bytes) and encrypted data
+    const iv = combined.slice(0, 12);
+    const encryptedData = combined.slice(12);
+
+    const decryptedBuffer = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      encryptedData
+    );
+
+    const decoder = new TextDecoder();
+    return decoder.decode(decryptedBuffer);
+  } catch {
+    return null;
   }
 };
 
@@ -85,16 +132,66 @@ export const secureStorage = {
     };
 
     try {
-      let serialized = JSON.stringify(item);
+      const serialized = JSON.stringify(item);
 
-      if (encrypt) {
-        const sessionKey = getSessionKey();
-        serialized = xorEncrypt(serialized, sessionKey);
+      if (encrypt && crypto.subtle) {
+        // Use async encryption
+        aesEncrypt(serialized).then(encrypted => {
+          if (encrypted) {
+            localStorage.setItem(key, `_e:${encrypted}`);
+          } else {
+            // Fallback to unencrypted if encryption fails
+            localStorage.setItem(key, serialized);
+          }
+        }).catch(() => {
+          localStorage.setItem(key, serialized);
+        });
+      } else {
+        localStorage.setItem(key, serialized);
       }
-
-      localStorage.setItem(key, encrypt ? `_e:${serialized}` : serialized);
     } catch (error) {
       logger.error('SecureStorage setItem error:', error);
+    }
+  },
+
+  /**
+   * Set an item with encryption (async version for proper encryption)
+   */
+  setItemAsync: async <T>(
+    key: string,
+    data: T,
+    options: {
+      encrypt?: boolean;
+      expiryHours?: number;
+    } = {}
+  ): Promise<void> => {
+    if (typeof window === 'undefined') return;
+
+    const { encrypt = false, expiryHours = DEFAULT_EXPIRY_HOURS } = options;
+    const now = Date.now();
+
+    const item: StorageItem<T> = {
+      data,
+      timestamp: now,
+      expiresAt: now + expiryHours * 60 * 60 * 1000,
+      version: STORAGE_VERSION,
+    };
+
+    try {
+      const serialized = JSON.stringify(item);
+
+      if (encrypt && crypto.subtle) {
+        const encrypted = await aesEncrypt(serialized);
+        if (encrypted) {
+          localStorage.setItem(key, `_e:${encrypted}`);
+        } else {
+          localStorage.setItem(key, serialized);
+        }
+      } else {
+        localStorage.setItem(key, serialized);
+      }
+    } catch (error) {
+      logger.error('SecureStorage setItemAsync error:', error);
     }
   },
 
@@ -108,15 +205,57 @@ export const secureStorage = {
       const stored = localStorage.getItem(key);
       if (!stored) return null;
 
+      // If encrypted, return null (use getItemAsync instead)
+      if (stored.startsWith('_e:')) {
+        // For backwards compatibility, try to get via async method
+        // This returns null for sync access to encrypted items
+        return null;
+      }
+
+      const item: StorageItem<T> = JSON.parse(stored);
+
+      // Check version
+      if (item.version !== STORAGE_VERSION) {
+        localStorage.removeItem(key);
+        return null;
+      }
+
+      // Check expiry
+      if (Date.now() > item.expiresAt) {
+        localStorage.removeItem(key);
+        return null;
+      }
+
+      return item.data;
+    } catch (error) {
+      logger.warn('SecureStorage getItem error, removing item', { key });
+      localStorage.removeItem(key);
+      return null;
+    }
+  },
+
+  /**
+   * Get an item with decryption (async version)
+   */
+  getItemAsync: async <T>(key: string): Promise<T | null> => {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const stored = localStorage.getItem(key);
+      if (!stored) return null;
+
       let serialized = stored;
-      let isEncrypted = false;
 
       // Check if encrypted
       if (stored.startsWith('_e:')) {
-        isEncrypted = true;
-        serialized = stored.slice(3);
-        const sessionKey = getSessionKey();
-        serialized = xorDecrypt(serialized, sessionKey);
+        const encrypted = stored.slice(3);
+        const decrypted = await aesDecrypt(encrypted);
+        if (!decrypted) {
+          // Decryption failed (different session), remove the item
+          localStorage.removeItem(key);
+          return null;
+        }
+        serialized = decrypted;
       }
 
       const item: StorageItem<T> = JSON.parse(serialized);
@@ -135,8 +274,7 @@ export const secureStorage = {
 
       return item.data;
     } catch (error) {
-      // If decryption fails (different session), remove the item
-      logger.warn('SecureStorage getItem error, removing item', { key });
+      logger.warn('SecureStorage getItemAsync error, removing item', { key });
       localStorage.removeItem(key);
       return null;
     }
@@ -174,7 +312,7 @@ export const secureStorage = {
   },
 
   /**
-   * Clean up all expired items
+   * Clean up all expired items (checks non-encrypted items only for sync operation)
    */
   cleanupExpired: (): void => {
     if (typeof window === 'undefined') return;
@@ -190,17 +328,11 @@ export const secureStorage = {
         const stored = localStorage.getItem(key);
         if (!stored) continue;
 
-        // Skip non-JSON items
-        if (!stored.startsWith('{') && !stored.startsWith('_e:')) continue;
+        // Skip encrypted items (they use async decryption)
+        // and non-JSON items
+        if (!stored.startsWith('{')) continue;
 
-        let serialized = stored;
-        if (stored.startsWith('_e:')) {
-          serialized = stored.slice(3);
-          const sessionKey = getSessionKey();
-          serialized = xorDecrypt(serialized, sessionKey);
-        }
-
-        const item = JSON.parse(serialized);
+        const item = JSON.parse(stored);
         if (item.expiresAt && now > item.expiresAt) {
           keysToRemove.push(key);
         }
@@ -211,15 +343,27 @@ export const secureStorage = {
 
     keysToRemove.forEach(key => localStorage.removeItem(key));
   },
+
+  /**
+   * Check if an item exists (async version that supports encrypted items)
+   */
+  hasItemAsync: async (key: string): Promise<boolean> => {
+    return (await secureStorage.getItemAsync(key)) !== null;
+  },
 };
 
-// Run cleanup periodically
+// Run cleanup periodically - with proper cleanup to prevent memory leaks
 if (typeof window !== 'undefined') {
   // Cleanup on load
   setTimeout(() => secureStorage.cleanupExpired(), 1000);
 
-  // Cleanup every 30 minutes
-  setInterval(() => secureStorage.cleanupExpired(), 30 * 60 * 1000);
+  // Store interval ID for cleanup
+  const cleanupIntervalId = setInterval(() => secureStorage.cleanupExpired(), 30 * 60 * 1000);
+
+  // Clean up interval on page unload to prevent memory leaks
+  window.addEventListener('beforeunload', () => {
+    clearInterval(cleanupIntervalId);
+  });
 }
 
 /**
@@ -240,15 +384,15 @@ export const STORAGE_KEYS = {
  * Cart-specific secure storage helpers
  */
 export const cartStorage = {
-  save: (cart: unknown): void => {
-    secureStorage.setItem(STORAGE_KEYS.CART, cart, {
+  save: async (cart: unknown): Promise<void> => {
+    await secureStorage.setItemAsync(STORAGE_KEYS.CART, cart, {
       encrypt: true,
       expiryHours: 24,
     });
   },
 
-  load: <T>(): T | null => {
-    return secureStorage.getItem<T>(STORAGE_KEYS.CART);
+  load: async <T>(): Promise<T | null> => {
+    return secureStorage.getItemAsync<T>(STORAGE_KEYS.CART);
   },
 
   clear: (): void => {
@@ -260,15 +404,15 @@ export const cartStorage = {
  * Purchase intent secure storage helpers
  */
 export const purchaseStorage = {
-  savePurchaseIntent: (intent: unknown): void => {
-    secureStorage.setItem(STORAGE_KEYS.PURCHASE_INTENT, intent, {
+  savePurchaseIntent: async (intent: unknown): Promise<void> => {
+    await secureStorage.setItemAsync(STORAGE_KEYS.PURCHASE_INTENT, intent, {
       encrypt: true,
       expiryHours: 1, // Short expiry for purchase intent
     });
   },
 
-  getPurchaseIntent: <T>(): T | null => {
-    return secureStorage.getItem<T>(STORAGE_KEYS.PURCHASE_INTENT);
+  getPurchaseIntent: async <T>(): Promise<T | null> => {
+    return secureStorage.getItemAsync<T>(STORAGE_KEYS.PURCHASE_INTENT);
   },
 
   clearPurchaseIntent: (): void => {

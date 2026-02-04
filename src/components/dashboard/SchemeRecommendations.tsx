@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -37,7 +38,7 @@ interface SchemeRecommendationsProps {
   showUpgradePrompt?: boolean;
 }
 
-export default function SchemeRecommendations({ 
+export default function SchemeRecommendations({
   userProfile = {
     startup_stage: 'early',
     sector: 'technology',
@@ -45,8 +46,9 @@ export default function SchemeRecommendations({
     funding_need: 2000000
   },
   maxRecommendations = 3,
-  showUpgradePrompt = true 
+  showUpgradePrompt = true
 }: SchemeRecommendationsProps) {
+  const router = useRouter();
   const [recommendations, setRecommendations] = useState<SchemeRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
@@ -186,7 +188,7 @@ export default function SchemeRecommendations({
           <p className="text-sm text-gray-600 mb-4">
             Complete your startup profile to get personalized scheme recommendations.
           </p>
-          <Button variant="outline" onClick={() => window.location.href = '/profile'}>
+          <Button variant="outline" onClick={() => router.push('/profile')}>
             Update Profile
           </Button>
         </CardContent>
@@ -248,11 +250,11 @@ export default function SchemeRecommendations({
                 </div>
               </div>
               
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="text-xs h-7"
-                onClick={() => window.location.href = `/government-schemes?scheme=${rec.scheme_code}`}
+                onClick={() => router.push(`/government-schemes?scheme=${rec.scheme_code}`)}
               >
                 View Details
                 <ChevronRight className="h-3 w-3 ml-1" />
@@ -266,10 +268,10 @@ export default function SchemeRecommendations({
             <div className="text-xs text-gray-600">
               Updated daily • Success rate tracking included
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => window.location.href = '/government-schemes'}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/government-schemes')}
               className="text-xs"
             >
               View All Schemes

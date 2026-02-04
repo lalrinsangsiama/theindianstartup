@@ -17,6 +17,7 @@ interface ProductAccess {
   daysRemaining?: number;
   productTitle?: string;
   productPrice?: number;
+  isError?: boolean; // Track if this is an error state
 }
 
 interface ProductProtectedRouteProps {
@@ -25,55 +26,61 @@ interface ProductProtectedRouteProps {
   fallback?: React.ReactNode;
 }
 
-export function ProductProtectedRoute({ 
-  productCode, 
-  children, 
-  fallback 
+export function ProductProtectedRoute({
+  productCode,
+  children,
+  fallback
 }: ProductProtectedRouteProps) {
   const { user, loading: authLoading } = useAuthContext();
   const router = useRouter();
   const [access, setAccess] = useState<ProductAccess | null>(null);
   const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const checkAccess = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/products/${productCode}/access`);
+      // UFH1 FIX: Check response.ok to distinguish "Access Denied" from "Server Error"
+      if (!response.ok) {
+        // Server error - don't show "Access Denied", show error state with retry
+        if (response.status >= 500) {
+          logger.error('Server error checking product access:', response.status);
+          setAccess({ hasAccess: false, productTitle: 'Server error', isError: true });
+        } else if (response.status === 404) {
+          // Product doesn't exist
+          setAccess({ hasAccess: false, productTitle: 'Product not found' });
+        } else {
+          // Other client errors (401, 403, etc.)
+          const errorData = await response.json().catch(() => ({}));
+          setAccess({ hasAccess: false, ...errorData });
+        }
+      } else {
+        const accessData = await response.json();
+        setAccess(accessData);
+      }
+    } catch (error) {
+      logger.error('Error checking product access:', error);
+      setAccess({ hasAccess: false, productTitle: 'Network error', isError: true });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const checkAccess = async () => {
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/products/${productCode}/access`);
-        // UFH1 FIX: Check response.ok to distinguish "Access Denied" from "Server Error"
-        if (!response.ok) {
-          // Server error - don't show "Access Denied", show error state
-          if (response.status >= 500) {
-            logger.error('Server error checking product access:', response.status);
-            setAccess({ hasAccess: false, productTitle: 'Error loading product' });
-          } else if (response.status === 404) {
-            // Product doesn't exist
-            setAccess({ hasAccess: false, productTitle: 'Product not found' });
-          } else {
-            // Other client errors (401, 403, etc.)
-            const errorData = await response.json().catch(() => ({}));
-            setAccess({ hasAccess: false, ...errorData });
-          }
-        } else {
-          const accessData = await response.json();
-          setAccess(accessData);
-        }
-      } catch (error) {
-        logger.error('Error checking product access:', error);
-        setAccess({ hasAccess: false, productTitle: 'Error loading product' });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (!authLoading) {
       checkAccess();
     }
-  }, [user, authLoading, productCode, router]);
+  }, [user, authLoading, productCode, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   if (authLoading || loading) {
     return (
@@ -87,6 +94,56 @@ export function ProductProtectedRoute({
     return null; // Will redirect to login
   }
 
+  // Show error state with retry option for server/network errors
+  if (access?.isError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-red-400" />
+            </div>
+
+            <Heading as="h2" variant="h4" className="mb-2">
+              Something Went Wrong
+            </Heading>
+
+            <Text color="muted" className="mb-6">
+              We couldn't verify your access to this content. This might be a temporary issue.
+            </Text>
+
+            <div className="space-y-3">
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={handleRetry}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : null}
+                Try Again
+              </Button>
+
+              <Link href="/dashboard" className="block">
+                <Button variant="outline" className="w-full">
+                  Back to Dashboard
+                </Button>
+              </Link>
+
+              <Text size="xs" color="muted" className="mt-4">
+                If this problem persists, please contact{' '}
+                <a href="mailto:support@theindianstartup.in" className="text-blue-600 hover:underline">
+                  support@theindianstartup.in
+                </a>
+              </Text>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   if (!access?.hasAccess) {
     return fallback || (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -95,15 +152,15 @@ export function ProductProtectedRoute({
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-gray-400" />
             </div>
-            
+
             <Heading as="h2" variant="h4" className="mb-2">
               Access Required
             </Heading>
-            
+
             <Text color="muted" className="mb-6">
               You need to purchase {access?.productTitle || productCode} to access this content.
             </Text>
-            
+
             {access?.productPrice && (
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <Text size="sm" color="muted" className="mb-1">Price</Text>
@@ -112,7 +169,7 @@ export function ProductProtectedRoute({
                 </Text>
               </div>
             )}
-            
+
             <div className="space-y-3">
               <Link href={`/products/${productCode.toLowerCase()}`} className="block">
                 <Button variant="primary" className="w-full">

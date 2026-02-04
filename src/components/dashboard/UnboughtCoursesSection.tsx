@@ -150,7 +150,7 @@ export function UnboughtCoursesSection({
                   ₹{getAllAccessOriginalPrice().toLocaleString('en-IN')}
                 </Text>
                 <Text className="font-bold text-3xl">
-                  ₹54,999
+                  ₹1,49,999
                 </Text>
               </div>
               <Link href="/pricing">

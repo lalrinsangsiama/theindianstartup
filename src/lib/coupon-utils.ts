@@ -157,21 +157,63 @@ export async function validateCoupon(
 }
 
 /**
- * Mark a coupon as used
+ * Mark a coupon as used with atomic increment
+ * Uses RPC for atomic operation, falls back to select+update pattern
  */
 export async function markCouponAsUsed(couponId: string, purchaseId: string) {
   try {
     const supabase = createClient();
-    
-    await supabase
+
+    // Try atomic increment via RPC first (preferred)
+    const { error: rpcError } = await supabase.rpc('increment_coupon_usage', {
+      coupon_id: couponId,
+      purchase_id: purchaseId
+    });
+
+    if (!rpcError) {
+      return true;
+    }
+
+    // Fallback: If RPC doesn't exist, use conditional update pattern
+    // Get current count first
+    const { data: coupon, error: fetchError } = await supabase
+      .from('Coupon')
+      .select('usedCount, maxUses')
+      .eq('id', couponId)
+      .single();
+
+    if (fetchError || !coupon) {
+      logger.error('Failed to fetch coupon for update:', fetchError);
+      return false;
+    }
+
+    // Check if coupon can still be used
+    if (coupon.usedCount >= coupon.maxUses) {
+      logger.warn('Coupon already at max uses', { couponId, usedCount: coupon.usedCount });
+      return false;
+    }
+
+    // Atomic conditional update: only update if usedCount hasn't changed
+    const newUsedCount = (coupon.usedCount || 0) + 1;
+    const { data: updated, error: updateError } = await supabase
       .from('Coupon')
       .update({
-        usedCount: 1,
+        usedCount: newUsedCount,
         usedAt: new Date().toISOString(),
-        usedForPurchase: purchaseId
+        usedForPurchase: purchaseId,
+        updatedAt: new Date().toISOString()
       })
-      .eq('id', couponId);
-    
+      .eq('id', couponId)
+      .eq('usedCount', coupon.usedCount) // Optimistic lock
+      .select('id')
+      .single();
+
+    if (updateError || !updated) {
+      // Race condition: another request updated the coupon
+      logger.warn('Coupon update race condition', { couponId, error: updateError });
+      return false;
+    }
+
     return true;
   } catch (error) {
     logger.error('Error marking coupon as used:', error);

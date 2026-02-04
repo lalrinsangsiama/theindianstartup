@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { portfolioUpdateSchema, ALLOWED_PORTFOLIO_FIELDS, validateRequest, validationErrorResponse } from '@/lib/validation-schemas';
+import { createAuditLog } from '@/lib/audit-log';
 
 export const dynamic = 'force-dynamic';
 
@@ -171,8 +173,6 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const updates = await request.json();
-
     // Get user from session
     const supabase = createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -184,11 +184,32 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    let rawData;
+    try {
+      rawData = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
+    // Validate input
+    const validation = validateRequest(portfolioUpdateSchema, rawData);
+    if (!validation.success) {
+      return NextResponse.json(validationErrorResponse(validation), { status: 400 });
+    }
+
+    // Filter to only allowed fields (whitelist)
+    const allowedUpdates: Record<string, unknown> = {};
+    for (const field of ALLOWED_PORTFOLIO_FIELDS) {
+      if (field in validation.data) {
+        allowedUpdates[field] = validation.data[field as keyof typeof validation.data];
+      }
+    }
+
     // Update portfolio
     const { data: portfolio, error: updateError } = await supabase
       .from('StartupPortfolio')
       .update({
-        ...updates,
+        ...allowedUpdates,
         updatedAt: new Date().toISOString(),
       })
       .eq('userId', user.id)
@@ -202,6 +223,14 @@ export async function PATCH(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Audit log the update
+    await createAuditLog({
+      eventType: 'portfolio_update',
+      userId: user.id,
+      action: 'UPDATE',
+      details: { updatedFields: Object.keys(allowedUpdates) },
+    });
 
     return NextResponse.json(portfolio);
 

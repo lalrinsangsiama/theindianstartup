@@ -203,7 +203,7 @@ export default function InvestorsPage() {
                 </Link>
                 <Link href="/pricing?highlight=ALL_ACCESS">
                   <Button variant="outline" size="lg">
-                    All-Access Bundle (₹54,999)
+                    All-Access Bundle (₹1,49,999)
                   </Button>
                 </Link>
               </div>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle, Shield, Target, Briefcase, BookOpen, TrendingUp } from "lucide-react";
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/icons/Logo';
@@ -9,9 +10,11 @@ import { StructuredData } from '@/components/seo/StructuredData';
 import { createClient } from '@/lib/supabase/client';
 import { TestimonialsSection, TESTIMONIALS } from '@/components/social-proof/FounderTestimonials';
 import { TrustBadges, PLATFORM_METRICS } from '@/components/social-proof/PlatformMetrics';
+import { User } from '@supabase/supabase-js';
 
 export default function HomePage() {
-  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -37,7 +40,7 @@ export default function HomePage() {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => window.location.href = '/dashboard'}
+                  onClick={() => router.push('/dashboard')}
                   className="px-6 py-2"
                 >
                   Dashboard
@@ -46,7 +49,7 @@ export default function HomePage() {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => window.location.href = '/signup'}
+                  onClick={() => router.push('/signup')}
                   className="px-6 py-2"
                 >
                   Get Started
@@ -79,7 +82,7 @@ export default function HomePage() {
                       event_label: 'hero_get_started'
                     });
                   }
-                  window.location.href = '/signup';
+                  router.push('/signup');
                 }}
                 className="relative inline-flex items-center justify-center group cursor-pointer"
               >
@@ -285,7 +288,7 @@ export default function HomePage() {
                 <Button
                   variant="primary"
                   size="lg"
-                  onClick={() => window.location.href = '/signup'}
+                  onClick={() => router.push('/signup')}
                   className="w-full"
                 >
                   Get All-Access
@@ -293,7 +296,7 @@ export default function HomePage() {
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={() => window.location.href = '/pricing'}
+                  onClick={() => router.push('/pricing')}
                   className="w-full"
                 >
                   View All Pricing
@@ -333,7 +336,7 @@ export default function HomePage() {
                     event_label: 'guarantee_get_started'
                   });
                 }
-                window.location.href = '/signup';
+                router.push('/signup');
               }}
             >
               Get Started Now <ArrowRight className="ml-2 h-5 w-5" />

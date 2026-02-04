@@ -177,15 +177,12 @@ function LoginContent() {
         return;
       }
 
-      // After successful API call, also sign in on the client side for session cookies
-      const { error: clientError } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (clientError) {
-        setLoginError('Sign-in succeeded but session setup failed. Please try again.');
-        return;
+      // The API sign-in already sets up the session via cookies
+      // Refresh the client auth state to pick up the new session
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        // Not critical - the page refresh below will pick up the session
+        console.warn('Session refresh warning:', refreshError);
       }
 
       // Successful login - reset rate limiting
@@ -215,6 +212,8 @@ function LoginContent() {
         destination = redirectTo;
       }
 
+      // Refresh the router to ensure fresh auth state on destination page
+      router.refresh();
       router.push(destination);
     } catch (error) {
       setLoginError('An unexpected error occurred. Please try again.');

@@ -30,7 +30,8 @@ export type AuditEventType =
   | 'data_delete'
   | 'security_event'
   | 'rate_limit_exceeded'
-  | 'suspicious_activity';
+  | 'suspicious_activity'
+  | 'portfolio_update';
 
 export interface AuditLogEntry {
   eventType: AuditEventType;

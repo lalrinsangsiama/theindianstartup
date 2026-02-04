@@ -79,6 +79,8 @@ export function GenericLessonPage({
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
   const [totalLessons, setTotalLessons] = useState(totalLessonsOverride || 0);
+  const [errorState, setErrorState] = useState<'none' | 'not_found' | 'no_access' | 'server_error'>('none');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Badge notification state
   const [showBadgeNotification, setShowBadgeNotification] = useState(false);
@@ -100,6 +102,8 @@ export function GenericLessonPage({
       }
 
       try {
+        setErrorState('none');
+        setErrorMessage('');
         const response = await fetch(`/api/products/${productCode}/lessons/${lessonId}`, {
           credentials: 'include'
         });
@@ -117,10 +121,27 @@ export function GenericLessonPage({
             setTotalLessons(data.totalLessons);
           }
         } else {
-          logger.error('Failed to fetch lesson:', await response.text());
+          // Distinguish between different error types for better UX
+          if (response.status === 404) {
+            setErrorState('not_found');
+            setErrorMessage('This lesson could not be found. It may have been moved or removed.');
+          } else if (response.status === 403) {
+            setErrorState('no_access');
+            setErrorMessage('You don\'t have access to this lesson. Please purchase the course to continue.');
+          } else if (response.status >= 500) {
+            setErrorState('server_error');
+            setErrorMessage('We\'re having trouble loading this lesson. Please try again.');
+          } else {
+            setErrorState('server_error');
+            const errorText = await response.text();
+            logger.error('Failed to fetch lesson:', errorText);
+            setErrorMessage('Unable to load lesson. Please try again.');
+          }
         }
       } catch (error) {
         logger.error(`Error fetching lesson for ${productCode}:`, error);
+        setErrorState('server_error');
+        setErrorMessage('Network error. Please check your connection and try again.');
       } finally {
         setLoading(false);
       }
@@ -160,11 +181,14 @@ export function GenericLessonPage({
           xpEarned: lesson.xpReward
         }));
 
-        // Check for new badge unlocks
+        // Check for new badge unlocks with MAX limit to prevent notification loop
+        const MAX_BADGES_TO_DISPLAY = 3;
         if (data.newBadges && data.newBadges.length > 0) {
-          // Store all unlocked badges and show the first one
-          setPendingBadges(data.newBadges.slice(1));
-          setUnlockedBadgeId(data.newBadges[0]);
+          // Limit badges shown to prevent overwhelming user with notifications
+          const badgesToShow = data.newBadges.slice(0, MAX_BADGES_TO_DISPLAY);
+          // Store remaining badges (up to limit) and show the first one
+          setPendingBadges(badgesToShow.slice(1));
+          setUnlockedBadgeId(badgesToShow[0]);
           setShowBadgeNotification(true);
         } else {
           // Navigate immediately if no badges
@@ -238,22 +262,44 @@ export function GenericLessonPage({
     );
   }
 
-  if (!lesson) {
+  if (!lesson || errorState !== 'none') {
     return (
       <ProductProtectedRoute productCode={normalizedProductCode}>
         <DashboardLayout>
-          <div className="max-w-4xl mx-auto">
-            <Alert variant="error">
-              <Text>Lesson not found or you do not have access to this content.</Text>
+          <div className="max-w-4xl mx-auto p-6">
+            <Alert variant={errorState === 'server_error' ? 'warning' : 'error'}>
+              <Text>{errorMessage || 'Lesson not found or you do not have access to this content.'}</Text>
             </Alert>
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/products/${productCode.toLowerCase()}`)}
-              className="mt-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Course
-            </Button>
+            <div className="flex flex-wrap gap-3 mt-4">
+              {errorState === 'server_error' && (
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setLoading(true);
+                    setErrorState('none');
+                    // Re-trigger fetch by updating a dependency
+                    window.location.reload();
+                  }}
+                >
+                  Try Again
+                </Button>
+              )}
+              {errorState === 'no_access' && (
+                <Button
+                  variant="primary"
+                  onClick={() => router.push(`/products/${productCode.toLowerCase()}`)}
+                >
+                  View Course Details
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/products/${productCode.toLowerCase()}`)}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Course
+              </Button>
+            </div>
           </div>
         </DashboardLayout>
       </ProductProtectedRoute>
@@ -413,8 +459,8 @@ export function GenericLessonPage({
                 </Card>
               )}
 
-              {/* Portfolio Integration - for courses that support it */}
-              {lesson.day <= 30 && (
+              {/* Portfolio Integration - for all courses up to 60 days */}
+              {lesson.day <= 60 && (
                 <ActivityCapture
                   activityTypeId={`${productCode.toLowerCase()}_day_${lesson.day}_activity`}
                   activityName={`Day ${lesson.day} Activity`}

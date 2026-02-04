@@ -59,8 +59,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     category,
     hasAccess,
     progress = 0,
-    rating = 4.8,
-    students = 2847,
+    rating,
+    students,
     icon,
     isPopular,
     isNew
@@ -154,10 +154,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               <Users className="w-3 h-3" />
               <span>{modules} modules</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span>{rating}</span>
-            </div>
           </div>
 
           {/* Progress bar for owned courses */}
@@ -233,14 +229,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           )}
         </div>
 
-        {/* Social proof for non-owned courses */}
-        {!hasAccess && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <Text size="xs" color="muted" className="text-center">
-              Join {students.toLocaleString()} students already learning
-            </Text>
-          </div>
-        )}
       </CardContent>
 
       {/* Hover effect overlay */}

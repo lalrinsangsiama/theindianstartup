@@ -31,8 +31,6 @@ interface Resource {
   url: string;
   description: string;
   tags: string[];
-  downloads: number;
-  rating: number;
   difficulty: 'Basic' | 'Intermediate' | 'Advanced' | 'Expert';
   isPremium: boolean;
   category: string;
@@ -54,8 +52,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-5-year-financial-model.xlsx',
     description: 'Comprehensive DCF model with scenario analysis, sensitivity analysis, and investor-ready outputs',
     tags: ['Financial Planning', 'DCF', 'Valuation', 'Scenario Analysis'],
-    downloads: 2847,
-    rating: 4.9,
     difficulty: 'Expert',
     isPremium: true,
     category: 'Financial Modeling',
@@ -69,8 +65,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-startup-budget-cashflow.xlsx',
     description: 'Monthly budget template with cash flow forecasting, burn rate tracking, and runway calculations',
     tags: ['Budgeting', 'Cash Flow', 'Burn Rate', 'Financial Planning'],
-    downloads: 3921,
-    rating: 4.8,
     difficulty: 'Intermediate',
     isPremium: false,
     category: 'Financial Planning',
@@ -84,8 +78,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-unit-economics-calculator',
     description: 'Interactive calculator for CAC, LTV, payback period, and unit economics optimization',
     tags: ['Unit Economics', 'CAC', 'LTV', 'Metrics'],
-    downloads: 1876,
-    rating: 4.7,
     difficulty: 'Intermediate',
     isPremium: true,
     category: 'Financial Analytics',
@@ -98,8 +90,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-fundraising-financials.zip',
     description: 'Complete investor-ready financial package including P&L, cash flow, balance sheet projections',
     tags: ['Fundraising', 'Investor Deck', 'Financial Statements', 'Projections'],
-    downloads: 2134,
-    rating: 4.9,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Fundraising',
@@ -115,8 +105,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-gst-compliance-dashboard',
     description: 'Automated GST filing tracker with return management, ITC reconciliation, and penalty calculator',
     tags: ['GST', 'Compliance', 'Tax', 'Automation'],
-    downloads: 4521,
-    rating: 4.8,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Tax & Compliance',
@@ -129,8 +117,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-einvoice-generator',
     description: 'Automated e-invoice generation tool with QR code creation and government portal integration',
     tags: ['E-Invoice', 'E-Way Bill', 'GST', 'Automation'],
-    downloads: 3287,
-    rating: 4.6,
     difficulty: 'Intermediate',
     isPremium: true,
     category: 'Tax & Compliance',
@@ -143,8 +129,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-tds-advance-tax-calculator',
     description: 'Comprehensive TDS calculation tool with advance tax planning and quarterly payment scheduler',
     tags: ['TDS', 'Advance Tax', 'Tax Planning', 'Calculator'],
-    downloads: 2891,
-    rating: 4.7,
     difficulty: 'Intermediate',
     isPremium: false,
     category: 'Tax & Compliance',
@@ -159,8 +143,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/guides/p4-accounting-system-setup.pdf',
     description: 'Step-by-step guide to setting up Tally, QuickBooks, or Zoho Books for Indian startups',
     tags: ['Accounting', 'Tally', 'QuickBooks', 'Setup'],
-    downloads: 5432,
-    rating: 4.9,
     difficulty: 'Basic',
     isPremium: false,
     category: 'Accounting',
@@ -174,8 +156,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-chart-of-accounts.xlsx',
     description: 'Industry-specific chart of accounts templates for tech, SaaS, e-commerce, and manufacturing',
     tags: ['Chart of Accounts', 'Accounting Structure', 'Templates'],
-    downloads: 4187,
-    rating: 4.8,
     difficulty: 'Intermediate',
     isPremium: true,
     category: 'Accounting',
@@ -189,8 +169,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-monthly-close-checklist.xlsx',
     description: 'Comprehensive month-end closing checklist with automated workflows and approval processes',
     tags: ['Month End', 'Financial Close', 'Checklist', 'Process'],
-    downloads: 3654,
-    rating: 4.7,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Accounting',
@@ -206,8 +184,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-saas-metrics-dashboard',
     description: 'Real-time SaaS metrics tracking: MRR, ARR, churn, CAC payback, net revenue retention',
     tags: ['SaaS', 'Metrics', 'MRR', 'Churn', 'Dashboard'],
-    downloads: 2976,
-    rating: 4.9,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Financial Analytics',
@@ -220,8 +196,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-financial-ratios-calculator',
     description: 'Calculate and benchmark 40+ financial ratios with industry comparisons and trend analysis',
     tags: ['Financial Ratios', 'Analysis', 'Benchmarking', 'KPIs'],
-    downloads: 4321,
-    rating: 4.8,
     difficulty: 'Intermediate',
     isPremium: false,
     category: 'Financial Analytics',
@@ -234,8 +208,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-breakeven-analysis',
     description: 'Multi-scenario break-even analysis with sensitivity testing and profit optimization',
     tags: ['Break-even', 'Profit Analysis', 'Scenario Planning'],
-    downloads: 3542,
-    rating: 4.7,
     difficulty: 'Intermediate',
     isPremium: true,
     category: 'Financial Analytics',
@@ -250,8 +222,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-bank-reconciliation.xlsx',
     description: 'Automated bank reconciliation with multi-currency support and exception reporting',
     tags: ['Bank Reconciliation', 'Treasury', 'Multi-Currency'],
-    downloads: 2876,
-    rating: 4.6,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Banking & Treasury',
@@ -265,8 +235,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/tools/p4-cash-management-dashboard',
     description: 'Real-time cash position tracking with forecasting and liquidity risk management',
     tags: ['Cash Management', 'Liquidity', 'Forecasting', 'Risk'],
-    downloads: 1987,
-    rating: 4.8,
     difficulty: 'Expert',
     isPremium: true,
     category: 'Banking & Treasury',
@@ -281,8 +249,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-investor-report-template.pptx',
     description: 'Professional monthly investor update template with key metrics and commentary',
     tags: ['Investor Relations', 'Monthly Reports', 'Updates'],
-    downloads: 1654,
-    rating: 4.9,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Investor Relations',
@@ -296,8 +262,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-board-package-template.zip',
     description: 'Complete board meeting package with financial statements, KPI dashboard, and strategic updates',
     tags: ['Board Meeting', 'Governance', 'Financial Reporting'],
-    downloads: 1321,
-    rating: 4.8,
     difficulty: 'Expert',
     isPremium: true,
     category: 'Investor Relations',
@@ -313,8 +277,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-annual-budget-toolkit.xlsx',
     description: 'Comprehensive annual budgeting with departmental allocation, variance analysis, and forecasting',
     tags: ['Annual Budget', 'Planning', 'Forecasting', 'Variance Analysis'],
-    downloads: 2543,
-    rating: 4.7,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Financial Planning',
@@ -328,8 +290,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-scenario-planning-model.xlsx',
     description: 'Advanced scenario modeling tool with Monte Carlo simulation and risk analysis',
     tags: ['Scenario Planning', 'Monte Carlo', 'Risk Analysis', 'Modeling'],
-    downloads: 1876,
-    rating: 4.9,
     difficulty: 'Expert',
     isPremium: true,
     category: 'Financial Planning',
@@ -345,8 +305,6 @@ const P4_FINANCE_RESOURCES: Resource[] = [
     url: '/templates/p4-internal-audit-checklist.xlsx',
     description: 'Comprehensive internal audit framework with risk assessment and control testing',
     tags: ['Internal Audit', 'Risk Assessment', 'Controls', 'Compliance'],
-    downloads: 2198,
-    rating: 4.6,
     difficulty: 'Advanced',
     isPremium: true,
     category: 'Audit & Controls',
@@ -459,10 +417,6 @@ export function P4ResourceLibrary({ hasAccess }: P4ResourceLibraryProps) {
                 <div className="text-2xl font-bold">{P4_FINANCE_RESOURCES.length}</div>
                 <div className="text-sm">Resources</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">{P4_FINANCE_RESOURCES.reduce((sum, r) => sum + r.downloads, 0).toLocaleString()}</div>
-                <div className="text-sm">Downloads</div>
-              </div>
             </div>
           </div>
         </CardContent>
@@ -549,15 +503,7 @@ export function P4ResourceLibrary({ hasAccess }: P4ResourceLibraryProps) {
               <h3 className="font-semibold mb-2">{resource.title}</h3>
               <p className="text-sm text-gray-600 mb-3">{resource.description}</p>
               
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                <div className="flex items-center gap-1">
-                  <Star className="w-3 h-3 text-yellow-500" />
-                  {resource.rating}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Download className="w-3 h-3" />
-                  {resource.downloads.toLocaleString()}
-                </div>
+              <div className="flex items-center text-sm text-gray-500 mb-3">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {resource.estimatedTime}
@@ -618,21 +564,15 @@ export function P4ResourceLibrary({ hasAccess }: P4ResourceLibraryProps) {
         </CardContent>
       </Card>
 
-      {/* Usage Stats */}
+      {/* Resource Summary */}
       <Card className="bg-gradient-to-r from-green-50 to-emerald-50">
         <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-gray-900">
-                {P4_FINANCE_RESOURCES.reduce((sum, r) => sum + r.downloads, 0).toLocaleString()}
+                {P4_FINANCE_RESOURCES.length}
               </div>
-              <div className="text-sm text-gray-600">Total Downloads</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">
-                {(P4_FINANCE_RESOURCES.reduce((sum, r) => sum + r.rating, 0) / P4_FINANCE_RESOURCES.length).toFixed(1)}★
-              </div>
-              <div className="text-sm text-gray-600">Average Rating</div>
+              <div className="text-sm text-gray-600">Resources</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">

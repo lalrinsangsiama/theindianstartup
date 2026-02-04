@@ -42,34 +42,68 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
-  
-  // Form data
-  const [formData, setFormData] = useState({
-    founderName: '',
-    phone: '',
-    startupName: '',
-    startupIdea: '',
-    targetMarket: '',
+
+  // Form data - initialize from localStorage if available
+  const [formData, setFormData] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('onboarding_form_data');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          // Invalid JSON, use defaults
+        }
+      }
+    }
+    return {
+      founderName: '',
+      phone: '',
+      startupName: '',
+      startupIdea: '',
+      targetMarket: '',
+    };
   });
 
-  // Check if user has already completed onboarding
+  // Persist form data to localStorage on changes
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('onboarding_form_data', JSON.stringify(formData));
+    }
+  }, [formData]);
+
+  // Combined effect for auth check and onboarding status (prevents race conditions)
+  useEffect(() => {
+    // Don't do anything while auth is still loading
+    if (authLoading) return;
+
+    // If not authenticated, redirect to login
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    // User is authenticated, check onboarding status
+    const abortController = new AbortController();
+
     const checkOnboardingStatus = async () => {
-      if (!user) return;
-      
       try {
-        const response = await fetch('/api/user/profile');
-        
+        const response = await fetch('/api/user/profile', {
+          signal: abortController.signal,
+        });
+
+        // Check if request was aborted
+        if (abortController.signal.aborted) return;
+
         // If response is ok, check the data
         if (response.ok) {
           const data = await response.json();
-          
+
           logger.info('Onboarding check response:', {
             hasCompletedOnboarding: data.hasCompletedOnboarding,
             needsOnboarding: data.needsOnboarding,
             userName: data.user?.name
           });
-          
+
           if (data.hasCompletedOnboarding && !data.needsOnboarding) {
             // User has already completed onboarding, redirect to dashboard
             logger.info('User has completed onboarding, redirecting to dashboard');
@@ -81,23 +115,22 @@ export default function OnboardingPage() {
           logger.info('Profile API response not ok - user needs onboarding');
         }
       } catch (error) {
+        // Ignore abort errors
+        if (error instanceof Error && error.name === 'AbortError') return;
         logger.error('Failed to check onboarding status:', error);
         // Don't redirect on error, let user proceed with onboarding
       } finally {
-        setCheckingOnboarding(false);
+        if (!abortController.signal.aborted) {
+          setCheckingOnboarding(false);
+        }
       }
     };
 
-    if (user && !authLoading) {
-      checkOnboardingStatus();
-    }
-  }, [user, authLoading, router]);
+    checkOnboardingStatus();
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
+    return () => {
+      abortController.abort();
+    };
   }, [user, authLoading, router]);
 
   const handleNext = async () => {
@@ -185,6 +218,8 @@ export default function OnboardingPage() {
             
             if (data.hasCompletedOnboarding && !data.needsOnboarding) {
               logger.info('Onboarding verified as complete, redirecting to dashboard');
+              // Clear persisted form data on successful completion
+              localStorage.removeItem('onboarding_form_data');
               router.push('/dashboard');
               return;
             }
@@ -199,6 +234,9 @@ export default function OnboardingPage() {
         // If verification failed, still redirect but with a flag
         logger.info('Onboarding verification failed after max attempts, forcing redirect');
         
+        // Clear persisted form data even if verification incomplete
+        localStorage.removeItem('onboarding_form_data');
+
         // Check if user has pending cart from signup
         const pendingCart = localStorage.getItem('preSignupCart');
         if (pendingCart) {
@@ -209,6 +247,7 @@ export default function OnboardingPage() {
         }
       } catch (error) {
         logger.error('Error during final redirect:', error);
+        localStorage.removeItem('onboarding_form_data');
         router.push('/dashboard?onboarding=complete');
       } finally {
         setLoading(false);

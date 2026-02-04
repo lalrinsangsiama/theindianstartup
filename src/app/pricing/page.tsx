@@ -92,7 +92,7 @@ export default function PricingPage() {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('pricingCart');
+    const savedCart = localStorage.getItem('checkoutCart');
     if (savedCart) {
       try {
         const parsed = JSON.parse(savedCart);
@@ -103,7 +103,7 @@ export default function PricingPage() {
         }).filter(Boolean);
         setCart(rehydrated);
       } catch (e) {
-        localStorage.removeItem('pricingCart');
+        localStorage.removeItem('checkoutCart');
       }
     }
   }, []);
@@ -112,22 +112,65 @@ export default function PricingPage() {
   useEffect(() => {
     if (cart.length > 0) {
       const toSave = cart.map(item => ({ code: item.product.code, quantity: item.quantity }));
-      localStorage.setItem('pricingCart', JSON.stringify(toSave));
+      localStorage.setItem('checkoutCart', JSON.stringify(toSave));
     } else {
-      localStorage.removeItem('pricingCart');
+      localStorage.removeItem('checkoutCart');
     }
   }, [cart]);
 
   useEffect(() => {
-    const loadRazorpay = () => {
-      return new Promise((resolve) => {
+    const loadRazorpay = async () => {
+      return new Promise<boolean>((resolve) => {
+        // Check if script already exists to prevent duplicate script tags
+        const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+        if (existingScript) {
+          // Script exists, wait for Razorpay to be available
+          const checkInterval = setInterval(() => {
+            if (window.Razorpay) {
+              clearInterval(checkInterval);
+              setRazorpayLoaded(true);
+              resolve(true);
+            }
+          }, 100);
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkInterval);
+            if (!window.Razorpay) {
+              setRazorpayLoaded(false);
+              resolve(false);
+            }
+          }, 10000);
+          return;
+        }
+
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.onload = () => {
           setRazorpayLoaded(true);
           resolve(true);
         };
-        script.onerror = () => resolve(false);
+        script.onerror = () => {
+          // Retry once after 2 seconds if script fails to load
+          setTimeout(() => {
+            // Check again before retry to prevent duplicate
+            if (window.Razorpay) {
+              setRazorpayLoaded(true);
+              resolve(true);
+              return;
+            }
+            const retryScript = document.createElement('script');
+            retryScript.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            retryScript.onload = () => {
+              setRazorpayLoaded(true);
+              resolve(true);
+            };
+            retryScript.onerror = () => {
+              setRazorpayLoaded(false);
+              resolve(false);
+            };
+            document.body.appendChild(retryScript);
+          }, 2000);
+        };
         document.body.appendChild(script);
       });
     };
@@ -187,7 +230,8 @@ export default function PricingPage() {
       return;
     }
 
-    // For multiple items, suggest All-Access if it's better value
+    // For multiple items, show clear message that multi-item checkout is not supported
+    // and suggest All-Access if it's better value
     const allAccessPrice = 149999;
     if (cartTotal > allAccessPrice * 0.6) {
       toast.info(
@@ -196,8 +240,12 @@ export default function PricingPage() {
       );
     }
 
-    // Process first item (in a real app, you'd handle multi-item checkout)
-    await handlePurchase(cart[0].product.code, cart[0].product.price);
+    // Multi-item checkout not supported - inform user clearly
+    toast.error(
+      'Please purchase courses one at a time, or choose the All-Access Bundle for all courses.',
+      { duration: 5000 }
+    );
+    return;
   };
 
   const handlePurchase = useCallback(async (productCode: string, price: number) => {
@@ -274,8 +322,21 @@ export default function PricingPage() {
       };
 
       if (typeof window !== 'undefined' && window.Razorpay) {
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+        try {
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } catch (razorpayError) {
+          logger.error('Razorpay instantiation error:', razorpayError);
+          toast.error('Payment gateway error. Please refresh and try again.');
+          setIsLoading(false);
+          setLoadingProduct(null);
+          return;
+        }
+      } else {
+        toast.error('Payment system not loaded. Please refresh the page.');
+        setIsLoading(false);
+        setLoadingProduct(null);
+        return;
       }
     } catch (error) {
       logger.error('Purchase error:', error);

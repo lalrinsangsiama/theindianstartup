@@ -47,23 +47,35 @@ export async function checkIdempotency(
     };
   }
 
-  // Create new idempotency key
+  // Create new idempotency key using UPSERT to prevent TOCTOU race condition
   const keyId = `${operation}_${userId}_${Date.now()}_${crypto.randomUUID()}`;
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + 24);
 
-  const { error } = await supabase
+  // Use upsert with ON CONFLICT to handle race conditions atomically
+  // If another request created the same key, we'll update it with our keyId
+  // but the response will remain null (indicating in-progress)
+  const { data: upserted, error } = await supabase
     .from('IdempotencyKey')
-    .insert({
-      id: keyId,
-      userId,
-      requestHash,
-      expiresAt: expiresAt.toISOString()
-    });
+    .upsert(
+      {
+        id: keyId,
+        userId,
+        requestHash,
+        expiresAt: expiresAt.toISOString(),
+        // response is intentionally not set - will be updated later
+      },
+      {
+        onConflict: 'userId,requestHash',
+        ignoreDuplicates: false,
+      }
+    )
+    .select('id, response')
+    .single();
 
   if (error) {
-    // If insert fails due to race condition, check again
-    const { data: raceCheck } = await supabase
+    // If upsert fails, do a final check for existing key
+    const { data: existingKey } = await supabase
       .from('IdempotencyKey')
       .select('id, response')
       .eq('userId', userId)
@@ -71,18 +83,33 @@ export async function checkIdempotency(
       .gt('expiresAt', new Date().toISOString())
       .single();
 
-    if (raceCheck?.response) {
+    if (existingKey?.response) {
       return {
         isNew: false,
-        key: raceCheck.id,
-        existingResponse: raceCheck.response
+        key: existingKey.id,
+        existingResponse: existingKey.response
       };
     }
+
+    // No existing key with response found, treat as new
+    return {
+      isNew: true,
+      key: keyId
+    };
+  }
+
+  // Check if the upserted record has a response (from concurrent request)
+  if (upserted?.response) {
+    return {
+      isNew: false,
+      key: upserted.id,
+      existingResponse: upserted.response
+    };
   }
 
   return {
     isNew: true,
-    key: keyId
+    key: upserted?.id || keyId
   };
 }
 

@@ -53,6 +53,9 @@ export default function SignupPage() {
 
   // Load and validate cart from localStorage
   useEffect(() => {
+    // SSR guard - only access localStorage on client
+    if (typeof window === 'undefined') return;
+
     const savedCart = localStorage.getItem('preSignupCart');
     const earlyBird = localStorage.getItem('earlyBirdPurchase');
 

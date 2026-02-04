@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -45,6 +46,7 @@ interface Template {
 }
 
 const BrandingTemplatesPage: React.FC = () => {
+  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { hasAccess, loading: accessLoading } = useUserProducts();
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -353,7 +355,7 @@ const BrandingTemplatesPage: React.FC = () => {
                     <AlertTriangle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
                     <div className="font-semibold text-yellow-700">Premium Access Required</div>
                     <div className="text-sm text-gray-600 mb-3">Unlock 300+ templates</div>
-                    <Button onClick={() => window.location.href = '/pricing'} size="sm" className="w-full">
+                    <Button onClick={() => router.push('/pricing')} size="sm" className="w-full">
                       Get P11 Access
                     </Button>
                   </div>

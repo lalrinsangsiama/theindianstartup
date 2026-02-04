@@ -28,7 +28,13 @@ export async function getUser() {
     .eq('id', user.id)
     .single();
 
-  return profile;
+  // Return profile if exists, otherwise return minimal user data from auth
+  // This ensures authenticated users are recognized even if profile doesn't exist yet
+  return profile || {
+    id: user.id,
+    email: user.email,
+    name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+  };
 }
 
 export async function getUserFromRequest(request: NextRequest) {

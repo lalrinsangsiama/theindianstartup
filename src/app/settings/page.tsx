@@ -720,9 +720,9 @@ export default function SettingsPage() {
                           ))}
                       </div>
                     ) : (
-                      <div className="text-center py-8">
-                        <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <Text color="muted" className="mb-4">No active subscriptions</Text>
+                      <div className="flex flex-col items-center py-8">
+                        <Package className="w-12 h-12 text-gray-400 mb-4" />
+                        <Text color="muted" className="mb-6">No active subscriptions</Text>
                         <AllAccessButton size="md" showSavings={true} />
                       </div>
                     )}

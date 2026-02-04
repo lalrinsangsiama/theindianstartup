@@ -114,19 +114,19 @@ export function ProductProtectedRoute({
             )}
             
             <div className="space-y-3">
-              <Link href={`/pricing?highlight=${productCode}`} className="block">
+              <Link href={`/products/${productCode.toLowerCase()}`} className="block">
                 <Button variant="primary" className="w-full">
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Purchase {productCode}
                 </Button>
               </Link>
-              
+
               <Link href="/pricing" className="block">
                 <Button variant="outline" className="w-full">
                   View All Products
                 </Button>
               </Link>
-              
+
               <Link href="/dashboard" className="block">
                 <Button variant="ghost" size="sm" className="w-full">
                   Back to Dashboard

@@ -34,19 +34,44 @@ export async function GET(request: NextRequest) {
       .eq('id', user.id)
       .maybeSingle();
 
-    // Removed debug logging
-
-    // If user doesn't exist in our database yet, return 404
+    // If user doesn't exist in our database yet, auto-create profile
     if (!userProfile) {
-      logger.info('User profile not found in database for user:', { userId: user.id });
-      return NextResponse.json(
-        {
-          error: 'Profile not found',
-          code: 'PROFILE_NOT_FOUND',
-          needsProfileCreation: true,
+      logger.info('Auto-creating profile for user:', { userId: user.id });
+
+      // Extract name from email or use default
+      const emailName = user.email?.split('@')[0] || 'User';
+      const displayName = user.user_metadata?.full_name || user.user_metadata?.name || emailName;
+
+      const { data: newProfile, error: createError } = await supabase
+        .from('User')
+        .insert({
+          id: user.id,
+          email: user.email || '',
+          name: displayName,
+          totalXP: 0,
+          currentStreak: 0,
+          badges: [],
+          paymentBlocked: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
+        .select('*, StartupPortfolio(*), purchases:Purchase(*)')
+        .single();
+
+      if (createError) {
+        logger.error('Failed to create user profile:', createError);
+        return errorResponse('Failed to create profile', 500);
+      }
+
+      return NextResponse.json({
+        user: {
+          ...newProfile,
+          portfolio: null,
+          activePurchases: [],
+          hasActiveAccess: false
         },
-        { status: 404 }
-      );
+        hasCompletedOnboarding: true,
+      });
     }
 
     // Onboarding is always considered complete (onboarding flow removed)

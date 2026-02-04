@@ -251,19 +251,34 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
           ))}
         </nav>
 
-        {/* Quick Action */}
-        <div className="p-4 border-t border-gray-200" data-tour="continue-journey">
-          <Link
-            href={`/journey/day/${userProfile?.currentDay || 1}`}
-            onClick={() => setSidebarOpen(false)}
-          >
-            <Button variant="primary" className="w-full group">
-              <Sparkles className="w-4 h-4 mr-2" />
-              <span>Continue Journey</span>
-              <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-        </div>
+        {/* Quick Action - Only show for users with active purchases */}
+        {userProfile?.hasActiveAccess ? (
+          <div className="p-4 border-t border-gray-200" data-tour="continue-journey">
+            <Link
+              href={`/journey/day/${userProfile?.currentDay || 1}`}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Button variant="primary" className="w-full group">
+                <Sparkles className="w-4 h-4 mr-2" />
+                <span>Continue Journey</span>
+                <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="p-4 border-t border-gray-200">
+            <Link
+              href="/pricing"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Button variant="primary" className="w-full group">
+                <Sparkles className="w-4 h-4 mr-2" />
+                <span>Start Learning</span>
+                <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Bottom Navigation */}
         <div className="border-t border-gray-200 px-2 py-2">

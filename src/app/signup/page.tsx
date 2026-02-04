@@ -407,14 +407,16 @@ export default function SignupPage() {
 function PasswordCheck({ met, text }: { met: boolean; text: string }) {
   return (
     <div className="flex items-center gap-2">
-      {met ? (
-        <div className="w-4 h-4 rounded-full border-2 border-green-600 bg-green-600 flex items-center justify-center">
-          <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
-        </div>
-      ) : (
-        <div className="w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center" />
-      )}
-      <Text size="sm" className={met ? 'text-green-600' : 'text-gray-500'}>
+      <div
+        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+          met
+            ? 'border-green-600 bg-green-600'
+            : 'border-gray-300 bg-transparent'
+        }`}
+      >
+        {met && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+      </div>
+      <Text size="sm" className={met ? 'text-green-600 font-medium' : 'text-gray-500'}>
         {text}
       </Text>
     </div>

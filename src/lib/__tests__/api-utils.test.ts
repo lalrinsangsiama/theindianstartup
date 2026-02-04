@@ -1,3 +1,40 @@
+// Mock Response class for test environment
+class MockResponse {
+  status: number;
+  headers: Map<string, string>;
+  private body: string;
+
+  constructor(body: string, init?: { status?: number; headers?: Record<string, string> }) {
+    this.body = body;
+    this.status = init?.status || 200;
+    this.headers = new Map(Object.entries(init?.headers || {}));
+  }
+
+  async json() {
+    return JSON.parse(this.body);
+  }
+}
+
+// Mock next/server before importing api-utils
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: (body: unknown, init?: { status?: number; headers?: Record<string, string> }) => {
+      return new MockResponse(JSON.stringify(body), {
+        status: init?.status,
+        headers: {
+          'Content-Type': 'application/json',
+          ...init?.headers,
+        },
+      });
+    },
+  },
+}));
+
+// Mock @supabase/ssr to prevent it from importing next/server internals
+jest.mock('@supabase/ssr', () => ({
+  createServerClient: jest.fn(),
+}));
+
 import {
   errorResponse,
   successResponse,

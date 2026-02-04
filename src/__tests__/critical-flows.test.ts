@@ -15,9 +15,9 @@ jest.mock('next/router', () => ({
   }),
 }));
 
-// Mock Supabase
-jest.mock('@/lib/supabase', () => ({
-  supabase: {
+// Mock Supabase client
+jest.mock('@/lib/supabase/client', () => ({
+  createClient: jest.fn(() => ({
     auth: {
       getUser: jest.fn(() => Promise.resolve({ data: { user: null }, error: null })),
       signInWithPassword: jest.fn(),
@@ -33,7 +33,7 @@ jest.mock('@/lib/supabase', () => ({
       insert: jest.fn(() => Promise.resolve({ data: [], error: null })),
       update: jest.fn(() => Promise.resolve({ data: [], error: null })),
     })),
-  },
+  })),
 }));
 
 // Mock fetch for API calls

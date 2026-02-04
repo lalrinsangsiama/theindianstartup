@@ -11,7 +11,12 @@ const mockDashboardData = {
   recentActivity: [],
 };
 
-describe('Redis Caching', () => {
+// Skip all Redis tests if Redis is not available (e.g., in CI)
+const redisAvailable = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
+
+const describeIfRedis = redisAvailable ? describe : describe.skip;
+
+describeIfRedis('Redis Caching', () => {
   beforeAll(async () => {
     // Ensure Redis is connected
     const isConnected = await redis.ping();
@@ -243,8 +248,8 @@ describe('Cache Integration', () => {
   });
 });
 
-// Benchmark tests
-describe('Cache Performance', () => {
+// Benchmark tests - only run when Redis is available
+describeIfRedis('Cache Performance', () => {
   test('should benchmark cache operations', async () => {
     const iterations = 100;
     const key = 'test:benchmark';

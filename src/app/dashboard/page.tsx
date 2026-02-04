@@ -654,7 +654,7 @@ function DashboardContent() {
       }
     };
 
-    if (user && !loading) {
+    if (user) {
       fetchDashboardData();
     }
 
@@ -665,7 +665,7 @@ function DashboardContent() {
         clearTimeout(retryTimeout);
       }
     };
-  }, [user, router, skipOnboardingCheck, retryCount, loading, showProgressiveOnboarding]);
+  }, [user, router, skipOnboardingCheck, retryCount, showProgressiveOnboarding]);
 
   const handleProductClick = useCallback((product: Product) => {
     if (product.hasAccess) {

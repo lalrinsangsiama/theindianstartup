@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
-import { 
-  XP_EVENTS, 
-  XPEventType, 
-  calculateLevel, 
-  calculateXPForNextLevel, 
+import {
+  XP_EVENTS,
+  XPEventType,
+  calculateLevel,
+  calculateXPForNextLevel,
   getLevelTitle,
   checkStreakBonus,
   checkMilestoneBonus
 } from '@/lib/xp';
 import { getNewBadges, BADGES } from '@/lib/badges';
+import { applyRateLimit, getClientIP } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,22 @@ interface XPAwardRequest {
 // POST - Award XP for an event
 export async function POST(request: NextRequest) {
   try {
+    // BEH4 FIX: Apply rate limiting to prevent XP farming abuse
+    const rateLimit = await applyRateLimit(request, 'lessonComplete');
+    if (!rateLimit.allowed) {
+      logger.warn('XP award rate limit exceeded', {
+        ip: getClientIP(request),
+        remaining: rateLimit.result.remaining,
+      });
+      return NextResponse.json(
+        { error: 'Too many XP requests. Please slow down.' },
+        {
+          status: 429,
+          headers: rateLimit.headers,
+        }
+      );
+    }
+
     const { eventType, metadata }: XPAwardRequest = await request.json();
 
     if (!eventType || !XP_EVENTS[eventType]) {
@@ -51,7 +68,7 @@ export async function POST(request: NextRequest) {
     // Get current user stats
     const { data: userData, error: userDataError } = await supabase
       .from('User')
-      .select('totalXP, currentStreak, longestStreak, badges, createdAt')
+      .select('totalXP, currentStreak, longestStreak, badges, createdAt, lastActivityDate')
       .eq('id', user.id)
       .single();
 
@@ -115,21 +132,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update user's total XP and other stats
-    const updateData: any = {
-      totalXP: newTotalXP,
-    };
+    // Prepare user update data (don't apply yet - wait for badge calculation)
+    const updateData: Record<string, unknown> = {};
 
-    // Update streak if applicable
+    // Calculate streak if applicable
     if (eventType === 'DAILY_LESSON_COMPLETE') {
       const today = new Date();
-      const lastActivity = userData.createdAt ? new Date(userData.createdAt) : today;
+      today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+      // Use lastActivityDate for streak calculation, not createdAt
+      // Fall back to createdAt only if lastActivityDate doesn't exist (new users)
+      const lastActivityStr = userData.lastActivityDate || userData.createdAt;
+      const lastActivity = lastActivityStr ? new Date(lastActivityStr) : today;
+      lastActivity.setHours(0, 0, 0, 0); // Normalize to start of day
+
       const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
 
       if (daysDiff === 1) {
         // Continue streak
         updateData.currentStreak = (userData.currentStreak || 0) + 1;
-        updateData.longestStreak = Math.max(updateData.currentStreak, userData.longestStreak || 0);
+        updateData.longestStreak = Math.max(updateData.currentStreak as number, userData.longestStreak || 0);
       } else if (daysDiff === 0) {
         // Same day, maintain streak
         updateData.currentStreak = userData.currentStreak || 1;
@@ -137,19 +159,41 @@ export async function POST(request: NextRequest) {
         // Streak broken, reset
         updateData.currentStreak = 1;
       }
+
+      // Always update lastActivityDate when completing a lesson
+      updateData.lastActivityDate = new Date().toISOString();
     }
 
-    const { error: updateError } = await supabase
-      .from('User')
-      .update(updateData)
-      .eq('id', user.id);
+    // Fetch community activity stats for badge calculations
+    let communityPosts = 0;
+    let helpGiven = 0;
+    let perfectDays = 0;
 
-    if (updateError) {
-      logger.error('Error updating user stats:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update user stats' },
-        { status: 500 }
-      );
+    try {
+      // Get community posts count
+      const { count: postsCount } = await supabase
+        .from('community_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      communityPosts = postsCount || 0;
+
+      // Get help given (comments on others' posts)
+      const { count: helpCount } = await supabase
+        .from('community_comments')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      helpGiven = helpCount || 0;
+
+      // Get perfect days (days with all tasks completed)
+      const { count: perfectCount } = await supabase
+        .from('daily_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('completed', true);
+      perfectDays = perfectCount || 0;
+    } catch {
+      // If community tables don't exist yet, use defaults
+      logger.info('Community stats not available, using defaults');
     }
 
     // Check for new badges
@@ -157,9 +201,9 @@ export async function POST(request: NextRequest) {
       currentDay: 1,
       currentStreak: updateData.currentStreak || userData.currentStreak || 0,
       totalXP: newTotalXP,
-      communityPosts: 0, // TODO: Get from community posts table
-      helpGiven: 0, // TODO: Get from community activity
-      perfectDays: 0, // TODO: Calculate perfect completion days
+      communityPosts,
+      helpGiven,
+      perfectDays,
       joinedAt: new Date(userData.createdAt || Date.now()),
     };
 
@@ -176,8 +220,6 @@ export async function POST(request: NextRequest) {
 
     // Award new badges and their XP
     if (newBadges.length > 0) {
-      const updatedBadges = [...currentBadges, ...newBadges];
-      
       // Calculate additional XP from badge rewards
       newBadges.forEach(badgeId => {
         const badge = BADGES[badgeId];
@@ -190,16 +232,7 @@ export async function POST(request: NextRequest) {
         });
       });
 
-      // Update badges and total XP (if badge XP rewards exist)
-      const finalTotalXP = newTotalXP + additionalXP;
-      
-      await supabase
-        .from('User')
-        .update({
-          badges: updatedBadges,
-          totalXP: finalTotalXP
-        })
-        .eq('id', user.id);
+      updateData.badges = [...currentBadges, ...newBadges];
 
       // Record badge XP events
       if (additionalXP > 0) {
@@ -215,7 +248,24 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Calculate final XP including badge rewards
     const finalTotalXP = newTotalXP + additionalXP;
+    updateData.totalXP = finalTotalXP;
+
+    // ATOMIC UPDATE: Apply all user updates in a single database call
+    // This prevents race conditions and ensures data integrity
+    const { error: updateError } = await supabase
+      .from('User')
+      .update(updateData)
+      .eq('id', user.id);
+
+    if (updateError) {
+      logger.error('Error updating user stats:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update user stats' },
+        { status: 500 }
+      );
+    }
     const finalLevel = calculateLevel(finalTotalXP);
     const levelProgress = calculateXPForNextLevel(finalTotalXP);
 

@@ -20,7 +20,23 @@ interface RateLimitResult {
 }
 
 // Track repeated violations for exponential backoff
+// BE3 FIX: Added MAX_SIZE constraint with LRU eviction to prevent memory leak under attack
+const MAX_VIOLATION_TRACKER_SIZE = 10000;
 const violationTracker = new Map<string, { count: number; lastViolation: number }>();
+
+// Helper function to enforce Map size limit with LRU eviction
+function enforceViolationTrackerSize(): void {
+  if (violationTracker.size > MAX_VIOLATION_TRACKER_SIZE) {
+    // Find and remove the oldest entries (LRU eviction)
+    const entries = Array.from(violationTracker.entries());
+    entries.sort((a, b) => a[1].lastViolation - b[1].lastViolation);
+    // Remove oldest 10% of entries
+    const removeCount = Math.ceil(MAX_VIOLATION_TRACKER_SIZE * 0.1);
+    for (let i = 0; i < removeCount && i < entries.length; i++) {
+      violationTracker.delete(entries[i][0]);
+    }
+  }
+}
 
 // Cleanup violation tracker every 30 minutes
 setInterval(() => {
@@ -64,6 +80,8 @@ function trackViolation(key: string): { count: number; backoffMs: number } {
     return { count: existing.count, backoffMs: calculateBackoff(existing.count) };
   }
 
+  // BE3 FIX: Enforce size limit before adding new entry
+  enforceViolationTrackerSize();
   violationTracker.set(key, { count: 1, lastViolation: now });
   return { count: 1, backoffMs: calculateBackoff(1) };
 }
@@ -76,7 +94,23 @@ export function clearViolation(key: string): void {
 }
 
 // In-memory fallback store (used when Redis is unavailable)
+// BE3 FIX: Added MAX_SIZE constraint with LRU eviction
+const MAX_FALLBACK_STORE_SIZE = 10000;
 const fallbackStore = new Map<string, { count: number; resetTime: number }>();
+
+// Helper function to enforce fallback store size limit
+function enforceFallbackStoreSize(): void {
+  if (fallbackStore.size > MAX_FALLBACK_STORE_SIZE) {
+    // Find and remove the oldest entries based on resetTime (LRU eviction)
+    const entries = Array.from(fallbackStore.entries());
+    entries.sort((a, b) => a[1].resetTime - b[1].resetTime);
+    // Remove oldest 10% of entries
+    const removeCount = Math.ceil(MAX_FALLBACK_STORE_SIZE * 0.1);
+    for (let i = 0; i < removeCount && i < entries.length; i++) {
+      fallbackStore.delete(entries[i][0]);
+    }
+  }
+}
 
 // Cleanup fallback store every 5 minutes
 setInterval(() => {
@@ -152,6 +186,8 @@ export async function distributedRateLimit(
   let current = fallbackStore.get(fullKey);
 
   if (!current || current.resetTime <= now) {
+    // BE3 FIX: Enforce size limit before adding new entry
+    enforceFallbackStoreSize();
     current = {
       count: 1,
       resetTime: now + config.windowMs,
@@ -378,6 +414,48 @@ export const RATE_LIMIT_CONFIGS = {
     maxRequests: 3, // 3 exports per day
     prefix: 'data-export',
   },
+
+  // Expert session creation
+  createSession: {
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 5, // 5 sessions per day
+    prefix: 'create-session',
+  },
+
+  // Expert session invites
+  sessionInvite: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 20, // 20 invites per hour
+    prefix: 'session-invite',
+  },
+
+  // Announcement creation
+  createAnnouncement: {
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 5, // 5 announcements per day
+    prefix: 'create-announcement',
+  },
+
+  // Ecosystem listing creation
+  createListing: {
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 5, // 5 listings per day
+    prefix: 'create-listing',
+  },
+
+  // Ecosystem review creation
+  createReview: {
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    maxRequests: 10, // 10 reviews per day
+    prefix: 'create-review',
+  },
+
+  // Helpful vote on reviews
+  helpfulVote: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 50, // 50 votes per hour
+    prefix: 'helpful-vote',
+  },
 } as const;
 
 /**
@@ -515,6 +593,12 @@ function getRateLimitMessage(configKey: keyof typeof RATE_LIMIT_CONFIGS): string
     feedback: 'Too many feedback submissions',
     supportTicket: 'Too many support tickets',
     dataExport: 'Too many data export requests',
+    createSession: 'Too many sessions created',
+    sessionInvite: 'Too many invites sent',
+    createAnnouncement: 'Too many announcements submitted',
+    createListing: 'Too many listings submitted',
+    createReview: 'Too many reviews submitted',
+    helpfulVote: 'Too many votes',
   };
   return messages[configKey] || 'Too many requests';
 }
@@ -612,6 +696,97 @@ export async function checkUserRateLimit(
 
   if (!allowed) {
     return createRateLimitResponse(result, configKey);
+  }
+
+  return null;
+}
+
+// ============================================================================
+// H14 FIX: REQUEST BODY SIZE VALIDATION
+// Prevents DoS attacks via large payloads
+// ============================================================================
+
+/**
+ * Maximum allowed request body sizes by type
+ */
+export const MAX_BODY_SIZES = {
+  default: 1024 * 1024, // 1MB
+  json: 100 * 1024, // 100KB for JSON payloads
+  form: 5 * 1024 * 1024, // 5MB for form data (file uploads)
+  image: 10 * 1024 * 1024, // 10MB for images
+} as const;
+
+/**
+ * Check if request body size is within acceptable limits
+ * Returns NextResponse error if body too large, null otherwise
+ */
+export function checkRequestBodySize(
+  req: NextRequest,
+  maxSize: number = MAX_BODY_SIZES.json
+): NextResponse | null {
+  const contentLength = req.headers.get('content-length');
+
+  if (contentLength) {
+    const size = parseInt(contentLength, 10);
+
+    if (isNaN(size)) {
+      // Invalid content-length header
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Invalid request',
+          message: 'Invalid Content-Length header',
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    if (size > maxSize) {
+      logger.warn('Request body too large', {
+        contentLength: size,
+        maxSize,
+        path: req.nextUrl.pathname,
+      });
+
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Payload too large',
+          message: `Request body exceeds maximum allowed size of ${Math.round(maxSize / 1024)}KB`,
+          maxSize,
+          receivedSize: size,
+        }),
+        {
+          status: 413,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Combined rate limit and body size check for POST/PUT/PATCH endpoints
+ * Returns NextResponse error if either check fails, null otherwise
+ */
+export async function checkPostRequestLimits(
+  req: NextRequest,
+  rateLimitConfig: keyof typeof RATE_LIMIT_CONFIGS,
+  maxBodySize: number = MAX_BODY_SIZES.json
+): Promise<NextResponse | null> {
+  // Check body size first (cheaper operation)
+  const bodySizeError = checkRequestBodySize(req, maxBodySize);
+  if (bodySizeError) {
+    return bodySizeError;
+  }
+
+  // Then check rate limit
+  const rateLimitError = await checkRateLimit(req, rateLimitConfig);
+  if (rateLimitError) {
+    return rateLimitError;
   }
 
   return null;

@@ -7,33 +7,42 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient();
-    
+
+    // Require authentication to view stats
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
     // Get total members count
     const { count: totalMembers } = await supabase
       .from('users')
       .select('*', { count: 'exact', head: true });
 
     // Get active users today (users who created posts/comments today)
+    // BE1 FIX: Refactored from invalid .then() chain to proper await syntax
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
-    const { data: activeUsers } = await supabase
-      .from('posts')
-      .select('author_id')
-      .gte('created_at', today.toISOString())
-      .then(async (result) => {
-        const { data: commentUsers } = await supabase
-          .from('comments')
-          .select('author_id')
-          .gte('created_at', today.toISOString());
-        
-        // Combine and deduplicate user IDs
-        const postUsers = result.data?.map(p => p.author_id) || [];
-        const commentUserIds = commentUsers?.map(c => c.author_id) || [];
-        const allActiveUsers = Array.from(new Set([...postUsers, ...commentUserIds]));
-        
-        return { data: allActiveUsers };
-      });
+
+    // Fetch post authors and comment authors in parallel
+    const [postsResult, commentsResult] = await Promise.all([
+      supabase
+        .from('posts')
+        .select('author_id')
+        .gte('created_at', today.toISOString()),
+      supabase
+        .from('comments')
+        .select('author_id')
+        .gte('created_at', today.toISOString())
+    ]);
+
+    // Combine and deduplicate user IDs
+    const postUsers = postsResult.data?.map(p => p.author_id) || [];
+    const commentUserIds = commentsResult.data?.map(c => c.author_id) || [];
+    const activeUsers = Array.from(new Set([...postUsers, ...commentUserIds]));
 
     // Get posts this week
     const weekAgo = new Date();
@@ -62,13 +71,13 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     logger.error('Community stats error:', error);
-    
-    // Return mock data if there's an error (for development)
+
+    // Return zeros on error instead of fake data
     return NextResponse.json({
-      totalMembers: 1247,
-      activeToday: 89,
-      postsThisWeek: 156,
-      expertSessions: 3,
+      totalMembers: 0,
+      activeToday: 0,
+      postsThisWeek: 0,
+      expertSessions: 0,
     });
   }
 }

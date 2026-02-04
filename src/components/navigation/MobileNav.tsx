@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-  Home, 
-  BookOpen, 
-  Trophy, 
-  Users, 
+import {
+  Home,
+  BookOpen,
+  Trophy,
+  Users,
   User,
   Menu,
   X,
@@ -68,6 +68,65 @@ export const MobileNav = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuthContext();
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
+  // Focus trap for drawer
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!isOpen || !drawerRef.current) return;
+
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable?.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable?.focus();
+        }
+      }
+    }
+  }, [isOpen]);
+
+  // H2 FIX: Handle focus management when drawer opens/closes with fallback
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveElement.current = document.activeElement as HTMLElement;
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus first focusable element in drawer after animation
+      setTimeout(() => {
+        const firstFocusable = drawerRef.current?.querySelector<HTMLElement>(
+          'button, [href], input'
+        );
+        firstFocusable?.focus();
+      }, 100);
+    } else {
+      document.removeEventListener('keydown', handleKeyDown);
+      // Restore focus with fallback - if previousActiveElement is null/undefined,
+      // try to focus the menu button by finding it in the DOM
+      const elementToFocus = previousActiveElement.current ||
+        document.querySelector<HTMLElement>('[data-mobile-menu-button]');
+      elementToFocus?.focus();
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleKeyDown]);
 
   // Hide on auth pages
   if (AUTH_PAGES.some(page => pathname?.startsWith(page))) {
@@ -88,18 +147,22 @@ export const MobileNav = () => {
             <Logo variant="full" className="h-8 text-black" />
           </Link>
           
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            ref={menuButtonRef}
+            type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-all duration-200"
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu-drawer"
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            data-mobile-menu-button
+            className="p-2 hover:bg-gray-100 rounded-xl transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             {isOpen ? (
               <X className="w-5 h-5 rotate-0 transition-transform duration-300" />
             ) : (
               <Menu className="w-5 h-5 transition-transform duration-300" />
             )}
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -113,10 +176,17 @@ export const MobileNav = () => {
       />
 
       {/* Mobile Menu Drawer */}
-      <div className={cn(
-        "lg:hidden fixed top-0 right-0 h-full w-80 bg-white z-50 transform transition-transform duration-300",
-        isOpen ? "translate-x-0" : "translate-x-full"
-      )}>
+      <div
+        ref={drawerRef}
+        id="mobile-menu-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
+        className={cn(
+          "lg:hidden fixed top-0 right-0 h-full w-80 bg-white z-50 transform transition-transform duration-300",
+          isOpen ? "translate-x-0" : "translate-x-full"
+        )}
+      >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 border-b">
@@ -154,8 +224,10 @@ export const MobileNav = () => {
             <div className="space-y-2">
               {mobileNavItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
-                
+                // UF4 FIX: Use startsWith for parent route matching (e.g., /products/p1/lessons/1 matches /products)
+                const isActive = pathname === item.href ||
+                  (item.href !== '/' && pathname?.startsWith(item.href));
+
                 return (
                   <Link
                     key={item.href}
@@ -224,16 +296,18 @@ export const MobileNav = () => {
         <nav className="grid grid-cols-5 gap-1 px-3 py-2 pb-safe">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
-            
+            // UF4 FIX: Use startsWith for parent route matching
+            const isActive = pathname === item.href ||
+              (item.href !== '/' && pathname?.startsWith(item.href));
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
                   "relative flex flex-col items-center gap-1 py-2 px-2 rounded-xl transition-all duration-300 min-h-[60px] group",
-                  isActive 
-                    ? "text-black" 
+                  isActive
+                    ? "text-black"
                     : "text-gray-500 hover:text-gray-700"
                 )}
               >

@@ -10,7 +10,8 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, error, variant = 'default', resize = 'vertical', ...props }, ref) => {
-    const baseClasses = 'w-full px-3 py-2 border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
+    // VS1 FIX: Changed focus ring from blue-500 to black for brand consistency
+    const baseClasses = 'w-full px-3 py-2 border rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
     
     const variantClasses = {
       default: 'border-gray-300 bg-white hover:border-gray-400',

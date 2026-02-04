@@ -31,22 +31,23 @@ export function Switch({
     }
   };
 
+  // Increased heights for better touch targets (minimum 44px height achieved via min-h)
   const sizeClasses = {
-    sm: 'w-8 h-4',
-    md: 'w-10 h-5',
-    lg: 'w-12 h-6',
+    sm: 'w-9 h-5 min-h-[44px]',
+    md: 'w-11 h-6 min-h-[44px]',
+    lg: 'w-14 h-7 min-h-[44px]',
   };
 
   const thumbSizeClasses = {
-    sm: 'w-3 h-3',
-    md: 'w-4 h-4',
-    lg: 'w-5 h-5',
+    sm: 'w-4 h-4',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
   };
 
   const translateClasses = {
     sm: checked ? 'translate-x-4' : 'translate-x-0.5',
     md: checked ? 'translate-x-5' : 'translate-x-0.5',
-    lg: checked ? 'translate-x-6' : 'translate-x-0.5',
+    lg: checked ? 'translate-x-7' : 'translate-x-0.5',
   };
 
   return (
@@ -58,10 +59,11 @@ export function Switch({
       onKeyDown={handleKeyDown}
       disabled={disabled}
       className={cn(
-        'relative inline-flex flex-shrink-0 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+        'relative inline-flex flex-shrink-0 items-center border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2',
         sizeClasses[size],
-        checked 
-          ? 'bg-blue-600' 
+        // VSH1 FIX: Changed from blue-600 to black for design system consistency
+        checked
+          ? 'bg-black'
           : 'bg-gray-200',
         disabled && 'opacity-50 cursor-not-allowed',
         className

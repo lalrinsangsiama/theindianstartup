@@ -1,22 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { applyRateLimit } from '@/lib/rate-limit';
+import { announcementSchema, validateRequest } from '@/lib/validation-schemas';
+import { escapeLikePattern, sanitizeText, sanitizeHTML } from '@/lib/sanitize';
+import { checkAdminStatus } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
+
+// BEH3 FIX: Constants for pagination bounds
+const MIN_PAGE = 1;
+const MAX_PAGE = 1000;
+const MIN_LIMIT = 1;
+const MAX_LIMIT = 100;
+const DEFAULT_LIMIT = 20;
 
 // GET - Fetch announcements with filtering and search
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+
+    // BEH3 FIX: Validate and bound pagination parameters to prevent DoS
+    const rawPage = parseInt(searchParams.get('page') || '1');
+    const rawLimit = parseInt(searchParams.get('limit') || String(DEFAULT_LIMIT));
+
+    // Validate page is a valid number within bounds
+    const page = isNaN(rawPage) ? MIN_PAGE : Math.max(MIN_PAGE, Math.min(MAX_PAGE, rawPage));
+    // Validate limit is a valid number within bounds
+    const limit = isNaN(rawLimit) ? DEFAULT_LIMIT : Math.max(MIN_LIMIT, Math.min(MAX_LIMIT, rawLimit));
+
     const type = searchParams.get('type') || 'all';
     const category = searchParams.get('category') || 'all';
     const priority = searchParams.get('priority') || 'all';
     const search = searchParams.get('search') || '';
     const showExpired = searchParams.get('showExpired') === 'true';
     const sortBy = searchParams.get('sortBy') || 'priority'; // priority, recent, views
-    
+
     const offset = (page - 1) * limit;
     const supabase = createClient();
 
@@ -77,7 +96,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.or(`title.ilike.%${search}%, content.ilike.%${search}%, tags.cs.{${search}}`);
+      const escapedSearch = escapeLikePattern(search);
+      query = query.or(`title.ilike.%${escapedSearch}%,content.ilike.%${escapedSearch}%`);
     }
 
     // Filter expired items unless explicitly requested
@@ -181,8 +201,6 @@ export async function GET(request: NextRequest) {
 // POST - Create a new announcement
 export async function POST(request: NextRequest) {
   try {
-    const announcementData = await request.json();
-
     // Get authenticated user
     const supabase = createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -194,21 +212,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is admin for official posts
-    const isAdmin = ['admin@theindianstartup.in', 'support@theindianstartup.in'].includes(user.email || '');
-
-    // Validate required fields
-    const { title, content, type, category } = announcementData;
-    
-    if (!title || !content || !type || !category) {
+    // Apply rate limiting (5 announcements per day per user)
+    const rateLimit = await applyRateLimit(request, 'createAnnouncement');
+    if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, content, type, category' },
+        { error: 'Too many announcements. Please wait before submitting another.' },
+        { status: 429, headers: rateLimit.headers }
+      );
+    }
+
+    const announcementData = await request.json();
+
+    // Validate input with Zod schema
+    const validation = validateRequest(announcementSchema, announcementData);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.details },
         { status: 400 }
       );
     }
 
+    const validatedData = validation.data;
+
+    // Check if user is admin for official posts using proper role-based check
+    const { isAdmin } = await checkAdminStatus(user.id);
+
+    // Sanitize text inputs
+    const sanitizedTitle = sanitizeText(validatedData.title);
+    const sanitizedContent = sanitizeHTML(validatedData.content, { allowLinks: true, allowImages: true });
+    const sanitizedExcerpt = validatedData.excerpt ? sanitizeText(validatedData.excerpt) : sanitizedContent.substring(0, 200) + '...';
+    const sanitizedTags = validatedData.tags?.map(tag => sanitizeText(tag).substring(0, 30)) || [];
+
     // Generate SEO slug
-    const seoSlug = title
+    const seoSlug = sanitizedTitle
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
@@ -219,29 +255,29 @@ export async function POST(request: NextRequest) {
       .from('announcements')
       .insert({
         author_id: user.id,
-        title,
-        content,
-        excerpt: announcementData.excerpt || content.substring(0, 200) + '...',
-        type,
-        category,
-        priority: announcementData.priority || 'normal',
-        target_audience: announcementData.targetAudience || ['all'],
-        industries: announcementData.industries || ['all'],
-        image_url: announcementData.imageUrl,
-        external_links: announcementData.externalLinks,
-        application_deadline: announcementData.applicationDeadline,
-        event_date: announcementData.eventDate,
-        valid_until: announcementData.validUntil,
-        is_sponsored: announcementData.isSponsored || false,
-        sponsor_name: announcementData.sponsorName,
-        sponsor_logo: announcementData.sponsorLogo,
-        sponsor_website: announcementData.sponsorWebsite,
-        sponsorship_type: announcementData.sponsorshipType,
+        title: sanitizedTitle,
+        content: sanitizedContent,
+        excerpt: sanitizedExcerpt,
+        type: validatedData.type,
+        category: validatedData.category,
+        priority: validatedData.priority,
+        target_audience: validatedData.targetAudience || ['all'],
+        industries: validatedData.industries || ['all'],
+        image_url: validatedData.imageUrl,
+        external_links: validatedData.externalLinks,
+        application_deadline: validatedData.applicationDeadline,
+        event_date: validatedData.eventDate,
+        valid_until: validatedData.validUntil,
+        is_sponsored: validatedData.isSponsored || false,
+        sponsor_name: validatedData.sponsorName ? sanitizeText(validatedData.sponsorName) : null,
+        sponsor_logo: validatedData.sponsorLogo,
+        sponsor_website: validatedData.sponsorWebsite,
+        sponsorship_type: validatedData.sponsorshipType,
         status: isAdmin ? 'approved' : 'pending', // Admin posts auto-approved
         is_admin_post: isAdmin,
-        is_pinned: announcementData.isPinned && isAdmin, // Only admins can pin
-        is_featured: announcementData.isFeatured && isAdmin,
-        tags: announcementData.tags || [],
+        is_pinned: validatedData.isPinned && isAdmin, // Only admins can pin
+        is_featured: validatedData.isFeatured && isAdmin,
+        tags: sanitizedTags,
         seo_slug: seoSlug,
         published_at: isAdmin ? new Date().toISOString() : null,
         created_at: new Date().toISOString(),
@@ -263,7 +299,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       points: isAdmin ? 25 : 40, // Less XP for admin posts
       event_type: 'announcement_contribution',
-      description: `${isAdmin ? 'Posted official announcement' : 'Submitted community announcement'}: ${title}`
+      description: `${isAdmin ? 'Posted official announcement' : 'Submitted community announcement'}: ${sanitizedTitle}`
     });
 
     const message = isAdmin 

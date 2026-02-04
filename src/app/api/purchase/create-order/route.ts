@@ -7,7 +7,7 @@ import { validateCoupon } from '@/lib/coupon-utils';
 import { checkIdempotency, storeIdempotencyResponse, checkPendingOrder } from '@/lib/idempotency';
 import { checkPaymentFraud } from '@/lib/fraud-detection';
 import { logPurchaseEvent } from '@/lib/audit-log';
-import { applyRateLimit, getClientIP } from '@/lib/rate-limit';
+import { applyRateLimit, getClientIP, checkRequestBodySize, MAX_BODY_SIZES } from '@/lib/rate-limit';
 import { capturePaymentError } from '@/lib/sentry';
 import Razorpay from 'razorpay';
 import { PRODUCTS } from '@/lib/product-access';
@@ -29,6 +29,20 @@ const createOrderSchema = z.object({
     .nullable(),
 });
 
+// BE2 FIX: Define proper TypeScript interface for purchase data
+interface PurchaseData {
+  userId: string;
+  productId: string;
+  amount: number;
+  originalAmount: number;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  razorpayOrderId: string;
+  expiresAt: string;
+  purchasedAt: string;
+  couponId?: string;
+  discountAmount?: number;
+}
+
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
@@ -36,6 +50,12 @@ const razorpay = new Razorpay({
 
 export async function POST(request: NextRequest) {
   try {
+    // H14 FIX: Check request body size first (prevent DoS via large payloads)
+    const bodySizeError = checkRequestBodySize(request, MAX_BODY_SIZES.json);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
     // Apply rate limiting first (before auth to prevent enumeration)
     const rateLimit = await applyRateLimit(request, 'payment');
     if (!rateLimit.allowed) {
@@ -54,13 +74,10 @@ export async function POST(request: NextRequest) {
 
     const user = await requireAuth();
 
-    // Check if email is verified
+    // Log if email is not verified but allow purchase to proceed
+    // Email verification can be requested separately after purchase
     if (!user.email_confirmed_at) {
-      logger.warn('Purchase blocked: email not verified', { userId: user.id });
-      return NextResponse.json(
-        { error: 'Please verify your email address before making a purchase' },
-        { status: 403 }
-      );
+      logger.info('Purchase from unverified email', { userId: user.id, email: user.email });
     }
 
     // Parse and validate request body
@@ -268,8 +285,8 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
-    // Create purchase record
-    const purchaseData: any = {
+    // BE2 FIX: Create purchase record with proper typing
+    const purchaseData: PurchaseData = {
       userId: user.id,
       productId: dbProduct.id,
       amount: finalAmount,
@@ -277,13 +294,12 @@ export async function POST(request: NextRequest) {
       status: 'pending',
       razorpayOrderId: razorpayOrder.id,
       expiresAt: expiresAt.toISOString(),
-      purchasedAt: new Date().toISOString()
+      purchasedAt: new Date().toISOString(),
+      ...(couponData && {
+        couponId: couponData.id,
+        discountAmount: discountAmount
+      })
     };
-    
-    if (couponData) {
-      purchaseData.couponId = couponData.id;
-      purchaseData.discountAmount = discountAmount;
-    }
     
     const { data: purchase, error: dbError } = await supabase
       .from('Purchase')

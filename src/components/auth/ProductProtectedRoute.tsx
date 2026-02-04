@@ -44,11 +44,27 @@ export function ProductProtectedRoute({
 
       try {
         const response = await fetch(`/api/products/${productCode}/access`);
-        const accessData = await response.json();
-        setAccess(accessData);
+        // UFH1 FIX: Check response.ok to distinguish "Access Denied" from "Server Error"
+        if (!response.ok) {
+          // Server error - don't show "Access Denied", show error state
+          if (response.status >= 500) {
+            logger.error('Server error checking product access:', response.status);
+            setAccess({ hasAccess: false, productTitle: 'Error loading product' });
+          } else if (response.status === 404) {
+            // Product doesn't exist
+            setAccess({ hasAccess: false, productTitle: 'Product not found' });
+          } else {
+            // Other client errors (401, 403, etc.)
+            const errorData = await response.json().catch(() => ({}));
+            setAccess({ hasAccess: false, ...errorData });
+          }
+        } else {
+          const accessData = await response.json();
+          setAccess(accessData);
+        }
       } catch (error) {
         logger.error('Error checking product access:', error);
-        setAccess({ hasAccess: false });
+        setAccess({ hasAccess: false, productTitle: 'Error loading product' });
       } finally {
         setLoading(false);
       }
@@ -173,8 +189,17 @@ export function useProductAccess(productCode: string) {
 
       try {
         const response = await fetch(`/api/products/${productCode}/access`);
-        const accessData = await response.json();
-        setAccess(accessData);
+        // UFH1 FIX: Check response.ok to handle server errors properly
+        if (!response.ok) {
+          if (response.status >= 500) {
+            logger.error('Server error checking product access:', response.status);
+          }
+          const errorData = await response.json().catch(() => ({}));
+          setAccess({ hasAccess: false, ...errorData });
+        } else {
+          const accessData = await response.json();
+          setAccess(accessData);
+        }
       } catch (error) {
         logger.error('Error checking product access:', error);
         setAccess({ hasAccess: false });

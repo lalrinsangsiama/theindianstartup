@@ -79,10 +79,24 @@ function FailedContent() {
   };
 
   useEffect(() => {
-    // Load saved cart from localStorage
-    const cart = localStorage.getItem('failedPaymentCart');
-    if (cart) {
-      setSavedCart(JSON.parse(cart));
+    // UFH5 FIX: Load saved cart from localStorage with try-catch for corrupted data
+    try {
+      const cart = localStorage.getItem('failedPaymentCart');
+      if (cart) {
+        const parsed = JSON.parse(cart);
+        // Validate the parsed data is an array
+        if (Array.isArray(parsed)) {
+          setSavedCart(parsed);
+        } else {
+          // Invalid data format, clear it
+          localStorage.removeItem('failedPaymentCart');
+        }
+      }
+    } catch (error) {
+      // Corrupted localStorage data - clear it and continue
+      console.warn('Failed to parse saved cart, clearing corrupted data');
+      localStorage.removeItem('failedPaymentCart');
+      setSavedCart([]);
     }
   }, []);
 

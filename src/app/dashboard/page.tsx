@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -15,6 +15,75 @@ import { CardTitle } from '@/components/ui/Card';
 import { CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+
+// M1: Error Boundary to prevent full-page crashes
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class DashboardErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  ErrorBoundaryState
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    logger.error('Dashboard error boundary caught error:', { error, errorInfo });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="max-w-md p-8 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Something went wrong
+            </h2>
+            <p className="text-gray-600 mb-6">
+              An unexpected error occurred while loading the dashboard. Please try refreshing the page.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Refresh Page
+              </button>
+              <a
+                href="/support"
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Contact Support
+              </a>
+            </div>
+            {process.env.NODE_ENV === 'development' && this.state.error && (
+              <div className="mt-6 p-4 bg-gray-100 rounded-lg text-left">
+                <p className="text-xs font-mono text-red-600 break-all">
+                  {this.state.error.message}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 // import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import Link from 'next/link';
 import {
@@ -72,6 +141,7 @@ import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBann
 import { ValueDashboard, ValueMetrics, PotentialValueCard } from '@/components/dashboard/ValueDashboard';
 import { LearningPathRecommendations } from '@/components/courses/LearningPathRecommendations';
 import { COURSE_CONTENT_STATS } from '@/components/courses/CourseContentBreakdown';
+import { Leaderboard } from '@/components/gamification/Leaderboard';
 
 // Lazy load heavy components
 const XPDisplay = dynamic(() => import('@/components/progress').then(mod => ({ default: mod.XPDisplay })), {
@@ -455,112 +525,147 @@ function DashboardContent() {
   }, []);
 
   useEffect(() => {
+    // UF5 FIX: Add AbortController to prevent infinite loading trap and cleanup on unmount
+    const abortController = new AbortController();
+    let retryTimeout: NodeJS.Timeout | null = null;
+
     const fetchDashboardData = async () => {
+      // Guard against fetching when component is unmounting
+      if (abortController.signal.aborted) return;
+
       try {
         setError(null);
         setIsRetrying(retryCount > 0);
-        
+
         const response = await fetch('/api/dashboard', {
           cache: 'no-store', // Always get fresh data for dashboard
           headers: {
             'Cache-Control': 'no-cache'
-          }
+          },
+          signal: abortController.signal
         });
-        
+
+        // Check if aborted after fetch
+        if (abortController.signal.aborted) return;
+
         if (response.status === 401) {
           // Session expired, redirect to login
           logger.warn('Dashboard: Session expired, redirecting to login');
           router.push('/login');
           return;
         }
-        
+
         if (response.status === 404 || (response.status === 500 && !skipOnboardingCheck)) {
           // User not found in DB, needs onboarding
           logger.info('Dashboard: User profile not found, redirecting to onboarding');
           router.push('/onboarding');
           return;
         }
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Validate response data structure
         if (!data || typeof data !== 'object') {
           throw new Error('Invalid response format from dashboard API');
         }
-        
+
         // Check if user needs progressive onboarding (only if not already showing it)
         if (!showProgressiveOnboarding && (!data.userName || data.userName === data.userEmail?.split('@')[0])) {
           try {
             const onboardingResponse = await fetch('/api/user/progressive-onboarding', {
-              cache: 'no-store'
+              cache: 'no-store',
+              signal: abortController.signal
             });
-            if (onboardingResponse.ok) {
+            if (!abortController.signal.aborted && onboardingResponse.ok) {
               const onboardingData = await onboardingResponse.json();
               if (onboardingData.onboardingStep < 3) {
                 setShowProgressiveOnboarding(true);
               }
             }
           } catch (onboardingError) {
-            logger.error('Failed to check progressive onboarding:', onboardingError);
+            if (!abortController.signal.aborted) {
+              logger.error('Failed to check progressive onboarding:', onboardingError);
+            }
             // Don't block dashboard loading for onboarding check failures
           }
         }
-        
+
+        // Don't update state if aborted
+        if (abortController.signal.aborted) return;
+
         // Enhance products with additional data
         const enhancedOwnedProducts = (data.ownedProducts || []).map((product: Product) => ({
           ...product,
           ...enhancedProducts[product.code]
         }));
-        
+
         // Enhance all products with additional data
         const enhancedAllProducts = (data.allProducts || []).map((product: Product) => ({
           ...product,
           ...enhancedProducts[product.code]
         }));
-        
+
         setDashboardData({
           ...data,
           ownedProducts: enhancedOwnedProducts,
           allProducts: enhancedAllProducts
         });
-        
+
         // Reset retry count on success
         setRetryCount(0);
-        
+
       } catch (error) {
+        // Ignore abort errors
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+
         logger.error('Failed to fetch dashboard data:', error);
-        
+
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        
-        if (retryCount < 2) {
+
+        // Only retry if not aborted and user still exists
+        if (!abortController.signal.aborted && user && retryCount < 2) {
           // Retry up to 2 times
           logger.info(`Dashboard: Retrying fetch, attempt ${retryCount + 1}`);
           setRetryCount(prev => prev + 1);
           // Retry after a delay
-          setTimeout(() => {
-            if (user) {
+          retryTimeout = setTimeout(() => {
+            if (!abortController.signal.aborted && user) {
               fetchDashboardData();
             }
           }, 1000 * (retryCount + 1)); // Progressive delay
           return;
         }
-        
-        // Max retries reached
-        setError(`Failed to load dashboard: ${errorMessage}`);
+
+        // Max retries reached or aborted
+        if (!abortController.signal.aborted) {
+          setError(`Failed to load dashboard: ${errorMessage}`);
+        }
       } finally {
-        setLoading(false);
-        setIsRetrying(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+          setIsRetrying(false);
+        }
       }
     };
 
     if (user && !loading) {
       fetchDashboardData();
     }
-  }, [user, router, skipOnboardingCheck, retryCount]);
+
+    // UF5 FIX: Cleanup on unmount to prevent memory leaks and stale updates
+    return () => {
+      abortController.abort();
+      if (retryTimeout) {
+        clearTimeout(retryTimeout);
+      }
+    };
+  }, [user, router, skipOnboardingCheck, retryCount, loading, showProgressiveOnboarding]);
 
   const handleProductClick = useCallback((product: Product) => {
     if (product.hasAccess) {
@@ -570,23 +675,26 @@ function DashboardContent() {
     }
   }, [router]);
 
-  // Filter products based on category and search
+  // Filter products based on category and search (case-insensitive)
   const filteredProducts = useMemo(() => {
     if (!dashboardData) return [];
-    
+
     let products = dashboardData.allProducts;
-    
+
     if (selectedCategory !== 'all') {
       products = products.filter(p => p.category === selectedCategory);
     }
-    
+
     if (searchQuery) {
-      products = products.filter(p => 
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
+      const query = searchQuery.toLowerCase();
+      products = products.filter(p =>
+        p.title.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query) ||
+        p.code.toLowerCase().includes(query) ||
+        (p.shortTitle && p.shortTitle.toLowerCase().includes(query))
       );
     }
-    
+
     return products;
   }, [dashboardData, selectedCategory, searchQuery]);
 
@@ -618,9 +726,15 @@ function DashboardContent() {
   if (error) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Card className="p-8 max-w-md border-2 border-red-200">
+        {/* H4 FIX: Add ARIA live region for screen reader announcements */}
+        <Card
+          className="p-8 max-w-md border-2 border-red-200"
+          role="alert"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <div className="flex flex-col items-center gap-4 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center">
+            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center" aria-hidden="true">
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
             <div>
@@ -806,8 +920,8 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Enhanced Stats Grid with Animation */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        {/* H27 FIX: Enhanced Stats Grid with Animation - Added md breakpoint */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {/* Primary Progress Card */}
           <Card className="col-span-2 lg:col-span-2 relative overflow-hidden group hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-black">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -836,7 +950,7 @@ function DashboardContent() {
                   <div className="h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                     <div 
                       className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full shadow-sm transition-all duration-1000 ease-out relative"
-                      style={{ width: `${(dashboardData.ownedProducts.length / 12) * 100}%` }}
+                      style={{ width: `${(dashboardData.ownedProducts.length / 30) * 100}%` }}
                     >
                       <div className="absolute inset-0 bg-white/20 animate-pulse" />
                     </div>
@@ -946,24 +1060,31 @@ function DashboardContent() {
               
               {/* View Mode Toggles */}
               <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+                {/* H1 FIX: Added aria-labels to icon-only buttons */}
+                <div className="hidden md:flex items-center gap-1 bg-gray-800 rounded-lg p-1" role="group" aria-label="View mode selector">
                   <button
                     onClick={() => setViewMode('grid')}
+                    aria-label="Switch to grid view"
+                    aria-pressed={viewMode === 'grid'}
                     className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
                   >
-                    <Grid className="w-4 h-4" />
+                    <Grid className="w-4 h-4" aria-hidden="true" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
+                    aria-label="Switch to list view"
+                    aria-pressed={viewMode === 'list'}
                     className={`p-2 rounded ${viewMode === 'list' ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
                   >
-                    <List className="w-4 h-4" />
+                    <List className="w-4 h-4" aria-hidden="true" />
                   </button>
                   <button
                     onClick={() => setViewMode('journey')}
+                    aria-label="Switch to journey view"
+                    aria-pressed={viewMode === 'journey'}
                     className={`p-2 rounded ${viewMode === 'journey' ? 'bg-white text-black' : 'text-white hover:bg-gray-700'}`}
                   >
-                    <Map className="w-4 h-4" />
+                    <Map className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -1010,8 +1131,37 @@ function DashboardContent() {
               </div>
             </div>
 
+            {/* UFH4 FIX: Empty State with total product count */}
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <Text size="lg" weight="medium" className="mb-2">No products found</Text>
+                <Text color="muted" className="mb-4">
+                  {searchQuery
+                    ? `No products match "${searchQuery}"`
+                    : `No products in the "${productCategories[selectedCategory]?.name || selectedCategory}" category`
+                  }
+                </Text>
+                {/* Show total available products when filtered to empty */}
+                <Text size="sm" color="muted" className="mb-4">
+                  Browse all {dashboardData.allProducts.length} products available
+                </Text>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                  }}
+                >
+                  Clear filters
+                </Button>
+              </div>
+            )}
+
             {/* Product Views */}
-            {viewMode === 'grid' && (
+            {viewMode === 'grid' && filteredProducts.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredProducts.map((product) => (
                   <div
@@ -1115,70 +1265,80 @@ function DashboardContent() {
               </div>
             )}
 
-            {viewMode === 'list' && (
+            {/* H26 FIX: Mobile-optimized list view with stacked layout on small screens */}
+            {viewMode === 'list' && filteredProducts.length > 0 && (
               <div className="space-y-3">
                 {filteredProducts.map((product) => (
                   <div
                     key={product.code}
                     onClick={() => handleProductClick(product)}
                     className={`
-                      p-4 border rounded-lg cursor-pointer transition-all flex items-center gap-4
-                      ${product.hasAccess 
-                        ? 'border-gray-200 hover:border-black hover:shadow' 
+                      p-4 border rounded-lg cursor-pointer transition-all
+                      ${product.hasAccess
+                        ? 'border-gray-200 hover:border-black hover:shadow'
                         : 'border-gray-100 bg-gray-50 hover:border-gray-300'
                       }
                     `}
                   >
-                    {/* Icon */}
-                    <div className={`
-                      w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
-                      ${product.hasAccess ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'}
-                    `}>
-                      {product.icon || <BookOpen className="w-5 h-5" />}
-                    </div>
-                    
-                    {/* Info */}
-                    <div className="flex-1">
-                      <Text weight="medium">{product.code}: {product.title}</Text>
-                      <Text size="sm" color="muted">{product.description}</Text>
-                    </div>
-                    
-                    {/* Status */}
-                    <div className="flex items-center gap-3">
-                      {product.hasAccess ? (
-                        <>
-                          {product.progress === 100 ? (
-                            <CheckCircle className="w-5 h-5 text-green-500" />
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <Text size="sm" color="muted">{product.progress}%</Text>
-                              <Clock className="w-5 h-5 text-orange-500" />
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <Text weight="medium">₹{product.price?.toLocaleString('en-IN')}</Text>
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(product.code, product.title, product.price);
-                            }}
-                          >
-                            <ShoppingCart className="w-4 h-4" />
-                          </Button>
-                        </>
-                      )}
-                      <ArrowRight className="w-4 h-4" />
+                    {/* Mobile: Stacked layout, Desktop: Row layout */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                      {/* Icon and Title Row */}
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className={`
+                          w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
+                          ${product.hasAccess ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'}
+                        `}>
+                          {product.icon || <BookOpen className="w-5 h-5" />}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <Text weight="medium" className="truncate">{product.code}: {product.shortTitle || product.title}</Text>
+                          <Text size="sm" color="muted" className="line-clamp-1 hidden sm:block">{product.description}</Text>
+                        </div>
+                      </div>
+
+                      {/* Status Row - Different layout for mobile */}
+                      <div className="flex items-center justify-between sm:justify-end gap-3 pl-13 sm:pl-0">
+                        {product.hasAccess ? (
+                          <div className="flex items-center gap-2">
+                            {product.progress === 100 ? (
+                              <>
+                                <CheckCircle className="w-5 h-5 text-green-500" />
+                                <Text size="sm" className="text-green-600 sm:hidden">Completed</Text>
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex items-center gap-2">
+                                  <Text size="sm" color="muted">{product.progress}%</Text>
+                                  <Clock className="w-5 h-5 text-orange-500" />
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Text weight="medium">₹{product.price?.toLocaleString('en-IN')}</Text>
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart(product.code, product.title, product.price);
+                              }}
+                            >
+                              <ShoppingCart className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                        <ArrowRight className="w-4 h-4 flex-shrink-0" />
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            {viewMode === 'journey' && (
+            {viewMode === 'journey' && filteredProducts.length > 0 && (
               <div className="relative">
                 <div className="text-center mb-8">
                   <Text color="muted">Your Startup Journey Path</Text>
@@ -1239,12 +1399,23 @@ function DashboardContent() {
               Your Achievements & Progress
             </Heading>
           </div>
-          <AchievementsSection
-            userId={user?.id || ''}
-            totalXP={dashboardData.totalXP}
-            currentLevel={dashboardData.userLevel}
-            badges={dashboardData.badges || []}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <AchievementsSection
+                userId={user?.id || ''}
+                totalXP={dashboardData.totalXP}
+                currentLevel={dashboardData.userLevel}
+                badges={dashboardData.badges || []}
+              />
+            </div>
+            <div>
+              <Leaderboard
+                limit={5}
+                showFilters={false}
+                compact={true}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Learning Path Guide */}
@@ -1372,7 +1543,7 @@ function DashboardContent() {
                 <Badge size="sm" className="bg-green-100 text-green-700">Free</Badge>
               </div>
               <Text size="sm" color="muted" className="mb-4">
-                Connect with 10,000+ Indian founders
+                Connect with Indian founders
               </Text>
               <Link href="/community">
                 <Button variant="outline" size="sm" className="w-full">
@@ -1573,12 +1744,12 @@ function DashboardContent() {
                     Get All-Access Bundle
                   </Heading>
                   <Text size="lg" color="muted" className="mb-6">
-                    Unlock all 12 comprehensive courses and master every aspect of building a successful startup in India
+                    Unlock all 30 comprehensive courses and master every aspect of building a successful startup in India
                   </Text>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div className="text-center">
-                      <Text className="font-bold text-2xl">12</Text>
+                      <Text className="font-bold text-2xl">30</Text>
                       <Text size="sm" color="muted">Courses</Text>
                     </div>
                     <div className="text-center">
@@ -1590,7 +1761,7 @@ function DashboardContent() {
                       <Text size="sm" color="muted">Templates</Text>
                     </div>
                     <div className="text-center">
-                      <Text className="font-bold text-2xl">1 Year</Text>
+                      <Text className="font-bold text-2xl">Lifetime</Text>
                       <Text size="sm" color="muted">Access</Text>
                     </div>
                   </div>
@@ -1633,7 +1804,9 @@ function DashboardContent() {
 export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <DashboardContent />
+      <DashboardErrorBoundary>
+        <DashboardContent />
+      </DashboardErrorBoundary>
     </ProtectedRoute>
   );
 }

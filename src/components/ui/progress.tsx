@@ -19,11 +19,12 @@ export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
       lg: 'h-3',
     };
 
+    // VS3 FIX: Aligned with design system - black for default, semantic colors for status
     const variantClasses = {
-      default: 'bg-blue-500',
-      success: 'bg-green-500',
-      warning: 'bg-yellow-500',
-      danger: 'bg-red-500',
+      default: 'bg-black',
+      success: 'bg-green-600',
+      warning: 'bg-amber-500',
+      danger: 'bg-red-600',
     };
 
     return (

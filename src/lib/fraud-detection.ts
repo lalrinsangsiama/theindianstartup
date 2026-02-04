@@ -114,12 +114,12 @@ export async function checkPaymentFraud(
     };
   } catch (error) {
     logger.error('Fraud check error:', error);
-    // On error, allow with medium risk (don't block legitimate transactions)
+    // On error, fail closed for security - block transaction and require review
     return {
-      allowed: true,
-      riskScore: 50,
-      riskLevel: 'medium',
-      reasons: ['Fraud check partially failed'],
+      allowed: false,
+      riskScore: 75,
+      riskLevel: 'high',
+      reasons: ['Fraud check failed - transaction blocked for security review'],
       requiresReview: true,
     };
   }

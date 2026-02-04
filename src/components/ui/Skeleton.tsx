@@ -38,7 +38,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
       <div
         ref={ref}
         className={cn(
-          'animate-pulse bg-gray-200',
+          'animate-pulse bg-muted',
           variants[variant],
           className
         )}

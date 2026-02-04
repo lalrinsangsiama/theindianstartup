@@ -2,7 +2,7 @@
 -- Add Portfolio Activity tables to support flexible portfolio building
 
 -- Create ActivityType table
-CREATE TABLE "ActivityType" (
+CREATE TABLE IF NOT EXISTS "ActivityType" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "category" TEXT NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE "ActivityType" (
 );
 
 -- Create ActivityTypeVersion table
-CREATE TABLE "ActivityTypeVersion" (
+CREATE TABLE IF NOT EXISTS "ActivityTypeVersion" (
     "id" TEXT NOT NULL,
     "activityTypeId" TEXT NOT NULL,
     "version" INTEGER NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE "ActivityTypeVersion" (
 );
 
 -- Create PortfolioActivity table
-CREATE TABLE "PortfolioActivity" (
+CREATE TABLE IF NOT EXISTS "PortfolioActivity" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "portfolioId" TEXT NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE "PortfolioActivity" (
 );
 
 -- Create PortfolioSection table
-CREATE TABLE "PortfolioSection" (
+CREATE TABLE IF NOT EXISTS "PortfolioSection" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -67,20 +67,32 @@ CREATE TABLE "PortfolioSection" (
 );
 
 -- Create unique constraints and indexes
-CREATE UNIQUE INDEX "ActivityType_id_version_key" ON "ActivityType"("id", "version");
-CREATE UNIQUE INDEX "ActivityTypeVersion_activityTypeId_version_key" ON "ActivityTypeVersion"("activityTypeId", "version");
-CREATE UNIQUE INDEX "PortfolioSection_name_key" ON "PortfolioSection"("name");
+CREATE UNIQUE INDEX IF NOT EXISTS "ActivityType_id_version_key" ON "ActivityType"("id", "version");
+CREATE UNIQUE INDEX IF NOT EXISTS "ActivityTypeVersion_activityTypeId_version_key" ON "ActivityTypeVersion"("activityTypeId", "version");
+CREATE UNIQUE INDEX IF NOT EXISTS "PortfolioSection_name_key" ON "PortfolioSection"("name");
 
 -- Create indexes for performance
-CREATE INDEX "PortfolioActivity_userId_activityTypeId_idx" ON "PortfolioActivity"("userId", "activityTypeId");
-CREATE INDEX "PortfolioActivity_sourceLesson_idx" ON "PortfolioActivity"("sourceLesson");
-CREATE INDEX "PortfolioActivity_sourceCourse_idx" ON "PortfolioActivity"("sourceCourse");
+CREATE INDEX IF NOT EXISTS "PortfolioActivity_userId_activityTypeId_idx" ON "PortfolioActivity"("userId", "activityTypeId");
+CREATE INDEX IF NOT EXISTS "PortfolioActivity_sourceLesson_idx" ON "PortfolioActivity"("sourceLesson");
+CREATE INDEX IF NOT EXISTS "PortfolioActivity_sourceCourse_idx" ON "PortfolioActivity"("sourceCourse");
 
--- Add foreign key constraints
-ALTER TABLE "ActivityTypeVersion" ADD CONSTRAINT "ActivityTypeVersion_activityTypeId_fkey" FOREIGN KEY ("activityTypeId") REFERENCES "ActivityType"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "PortfolioActivity" ADD CONSTRAINT "PortfolioActivity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "PortfolioActivity" ADD CONSTRAINT "PortfolioActivity_portfolioId_fkey" FOREIGN KEY ("portfolioId") REFERENCES "StartupPortfolio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "PortfolioActivity" ADD CONSTRAINT "PortfolioActivity_activityTypeId_fkey" FOREIGN KEY ("activityTypeId") REFERENCES "ActivityType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- Add foreign key constraints (skip if already exist)
+DO $$ BEGIN
+    ALTER TABLE "ActivityTypeVersion" ADD CONSTRAINT "ActivityTypeVersion_activityTypeId_fkey" FOREIGN KEY ("activityTypeId") REFERENCES "ActivityType"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+    ALTER TABLE "PortfolioActivity" ADD CONSTRAINT "PortfolioActivity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+    ALTER TABLE "PortfolioActivity" ADD CONSTRAINT "PortfolioActivity_portfolioId_fkey" FOREIGN KEY ("portfolioId") REFERENCES "StartupPortfolio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+    ALTER TABLE "PortfolioActivity" ADD CONSTRAINT "PortfolioActivity_activityTypeId_fkey" FOREIGN KEY ("activityTypeId") REFERENCES "ActivityType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Update functions for automatic timestamp updates
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -92,8 +104,11 @@ END;
 $$ language 'plpgsql';
 
 -- Add triggers for automatic timestamp updates
+DROP TRIGGER IF EXISTS update_activity_type_updated_at ON "ActivityType";
 CREATE TRIGGER update_activity_type_updated_at BEFORE UPDATE ON "ActivityType" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_portfolio_activity_updated_at ON "PortfolioActivity";
 CREATE TRIGGER update_portfolio_activity_updated_at BEFORE UPDATE ON "PortfolioActivity" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_portfolio_section_updated_at ON "PortfolioSection";
 CREATE TRIGGER update_portfolio_section_updated_at BEFORE UPDATE ON "PortfolioSection" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Add comment for documentation

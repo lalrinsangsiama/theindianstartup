@@ -178,10 +178,15 @@ export const ContentSkeleton: React.FC = () => {
   );
 };
 
-// Loading Spinner
-export const LoadingSpinner: React.FC<{ size?: 'sm' | 'md' | 'lg'; className?: string }> = ({ 
-  size = 'md', 
-  className = '' 
+// H5 FIX: Loading Spinner with accessibility
+export const LoadingSpinner: React.FC<{
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+  label?: string;
+}> = ({
+  size = 'md',
+  className = '',
+  label = 'Loading...'
 }) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -190,8 +195,17 @@ export const LoadingSpinner: React.FC<{ size?: 'sm' | 'md' | 'lg'; className?: s
   };
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      <div className={`${sizeClasses[size]} border-4 border-gray-200 border-t-black rounded-full animate-spin`}></div>
+    <div
+      className={`flex items-center justify-center ${className}`}
+      role="status"
+      aria-busy="true"
+      aria-label={label}
+    >
+      <div
+        className={`${sizeClasses[size]} border-4 border-gray-200 border-t-black rounded-full animate-spin`}
+        aria-hidden="true"
+      ></div>
+      <span className="sr-only">{label}</span>
     </div>
   );
 };

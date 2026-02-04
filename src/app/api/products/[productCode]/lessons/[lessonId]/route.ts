@@ -2,8 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { PRODUCTS } from '@/lib/product-access';
+import { getNewBadges, BadgeId } from '@/lib/badges';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Check if a string is a valid UUID
+ */
+function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
+/**
+ * Check if a string is numeric (for day/order number lookup)
+ */
+function isNumeric(str: string): boolean {
+  return /^\d+$/.test(str);
+}
 
 export async function GET(
   request: NextRequest,
@@ -11,10 +27,14 @@ export async function GET(
 ) {
   try {
     const supabase = createClient();
-    
+
+    // Normalize product code to uppercase for case-insensitive handling
+    const productCode = params.productCode.toUpperCase();
+    const lessonId = params.lessonId;
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return NextResponse.json({
         error: 'Unauthorized'
@@ -22,7 +42,7 @@ export async function GET(
     }
 
     // Check if product exists
-    const product = PRODUCTS[params.productCode];
+    const product = PRODUCTS[productCode];
     if (!product) {
       return NextResponse.json({
         error: 'Product not found'
@@ -44,11 +64,20 @@ export async function GET(
       }, { status: 403 });
     }
 
-    // Check if user has direct access to the product or ALL_ACCESS
-    const directAccess = purchases.find(p => p.product?.code === params.productCode);
-    const bundleAccess = purchases.find(p => p.product?.code === 'ALL_ACCESS');
-    
-    if (!directAccess && !bundleAccess) {
+    // Check if user has direct access to the product or ALL_ACCESS or SECTOR_MASTERY
+    const directAccess = purchases.find((p: { product?: { code: string } | null }) =>
+      p.product?.code === productCode
+    );
+    const bundleAccess = purchases.find((p: { product?: { code: string } | null }) =>
+      p.product?.code === 'ALL_ACCESS'
+    );
+    const sectorBundleAccess = ['P13', 'P14', 'P15'].includes(productCode)
+      ? purchases.find((p: { product?: { code: string } | null }) =>
+          p.product?.code === 'SECTOR_MASTERY'
+        )
+      : null;
+
+    if (!directAccess && !bundleAccess && !sectorBundleAccess) {
       return NextResponse.json({
         hasAccess: false,
         error: 'No access to this product'
@@ -56,10 +85,23 @@ export async function GET(
     }
 
     // Get user's purchase for this product
-    const activePurchase = directAccess || bundleAccess;
+    const activePurchase = directAccess || bundleAccess || sectorBundleAccess;
 
-    // Get the specific lesson
-    const { data: lesson, error: lessonError } = await supabase
+    // First get the product ID from database
+    const { data: dbProduct } = await supabase
+      .from('Product')
+      .select('id')
+      .eq('code', productCode)
+      .single();
+
+    if (!dbProduct) {
+      return NextResponse.json({
+        error: 'Product not found in database'
+      }, { status: 404 });
+    }
+
+    // Build query based on lesson ID type (UUID or day number)
+    let lessonQuery = supabase
       .from('Lesson')
       .select(`
         id,
@@ -79,30 +121,44 @@ export async function GET(
             code
           )
         )
-      `)
-      .eq('id', params.lessonId)
-      .single() as { 
-        data: {
+      `);
+
+    if (isUUID(lessonId)) {
+      // Query by UUID
+      lessonQuery = lessonQuery.eq('id', lessonId);
+    } else if (isNumeric(lessonId)) {
+      // Query by day/order number - need to filter by product
+      lessonQuery = lessonQuery
+        .eq('order', parseInt(lessonId, 10))
+        .eq('module.productId', dbProduct.id);
+    } else {
+      return NextResponse.json({
+        error: 'Invalid lesson ID format'
+      }, { status: 400 });
+    }
+
+    const { data: lesson, error: lessonError } = await lessonQuery.single() as {
+      data: {
+        id: string;
+        order: number;
+        title: string;
+        briefContent: string;
+        actionItems: string[];
+        resources: Record<string, string[]> | string[];
+        estimatedTime: number;
+        xpReward: number;
+        moduleId: string;
+        module: {
           id: string;
-          order: number;
           title: string;
-          briefContent: string;
-          actionItems: any;
-          resources: any;
-          estimatedTime: number;
-          xpReward: number;
-          moduleId: string;
-          module: {
-            id: string;
-            title: string;
-            productId: string;
-            product: {
-              code: string;
-            };
+          productId: string;
+          product: {
+            code: string;
           };
-        } | null;
-        error: any;
-      };
+        };
+      } | null;
+      error: Error | null;
+    };
 
     if (lessonError || !lesson) {
       return NextResponse.json({
@@ -111,7 +167,7 @@ export async function GET(
     }
 
     // Verify lesson belongs to the requested product
-    if (lesson.module?.product?.code !== params.productCode) {
+    if (lesson.module?.product?.code !== productCode) {
       return NextResponse.json({
         error: 'Lesson does not belong to this product'
       }, { status: 404 });
@@ -121,9 +177,15 @@ export async function GET(
     const { data: progress } = await supabase
       .from('LessonProgress')
       .select('*')
-      .eq('purchaseId', activePurchase.id)
-      .eq('lessonId', params.lessonId)
+      .eq('purchaseId', activePurchase?.id)
+      .eq('lessonId', lesson.id)
       .single();
+
+    // Get total lessons count for navigation
+    const { count: totalLessons } = await supabase
+      .from('Lesson')
+      .select('id', { count: 'exact', head: true })
+      .eq('module.productId', dbProduct.id);
 
     return NextResponse.json({
       hasAccess: true,
@@ -134,7 +196,8 @@ export async function GET(
         tasksCompleted: progress?.tasksCompleted || [],
         reflection: progress?.reflection || '',
         xpEarned: progress?.xpEarned || 0
-      }
+      },
+      totalLessons: totalLessons || 0
     });
 
   } catch (error) {
@@ -152,10 +215,14 @@ export async function POST(
 ) {
   try {
     const supabase = createClient();
-    
+
+    // Normalize product code to uppercase
+    const productCode = params.productCode.toUpperCase();
+    const lessonId = params.lessonId;
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return NextResponse.json({
         error: 'Unauthorized'
@@ -166,7 +233,7 @@ export async function POST(
     const { tasksCompleted, reflection, xpEarned } = body;
 
     // Check access (same as GET)
-    const product = PRODUCTS[params.productCode];
+    const product = PRODUCTS[productCode];
     if (!product) {
       return NextResponse.json({
         error: 'Product not found'
@@ -180,22 +247,67 @@ export async function POST(
       .eq('status', 'completed')
       .gte('expiresAt', new Date().toISOString());
 
-    const directAccess = purchases?.find(p => p.product?.code === params.productCode);
-    const bundleAccess = purchases?.find(p => p.product?.code === 'ALL_ACCESS');
-    
-    if (!directAccess && !bundleAccess) {
+    const directAccess = purchases?.find((p: { product?: { code: string } | null }) =>
+      p.product?.code === productCode
+    );
+    const bundleAccess = purchases?.find((p: { product?: { code: string } | null }) =>
+      p.product?.code === 'ALL_ACCESS'
+    );
+    const sectorBundleAccess = ['P13', 'P14', 'P15'].includes(productCode)
+      ? purchases?.find((p: { product?: { code: string } | null }) =>
+          p.product?.code === 'SECTOR_MASTERY'
+        )
+      : null;
+
+    if (!directAccess && !bundleAccess && !sectorBundleAccess) {
       return NextResponse.json({
         hasAccess: false,
         error: 'No access to this product'
       }, { status: 403 });
     }
 
+    const activePurchase = directAccess || bundleAccess || sectorBundleAccess;
+
+    // Resolve lesson ID if it's a day number
+    let resolvedLessonId = lessonId;
+
+    if (isNumeric(lessonId)) {
+      // Get the product ID first
+      const { data: dbProduct } = await supabase
+        .from('Product')
+        .select('id')
+        .eq('code', productCode)
+        .single();
+
+      if (!dbProduct) {
+        return NextResponse.json({
+          error: 'Product not found'
+        }, { status: 404 });
+      }
+
+      // Get lesson by order number
+      const { data: lesson } = await supabase
+        .from('Lesson')
+        .select('id, module:Module!inner(productId)')
+        .eq('order', parseInt(lessonId, 10))
+        .eq('module.productId', dbProduct.id)
+        .single();
+
+      if (!lesson) {
+        return NextResponse.json({
+          error: 'Lesson not found'
+        }, { status: 404 });
+      }
+
+      resolvedLessonId = lesson.id;
+    }
+
     // Update lesson progress
     const { data, error } = await supabase
       .from('LessonProgress')
       .upsert({
-        purchaseId: directAccess?.id || bundleAccess?.id,
-        lessonId: params.lessonId,
+        purchaseId: activePurchase?.id,
+        lessonId: resolvedLessonId,
         completedAt: new Date().toISOString(),
         tasksCompleted: tasksCompleted || [],
         reflection: reflection || '',
@@ -213,24 +325,55 @@ export async function POST(
       }, { status: 500 });
     }
 
-    // Get current user XP
+    // Get current user data including badges
     const { data: userData } = await supabase
       .from('User')
-      .select('totalXP')
+      .select('totalXP, currentStreak, badges')
       .eq('id', user.id)
       .single();
+
+    const newTotalXP = (userData?.totalXP || 0) + (xpEarned || 0);
+    const currentBadges: string[] = userData?.badges || [];
 
     // Update user total XP
     await supabase
       .from('User')
       .update({
-        totalXP: (userData?.totalXP || 0) + (xpEarned || 0)
+        totalXP: newTotalXP
       })
       .eq('id', user.id);
 
+    // Get lesson order to check day-based badges
+    const { data: lessonData } = await supabase
+      .from('Lesson')
+      .select('order')
+      .eq('id', resolvedLessonId)
+      .single();
+
+    // Check for new badge unlocks
+    const userStats = {
+      currentDay: lessonData?.order || 0,
+      currentStreak: userData?.currentStreak || 0,
+      totalXP: newTotalXP
+    };
+
+    const newBadgeIds = getNewBadges(currentBadges, userStats);
+
+    // If new badges were unlocked, update the user's badges array
+    if (newBadgeIds.length > 0) {
+      await supabase
+        .from('User')
+        .update({
+          badges: [...currentBadges, ...newBadgeIds]
+        })
+        .eq('id', user.id);
+    }
+
     return NextResponse.json({
       success: true,
-      progress: data
+      progress: data,
+      newBadges: newBadgeIds,
+      totalXP: newTotalXP
     });
 
   } catch (error) {

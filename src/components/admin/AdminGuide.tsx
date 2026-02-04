@@ -86,7 +86,7 @@ export function AdminGuide() {
     {
       id: 'content_seeding',
       title: 'How to Seed Course Content',
-      description: 'Step-by-step guide to populate all 12 courses',
+      description: 'Step-by-step guide to populate all 30 courses',
       category: 'content_management',
       difficulty: 'beginner',
       estimatedTime: '15 minutes',
@@ -100,7 +100,7 @@ export function AdminGuide() {
         {
           id: 'understand_seeding',
           title: 'Understand Seeding',
-          description: 'Seeding populates your database with all 12 course structures (P1-P12) with lessons, modules, and content',
+          description: 'Seeding populates your database with all 30 course structures (P1-P30) with lessons, modules, and content',
         },
         {
           id: 'click_seed_all',

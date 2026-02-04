@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { createAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
+import { sendRefundApprovedEmail } from '@/lib/email';
 
 const approveSchema = z.object({
   approvedAmount: z.number().positive().optional(),
@@ -192,7 +193,31 @@ export async function POST(
       ipAddress: clientIP,
     });
 
-    // TODO: Send email notification to user
+    // Fetch user info for email notification
+    const { data: userData } = await supabase
+      .from('users')
+      .select('name, email')
+      .eq('id', purchase.userId)
+      .single();
+
+    // Fetch product info for email
+    const { data: productData } = await supabase
+      .from('products')
+      .select('title')
+      .eq('code', purchase.productCode)
+      .single();
+
+    // Send email notification to user
+    if (userData?.email) {
+      await sendRefundApprovedEmail({
+        userName: userData.name || 'Valued Customer',
+        userEmail: userData.email,
+        productName: productData?.title || purchase.productCode,
+        refundAmount: finalAmount,
+        refundId,
+        originalAmount: purchase.amount,
+      });
+    }
 
     return NextResponse.json({
       success: true,

@@ -4,6 +4,8 @@
  * Falls back to in-memory store for development/testing
  */
 
+import { logger } from '@/lib/logger';
+
 interface RateLimitEntry {
   count: number;
   resetTime: number;
@@ -67,7 +69,7 @@ class RedisClient {
       const data = await response.json();
       return data.result;
     } catch (error) {
-      console.error('Redis fetch error:', error);
+      logger.error('Redis fetch error:', error);
       throw error;
     }
   }

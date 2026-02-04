@@ -304,12 +304,9 @@ export function LazyIcon({ iconName, ...props }: IconProps & { iconName: string 
 }
 
 // Icon preloader for performance
-export function preloadIcons(iconNames: string[]) {
+export function preloadIcons(_iconNames: string[]) {
   // This would preload icon assets in a production app
-  if (typeof window !== 'undefined') {
-    // Implementation would depend on your icon loading strategy
-    console.log('Preloading icons:', iconNames);
-  }
+  // Implementation would depend on your icon loading strategy
 }
 
 // Common icon combinations

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       nextSteps: getNextSteps(percentageScore)
     });
   } catch (error) {
-    console.error('Assessment error:', error);
+    logger.error('Assessment error:', error);
     return NextResponse.json(
       { error: 'Failed to process assessment' },
       { status: 500 }

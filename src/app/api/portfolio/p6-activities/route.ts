@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getUserFromRequest } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
       .in('activityTypeId', activityTypes.map(at => at.id));
 
     if (userActError) {
-      console.error('Error fetching user activities:', userActError);
+      logger.error('Error fetching user activities:', userActError);
     }
 
     // Process activity types with user progress
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching P6 portfolio activities:', error);
+    logger.error('Error fetching P6 portfolio activities:', error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'
@@ -202,7 +203,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error saving P6 portfolio activity:', error);
+    logger.error('Error saving P6 portfolio activity:', error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'

@@ -9,7 +9,6 @@ import {
   DollarSign,
   Target,
   Award,
-  Percent,
   Sparkles,
   ChevronRight
 } from 'lucide-react';
@@ -18,12 +17,9 @@ import { Button } from '@/components/ui/Button';
 
 export interface ValueMetrics {
   totalInvested: number;
-  totalValueReceived: number;
-  savingsAmount: number;
-  savingsPercentage: number;
-  roiMultiplier: number;
+  coursesOwned: number;
+  totalCourses: number;
   founderReadinessScore: number;
-  percentileRanking: number;
   bundleSavingsAvailable?: number;
   hasAllAccess?: boolean;
 }
@@ -36,12 +32,9 @@ interface ValueDashboardProps {
 export function ValueDashboard({ metrics, className = '' }: ValueDashboardProps) {
   const {
     totalInvested,
-    totalValueReceived,
-    savingsAmount,
-    savingsPercentage,
-    roiMultiplier,
+    coursesOwned,
+    totalCourses,
     founderReadinessScore,
-    percentileRanking,
     bundleSavingsAvailable,
     hasAllAccess
   } = metrics;
@@ -68,28 +61,26 @@ export function ValueDashboard({ metrics, className = '' }: ValueDashboardProps)
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkles className="w-5 h-5 text-green-600" />
-            Your Entrepreneurial Investment
+            Your Learning Journey
           </CardTitle>
           <Badge className="bg-green-600 text-white">
-            {roiMultiplier}x ROI
+            {coursesOwned}/{totalCourses} Courses
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Main Value Display */}
+        {/* Main Stats Display */}
         <div className="grid grid-cols-2 gap-6">
-          {/* Total Value Received */}
+          {/* Courses Owned */}
           <div className="text-center p-4 bg-white rounded-xl shadow-sm border border-green-100">
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingUp className="w-5 h-5 text-green-600" />
-              <Text size="sm" color="muted">Total Value Received</Text>
+              <Text size="sm" color="muted">Courses Owned</Text>
             </div>
             <Text className="text-3xl font-bold text-green-700">
-              {totalValueReceived >= 100000
-                ? `₹${(totalValueReceived / 100000).toFixed(1)}L`
-                : `₹${totalValueReceived.toLocaleString('en-IN')}`
-              }
+              {coursesOwned}
             </Text>
+            <Text size="xs" color="muted">of {totalCourses} available</Text>
           </div>
 
           {/* Your Investment */}
@@ -103,38 +94,6 @@ export function ValueDashboard({ metrics, className = '' }: ValueDashboardProps)
                 ? `₹${(totalInvested / 100000).toFixed(1)}L`
                 : `₹${totalInvested.toLocaleString('en-IN')}`
               }
-            </Text>
-          </div>
-        </div>
-
-        {/* Savings Row */}
-        <div className="grid grid-cols-2 gap-6">
-          <div className="text-center p-4 bg-gradient-to-r from-emerald-100 to-green-100 rounded-xl">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Percent className="w-5 h-5 text-emerald-600" />
-              <Text size="sm" color="muted">You Saved</Text>
-            </div>
-            <Text className="text-2xl font-bold text-emerald-700">
-              {savingsAmount >= 100000
-                ? `₹${(savingsAmount / 100000).toFixed(1)}L`
-                : `₹${savingsAmount.toLocaleString('en-IN')}`
-              }
-            </Text>
-            <Badge className="mt-1 bg-emerald-600 text-white text-xs">
-              {savingsPercentage}% OFF
-            </Badge>
-          </div>
-
-          <div className="text-center p-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Target className="w-5 h-5 text-blue-600" />
-              <Text size="sm" color="muted">ROI Multiplier</Text>
-            </div>
-            <Text className="text-2xl font-bold text-blue-700">
-              {roiMultiplier}x Value
-            </Text>
-            <Text size="xs" color="muted" className="mt-1">
-              For every ₹1 invested
             </Text>
           </div>
         </div>
@@ -168,15 +127,9 @@ export function ValueDashboard({ metrics, className = '' }: ValueDashboardProps)
             </div>
           </div>
 
-          {/* Percentile Ranking */}
-          {percentileRanking > 0 && (
-            <div className="mt-3 flex items-center justify-center gap-2 p-2 bg-purple-50 rounded-lg">
-              <Sparkles className="w-4 h-4 text-purple-600" />
-              <Text size="sm" className="text-purple-700">
-                You're in the <span className="font-bold">top {100 - percentileRanking}%</span> of founders
-              </Text>
-            </div>
-          )}
+          <Text size="xs" color="muted" className="mt-2 text-center">
+            Based on courses owned, completion progress, skills acquired, and XP earned
+          </Text>
         </div>
 
         {/* Bundle Upgrade CTA */}
@@ -210,24 +163,18 @@ interface PotentialValueCardProps {
 }
 
 export function PotentialValueCard({ className = '' }: PotentialValueCardProps) {
-  // Value calculations based on product pricing and market comparisons
   const starterCourse = {
     code: 'P1',
     title: '30-Day India Launch Sprint',
     price: 4999,
-    templateValue: 15000,
-    consultantCost: 50000,
     outcomes: ['Incorporated company', 'MVP ready', 'First customers']
   };
 
   const allAccessBundle = {
     price: 149999,
-    totalValue: 290952,
-    savings: 140953,
     coursesCount: 30,
     toolkitsCount: 18,
-    templatesCount: 450,
-    consultantCost: 2000000 // 20L for equivalent consulting
+    templatesCount: 450
   };
 
   return (
@@ -264,15 +211,15 @@ export function PotentialValueCard({ className = '' }: PotentialValueCardProps) 
               </Text>
             </div>
             <div className="text-center p-3 bg-green-50 rounded-lg">
-              <Text size="xs" color="muted">Template Value</Text>
+              <Text size="xs" color="muted">Duration</Text>
               <Text className="text-lg font-bold text-green-700">
-                ₹{starterCourse.templateValue.toLocaleString('en-IN')}+
+                30 Days
               </Text>
             </div>
             <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <Text size="xs" color="muted">ROI</Text>
+              <Text size="xs" color="muted">Modules</Text>
               <Text className="text-lg font-bold text-purple-700">
-                {Math.round(starterCourse.templateValue / starterCourse.price)}x
+                4 Modules
               </Text>
             </div>
           </div>
@@ -281,7 +228,7 @@ export function PotentialValueCard({ className = '' }: PotentialValueCardProps) 
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-green-600" />
               <Text size="sm" className="text-green-700">
-                <span className="font-semibold">Save ₹{(starterCourse.consultantCost - starterCourse.price).toLocaleString('en-IN')}</span> vs hiring a consultant
+                <span className="font-semibold">Includes templates, tools & step-by-step guides</span>
               </Text>
             </div>
           </div>
@@ -310,9 +257,9 @@ export function PotentialValueCard({ className = '' }: PotentialValueCardProps) 
 
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="p-3 bg-white/50 rounded-lg">
-              <Text size="xs" color="muted">Total Value</Text>
+              <Text size="xs" color="muted">All Courses</Text>
               <Text className="text-xl font-bold text-purple-700">
-                ₹{(allAccessBundle.totalValue / 100000).toFixed(1)}L
+                {allAccessBundle.coursesCount} Courses
               </Text>
             </div>
             <div className="p-3 bg-white/50 rounded-lg">
@@ -329,13 +276,6 @@ export function PotentialValueCard({ className = '' }: PotentialValueCardProps) 
             <Badge className="bg-white text-purple-700">{allAccessBundle.templatesCount}+ Templates</Badge>
           </div>
 
-          <div className="p-3 bg-white/50 rounded-lg mb-4">
-            <Text size="sm" className="text-purple-700">
-              <span className="font-semibold">Compare:</span> Equivalent consulting would cost{' '}
-              <span className="font-bold">₹{(allAccessBundle.consultantCost / 100000)}L+</span>
-            </Text>
-          </div>
-
           <Link href="/pricing">
             <Button variant="outline" className="w-full border-purple-300 text-purple-700 hover:bg-purple-50">
               View All-Access Bundle
@@ -344,27 +284,27 @@ export function PotentialValueCard({ className = '' }: PotentialValueCardProps) 
           </Link>
         </div>
 
-        {/* Market Comparison */}
+        {/* What You Get */}
         <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
           <Text weight="medium" className="mb-3 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-gray-600" />
-            Why The Indian Startup?
+            What You Get
           </Text>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <Text color="muted">Startup Consultant (monthly)</Text>
-              <Text className="line-through text-gray-400">₹50,000 - ₹2,00,000</Text>
+              <Text color="muted">Step-by-step courses</Text>
+              <Text className="text-green-700">30 courses</Text>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <Text color="muted">Business Courses (MBA programs)</Text>
-              <Text className="line-through text-gray-400">₹2,00,000 - ₹25,00,000</Text>
+              <Text color="muted">Ready-to-use templates</Text>
+              <Text className="text-green-700">1000+ templates</Text>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <Text color="muted">Legal Templates (from lawyers)</Text>
-              <Text className="line-through text-gray-400">₹25,000 - ₹1,00,000</Text>
+              <Text color="muted">Toolkits & checklists</Text>
+              <Text className="text-green-700">18 toolkits</Text>
             </div>
             <div className="flex items-center justify-between text-sm font-medium border-t pt-2 mt-2">
-              <Text className="text-green-700">The Indian Startup (lifetime)</Text>
+              <Text className="text-green-700">Lifetime access</Text>
               <Text className="text-green-700">₹4,999 - ₹1,49,999</Text>
             </div>
           </div>

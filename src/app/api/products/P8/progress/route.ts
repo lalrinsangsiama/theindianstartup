@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getUserFromRequest } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -122,8 +123,8 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching P8 progress:', error);
-    return NextResponse.json({ 
+    logger.error('Error fetching P8 progress:', error);
+    return NextResponse.json({
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
@@ -309,8 +310,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error updating P8 progress:', error);
-    return NextResponse.json({ 
+    logger.error('Error updating P8 progress:', error);
+    return NextResponse.json({
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });

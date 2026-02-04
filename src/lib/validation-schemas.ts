@@ -157,6 +157,156 @@ export const communityCommentSchema = z.object({
 export type CommunityComment = z.infer<typeof communityCommentSchema>;
 
 // ============================================================================
+// EXPERT SESSION SCHEMAS
+// ============================================================================
+
+export const createSessionSchema = z.object({
+  title: z.string()
+    .min(5, 'Title must be at least 5 characters')
+    .max(200, 'Title must be less than 200 characters'),
+  description: safeTextSchema(2000).optional().nullable(),
+  scheduledAt: z.string()
+    .datetime({ message: 'Please provide a valid ISO 8601 datetime' })
+    .refine((val) => new Date(val) > new Date(), {
+      message: 'Session must be scheduled in the future',
+    }),
+  durationMinutes: z.number()
+    .int('Duration must be a whole number')
+    .min(15, 'Session must be at least 15 minutes')
+    .max(180, 'Session cannot exceed 3 hours'),
+  maxAttendees: z.number()
+    .int('Attendee count must be a whole number')
+    .min(2, 'Session must allow at least 2 attendees')
+    .max(500, 'Session cannot exceed 500 attendees'),
+  topicTags: z.array(z.string().max(30, 'Tag too long')).max(10, 'Maximum 10 tags allowed').optional(),
+  meetingUrl: urlSchema,
+});
+
+export type CreateSession = z.infer<typeof createSessionSchema>;
+
+export const updateSessionSchema = createSessionSchema.partial().extend({
+  status: z.enum(['draft', 'upcoming', 'live', 'completed', 'cancelled']).optional(),
+  recordingUrl: urlSchema,
+});
+
+export type UpdateSession = z.infer<typeof updateSessionSchema>;
+
+export const sessionInviteSchema = z.object({
+  email: emailSchema,
+});
+
+export type SessionInvite = z.infer<typeof sessionInviteSchema>;
+
+// ============================================================================
+// ECOSYSTEM LISTING SCHEMAS
+// ============================================================================
+
+export const ecosystemListingSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name must be less than 100 characters'),
+  description: safeTextSchema(1000).optional().nullable(),
+  category: z.enum([
+    'incubator',
+    'accelerator',
+    'investor',
+    'mentor',
+    'service_provider',
+    'coworking',
+    'government',
+    'bank',
+    'nbfc',
+    'law_firm',
+    'ca_firm',
+    'other',
+  ]),
+  subCategory: z.string().max(50).optional().nullable(),
+  website: urlSchema,
+  email: z.string().email().optional().nullable(),
+  phone: indianPhoneSchema,
+  address: z.string().max(500).optional().nullable(),
+  city: z.string().max(100).optional().nullable(),
+  state: z.string().max(100).optional().nullable(),
+  tags: z.array(z.string().max(30)).max(10).optional(),
+  fundingAmount: z.string().max(50).optional().nullable(),
+  equityTaken: z.string().max(20).optional().nullable(),
+  programDuration: z.string().max(50).optional().nullable(),
+  batchSize: z.number().int().positive().max(1000).optional().nullable(),
+  loanTypes: z.array(z.string().max(50)).max(10).optional(),
+  interestRates: z.string().max(50).optional().nullable(),
+  eligibilityInfo: safeTextSchema(2000).optional().nullable(),
+  applicationProcess: safeTextSchema(2000).optional().nullable(),
+  documentsRequired: z.array(z.string().max(100)).max(20).optional(),
+});
+
+export type EcosystemListing = z.infer<typeof ecosystemListingSchema>;
+
+// ============================================================================
+// ECOSYSTEM REVIEW SCHEMAS
+// ============================================================================
+
+export const ecosystemReviewSchema = z.object({
+  listingId: z.string().uuid('Invalid listing ID'),
+  rating: z.number()
+    .int('Rating must be a whole number')
+    .min(1, 'Rating must be at least 1')
+    .max(5, 'Rating cannot exceed 5'),
+  title: z.string()
+    .min(5, 'Title must be at least 5 characters')
+    .max(100, 'Title must be less than 100 characters'),
+  content: safeTextSchema(2000),
+  experienceType: z.enum(['applied', 'accepted', 'rejected', 'participated', 'client', 'other']),
+  applicationDate: z.string().date().optional().nullable(),
+  responseTime: z.string().max(50).optional().nullable(),
+  isAnonymous: z.boolean().default(false),
+  anonymousName: z.string().max(50).optional().nullable(),
+}).refine((data) => {
+  // If anonymous, require anonymousName
+  if (data.isAnonymous && !data.anonymousName) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Anonymous name is required for anonymous reviews',
+  path: ['anonymousName'],
+});
+
+export type EcosystemReview = z.infer<typeof ecosystemReviewSchema>;
+
+// ============================================================================
+// ANNOUNCEMENT SCHEMAS
+// ============================================================================
+
+export const announcementSchema = z.object({
+  title: safeTextSchema(200),
+  content: safeTextSchema(10000),
+  excerpt: safeTextSchema(300).optional(),
+  type: z.enum(['general', 'event', 'opportunity', 'funding', 'news', 'milestone', 'partnership']),
+  category: z.string().max(50),
+  priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
+  targetAudience: z.array(z.string().max(50)).max(10).optional(),
+  industries: z.array(z.string().max(50)).max(10).optional(),
+  imageUrl: urlSchema,
+  externalLinks: z.array(z.object({
+    label: z.string().max(100),
+    url: z.string().url(),
+  })).max(5).optional(),
+  applicationDeadline: z.string().datetime().optional().nullable(),
+  eventDate: z.string().datetime().optional().nullable(),
+  validUntil: z.string().datetime().optional().nullable(),
+  isSponsored: z.boolean().default(false),
+  sponsorName: z.string().max(100).optional().nullable(),
+  sponsorLogo: urlSchema,
+  sponsorWebsite: urlSchema,
+  sponsorshipType: z.enum(['banner', 'featured', 'promoted']).optional().nullable(),
+  isPinned: z.boolean().default(false),
+  isFeatured: z.boolean().default(false),
+  tags: z.array(z.string().max(30)).max(10).optional(),
+});
+
+export type Announcement = z.infer<typeof announcementSchema>;
+
+// ============================================================================
 // SETTINGS SCHEMAS
 // ============================================================================
 

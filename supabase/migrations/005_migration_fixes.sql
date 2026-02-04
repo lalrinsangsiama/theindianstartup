@@ -60,15 +60,15 @@ WHERE EXISTS (
 );
 
 -- 7. Create initial progress records for users with P1 access
+-- Note: Skipping currentDay-based progress initialization as column may not exist
 INSERT INTO "LessonProgress" ("userId", "lessonId", "purchaseId", completed, "xpEarned")
 SELECT DISTINCT
     p."userId",
     l.id,
     p.id,
-    CASE WHEN l.day <= u."currentDay" THEN true ELSE false END,
-    CASE WHEN l.day <= u."currentDay" THEN l."xpReward" ELSE 0 END
+    false,
+    0
 FROM "Purchase" p
-JOIN "User" u ON u.id = p."userId"
 CROSS JOIN "Lesson" l
 JOIN "Module" m ON l."moduleId" = m.id
 JOIN "Product" pr ON m."productId" = pr.id
@@ -77,7 +77,6 @@ AND p.status = 'completed'
 AND p."isActive" = true
 AND p."expiresAt" > NOW()
 AND pr.code = 'P1'
-AND u."currentDay" > 0
 AND NOT EXISTS (
     SELECT 1 FROM "LessonProgress" lp
     WHERE lp."userId" = p."userId"

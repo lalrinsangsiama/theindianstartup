@@ -1,13 +1,15 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function ProductsPage() {
+  const router = useRouter();
+
   useEffect(() => {
     // Redirect to pricing page where users can see all products
-    redirect('/pricing');
-  }, []);
+    router.replace('/pricing');
+  }, [router]);
 
   return null;
 }

@@ -13,7 +13,7 @@ import { CardHeader } from '@/components/ui/Card';
 import { CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { 
+import {
   ArrowLeft,
   Video,
   Calendar,
@@ -26,10 +26,11 @@ import {
   Loader2,
   BookOpen,
   TrendingUp,
-  DollarSign,
   Zap,
-  Target
+  Target,
+  Plus
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface ExpertSession {
   id: string;
@@ -58,82 +59,26 @@ export default function ExpertSessionsPage() {
   const fetchExpertSessions = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Mock data for demonstration - in real app, fetch from API
-      const mockSessions: ExpertSession[] = [
-        {
-          id: '1',
-          title: 'Fundraising 101: From Seed to Series A',
-          description: 'Learn the fundamentals of startup fundraising in the Indian ecosystem. We\'ll cover everything from preparing your pitch deck to negotiating term sheets, with real examples from successful Indian startups.',
-          expertName: 'Vikram Chandra',
-          expertBio: 'Former VP at Sequoia Capital India. Led investments in 50+ Indian startups including Zomato, Byju\'s, and Ola. Author of "The Indian Startup Playbook".',
-          expertImage: '/experts/vikram.jpg',
-          scheduledAt: '2024-01-20T15:00:00Z',
-          duration: 60,
-          maxAttendees: 50,
-          registeredCount: 34,
-          topic: ['fundraising', 'investment', 'pitch-deck'],
-          status: 'upcoming',
-          meetingUrl: 'https://meet.google.com/abc-def-ghi',
-          isRegistered: false,
-        },
-        {
-          id: '2',
-          title: 'Building Your MVP in 30 Days',
-          description: 'A practical guide to building and launching your Minimum Viable Product. Learn lean development principles, prioritization frameworks, and how to validate your product-market fit quickly.',
-          expertName: 'Nisha Patel',
-          expertBio: 'Co-founder of TechStart Labs. Built 3 successful SaaS products with $10M+ ARR. Former Product Manager at Flipkart and Amazon.',
-          expertImage: '/experts/nisha.jpg',
-          scheduledAt: '2024-01-25T14:00:00Z',
-          duration: 45,
-          maxAttendees: 40,
-          registeredCount: 28,
-          topic: ['product', 'mvp', 'lean-startup'],
-          status: 'upcoming',
-          meetingUrl: 'https://zoom.us/j/123456789',
-          isRegistered: true,
-        },
-        {
-          id: '3',
-          title: 'Digital Marketing for Indian Startups',
-          description: 'Master cost-effective digital marketing strategies tailored for the Indian market. From SEO and content marketing to social media and paid advertising.',
-          expertName: 'Expert Speaker',
-          expertBio: 'Growth marketing specialist with experience in scaling startups.',
-          scheduledAt: '2024-01-15T16:00:00Z',
-          duration: 50,
-          maxAttendees: 60,
-          registeredCount: 60,
-          topic: ['marketing', 'growth', 'digital-marketing'],
-          status: 'completed',
-          recordingUrl: 'https://youtube.com/watch?v=recording1',
-        },
-        {
-          id: '4',
-          title: 'Legal Essentials for Indian Startups',
-          description: 'Navigate the complex legal landscape of starting a business in India. Cover company registration, compliance requirements, and intellectual property protection.',
-          expertName: 'Expert Speaker',
-          expertBio: 'Startup law specialist with experience in company registration and compliance.',
-          scheduledAt: '2024-01-12T11:00:00Z',
-          duration: 40,
-          maxAttendees: 30,
-          registeredCount: 30,
-          topic: ['legal', 'compliance', 'incorporation'],
-          status: 'completed',
-          recordingUrl: 'https://youtube.com/watch?v=recording2',
-        },
-      ];
 
-      // Filter sessions based on selected filter
-      let filteredSessions = mockSessions;
-      if (filter === 'upcoming') {
-        filteredSessions = mockSessions.filter(s => s.status === 'upcoming');
-      } else if (filter === 'completed') {
-        filteredSessions = mockSessions.filter(s => s.status === 'completed');
+      // Build query params for API
+      const params = new URLSearchParams();
+      if (filter !== 'all') {
+        params.set('status', filter);
       }
 
-      setSessions(filteredSessions);
+      // Fetch real data from API
+      const response = await fetch(`/api/community/expert-sessions?${params}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setSessions(data.sessions || []);
+      } else {
+        // API not available yet, show empty state
+        setSessions([]);
+      }
     } catch (error) {
       logger.error('Error fetching expert sessions:', error);
+      setSessions([]);
     } finally {
       setLoading(false);
     }
@@ -145,16 +90,23 @@ export default function ExpertSessionsPage() {
 
   const handleRegister = async (sessionId: string) => {
     try {
-      // In real app, call API to register
-      logger.info('Registering for session:', { sessionId });
-      
+      const response = await fetch(`/api/community/expert-sessions/${sessionId}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to register');
+      }
+
       // Update local state
       setSessions(sessions.map(session =>
         session.id === sessionId
-          ? { 
-              ...session, 
-              isRegistered: true, 
-              registeredCount: session.registeredCount + 1 
+          ? {
+              ...session,
+              isRegistered: true,
+              registeredCount: session.registeredCount + 1
             }
           : session
       ));
@@ -226,18 +178,26 @@ export default function ExpertSessionsPage() {
               </Button>
             </div>
 
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <Video className="w-6 h-6 text-orange-600" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-orange-100 rounded-lg">
+                  <Video className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <Heading as="h1" className="mb-1">
+                    Expert Office Hours
+                  </Heading>
+                  <Text className="text-gray-600">
+                    Learn from industry experts and successful entrepreneurs
+                  </Text>
+                </div>
               </div>
-              <div>
-                <Heading as="h1" className="mb-1">
-                  Expert Office Hours
-                </Heading>
-                <Text className="text-gray-600">
-                  Learn from industry experts and successful entrepreneurs
-                </Text>
-              </div>
+              <Link href="/community/expert-sessions/new">
+                <Button variant="primary" className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Host a Session
+                </Button>
+              </Link>
             </div>
 
             {/* Filter Tabs */}
@@ -399,13 +359,15 @@ export default function ExpertSessionsPage() {
                       {isUpcoming && (
                         <>
                           {session.isRegistered ? (
-                            <Button variant="secondary" className="flex-1" disabled>
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Registered
-                            </Button>
+                            <Link href={`/community/expert-sessions/${session.id}`} className="flex-1">
+                              <Button variant="secondary" className="w-full">
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                View Details
+                              </Button>
+                            </Link>
                           ) : spotsLeft > 0 ? (
-                            <Button 
-                              variant="primary" 
+                            <Button
+                              variant="primary"
                               className="flex-1"
                               onClick={() => handleRegister(session.id)}
                             >
@@ -417,24 +379,23 @@ export default function ExpertSessionsPage() {
                               Full
                             </Button>
                           )}
-                          
-                          {session.isRegistered && (
+
+                          <Link href={`/community/expert-sessions/${session.id}`}>
                             <Button variant="outline" size="sm">
-                              Add to Calendar
+                              Details
                             </Button>
-                          )}
+                          </Link>
                         </>
                       )}
 
                       {isCompleted && (
                         <>
-                          <Button variant="primary" className="flex-1">
-                            <Play className="w-4 h-4 mr-2" />
-                            Watch Recording
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Download Resources
-                          </Button>
+                          <Link href={`/community/expert-sessions/${session.id}`} className="flex-1">
+                            <Button variant="primary" className="w-full">
+                              <Play className="w-4 h-4 mr-2" />
+                              View Recording
+                            </Button>
+                          </Link>
                         </>
                       )}
                     </div>

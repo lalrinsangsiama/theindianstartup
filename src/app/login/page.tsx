@@ -131,16 +131,33 @@ function LoginContent() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
+      // Use server-side API for sign-in (includes server-side rate limiting)
+      const response = await fetch('/api/auth/sign-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
-      if (error) {
-        // Track failed login attempt for rate limiting
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Track failed login attempt for client-side rate limiting
         const newAttempts = loginAttempts + 1;
         setLoginAttempts(newAttempts);
         localStorage.setItem('loginAttempts', newAttempts.toString());
+
+        // Handle server-side rate limit
+        if (response.status === 429) {
+          const retryAfter = result.retryAfter || 60;
+          const lockoutTime = Date.now() + (retryAfter * 1000);
+          setLockoutUntil(lockoutTime);
+          localStorage.setItem('loginLockoutUntil', lockoutTime.toString());
+          setLoginError(result.message || 'Too many login attempts. Please try again later.');
+          return;
+        }
 
         if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
           const lockoutTime = Date.now() + LOCKOUT_DURATION_MS;
@@ -149,14 +166,25 @@ function LoginContent() {
           setLoginError(
             'Too many failed login attempts. Your account has been temporarily locked for 15 minutes.'
           );
-        } else if (error.message.includes('Email not confirmed')) {
+        } else if (result.code === 'EMAIL_NOT_CONFIRMED') {
           router.push('/signup/verify-email');
         } else {
           const attemptsRemaining = MAX_LOGIN_ATTEMPTS - newAttempts;
           setLoginError(
-            `${error.message}${attemptsRemaining <= 2 ? ` (${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining)` : ''}`
+            `${result.error || 'Invalid email or password'}${attemptsRemaining <= 2 ? ` (${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining)` : ''}`
           );
         }
+        return;
+      }
+
+      // After successful API call, also sign in on the client side for session cookies
+      const { error: clientError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (clientError) {
+        setLoginError('Sign-in succeeded but session setup failed. Please try again.');
         return;
       }
 

@@ -86,14 +86,9 @@ async function completePurchase(
     return false;
   }
 
-  // Check if already processed (idempotency)
-  if (purchase.status === 'completed') {
-    logger.info('Purchase already completed, skipping', { orderId, purchaseId: purchase.id });
-    return true;
-  }
-
-  // Update purchase status
-  const { error: updateError } = await supabase
+  // Atomic update: only update if status is still pending
+  // This prevents race conditions where duplicate webhooks could both process
+  const { data: updatedPurchase, error: updateError } = await supabase
     .from('Purchase')
     .update({
       status: 'completed',
@@ -102,31 +97,42 @@ async function completePurchase(
       isActive: true,
       updatedAt: new Date().toISOString()
     })
-    .eq('id', purchase.id);
+    .eq('id', purchase.id)
+    .eq('status', 'pending')  // Only update if still pending (atomic check)
+    .select()
+    .single();
 
-  if (updateError) {
+  // If no rows were updated, the purchase was already processed
+  if (updateError || !updatedPurchase) {
+    if (purchase.status === 'completed') {
+      logger.info('Purchase already completed, skipping', { orderId, purchaseId: purchase.id });
+      return true;
+    }
     logger.error('Failed to update purchase status', { purchaseId: purchase.id, error: updateError });
     return false;
   }
 
-  // Mark coupon as used if applicable - increment usedCount atomically
+  // Mark coupon as used if applicable - use RPC for atomic increment
   if (purchase.couponId) {
-    // First get current count, then increment
-    const { data: coupon } = await supabase
-      .from('Coupon')
-      .select('usedCount')
-      .eq('id', purchase.couponId)
-      .single();
+    try {
+      // Try atomic increment via RPC first
+      const { error: rpcError } = await supabase.rpc('increment_coupon_usage', {
+        coupon_id: purchase.couponId
+      });
 
-    if (coupon) {
-      await supabase
-        .from('Coupon')
-        .update({
-          usedCount: (coupon.usedCount || 0) + 1,
-          usedAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        })
-        .eq('id', purchase.couponId);
+      if (rpcError) {
+        // Fallback if RPC doesn't exist - update timestamp
+        await supabase
+          .from('Coupon')
+          .update({
+            usedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          })
+          .eq('id', purchase.couponId);
+      }
+    } catch {
+      // Silent fail for coupon tracking - payment already succeeded
+      logger.warn('Failed to update coupon usage', { couponId: purchase.couponId });
     }
   }
 

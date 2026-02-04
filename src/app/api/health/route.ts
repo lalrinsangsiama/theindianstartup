@@ -124,27 +124,44 @@ export async function GET() {
     const status = criticalHealthy ? (allHealthy ? 'healthy' : 'degraded') : 'unhealthy';
     const totalLatencyMs = Date.now() - startTime;
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // Build health response - hide detailed info in production
     const health = {
       status,
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || '1.0.0',
-      environment: process.env.NODE_ENV || 'development',
-      checks: Object.fromEntries(
-        Object.entries(checks).map(([key, value]) => [
-          key,
-          {
-            healthy: value.status,
-            ...(value.latencyMs !== undefined && { latencyMs: value.latencyMs }),
-            ...(value.error && { error: value.error }),
-          },
-        ])
-      ),
-      totalLatencyMs,
-      uptime: process.uptime(),
-      memory: {
-        heapUsedMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        heapTotalMB: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
-      },
+      // Only include detailed checks in non-production
+      ...(isProduction
+        ? {
+            // Minimal info for production - just the overall status
+            checks: Object.fromEntries(
+              Object.entries(checks).map(([key, value]) => [
+                key,
+                { healthy: value.status },
+              ])
+            ),
+          }
+        : {
+            // Full info for development/staging
+            environment: process.env.NODE_ENV || 'development',
+            checks: Object.fromEntries(
+              Object.entries(checks).map(([key, value]) => [
+                key,
+                {
+                  healthy: value.status,
+                  ...(value.latencyMs !== undefined && { latencyMs: value.latencyMs }),
+                  ...(value.error && { error: value.error }),
+                },
+              ])
+            ),
+            totalLatencyMs,
+            uptime: process.uptime(),
+            memory: {
+              heapUsedMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+              heapTotalMB: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+            },
+          }),
     };
 
     return NextResponse.json(health, {

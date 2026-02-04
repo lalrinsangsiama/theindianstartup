@@ -45,7 +45,7 @@ if (typeof window !== 'undefined') {
   // Dynamically import DOMPurify for client-side only
   import('dompurify').then((module) => {
     DOMPurify = module.default;
-    
+
     // Configure DOMPurify
     DOMPurify.setConfig({
       ALLOWED_TAGS,
@@ -60,6 +60,12 @@ if (typeof window !== 'undefined') {
       ADD_TAGS: ['time'], // HTML5 tags
       ADD_ATTR: ['target', 'rel', 'loading'], // Additional attributes
     });
+  }).catch((err) => {
+    // Log error but don't break the application - server sanitization will be used as fallback
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Sanitize] Failed to load DOMPurify:', err);
+    }
+    // In production, errors are logged via the server-side fallback being used
   });
 }
 
@@ -264,6 +270,116 @@ export function SafeHTML({ html, className, options }: SafeHTMLProps): React.JSX
     className,
     dangerouslySetInnerHTML: { __html: sanitized }
   });
+}
+
+/**
+ * Escape special characters for safe SQL LIKE pattern matching.
+ * Prevents SQL injection in LIKE clauses when used with parameterized queries.
+ *
+ * @param pattern - User input to use in LIKE pattern
+ * @returns Escaped pattern safe for use in SQL LIKE
+ */
+export function escapeLikePattern(pattern: string): string {
+  if (!pattern || typeof pattern !== 'string') {
+    return '';
+  }
+
+  return pattern
+    .replace(/\\/g, '\\\\')
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_');
+}
+
+/**
+ * Sanitize text by stripping all HTML and escaping entities.
+ * Use this for plain text fields that should never contain HTML.
+ *
+ * @param text - Potentially unsafe text string
+ * @returns Plain text with HTML stripped
+ */
+export function sanitizeText(text: string): string {
+  if (!text || typeof text !== 'string') {
+    return '';
+  }
+
+  return text
+    // Strip all HTML tags
+    .replace(/<[^>]*>/g, '')
+    // Remove null bytes
+    .replace(/\0/g, '')
+    // Collapse multiple whitespace to single space
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Sanitize HTML content, keeping only safe formatting tags.
+ * Alias for sanitizeHTML for API consistency.
+ */
+export function sanitizeHtml(dirty: string): string {
+  return sanitizeHTML(dirty, {
+    allowLinks: true,
+    allowStyles: false,
+    allowImages: false,
+    allowTables: false,
+  });
+}
+
+/**
+ * Sanitize email address
+ *
+ * @param email - Email address to validate
+ * @returns Sanitized email or null if invalid
+ */
+export function sanitizeEmail(email: string): string | null {
+  if (!email || typeof email !== 'string') {
+    return null;
+  }
+
+  const trimmed = email.trim().toLowerCase();
+
+  // Basic email regex
+  const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+
+  if (!emailRegex.test(trimmed)) {
+    return null;
+  }
+
+  // Additional checks for suspicious patterns
+  if (
+    trimmed.includes('..') ||
+    trimmed.startsWith('.') ||
+    trimmed.includes('<') ||
+    trimmed.includes('>')
+  ) {
+    return null;
+  }
+
+  return trimmed;
+}
+
+/**
+ * Sanitize file name to prevent path traversal and invalid characters.
+ *
+ * @param filename - User-provided filename
+ * @returns Safe filename
+ */
+export function sanitizeFilename(filename: string): string {
+  if (!filename || typeof filename !== 'string') {
+    return '';
+  }
+
+  return filename
+    // Remove path traversal attempts
+    .replace(/\.\./g, '')
+    .replace(/[\/\\]/g, '')
+    // Remove null bytes
+    .replace(/\0/g, '')
+    // Remove other problematic characters
+    .replace(/[<>:"|?*]/g, '')
+    // Limit length
+    .substring(0, 255)
+    .trim();
 }
 
 // Markdown to HTML conversion with sanitization

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { applyRateLimit } from '@/lib/rate-limit';
+import { communityPostSchema, validateRequest } from '@/lib/validation-schemas';
+import { escapeLikePattern, sanitizeText, sanitizeHTML } from '@/lib/sanitize';
 
 // Maximum items per page (prevents abuse)
 const MAX_LIMIT = 50;
@@ -55,9 +57,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Apply search filter
+    // Apply search filter (escape special characters to prevent SQL injection)
     if (search) {
-      query = query.or(`title.ilike.%${search}%, content.ilike.%${search}%`);
+      const escapedSearch = escapeLikePattern(search);
+      query = query.or(`title.ilike.%${escapedSearch}%,content.ilike.%${escapedSearch}%`);
     }
 
     // Apply pagination
@@ -177,17 +180,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { title, content, type, tags, threadId } = await request.json();
+    const body = await request.json();
+
+    // Validate input with Zod schema
+    const validation = validateRequest(communityPostSchema, body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.details },
+        { status: 400 }
+      );
+    }
+
+    const { title, content, category, tags } = validation.data;
+    const { threadId } = body;
+
+    // Sanitize text inputs
+    const sanitizedTitle = sanitizeText(title);
+    const sanitizedContent = sanitizeHTML(content, { allowLinks: true, allowStyles: false });
+    const sanitizedTags = tags?.map(tag => sanitizeText(tag).substring(0, 30)) || [];
 
     // Create post
     const { data: post, error: postError } = await supabase
       .from('posts')
       .insert({
         author_id: user.id,
-        title,
-        content,
-        type: type || 'general',
-        tags: tags || [],
+        title: sanitizedTitle,
+        content: sanitizedContent,
+        type: category,
+        tags: sanitizedTags,
         thread_id: threadId || null,
         is_approved: true, // Auto-approve for now
         created_at: new Date().toISOString(),

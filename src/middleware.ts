@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
 import { apiRateLimit, authRateLimit, paymentRateLimit } from '@/lib/rate-limit'
 
@@ -12,6 +13,31 @@ const ALLOWED_ORIGINS = [
 function isLocalhostOrigin(origin: string | null): boolean {
   if (process.env.NODE_ENV !== 'development' || !origin) return false
   return /^http:\/\/localhost:\d+$/.test(origin)
+}
+
+// Create Supabase client for middleware with cookie handling
+function createSupabaseMiddlewareClient(request: NextRequest, response: NextResponse) {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          // Set cookie on request for subsequent middleware/server usage
+          request.cookies.set({ name, value, ...options })
+          // Set cookie on response to send back to browser
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: any) {
+          request.cookies.set({ name, value: '', ...options })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
 }
 
 // Check if user has a valid session by checking Supabase auth cookies
@@ -96,6 +122,15 @@ export async function middleware(request: NextRequest) {
 
   // Create response with security headers
   const response = NextResponse.next()
+
+  // H12 FIX: Add X-Request-ID for tracing requests across logs
+  const requestId = crypto.randomUUID()
+  response.headers.set('X-Request-ID', requestId)
+
+  // Refresh Supabase session - this is crucial for PKCE flow and maintaining auth state
+  // The getUser() call will refresh the session if needed and update cookies
+  const supabase = createSupabaseMiddlewareClient(request, response)
+  await supabase.auth.getUser()
 
   // Add security headers
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {

@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  ArrowRight, 
-  TrendingUp, 
-  Clock, 
+import {
+  ArrowRight,
+  TrendingUp,
+  Clock,
   Target,
   Award,
   BookOpen,
@@ -17,6 +17,7 @@ import { Heading } from '@/components/ui/Typography';
 import { Text } from '@/components/ui/Typography';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar as Progress } from '@/components/ui/ProgressBar';
+import { getLast7DaysProgress, calculateCurrentDay } from '@/lib/progress-utils';
 // Helper function to format Indian price
 const formatIndianPrice = (price: number) => {
   return price.toLocaleString('en-IN');
@@ -76,7 +77,7 @@ const ContinueLearning = ({ activeCourses, router }: any) => {
         <div>
           <div className="flex items-center justify-between mb-2">
             <Text size="sm" weight="medium">{currentCourse.productName}</Text>
-            <Text size="xs" color="muted">Day {currentCourse.currentDay}/30</Text>
+            <Text size="xs" color="muted">Day {currentCourse.currentDay}/{currentCourse.totalLessons || 30}</Text>
           </div>
           <Progress value={currentCourse.progress} className="h-2 mb-3" />
           <Button 
@@ -145,7 +146,7 @@ const PopularCourses = ({ purchases, router, limit = 3 }: any) => {
           <Card 
             key={product.code}
             className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => router.push(`/demo/${product.code.toLowerCase()}`)}
+            onClick={() => router.push(`/products/${product.code.toLowerCase()}`)}
           >
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 ${product.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
@@ -212,26 +213,29 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
 }) => {
   const router = useRouter();
   
-  // Calculate active courses
+  // Calculate active courses with real lesson counts from product data
   const activeCourses = purchases
     .filter(p => p.isActive && p.productCode !== 'ALL_ACCESS')
     .map(purchase => {
       const progress = lessonProgress.filter(lp => lp.purchaseId === purchase.id);
       const completedCount = progress.filter(lp => lp.completed).length;
-      const totalLessons = 30; // Adjust based on product
-      
+      // Use actual lesson count from product if available, otherwise estimate from modules
+      const totalLessons = purchase.totalLessons || (purchase.modules ? purchase.modules * 3 : 30);
+      const currentDay = calculateCurrentDay(completedCount, totalLessons);
+
       return {
         ...purchase,
-        progress: (completedCount / totalLessons) * 100,
-        currentDay: completedCount + 1,
-        nextLessonUrl: `/products/${purchase.productCode.toLowerCase()}/lessons/${completedCount + 1}`
+        progress: totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0,
+        currentDay,
+        totalLessons,
+        nextLessonUrl: `/products/${purchase.productCode.toLowerCase()}/lessons/${currentDay}`
       };
     })
     .sort((a, b) => b.updatedAt - a.updatedAt);
 
-  // Calculate weekly progress (mock data for now)
-  const weeklyProgress = [true, true, false, true, false, false, false];
-  
+  // Calculate weekly progress from actual lesson completion data
+  const weeklyProgress = getLast7DaysProgress(lessonProgress);
+
   const completedLessons = lessonProgress.filter(lp => lp.completed).length;
 
   return (
@@ -295,8 +299,9 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <Text weight="medium" className="mb-2">Explore All Courses</Text>
+            {/* H29 FIX: Updated course count to 30 */}
             <Text size="sm" color="muted" className="mb-4">
-              12 comprehensive courses to master every aspect of building your startup
+              30 comprehensive courses to master every aspect of building your startup
             </Text>
             <Button 
               size="sm" 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // State Schemes API - Comprehensive database access for P7 course
 export async function GET(request: NextRequest) {
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest) {
     const { data: schemes, error } = await query;
     
     if (error) {
-      console.error('State schemes fetch error:', error);
+      logger.error('State schemes fetch error:', error);
       return NextResponse.json(
         { error: 'Failed to fetch state schemes' }, 
         { status: 500 }
@@ -161,7 +162,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('State schemes API error:', error);
+    logger.error('State schemes API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (error) {
-      console.error('State schemes RPC error:', error);
+      logger.error('State schemes RPC error:', error);
       return NextResponse.json(
         { error: 'Failed to fetch scheme analysis' }, 
         { status: 500 }
@@ -224,7 +225,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('State schemes analysis API error:', error);
+    logger.error('State schemes analysis API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

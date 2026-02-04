@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { errorResponse } from '@/lib/api-utils';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
       });
 
     if (error) {
-      console.error('Error searching incubators:', error);
+      logger.error('Error searching incubators:', error);
       return errorResponse('Failed to fetch incubators', 500, error);
     }
 
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
       .order('name');
 
     if (categoriesError) {
-      console.error('Error fetching categories:', categoriesError);
+      logger.error('Error fetching categories:', categoriesError);
     }
 
     // Get unique cities, sectors, and stages for filters
@@ -118,7 +119,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Incubator API error:', error);
+    logger.error('Incubator API error:', error);
     return errorResponse('Internal server error', 500, error);
   }
 }
@@ -172,7 +173,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (error) {
-      console.error('Error fetching incubator details:', error);
+      logger.error('Error fetching incubator details:', error);
       return errorResponse('Failed to fetch incubator details', 500, error);
     }
 
@@ -189,7 +190,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Incubator details API error:', error);
+    logger.error('Incubator details API error:', error);
     return errorResponse('Internal server error', 500, error);
   }
 }

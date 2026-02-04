@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { errorResponse, successResponse } from '@/lib/api-utils';
+import { calculateLevel, calculateXPForNextLevel } from '@/lib/xp';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,12 +52,13 @@ export async function GET(request: NextRequest) {
         .eq('status', 'completed')
         .gt('expiresAt', new Date().toISOString()),
 
-      // Lesson progress for XP calculation - LessonProgress has direct userId column
+      // Lesson progress for XP calculation and progress tracking - LessonProgress has direct userId column
       supabase
         .from('LessonProgress')
-        .select('xpEarned')
+        .select('lessonId, xpEarned, completedAt, productCode')
         .eq('userId', user.id)
-        .not('completedAt', 'is', null),
+        .not('completedAt', 'is', null)
+        .order('completedAt', { ascending: false }),
 
       // User portfolio
       supabase
@@ -112,13 +114,22 @@ export async function GET(request: NextRequest) {
     // Calculate total XP from lessons
     const totalXPFromLessons = lessonProgress?.reduce((sum, lesson) => sum + (lesson.xpEarned || 0), 0) || 0;
 
-    // Update user XP if needed (fire-and-forget to not block response)
+    // H1: Update user XP if needed with proper error handling
     if (totalXPFromLessons !== userProfile.totalXP) {
-      supabase
-        .from('User')
-        .update({ totalXP: totalXPFromLessons })
-        .eq('id', user.id)
-        .then(() => { /* fire and forget */ }, err => logger.error('Failed to update user XP:', err));
+      try {
+        const { error: xpUpdateError } = await supabase
+          .from('User')
+          .update({ totalXP: totalXPFromLessons })
+          .eq('id', user.id);
+
+        if (xpUpdateError) {
+          logger.error('Failed to update user XP:', { error: xpUpdateError, userId: user.id });
+          // Don't fail the entire response, just log the error
+        }
+      } catch (err) {
+        logger.error('Failed to update user XP:', { error: err, userId: user.id });
+      }
+      // Update local value regardless to show correct XP in this response
       userProfile.totalXP = totalXPFromLessons;
     }
 
@@ -251,32 +262,21 @@ export async function GET(request: NextRequest) {
       .map(p => skillsMapping[p.code as string])
       .filter(Boolean);
 
-    // Calculate user level based on XP
-    const userLevel = Math.floor(userProfile.totalXP / 100) + 1;
-    const nextLevelXP = (userLevel * 100) - userProfile.totalXP;
+    // Calculate user level based on XP using the same progressive formula as xp.ts
+    const userLevel = calculateLevel(userProfile.totalXP || 0);
+    const levelProgress = calculateXPForNextLevel(userProfile.totalXP || 0);
+    const nextLevelXP = levelProgress.required - levelProgress.current;
 
-    // Calculate value metrics for ROI dashboard
-    // Value multiplier: courses provide 3x value through templates, tools, and knowledge
-    const VALUE_MULTIPLIER = 3;
+    // Calculate value metrics for dashboard
     const ALL_ACCESS_PRICE = 149999;
 
     // Calculate total invested (sum of purchased product prices)
     const totalInvested = ownedProducts.reduce((sum, p) => sum + (p.price || 0), 0);
 
-    // Calculate total value received (original prices * value multiplier for completed content)
-    // Plus additional value from templates and tools
+    // Calculate average product progress
     const averageProductProgress = ownedProducts.length > 0
       ? ownedProducts.reduce((sum, p) => sum + p.progress, 0) / ownedProducts.length
       : 0;
-    const progressMultiplier = 1 + (averageProductProgress / 100); // 1x to 2x based on progress
-    const totalValueReceived = Math.round(totalInvested * VALUE_MULTIPLIER * progressMultiplier);
-
-    // Calculate savings
-    const savingsAmount = totalValueReceived - totalInvested;
-    const savingsPercentage = totalInvested > 0 ? Math.round((savingsAmount / totalValueReceived) * 100) : 0;
-
-    // Calculate ROI multiplier
-    const roiMultiplier = totalInvested > 0 ? Math.round((totalValueReceived / totalInvested) * 10) / 10 : 0;
 
     // Calculate Founder Readiness Score (0-100)
     // Based on: courses owned (40%), completion progress (30%), skills acquired (20%), XP (10%)
@@ -286,10 +286,6 @@ export async function GET(request: NextRequest) {
     const xpScore = Math.min(10, (userProfile.totalXP / 5000) * 10);
     const founderReadinessScore = Math.round(coursesScore + completionScore + skillsScore + xpScore);
 
-    // Calculate percentile ranking (simplified - based on products owned)
-    // In a real implementation, this would query against all users
-    const percentileRanking = Math.min(99, Math.max(1, 100 - (ownedProducts.length * 8)));
-
     // Calculate bundle savings available (if not ALL_ACCESS owner)
     const hasAllAccess = ownedCodes.includes('ALL_ACCESS');
     const allCoursesTotal = allProducts?.filter(p => p.code !== 'ALL_ACCESS').reduce((sum, p) => sum + (p.price || 0), 0) || 0;
@@ -297,12 +293,9 @@ export async function GET(request: NextRequest) {
 
     const valueMetrics = {
       totalInvested,
-      totalValueReceived,
-      savingsAmount,
-      savingsPercentage,
-      roiMultiplier,
+      coursesOwned: ownedProducts.length,
+      totalCourses: 30,
       founderReadinessScore,
-      percentileRanking,
       bundleSavingsAvailable,
       hasAllAccess
     };
@@ -354,7 +347,19 @@ export async function GET(request: NextRequest) {
           totalActivities: requiredActivities.length
         };
       })(),
-      valueMetrics
+      valueMetrics,
+      // C8 FIX: Include lesson progress for tracking completed lessons
+      lessonProgress: {
+        completedLessons: lessonProgress?.length || 0,
+        totalXPFromLessons,
+        recentCompletions: (lessonProgress || []).slice(0, 5).map(lp => ({
+          lessonId: lp.lessonId,
+          xpEarned: lp.xpEarned,
+          completedAt: lp.completedAt,
+          productCode: lp.productCode
+        })),
+        lastCompletedAt: lessonProgress?.[0]?.completedAt || null
+      }
     };
 
     const response = NextResponse.json(dashboardData);

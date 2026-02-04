@@ -93,9 +93,10 @@ export async function GET(request: NextRequest) {
 }
 
 function generateReferralCode(userId: string): string {
-  // Generate a unique referral code
+  // Generate a unique referral code using cryptographically secure randomness
   const timestamp = Date.now().toString(36);
-  const randomStr = Math.random().toString(36).substring(2, 6);
+  // Use crypto.randomUUID() for secure random string generation
+  const randomStr = crypto.randomUUID().substring(0, 8).replace(/-/g, '');
   const userPart = userId.substring(0, 4);
   return `TIS${userPart}${timestamp}${randomStr}`.toUpperCase();
 }

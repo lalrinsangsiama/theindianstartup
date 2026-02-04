@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { logger } from '@/lib/logger';
 
 // Force dynamic to prevent static generation - env vars needed at runtime
 export const dynamic = 'force-dynamic';
@@ -63,7 +64,7 @@ export async function GET(request: NextRequest) {
     const { data: schemes, error } = await query;
 
     if (error) {
-      console.error('Error fetching public schemes:', error);
+      logger.error('Error fetching public schemes:', error);
       return NextResponse.json(
         { error: 'Failed to fetch schemes' },
         { status: 500 }
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Public API Error:', error);
+    logger.error('Public API Error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

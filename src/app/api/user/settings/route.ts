@@ -4,10 +4,47 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 
-const settingsSchema = z.object({
-  type: z.enum(['notifications', 'privacy', 'profile']),
-  data: z.record(z.any())
-});
+// C3: Typed schemas for each settings type (replacing z.any())
+const NotificationSettings = z.object({
+  emailUpdates: z.boolean().optional(),
+  progressAlerts: z.boolean().optional(),
+  communityNotifs: z.boolean().optional(),
+  marketingEmails: z.boolean().optional(),
+  dailyReminders: z.boolean().optional(),
+  weeklyProgress: z.boolean().optional(),
+  achievements: z.boolean().optional(),
+  communityUpdates: z.boolean().optional(),
+  expertSessions: z.boolean().optional(),
+  marketing: z.boolean().optional(),
+}).strict();
+
+const PrivacySettings = z.object({
+  profileVisibility: z.enum(['public', 'private', 'connections']).optional(),
+  showEmail: z.boolean().optional(),
+  showProgress: z.boolean().optional(),
+  allowMessages: z.boolean().optional(),
+  profileVisible: z.boolean().optional(),
+  progressVisible: z.boolean().optional(),
+  portfolioVisible: z.boolean().optional(),
+  activityVisible: z.boolean().optional(),
+}).strict();
+
+const ProfileSettings = z.object({
+  name: z.string().min(1).max(100).optional(),
+  phone: z.string().max(20).optional(),
+  startupName: z.string().max(200).optional(),
+  industry: z.string().max(100).optional(),
+  bio: z.string().max(500).optional(),
+  linkedinUrl: z.string().url().optional().or(z.literal('')).nullable(),
+  twitterUrl: z.string().url().optional().or(z.literal('')).nullable(),
+}).strict();
+
+// Discriminated union for type-safe settings validation
+const settingsSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('notifications'), data: NotificationSettings }),
+  z.object({ type: z.literal('privacy'), data: PrivacySettings }),
+  z.object({ type: z.literal('profile'), data: ProfileSettings }),
+]);
 
 export async function GET(request: NextRequest) {
   try {

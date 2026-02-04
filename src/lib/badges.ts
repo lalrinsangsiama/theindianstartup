@@ -254,8 +254,8 @@ export const checkBadgeEligibility = (
       
     case 'special':
       if (value === 'early_adopter' && userStats.joinedAt) {
-        // Check if joined within first month of launch
-        const launchDate = new Date('2024-02-01'); // Set your launch date
+        // H30 FIX: Check if joined within first month of actual launch (2026-02-04)
+        const launchDate = new Date('2026-02-04');
         const oneMonthAfterLaunch = new Date(launchDate);
         oneMonthAfterLaunch.setMonth(oneMonthAfterLaunch.getMonth() + 1);
         return userStats.joinedAt <= oneMonthAfterLaunch;

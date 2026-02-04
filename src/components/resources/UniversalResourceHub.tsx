@@ -177,8 +177,7 @@ const UniversalResourceHub: React.FC<UniversalResourceHubProps> = ({
           : resource
       ));
 
-      // Show success message (you could use a toast library here)
-      console.log(`Downloaded: ${data.resource?.title}`);
+      // Download complete - UI already updated above
       
     } catch (err: any) {
       console.error('Download error:', err.message);

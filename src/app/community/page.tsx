@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/lib/logger';
-import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Heading } from '@/components/ui/Typography';
@@ -14,25 +13,24 @@ import { CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  Users, 
-  MessageSquare, 
-  Trophy, 
+import {
+  Users,
+  MessageSquare,
+  Trophy,
   Calendar,
   Plus,
   Search,
-  TrendingUp,
   Heart,
   MessageCircle,
   Clock,
-  Star,
   Zap,
   Target,
   BookOpen,
   Video,
   Award,
   ArrowRight,
-  Building
+  Building,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -71,8 +69,8 @@ interface ExpertSession {
 }
 
 export default function CommunityPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(false);
   const [stats, setStats] = useState<CommunityStats>({
     totalMembers: 0,
     activeToday: 0,
@@ -82,6 +80,54 @@ export default function CommunityPage() {
   const [recentPosts, setRecentPosts] = useState<RecentPost[]>([]);
   const [upcomingSessions, setUpcomingSessions] = useState<ExpertSession[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchPosts = useCallback(async (cursor?: string) => {
+    try {
+      if (cursor) {
+        setPostsLoading(true);
+      }
+
+      const params = new URLSearchParams({
+        limit: '10',
+        ...(selectedCategory !== 'all' && { category: selectedCategory }),
+        ...(debouncedSearch && { search: debouncedSearch }),
+        ...(cursor && { cursor }),
+      });
+
+      const response = await fetch(`/api/community/posts?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (cursor) {
+          setRecentPosts(prev => [...prev, ...(data.posts || [])]);
+        } else {
+          setRecentPosts(data.posts || []);
+        }
+        setHasMore(data.hasMore || false);
+        setNextCursor(data.nextCursor || null);
+      }
+    } catch (error) {
+      logger.error('Error fetching posts:', error);
+    } finally {
+      setPostsLoading(false);
+    }
+  }, [selectedCategory, debouncedSearch]);
+
+  // Fetch posts when category or search changes
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   useEffect(() => {
     fetchCommunityData();
@@ -90,92 +136,50 @@ export default function CommunityPage() {
   const fetchCommunityData = async () => {
     try {
       setLoading(true);
-      
-      // In a real app, this would fetch from multiple endpoints
-      // For now, using mock data to demonstrate the UI
-      
-      setStats({
-        totalMembers: 1247,
-        activeToday: 89,
-        postsThisWeek: 156,
-        expertSessions: 3,
-      });
 
-      setRecentPosts([
-        {
-          id: '1',
-          title: 'How I validated my SaaS idea in 2 weeks',
-          content: 'Just completed Day 5 of the program and wanted to share my validation process...',
-          author: {
-            name: 'Priya Sharma',
-            avatar: '',
-            badges: ['Starter', 'Researcher'],
-          },
-          type: 'success_story',
-          likesCount: 23,
-          commentsCount: 8,
-          createdAt: '2 hours ago',
-          tags: ['validation', 'saas', 'day-5'],
-        },
-        {
-          id: '2',
-          title: 'Need help with GST registration process',
-          content: 'Can anyone guide me through the GST registration for a new startup?',
-          author: {
-            name: 'Rahul Kumar',
-            avatar: '',
-            badges: ['Starter'],
-          },
-          type: 'question',
-          likesCount: 12,
-          commentsCount: 15,
-          createdAt: '4 hours ago',
-          tags: ['gst', 'legal', 'help'],
-        },
-        {
-          id: '3',
-          title: 'Amazing tools for market research - Free resources',
-          content: 'Compiled a list of 15 free tools that helped me with my market research...',
-          author: {
-            name: 'Anjali Gupta',
-            avatar: '',
-            badges: ['Researcher', 'Helper'],
-          },
-          type: 'resource_share',
-          likesCount: 45,
-          commentsCount: 12,
-          createdAt: '6 hours ago',
-          tags: ['resources', 'market-research', 'tools'],
-        },
+      // Fetch stats, posts, and sessions in parallel
+      const [statsResponse, postsResponse, sessionsResponse] = await Promise.all([
+        fetch('/api/community/stats').catch(() => null),
+        fetch('/api/community/posts?limit=10').catch(() => null),
+        fetch('/api/community/expert-sessions?status=upcoming&limit=2').catch(() => null),
       ]);
 
-      setUpcomingSessions([
-        {
-          id: '1',
-          title: 'Fundraising 101: From Seed to Series A',
-          expertName: 'Vikram Chandra',
-          scheduledAt: '2024-01-20T15:00:00Z',
-          duration: 60,
-          registeredCount: 34,
-          maxAttendees: 50,
-          topic: ['fundraising', 'investment'],
-        },
-        {
-          id: '2',
-          title: 'Building Your MVP in 30 Days',
-          expertName: 'Nisha Patel',
-          scheduledAt: '2024-01-25T14:00:00Z',
-          duration: 45,
-          registeredCount: 28,
-          maxAttendees: 40,
-          topic: ['product', 'mvp'],
-        },
-      ]);
+      // Set stats from API
+      if (statsResponse?.ok) {
+        const statsData = await statsResponse.json();
+        setStats(statsData);
+      }
+
+      // Set posts from API or empty array
+      if (postsResponse?.ok) {
+        const postsData = await postsResponse.json();
+        setRecentPosts(postsData.posts || []);
+        setHasMore(postsData.hasMore || false);
+        setNextCursor(postsData.nextCursor || null);
+      } else {
+        setRecentPosts([]);
+      }
+
+      // Set sessions from API or empty array
+      if (sessionsResponse?.ok) {
+        const sessionsData = await sessionsResponse.json();
+        setUpcomingSessions(sessionsData.sessions || []);
+      } else {
+        setUpcomingSessions([]);
+      }
 
     } catch (error) {
       logger.error('Error fetching community data:', error);
+      setRecentPosts([]);
+      setUpcomingSessions([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (nextCursor && !postsLoading) {
+      fetchPosts(nextCursor);
     }
   };
 
@@ -221,7 +225,7 @@ export default function CommunityPage() {
                   </Text>
                 </div>
               </div>
-              
+
               <Link href="/community/new-post">
                 <Button variant="primary" className="flex items-center gap-2">
                   <Plus className="w-4 h-4" />
@@ -286,6 +290,8 @@ export default function CommunityPage() {
                       <Input
                         placeholder="Search discussions..."
                         className="pl-10"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
                     <div className="flex gap-2 flex-wrap">
@@ -311,69 +317,107 @@ export default function CommunityPage() {
 
               {/* Recent Posts */}
               <div className="space-y-4">
-                {recentPosts.map((post) => (
-                  <Card key={post.id} className="border-2 hover:border-black hover:shadow-md transition-all duration-200">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                          {post.author.name.charAt(0)}
-                        </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <Text weight="medium">{post.author.name}</Text>
-                            <div className="flex gap-1">
-                              {post.author.badges.map((badge, i) => (
-                                <Badge key={i} variant="outline" size="sm">
-                                  {badge}
-                                </Badge>
-                              ))}
+                {recentPosts.length > 0 ? (
+                  recentPosts.map((post) => (
+                    <Link key={post.id} href={`/community/posts/${post.id}`}>
+                      <Card className="border-2 hover:border-black hover:shadow-md transition-all duration-200 cursor-pointer">
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                              {post.author.name.charAt(0)}
                             </div>
-                            <Text size="sm" color="muted">•</Text>
-                            <Text size="sm" color="muted">{post.createdAt}</Text>
-                          </div>
-                          
-                          <Heading as="h3" variant="h6" className="mb-2">
-                            {post.title}
-                          </Heading>
-                          
-                          <Text className="mb-3 line-clamp-2">
-                            {post.content}
-                          </Text>
-                          
-                          <div className="flex items-center justify-between">
-                            <div className="flex gap-2 flex-wrap">
-                              {post.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" size="sm">
-                                  #{tag}
-                                </Badge>
-                              ))}
-                            </div>
-                            
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1 text-gray-500">
-                                <Heart className="w-4 h-4" />
-                                <Text size="sm">{post.likesCount}</Text>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                <Text weight="medium">{post.author.name}</Text>
+                                <div className="flex gap-1">
+                                  {post.author.badges.map((badge, i) => (
+                                    <Badge key={i} variant="outline" size="sm">
+                                      {badge}
+                                    </Badge>
+                                  ))}
+                                </div>
+                                <Text size="sm" color="muted">•</Text>
+                                <Text size="sm" color="muted">{post.createdAt}</Text>
                               </div>
-                              <div className="flex items-center gap-1 text-gray-500">
-                                <MessageCircle className="w-4 h-4" />
-                                <Text size="sm">{post.commentsCount}</Text>
+
+                              <Heading as="h3" variant="h6" className="mb-2">
+                                {post.title}
+                              </Heading>
+
+                              <Text className="mb-3 line-clamp-2">
+                                {post.content}
+                              </Text>
+
+                              <div className="flex items-center justify-between">
+                                <div className="flex gap-2 flex-wrap">
+                                  {post.tags.map((tag) => (
+                                    <Badge key={tag} variant="outline" size="sm">
+                                      #{tag}
+                                    </Badge>
+                                  ))}
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-1 text-gray-500">
+                                    <Heart className="w-4 h-4" />
+                                    <Text size="sm">{post.likesCount}</Text>
+                                  </div>
+                                  <div className="flex items-center gap-1 text-gray-500">
+                                    <MessageCircle className="w-4 h-4" />
+                                    <Text size="sm">{post.commentsCount}</Text>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))
+                ) : (
+                  <Card className="border-2">
+                    <CardContent className="p-12 text-center">
+                      <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <Heading as="h3" variant="h6" className="mb-2">
+                        {debouncedSearch ? 'No posts found' : 'No posts yet'}
+                      </Heading>
+                      <Text color="muted" className="mb-4">
+                        {debouncedSearch
+                          ? 'Try adjusting your search or filters'
+                          : 'Be the first to start a discussion in the community!'}
+                      </Text>
+                      {!debouncedSearch && (
+                        <Link href="/community/new-post">
+                          <Button variant="primary">
+                            Create First Post
+                          </Button>
+                        </Link>
+                      )}
                     </CardContent>
                   </Card>
-                ))}
+                )}
               </div>
 
-              {/* Load More */}
-              <div className="text-center">
-                <Button variant="outline">
-                  Load More Posts
-                </Button>
-              </div>
+              {/* Load More - only show if there are more posts */}
+              {hasMore && (
+                <div className="text-center">
+                  <Button
+                    variant="outline"
+                    onClick={handleLoadMore}
+                    disabled={postsLoading}
+                  >
+                    {postsLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      'Load More Posts'
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Sidebar */}
@@ -433,37 +477,51 @@ export default function CommunityPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {upcomingSessions.map((session) => (
-                    <div key={session.id} className="border rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <Heading as="h4" variant="h6" className="line-clamp-2">
-                          {session.title}
-                        </Heading>
-                        <Badge variant="outline" size="sm">
-                          {session.registeredCount}/{session.maxAttendees}
-                        </Badge>
-                      </div>
-                      
-                      <Text size="sm" color="muted" className="mb-2">
-                        with {session.expertName}
-                      </Text>
-                      
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          Jan 20, 3:00 PM
+                  {upcomingSessions.length > 0 ? (
+                    upcomingSessions.map((session) => (
+                      <div key={session.id} className="border rounded-lg p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <Heading as="h4" variant="h6" className="line-clamp-2">
+                            {session.title}
+                          </Heading>
+                          <Badge variant="outline" size="sm">
+                            {session.registeredCount}/{session.maxAttendees}
+                          </Badge>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {session.duration}m
+
+                        <Text size="sm" color="muted" className="mb-2">
+                          with {session.expertName}
+                        </Text>
+
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(session.scheduledAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {session.duration}m
+                          </div>
                         </div>
+
+                        <Link href={`/community/expert-sessions/${session.id}`}>
+                          <Button size="sm" className="w-full">
+                            View Details
+                          </Button>
+                        </Link>
                       </div>
-                      
-                      <Button size="sm" className="w-full">
-                        Register Now
-                      </Button>
+                    ))
+                  ) : (
+                    <div className="text-center py-6">
+                      <Video className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                      <Text size="sm" color="muted">No upcoming sessions</Text>
+                      <Link href="/community/expert-sessions/new">
+                        <Button variant="outline" size="sm" className="mt-3">
+                          Host a Session
+                        </Button>
+                      </Link>
                     </div>
-                  ))}
+                  )}
                 </CardContent>
               </Card>
 
@@ -484,14 +542,14 @@ export default function CommunityPage() {
                     </div>
                     <div className="flex items-start gap-2">
                       <Award className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <Text size="sm">Celebrate others' successes and milestones</Text>
+                      <Text size="sm">Celebrate others&apos; successes and milestones</Text>
                     </div>
                     <div className="flex items-start gap-2">
                       <Target className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                       <Text size="sm">Stay on-topic and provide value in discussions</Text>
                     </div>
                   </div>
-                  
+
                   <Link href="/community/guidelines" className="block mt-4">
                     <Button variant="outline" size="sm" className="w-full">
                       Read Full Guidelines

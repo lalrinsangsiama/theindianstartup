@@ -141,8 +141,7 @@ Rahul ran his consultancy as sole proprietorship. When a client sued for ₹15 l
     }
   };
 
-  const handleActivityComplete = (activityId: string) => {
-    console.log('Activity completed:', activityId);
+  const handleActivityComplete = (_activityId: string) => {
     handleSectionComplete('activities');
   };
 

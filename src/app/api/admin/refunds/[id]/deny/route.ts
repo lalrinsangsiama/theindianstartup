@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { createAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
+import { sendRefundDeniedEmail } from '@/lib/email';
 
 const denySchema = z.object({
   denialReason: z.string().min(10, 'Please provide a reason for denial').max(1000),
@@ -102,7 +103,30 @@ export async function POST(
       ipAddress: clientIP,
     });
 
-    // TODO: Send email notification to user with denial reason
+    // Fetch user info for email notification
+    const { data: userData } = await supabase
+      .from('users')
+      .select('name, email')
+      .eq('id', purchase.userId)
+      .single();
+
+    // Fetch product info for email
+    const { data: productData } = await supabase
+      .from('products')
+      .select('title')
+      .eq('code', purchase.productCode)
+      .single();
+
+    // Send email notification to user with denial reason
+    if (userData?.email) {
+      await sendRefundDeniedEmail({
+        userName: userData.name || 'Valued Customer',
+        userEmail: userData.email,
+        productName: productData?.title || purchase.productCode,
+        denialReason,
+        refundId,
+      });
+    }
 
     return NextResponse.json({
       success: true,

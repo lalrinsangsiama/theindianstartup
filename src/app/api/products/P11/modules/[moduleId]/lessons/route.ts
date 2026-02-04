@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getUserFromRequest } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
@@ -86,8 +87,8 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Error fetching module lessons:', error);
-    return NextResponse.json({ 
+    logger.error('Error fetching module lessons:', error);
+    return NextResponse.json({
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });

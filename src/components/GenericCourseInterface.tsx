@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -122,6 +123,7 @@ interface GenericCourseInterfaceProps {
 }
 
 export function GenericCourseInterface({ courseData, config }: GenericCourseInterfaceProps) {
+  const router = useRouter();
   const [activeModule, setActiveModule] = useState(0);
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
 
@@ -424,9 +426,12 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
                                   </div>
                                 )}
 
-                                <Button className="w-full sm:w-auto">
+                                <Button
+                                  className="w-full sm:w-auto"
+                                  onClick={() => router.push(`/products/${product.code.toLowerCase()}/lessons/${lesson.id}`)}
+                                >
                                   <Play className="w-4 h-4 mr-2" />
-                                  Start Lesson
+                                  {userProgress?.[lesson.id]?.completed ? 'Review Lesson' : 'Start Lesson'}
                                 </Button>
                               </div>
                             )}
@@ -471,26 +476,43 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
 
           {/* Community Tab */}
           <TabsContent value="community">
-            <Card className="p-8 text-center">
-              <Users className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-4">Join Our Community</h3>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Connect with fellow entrepreneurs, share experiences, get advice,
-                and build strategic partnerships in our exclusive community.
-              </p>
-              <div className="grid md:grid-cols-3 gap-4 mb-8">
-                {config.communityStats.map((stat, index) => (
-                  <div key={index}>
-                    <div className={`text-3xl font-bold text-${stat.color}-600`}>{stat.value}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-              <Button size="lg">
-                <MessageSquare className="w-5 h-5 mr-2" />
-                Join Community Discussions
-              </Button>
-            </Card>
+            <div className="space-y-6">
+              {/* Course Info Card */}
+              <Card className="p-6">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                  Course Details
+                </h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {config.communityStats.map((stat, index) => (
+                    <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
+                      <div className={`text-2xl font-bold text-${stat.color}-600`}>{stat.value}</div>
+                      <div className="text-sm text-gray-600">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Community Features */}
+              <Card className="p-8 text-center">
+                <Users className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Connect with Fellow Founders</h3>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                  Get access to our founder community where you can share experiences,
+                  ask questions, and connect with entrepreneurs on the same journey.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button size="lg" onClick={() => router.push('/community')}>
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    Visit Community Hub
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => router.push('/community/ecosystem')}>
+                    <Globe className="w-5 h-5 mr-2" />
+                    Explore Ecosystem
+                  </Button>
+                </div>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
 
@@ -518,6 +540,56 @@ export function GenericCourseInterface({ courseData, config }: GenericCourseInte
 
 // Pre-built configurations for common course types
 export const courseConfigs: Record<string, CourseConfig> = {
+  // P1: 30-Day India Launch Sprint
+  P1: {
+    gradientFrom: 'from-orange-900',
+    gradientVia: 'via-orange-800',
+    gradientTo: 'to-amber-900',
+    badgeText: '30-DAY LAUNCH SPRINT',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '4', label: 'Modules' },
+      { value: '30', label: 'Days' },
+      { value: 'Incorporated', label: 'Outcome' },
+      { value: 'India', label: 'Focused' }
+    ],
+    achievements: [
+      'Validate your startup idea with real market feedback',
+      'Complete company incorporation and legal setup',
+      'Build your founding team structure',
+      'Launch your MVP to first customers',
+      'Establish banking and compliance foundations',
+      'Create your 90-day growth roadmap'
+    ],
+    features: [
+      { icon: <Target className="w-5 h-5 text-orange-500 mt-0.5" />, text: 'Daily action plans with clear deliverables' },
+      { icon: <FileText className="w-5 h-5 text-amber-500 mt-0.5" />, text: 'Complete incorporation checklist' },
+      { icon: <Building className="w-5 h-5 text-yellow-600 mt-0.5" />, text: 'India-specific regulatory guidance' },
+      { icon: <Users className="w-5 h-5 text-orange-600 mt-0.5" />, text: 'Founder agreement templates' },
+      { icon: <Zap className="w-5 h-5 text-amber-600 mt-0.5" />, text: 'MVP launch framework' }
+    ],
+    journeySteps: [
+      { title: 'Week 1', description: 'Idea validation & market research', color: 'orange' },
+      { title: 'Week 2', description: 'Legal setup & incorporation', color: 'amber' },
+      { title: 'Week 3', description: 'Team & operations setup', color: 'yellow' },
+      { title: 'Week 4', description: 'Launch & first customers', color: 'green' }
+    ],
+    resources: [
+      { icon: <FileText className="w-8 h-8 text-orange-600 mb-3" />, title: 'Startup Launch Kit', description: 'All documents needed to incorporate in India', buttonText: 'Get Launch Kit', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <Target className="w-8 h-8 text-amber-600 mb-3" />, title: 'Validation Framework', description: 'Customer discovery and idea validation tools', buttonText: 'Access Framework', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Building className="w-8 h-8 text-yellow-600 mb-3" />, title: 'Compliance Tracker', description: 'Track all post-incorporation requirements', buttonText: 'Start Tracking', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '30', label: 'Days Duration', color: 'orange' },
+      { value: '50+', label: 'Templates', color: 'amber' },
+      { value: 'Daily', label: 'Action Plans', color: 'yellow' }
+    ],
+    ctaText: 'Ready to Launch Your Startup?',
+    ctaSubtext: 'Go from idea to incorporated startup in just 30 days with our proven framework.',
+    price: '₹4,999'
+  },
+
   P3: {
     gradientFrom: 'from-purple-900',
     gradientVia: 'via-purple-800',
@@ -529,7 +601,7 @@ export const courseConfigs: Record<string, CourseConfig> = {
       { value: '12', label: 'Modules' },
       { value: '45', label: 'Days' },
       { value: '₹5Cr+', label: 'Funding Range' },
-      { value: '87%', label: 'Success Rate' }
+      { value: 'India', label: 'Focused' }
     ],
     achievements: [
       'Master government funding from grants to venture capital',
@@ -553,18 +625,19 @@ export const courseConfigs: Record<string, CourseConfig> = {
     ],
     resources: [
       { icon: <FileText className="w-8 h-8 text-purple-600 mb-3" />, title: 'Pitch Deck Templates', description: 'Investor-ready presentation templates', buttonText: 'Download Templates', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
-      { icon: <Globe className="w-8 h-8 text-blue-600 mb-3" />, title: 'Investor Database', description: '700+ verified investors with contact details', buttonText: 'Access Database', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Globe className="w-8 h-8 text-blue-600 mb-3" />, title: 'Investor Database', description: 'Curated list of active Indian investors', buttonText: 'Access Database', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
       { icon: <TrendingUp className="w-8 h-8 text-green-600 mb-3" />, title: 'Financial Models', description: 'Pro forma templates and calculators', buttonText: 'Get Models', buttonIcon: <Download className="w-4 h-4 mr-2" /> }
     ],
     communityStats: [
-      { value: '1,000+', label: 'Active Members', color: 'purple' },
-      { value: '₹500Cr+', label: 'Funding Raised', color: 'blue' },
-      { value: '200+', label: 'Success Stories', color: 'green' }
+      { value: '45', label: 'Days Duration', color: 'purple' },
+      { value: '60+', label: 'Templates', color: 'blue' },
+      { value: '12', label: 'Modules', color: 'green' }
     ],
     ctaText: 'Ready to Master Funding?',
-    ctaSubtext: 'Join 1,000+ founders who have successfully raised funding using our proven frameworks.',
+    ctaSubtext: 'Learn proven frameworks to raise funding from grants to venture capital.',
     price: '₹5,999'
   },
+
   P4: {
     gradientFrom: 'from-green-900',
     gradientVia: 'via-green-800',
@@ -604,13 +677,313 @@ export const courseConfigs: Record<string, CourseConfig> = {
       { icon: <TrendingUp className="w-8 h-8 text-purple-600 mb-3" />, title: 'Dashboard Templates', description: 'Real-time financial dashboards', buttonText: 'Get Dashboards', buttonIcon: <Download className="w-4 h-4 mr-2" /> }
     ],
     communityStats: [
-      { value: '500+', label: 'CFOs Trained', color: 'green' },
-      { value: '₹100Cr+', label: 'Managed', color: 'blue' },
-      { value: '100%', label: 'Compliance', color: 'purple' }
+      { value: '45', label: 'Days Duration', color: 'green' },
+      { value: '70+', label: 'Templates', color: 'blue' },
+      { value: '12', label: 'Modules', color: 'purple' }
     ],
     ctaText: 'Ready for CFO-Level Finance?',
     ctaSubtext: 'Build financial infrastructure that scales with your startup.',
     price: '₹6,999'
+  },
+
+  // P5: Legal Stack - Bulletproof Framework
+  P5: {
+    gradientFrom: 'from-red-900',
+    gradientVia: 'via-red-800',
+    gradientTo: 'to-rose-900',
+    badgeText: 'BULLETPROOF LEGAL FRAMEWORK',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '12', label: 'Modules' },
+      { value: '45', label: 'Days' },
+      { value: '100+', label: 'Templates' },
+      { value: 'India', label: 'Compliant' }
+    ],
+    achievements: [
+      'Build bulletproof legal infrastructure from day one',
+      'Master contracts, NDAs, and service agreements',
+      'Protect intellectual property and trade secrets',
+      'Navigate employment law and POSH compliance',
+      'Handle disputes and regulatory challenges',
+      'Create investor-ready legal documentation'
+    ],
+    features: [
+      { icon: <FileText className="w-5 h-5 text-red-500 mt-0.5" />, text: 'Complete contract library (50+ templates)' },
+      { icon: <Award className="w-5 h-5 text-rose-500 mt-0.5" />, text: 'IP protection strategies' },
+      { icon: <Users className="w-5 h-5 text-red-600 mt-0.5" />, text: 'Employment & POSH compliance' },
+      { icon: <Building className="w-5 h-5 text-rose-600 mt-0.5" />, text: 'Regulatory compliance frameworks' },
+      { icon: <Globe className="w-5 h-5 text-red-400 mt-0.5" />, text: 'Cross-border legal considerations' }
+    ],
+    journeySteps: [
+      { title: 'Foundation', description: 'Core legal infrastructure', color: 'red' },
+      { title: 'Contracts', description: 'Master agreements & NDAs', color: 'rose' },
+      { title: 'IP & HR', description: 'Protection & compliance', color: 'pink' },
+      { title: 'Advanced', description: 'Disputes & regulations', color: 'orange' }
+    ],
+    resources: [
+      { icon: <FileText className="w-8 h-8 text-red-600 mb-3" />, title: 'Legal Template Library', description: 'Contracts, NDAs, agreements ready to use', buttonText: 'Access Templates', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <Award className="w-8 h-8 text-rose-600 mb-3" />, title: 'IP Protection Guide', description: 'Comprehensive trademark & patent guide', buttonText: 'Get Guide', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Users className="w-8 h-8 text-red-500 mb-3" />, title: 'HR Compliance Kit', description: 'Employment contracts & POSH policies', buttonText: 'Download Kit', buttonIcon: <Download className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '45', label: 'Days Duration', color: 'red' },
+      { value: '100+', label: 'Templates', color: 'rose' },
+      { value: '12', label: 'Modules', color: 'pink' }
+    ],
+    ctaText: 'Ready to Build Your Legal Foundation?',
+    ctaSubtext: 'Protect your startup with comprehensive legal frameworks built for India.',
+    price: '₹7,999'
+  },
+
+  // P6: Sales & GTM in India
+  P6: {
+    gradientFrom: 'from-emerald-900',
+    gradientVia: 'via-emerald-800',
+    gradientTo: 'to-green-900',
+    badgeText: 'SALES & GTM MASTERY',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '10', label: 'Modules' },
+      { value: '60', label: 'Days' },
+      { value: 'Revenue', label: 'Focused' },
+      { value: 'B2B & B2C', label: 'Strategies' }
+    ],
+    achievements: [
+      'Build a scalable sales engine from scratch',
+      'Master B2B and B2C sales strategies for India',
+      'Create high-converting sales funnels',
+      'Develop channel partner networks',
+      'Implement sales automation and CRM systems',
+      'Scale your revenue with proven playbooks'
+    ],
+    features: [
+      { icon: <TrendingUp className="w-5 h-5 text-emerald-500 mt-0.5" />, text: 'Complete sales process framework' },
+      { icon: <Users className="w-5 h-5 text-green-500 mt-0.5" />, text: 'India-specific B2B & B2C strategies' },
+      { icon: <Target className="w-5 h-5 text-emerald-600 mt-0.5" />, text: 'Lead generation & qualification' },
+      { icon: <Zap className="w-5 h-5 text-green-600 mt-0.5" />, text: 'Sales automation templates' },
+      { icon: <Award className="w-5 h-5 text-emerald-400 mt-0.5" />, text: 'Channel partner playbooks' }
+    ],
+    journeySteps: [
+      { title: 'Foundation', description: 'Sales fundamentals & ICP', color: 'emerald' },
+      { title: 'Pipeline', description: 'Lead gen & qualification', color: 'green' },
+      { title: 'Closing', description: 'Negotiation & deals', color: 'teal' },
+      { title: 'Scale', description: 'Team & automation', color: 'cyan' }
+    ],
+    resources: [
+      { icon: <TrendingUp className="w-8 h-8 text-emerald-600 mb-3" />, title: 'Sales Playbook', description: 'Complete B2B and B2C sales frameworks', buttonText: 'Get Playbook', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <Target className="w-8 h-8 text-green-600 mb-3" />, title: 'Pipeline Templates', description: 'CRM setup and tracking templates', buttonText: 'Access Templates', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Users className="w-8 h-8 text-emerald-500 mb-3" />, title: 'Pitch Scripts', description: 'Proven scripts for calls and demos', buttonText: 'Download Scripts', buttonIcon: <Download className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '60', label: 'Days Duration', color: 'emerald' },
+      { value: '80+', label: 'Templates', color: 'green' },
+      { value: '10', label: 'Modules', color: 'teal' }
+    ],
+    ctaText: 'Ready to Build Your Revenue Engine?',
+    ctaSubtext: 'Transform your startup into a revenue-generating machine with proven sales frameworks.',
+    price: '₹6,999'
+  },
+
+  // P11: Branding & PR Mastery
+  P11: {
+    gradientFrom: 'from-pink-900',
+    gradientVia: 'via-pink-800',
+    gradientTo: 'to-rose-900',
+    badgeText: 'BRANDING & PR MASTERY',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '12', label: 'Modules' },
+      { value: '54', label: 'Days' },
+      { value: 'Brand', label: 'Building' },
+      { value: 'Media', label: 'Coverage' }
+    ],
+    achievements: [
+      'Build a memorable brand identity from scratch',
+      'Master PR and media relations in India',
+      'Create viral content strategies',
+      'Develop thought leadership positioning',
+      'Handle crisis communications effectively',
+      'Scale your brand presence nationally'
+    ],
+    features: [
+      { icon: <Star className="w-5 h-5 text-pink-500 mt-0.5" />, text: 'Complete brand identity framework' },
+      { icon: <FileText className="w-5 h-5 text-rose-500 mt-0.5" />, text: 'PR toolkit with media templates' },
+      { icon: <Globe className="w-5 h-5 text-pink-600 mt-0.5" />, text: 'India media landscape guide' },
+      { icon: <Users className="w-5 h-5 text-rose-600 mt-0.5" />, text: 'Thought leadership playbook' },
+      { icon: <Zap className="w-5 h-5 text-pink-400 mt-0.5" />, text: 'Crisis communication templates' }
+    ],
+    journeySteps: [
+      { title: 'Brand', description: 'Identity & positioning', color: 'pink' },
+      { title: 'Content', description: 'Story & messaging', color: 'rose' },
+      { title: 'PR', description: 'Media & outreach', color: 'fuchsia' },
+      { title: 'Scale', description: 'Growth & leadership', color: 'purple' }
+    ],
+    resources: [
+      { icon: <Star className="w-8 h-8 text-pink-600 mb-3" />, title: 'Brand Kit Templates', description: 'Logo guidelines, brand book, visual identity', buttonText: 'Get Brand Kit', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <FileText className="w-8 h-8 text-rose-600 mb-3" />, title: 'PR Toolkit', description: 'Press releases, media kits, pitch templates', buttonText: 'Access Toolkit', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Globe className="w-8 h-8 text-pink-500 mb-3" />, title: 'Media Database', description: 'Curated list of Indian journalists and outlets', buttonText: 'View Database', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '54', label: 'Days Duration', color: 'pink' },
+      { value: '90+', label: 'Templates', color: 'rose' },
+      { value: '12', label: 'Modules', color: 'fuchsia' }
+    ],
+    ctaText: 'Ready to Build Your Brand?',
+    ctaSubtext: 'Transform into a recognized industry leader with strategic branding and PR.',
+    price: '₹7,999'
+  },
+
+  // P12: Marketing Mastery
+  P12: {
+    gradientFrom: 'from-indigo-900',
+    gradientVia: 'via-indigo-800',
+    gradientTo: 'to-blue-900',
+    badgeText: 'MARKETING MASTERY',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '12', label: 'Modules' },
+      { value: '60', label: 'Days' },
+      { value: 'Growth', label: 'Engine' },
+      { value: 'Data', label: 'Driven' }
+    ],
+    achievements: [
+      'Build a complete marketing engine from scratch',
+      'Master digital marketing channels for India',
+      'Create data-driven campaign strategies',
+      'Implement marketing automation systems',
+      'Optimize CAC and improve ROI',
+      'Scale growth with performance marketing'
+    ],
+    features: [
+      { icon: <TrendingUp className="w-5 h-5 text-indigo-500 mt-0.5" />, text: 'Complete growth marketing framework' },
+      { icon: <Target className="w-5 h-5 text-blue-500 mt-0.5" />, text: 'India-specific channel strategies' },
+      { icon: <Zap className="w-5 h-5 text-indigo-600 mt-0.5" />, text: 'Marketing automation setup' },
+      { icon: <FileText className="w-5 h-5 text-blue-600 mt-0.5" />, text: 'Content marketing playbook' },
+      { icon: <Award className="w-5 h-5 text-indigo-400 mt-0.5" />, text: 'Performance tracking dashboards' }
+    ],
+    journeySteps: [
+      { title: 'Strategy', description: 'Foundations & planning', color: 'indigo' },
+      { title: 'Channels', description: 'Paid, organic & content', color: 'blue' },
+      { title: 'Automation', description: 'Systems & tools', color: 'violet' },
+      { title: 'Scale', description: 'Optimization & growth', color: 'purple' }
+    ],
+    resources: [
+      { icon: <TrendingUp className="w-8 h-8 text-indigo-600 mb-3" />, title: 'Marketing Playbook', description: 'Complete digital marketing strategy guide', buttonText: 'Get Playbook', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <Target className="w-8 h-8 text-blue-600 mb-3" />, title: 'Campaign Templates', description: 'Ad copy, landing pages, email sequences', buttonText: 'Access Templates', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Zap className="w-8 h-8 text-indigo-500 mb-3" />, title: 'Analytics Setup', description: 'Tracking and reporting dashboards', buttonText: 'Setup Analytics', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '60', label: 'Days Duration', color: 'indigo' },
+      { value: '100+', label: 'Templates', color: 'blue' },
+      { value: '12', label: 'Modules', color: 'violet' }
+    ],
+    ctaText: 'Ready to Build Your Marketing Engine?',
+    ctaSubtext: 'Create a data-driven marketing machine that drives sustainable growth.',
+    price: '₹9,999'
+  },
+
+  // P20: FinTech Mastery
+  P20: {
+    gradientFrom: 'from-blue-900',
+    gradientVia: 'via-indigo-800',
+    gradientTo: 'to-violet-900',
+    badgeText: 'FINTECH MASTERY',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '11', label: 'Modules' },
+      { value: '60', label: 'Days' },
+      { value: 'RBI', label: 'Compliance' },
+      { value: 'Licensed', label: 'Ready' }
+    ],
+    achievements: [
+      'Navigate RBI regulations and licensing requirements',
+      'Build compliant payment infrastructure (PA/PG)',
+      'Understand NBFC setup and operations',
+      'Master digital lending regulations',
+      'Implement KYC/AML compliance systems',
+      'Launch FinTech products in India legally'
+    ],
+    features: [
+      { icon: <Building className="w-5 h-5 text-blue-500 mt-0.5" />, text: 'Complete RBI licensing guide' },
+      { icon: <FileText className="w-5 h-5 text-indigo-500 mt-0.5" />, text: 'PA/PG compliance framework' },
+      { icon: <Award className="w-5 h-5 text-violet-500 mt-0.5" />, text: 'NBFC setup documentation' },
+      { icon: <Globe className="w-5 h-5 text-blue-600 mt-0.5" />, text: 'Digital lending compliance' },
+      { icon: <Users className="w-5 h-5 text-indigo-600 mt-0.5" />, text: 'KYC/AML implementation guide' }
+    ],
+    journeySteps: [
+      { title: 'Landscape', description: 'FinTech regulations', color: 'blue' },
+      { title: 'Licensing', description: 'PA/PG & NBFC setup', color: 'indigo' },
+      { title: 'Compliance', description: 'KYC, AML & data', color: 'violet' },
+      { title: 'Scale', description: 'Growth & partnerships', color: 'purple' }
+    ],
+    resources: [
+      { icon: <Building className="w-8 h-8 text-blue-600 mb-3" />, title: 'RBI Compliance Kit', description: 'All regulatory documentation templates', buttonText: 'Get Compliance Kit', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <FileText className="w-8 h-8 text-indigo-600 mb-3" />, title: 'Licensing Guide', description: 'Step-by-step PA/PG and NBFC application', buttonText: 'Access Guide', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <Award className="w-8 h-8 text-violet-600 mb-3" />, title: 'KYC/AML Framework', description: 'Implementation templates and SOPs', buttonText: 'Download Framework', buttonIcon: <Download className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '60', label: 'Days Duration', color: 'blue' },
+      { value: '80+', label: 'Templates', color: 'indigo' },
+      { value: '11', label: 'Modules', color: 'violet' }
+    ],
+    ctaText: 'Ready to Launch Your FinTech?',
+    ctaSubtext: 'Navigate RBI regulations and build compliant FinTech products in India.',
+    price: '₹8,999'
+  },
+
+  // P30: International Expansion
+  P30: {
+    gradientFrom: 'from-violet-900',
+    gradientVia: 'via-purple-800',
+    gradientTo: 'to-fuchsia-900',
+    badgeText: 'GLOBAL EXPANSION MASTERY',
+    badgeBgColor: 'bg-yellow-500',
+    badgeTextColor: 'text-black',
+    stats: [
+      { value: '11', label: 'Modules' },
+      { value: '60', label: 'Days' },
+      { value: 'Global', label: 'Markets' },
+      { value: 'FEMA', label: 'Compliant' }
+    ],
+    achievements: [
+      'Master FEMA compliance for international expansion',
+      'Navigate US, EU, and MENA market entry',
+      'Set up international subsidiaries correctly',
+      'Implement transfer pricing frameworks',
+      'Build cross-border payment systems',
+      'Scale your startup to global markets'
+    ],
+    features: [
+      { icon: <Globe className="w-5 h-5 text-violet-500 mt-0.5" />, text: 'Complete FEMA compliance guide' },
+      { icon: <Building className="w-5 h-5 text-purple-500 mt-0.5" />, text: 'US/EU/MENA market entry frameworks' },
+      { icon: <FileText className="w-5 h-5 text-fuchsia-500 mt-0.5" />, text: 'International subsidiary setup' },
+      { icon: <TrendingUp className="w-5 h-5 text-violet-600 mt-0.5" />, text: 'Transfer pricing documentation' },
+      { icon: <Award className="w-5 h-5 text-purple-600 mt-0.5" />, text: 'Cross-border payment solutions' }
+    ],
+    journeySteps: [
+      { title: 'Foundation', description: 'FEMA & compliance', color: 'violet' },
+      { title: 'Structure', description: 'International entity setup', color: 'purple' },
+      { title: 'Markets', description: 'US, EU & MENA entry', color: 'fuchsia' },
+      { title: 'Scale', description: 'Global operations', color: 'pink' }
+    ],
+    resources: [
+      { icon: <Globe className="w-8 h-8 text-violet-600 mb-3" />, title: 'FEMA Compliance Kit', description: 'Complete regulatory documentation for ODI/FDI', buttonText: 'Get Compliance Kit', buttonIcon: <Download className="w-4 h-4 mr-2" /> },
+      { icon: <Building className="w-8 h-8 text-purple-600 mb-3" />, title: 'Market Entry Playbook', description: 'US, EU, MENA expansion frameworks', buttonText: 'Access Playbook', buttonIcon: <ExternalLink className="w-4 h-4 mr-2" /> },
+      { icon: <FileText className="w-8 h-8 text-fuchsia-600 mb-3" />, title: 'Transfer Pricing Guide', description: 'Documentation and compliance templates', buttonText: 'Download Guide', buttonIcon: <Download className="w-4 h-4 mr-2" /> }
+    ],
+    communityStats: [
+      { value: '60', label: 'Days Duration', color: 'violet' },
+      { value: '90+', label: 'Templates', color: 'purple' },
+      { value: '11', label: 'Modules', color: 'fuchsia' }
+    ],
+    ctaText: 'Ready to Go Global?',
+    ctaSubtext: 'Expand your Indian startup to international markets with FEMA-compliant frameworks.',
+    price: '₹9,999'
   }
 };
 

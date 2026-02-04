@@ -818,7 +818,7 @@ export default function JourneyPage() {
                           Unlock All Courses with All Access
                         </Heading>
                         <Text color="muted" className="max-w-2xl mx-auto mb-6">
-                          Get instant access to all 12 courses, future updates, and exclusive content. 
+                          Get instant access to all 30 courses, future updates, and exclusive content.
                           The complete education you need to build a successful startup.
                         </Text>
                         <Link href="/pricing">

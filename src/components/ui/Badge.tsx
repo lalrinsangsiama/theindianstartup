@@ -17,10 +17,11 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       outline: 'bg-white text-gray-600 border-gray-300',
     };
     
+    // Increased padding for better touch targets when badges are clickable
     const sizes = {
-      sm: 'px-2 py-1 text-xs',
-      md: 'px-2.5 py-1.5 text-sm',
-      lg: 'px-3 py-2 text-base',
+      sm: 'px-2.5 py-1.5 text-xs min-h-[28px]',
+      md: 'px-3 py-2 text-sm min-h-[32px]',
+      lg: 'px-4 py-2.5 text-base min-h-[36px]',
     };
     
     return (

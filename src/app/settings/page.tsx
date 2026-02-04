@@ -20,9 +20,9 @@ import { TabsContent } from '@/components/ui/Tabs';
 import { TabsList } from '@/components/ui/Tabs';
 import { TabsTrigger } from '@/components/ui/Tabs';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { 
-  Bell, 
-  Shield, 
+import {
+  Bell,
+  Shield,
   Download,
   Trash2,
   AlertTriangle,
@@ -35,20 +35,14 @@ import {
   Mail,
   CreditCard,
   Package,
-  Calendar,
   Receipt,
-  ShoppingCart,
   TrendingUp,
-  Clock,
   Gift,
   AlertCircle,
   ExternalLink,
   User,
   Building,
-  MapPin,
-  Phone,
   Edit2,
-  Camera,
   BookOpen
 } from 'lucide-react';
 import { PaymentButton, BuyNowButton, AllAccessButton, UpgradeButton } from '@/components/payment/PaymentButton';
@@ -96,7 +90,8 @@ export default function SettingsPage() {
     name: '',
     phone: '',
     startupName: '',
-    industry: ''
+    industry: '',
+    linkedinUrl: ''
   });
   const [profileSaving, setProfileSaving] = useState(false);
 
@@ -107,7 +102,8 @@ export default function SettingsPage() {
         name: user.user_metadata?.name || '',
         phone: user.user_metadata?.phone || '',
         startupName: user.user_metadata?.startupName || '',
-        industry: user.user_metadata?.industry || ''
+        industry: user.user_metadata?.industry || '',
+        linkedinUrl: user.user_metadata?.linkedinUrl || ''
       });
     }
   }, [user]);
@@ -144,18 +140,17 @@ export default function SettingsPage() {
       try {
         setLoadingBilling(true);
         
-        // Fetch purchase history
-        const historyRes = await fetch('/api/purchase/history');
+        // Fetch purchase history using the existing endpoint
+        const historyRes = await fetch('/api/user/purchases');
         if (historyRes.ok) {
           const history = await historyRes.json();
           setPurchaseHistory(history.purchases || []);
-        }
-        
-        // Fetch current subscriptions
-        const subscriptionsRes = await fetch('/api/user/subscriptions');
-        if (subscriptionsRes.ok) {
-          const subs = await subscriptionsRes.json();
-          setBillingData(subs);
+          // Active purchases serve as subscriptions data
+          setBillingData({
+            activePurchases: (history.purchases || []).filter((p: { status: string; expiresAt: string }) =>
+              p.status === 'completed' && new Date(p.expiresAt) > new Date()
+            )
+          });
         }
       } catch (error) {
         logger.error('Failed to fetch billing data:', error);
@@ -463,13 +458,8 @@ export default function SettingsPage() {
                     <div className="space-y-6">
                       {/* Avatar Section */}
                       <div className="flex items-center gap-6">
-                        <div className="relative">
-                          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                            {user?.email?.charAt(0).toUpperCase() || 'U'}
-                          </div>
-                          <button className="absolute bottom-0 right-0 p-2 bg-black text-white rounded-full hover:bg-gray-800">
-                            <Camera className="w-4 h-4" />
-                          </button>
+                        <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                          {user?.email?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div>
                           <Text size="lg" weight="bold">{profileData.name || user?.user_metadata?.name || 'Founder'}</Text>
@@ -510,9 +500,12 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium mb-2">LinkedIn Profile</label>
-                          <Input 
-                            type="url" 
+                          <Input
+                            type="url"
+                            value={isEditingProfile ? (profileData as any).linkedinUrl || '' : (user?.user_metadata?.linkedinUrl || '')}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, linkedinUrl: e.target.value }))}
                             placeholder="https://linkedin.com/in/yourprofile"
+                            disabled={!isEditingProfile}
                           />
                         </div>
                       </div>
@@ -1126,12 +1119,14 @@ export default function SettingsPage() {
                     <div>
                       <Text weight="medium" className="mb-2">Change Password</Text>
                       <Text size="sm" color="muted" className="mb-3">
-                        Update your password to keep your account secure
+                        To change your password, use the &quot;Forgot Password&quot; option on the login page. We&apos;ll send a secure reset link to your email.
                       </Text>
-                      <Button variant="outline">
-                        <Key className="w-4 h-4 mr-2" />
-                        Change Password
-                      </Button>
+                      <Link href="/login?action=forgot">
+                        <Button variant="outline">
+                          <Key className="w-4 h-4 mr-2" />
+                          Reset Password via Email
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
@@ -1259,12 +1254,18 @@ export default function SettingsPage() {
                       <div>
                         <Text weight="medium" className="mb-2">Delete Account</Text>
                         <Text size="sm" color="muted" className="mb-3">
-                          Permanently delete your account and all associated data. This action cannot be reversed.
+                          To permanently delete your account and all associated data, please contact our support team at{' '}
+                          <a href="mailto:support@theindianstartup.in" className="text-blue-600 underline">
+                            support@theindianstartup.in
+                          </a>
+                          . Account deletion requests are processed within 7 business days.
                         </Text>
-                        <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete Account
-                        </Button>
+                        <a href="mailto:support@theindianstartup.in?subject=Account%20Deletion%20Request">
+                          <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50">
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Request Account Deletion
+                          </Button>
+                        </a>
                       </div>
                     </div>
                   </CardContent>

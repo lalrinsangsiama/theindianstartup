@@ -86,9 +86,9 @@ const PRODUCT_SEO_DATA = {
   },
   ALL_ACCESS: {
     title: 'All-Access Bundle - Complete Startup Mastery Program',
-    description: 'Access all 12 courses with 30% savings. Complete startup education from idea to scale.',
+    description: 'Access all 30 courses with 33% savings. Complete startup education from idea to global scale.',
     keywords: ['startup bundle', 'complete program', 'startup education', 'entrepreneur course', 'business mastery'],
-    price: 54999,
+    price: 149999,
     currency: 'INR',
   },
 } as const;

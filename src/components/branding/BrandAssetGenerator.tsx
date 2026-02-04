@@ -184,8 +184,87 @@ const BrandAssetGenerator: React.FC = () => {
   };
 
   const downloadAsset = (asset: BrandAsset) => {
-    // In a real implementation, this would download the actual asset
-    console.log('Downloading:', asset.name);
+    // Generate the asset on canvas and download
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size based on asset type
+    const sizes: Record<string, { w: number; h: number }> = {
+      logo: { w: 512, h: 512 },
+      color_palette: { w: 800, h: 400 },
+      typography: { w: 800, h: 600 },
+      template: { w: 1200, h: 630 },
+      icon: { w: 256, h: 256 },
+    };
+
+    const size = sizes[asset.type] || { w: 512, h: 512 };
+    canvas.width = size.w;
+    canvas.height = size.h;
+
+    // Clear canvas
+    ctx.fillStyle = colorPalette.background;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw based on asset type
+    if (asset.type === 'logo' || asset.type === 'icon') {
+      // Draw logo with brand name and selected style
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const shapeSize = Math.min(canvas.width, canvas.height) * 0.2;
+
+      // Draw shape based on selected style
+      ctx.fillStyle = colorPalette.accent;
+      switch (selectedStyle) {
+        case 'geometric':
+          ctx.fillRect(centerX - shapeSize, centerY - shapeSize - 60, shapeSize * 2, shapeSize * 2);
+          break;
+        case 'circular':
+        case 'friendly':
+          ctx.beginPath();
+          ctx.arc(centerX, centerY - 60, shapeSize, 0, 2 * Math.PI);
+          ctx.fill();
+          break;
+        case 'angular':
+        case 'dynamic':
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY - shapeSize - 60);
+          ctx.lineTo(centerX - shapeSize, centerY + shapeSize - 60);
+          ctx.lineTo(centerX + shapeSize, centerY + shapeSize - 60);
+          ctx.closePath();
+          ctx.fill();
+          break;
+        default:
+          // Default to rectangle
+          ctx.fillRect(centerX - shapeSize, centerY - shapeSize - 60, shapeSize * 2, shapeSize * 2);
+      }
+
+      // Draw brand name
+      ctx.fillStyle = colorPalette.primary;
+      ctx.font = `bold ${canvas.width * 0.08}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(brandName || 'Brand', centerX, centerY + shapeSize + 20);
+    } else if (asset.type === 'color_palette') {
+      // Draw color swatches
+      const colors = [colorPalette.primary, colorPalette.secondary, colorPalette.accent, colorPalette.neutral, colorPalette.background];
+      const swatchWidth = canvas.width / colors.length;
+      colors.forEach((color, i) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(i * swatchWidth, 0, swatchWidth, canvas.height * 0.7);
+        ctx.fillStyle = '#000';
+        ctx.font = '16px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(color.toUpperCase(), i * swatchWidth + swatchWidth / 2, canvas.height * 0.85);
+      });
+    }
+
+    // Create download link
+    const link = document.createElement('a');
+    link.download = `${asset.name.replace(/\s+/g, '_').toLowerCase()}.${asset.format}`;
+    link.href = canvas.toDataURL(`image/${asset.format === 'png' ? 'png' : 'jpeg'}`, 1.0);
+    link.click();
   };
 
   const copyColorToClipboard = (color: string) => {

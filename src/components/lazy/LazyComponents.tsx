@@ -104,10 +104,6 @@ export const LazyAnalyticsDashboard = withLazyLoading(
 );
 
 // Community components
-export const LazyCommunityPosts = withLazyLoading(
-  () => import('@/components/community/CommunityPosts')
-);
-
 export const LazyEcosystemDirectory = withLazyLoading(
   () => import('@/components/community/EcosystemDirectory')
 );

@@ -6,6 +6,7 @@
  */
 
 import crypto from 'crypto';
+import { logger } from '@/lib/logger';
 
 // Top 100 common passwords to block
 const COMMON_PASSWORDS = new Set([
@@ -176,7 +177,7 @@ export async function checkPasswordBreach(password: string): Promise<{
     return { breached: false };
   } catch (error) {
     // Don't block user if check fails
-    console.error('Password breach check failed:', error);
+    logger.error('Password breach check failed:', error);
     return { breached: false };
   }
 }

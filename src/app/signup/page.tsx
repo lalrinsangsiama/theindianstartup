@@ -41,13 +41,48 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState('');
 
-  // Load cart from localStorage
+  // Valid product codes for cart validation
+  const VALID_PRODUCT_CODES = [
+    'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10',
+    'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P20',
+    'P21', 'P22', 'P23', 'P24', 'P25', 'P26', 'P27', 'P28', 'P29', 'P30',
+    'T13', 'T14', 'T15', 'T16', 'T17', 'T18', 'T19', 'T20',
+    'T21', 'T22', 'T23', 'T24', 'T25', 'T26', 'T27', 'T28', 'T29', 'T30',
+    'ALL_ACCESS', 'SECTOR_MASTERY'
+  ];
+
+  // Load and validate cart from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem('preSignupCart');
     const earlyBird = localStorage.getItem('earlyBirdPurchase');
-    
+
     if (savedCart) {
-      setCart(JSON.parse(savedCart));
+      try {
+        const parsedCart: CartItem[] = JSON.parse(savedCart);
+        // C11 FIX: Validate cart items against current product catalog
+        const validatedCart = parsedCart.filter(item => {
+          const isValidCode = VALID_PRODUCT_CODES.includes(item.product?.code);
+          const hasValidPrice = typeof item.product?.price === 'number' && item.product.price > 0;
+          const hasValidTitle = typeof item.product?.title === 'string' && item.product.title.length > 0;
+          const hasValidQuantity = typeof item.quantity === 'number' && item.quantity > 0;
+          return isValidCode && hasValidPrice && hasValidTitle && hasValidQuantity;
+        });
+
+        // If cart was modified during validation, update localStorage
+        if (validatedCart.length !== parsedCart.length) {
+          if (validatedCart.length > 0) {
+            localStorage.setItem('preSignupCart', JSON.stringify(validatedCart));
+          } else {
+            localStorage.removeItem('preSignupCart');
+          }
+        }
+
+        setCart(validatedCart);
+      } catch {
+        // Invalid JSON in localStorage, clear it
+        localStorage.removeItem('preSignupCart');
+        setCart([]);
+      }
     }
     if (earlyBird === 'true') {
       setHasEarlyBird(true);

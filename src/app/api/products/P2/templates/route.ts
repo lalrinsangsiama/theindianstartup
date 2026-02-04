@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 
 
@@ -117,7 +118,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching P2 templates:', error);
+    logger.error('Error fetching P2 templates:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -242,7 +243,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error processing P2 template request:', error);
+    logger.error('Error processing P2 template request:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -292,7 +293,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ success: true, xpEarned: 10 });
 
   } catch (error) {
-    console.error('Error processing template feedback:', error);
+    logger.error('Error processing template feedback:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

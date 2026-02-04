@@ -24,6 +24,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
 interface ForumPost {
   id: string;
@@ -158,7 +159,7 @@ export function CommunityHub() {
 
   return (
     <div className="space-y-6">
-      {/* Community Stats */}
+      {/* Community Stats - Will show real data when available */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
@@ -166,7 +167,7 @@ export function CommunityHub() {
               <Users className="w-5 h-5 text-blue-600" />
               <Badge size="sm" variant="outline">Active</Badge>
             </div>
-            <Text className="text-2xl font-bold">10,247</Text>
+            <Text className="text-2xl font-bold">-</Text>
             <Text size="sm" color="muted">Community Members</Text>
           </CardContent>
         </Card>
@@ -175,9 +176,8 @@ export function CommunityHub() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
               <MessageSquare className="w-5 h-5 text-green-600" />
-              <Text size="xs" className="text-green-600">+12%</Text>
             </div>
-            <Text className="text-2xl font-bold">3,892</Text>
+            <Text className="text-2xl font-bold">-</Text>
             <Text size="sm" color="muted">Total Discussions</Text>
           </CardContent>
         </Card>
@@ -186,9 +186,8 @@ export function CommunityHub() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
               <TrendingUp className="w-5 h-5 text-purple-600" />
-              <Text size="xs" className="text-purple-600">New</Text>
             </div>
-            <Text className="text-2xl font-bold">156</Text>
+            <Text className="text-2xl font-bold">-</Text>
             <Text size="sm" color="muted">This Week</Text>
           </CardContent>
         </Card>
@@ -197,9 +196,8 @@ export function CommunityHub() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
               <Clock className="w-5 h-5 text-orange-600" />
-              <Badge size="sm" className="bg-orange-100 text-orange-700">Live</Badge>
             </div>
-            <Text className="text-2xl font-bold">42</Text>
+            <Text className="text-2xl font-bold">-</Text>
             <Text size="sm" color="muted">Online Now</Text>
           </CardContent>
         </Card>
@@ -279,10 +277,12 @@ export function CommunityHub() {
           </Button>
         </div>
 
-        <Button variant="primary">
-          <Plus className="w-4 h-4 mr-2" />
-          New Discussion
-        </Button>
+        <Link href="/community/new-post">
+          <Button variant="primary">
+            <Plus className="w-4 h-4 mr-2" />
+            New Discussion
+          </Button>
+        </Link>
       </div>
 
       {/* Posts List */}
@@ -305,67 +305,70 @@ export function CommunityHub() {
           </div>
         ) : filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <Heading as="h3" variant="h6" className="mb-1">
-                      {post.title}
-                    </Heading>
-                    <Text size="sm" color="muted" className="line-clamp-2">
-                      {post.content}
-                    </Text>
-                  </div>
-                  {post.author.isVerified && (
-                    <Badge className="bg-blue-100 text-blue-700">
-                      <UserCheck className="w-3 h-3 mr-1" />
-                      Verified
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" size="sm">
-                      <Tag className="w-3 h-3 mr-1" />
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLike(post.id);
-                      }}
-                      className={`flex items-center gap-1 ${post.isLiked ? 'text-red-600' : 'text-gray-600'} hover:text-red-600 transition-colors`}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                      {post.likes}
-                    </button>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <MessageCircle className="w-4 h-4" />
-                      {post.replies}
+            <Link key={post.id} href={`/community/posts/${post.id}`}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <Heading as="h3" variant="h6" className="mb-1">
+                        {post.title}
+                      </Heading>
+                      <Text size="sm" color="muted" className="line-clamp-2">
+                        {post.content}
+                      </Text>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Eye className="w-4 h-4" />
-                      {post.views}
+                    {post.author.isVerified && (
+                      <Badge className="bg-blue-100 text-blue-700">
+                        <UserCheck className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.tags.map((tag) => (
+                      <Badge key={tag} variant="outline" size="sm">
+                        <Tag className="w-3 h-3 mr-1" />
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-sm">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleLike(post.id);
+                        }}
+                        className={`flex items-center gap-1 ${post.isLiked ? 'text-red-600' : 'text-gray-600'} hover:text-red-600 transition-colors`}
+                      >
+                        <ThumbsUp className="w-4 h-4" />
+                        {post.likes}
+                      </button>
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <MessageCircle className="w-4 h-4" />
+                        {post.replies}
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Eye className="w-4 h-4" />
+                        {post.views}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Text size="xs" color="muted">
+                        by {post.author.name}
+                      </Text>
+                      <Text size="xs" color="muted">
+                        • {new Date(post.lastActivity).toLocaleDateString()}
+                      </Text>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Text size="xs" color="muted">
-                      by {post.author.name}
-                    </Text>
-                    <Text size="xs" color="muted">
-                      • {new Date(post.lastActivity).toLocaleDateString()}
-                    </Text>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))
         ) : (
           <Card>

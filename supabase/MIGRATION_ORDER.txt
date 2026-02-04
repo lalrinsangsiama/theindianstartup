@@ -1,0 +1,72 @@
+=== Migration Files Execution Order ===
+
+Run these files in order via Supabase SQL Editor:
+
+FOUNDATION COURSES (P1-P12):
+1. 20260204_001_p1_launch_sprint_enhanced.sql
+2. 20260204_002_p2_incorporation_enhanced.sql
+3. 20260204_003_p3_funding_enhanced.sql
+4. 20260204_004_p4_finance_enhanced.sql
+5. 20260204_004b_p4_finance_enhanced_part2.sql
+6. 20260204_005_p5_legal_enhanced.sql
+7. 20260204_005b_p5_legal_enhanced_part2.sql
+8. 20260204_006_p6_sales_gtm_enhanced.sql
+9. 20260204_006b_p6_sales_gtm_enhanced_part2.sql
+10. 20260204_007_p7_state_schemes_enhanced.sql
+11. 20260204_008_p8_dataroom_enhanced.sql
+12. 20260204_009_p9_govt_schemes_enhanced.sql
+13. 20260204_010_p10_patent_enhanced.sql
+14. 20260204_011_p11_branding_enhanced.sql
+15. 20260204_012_p12_marketing_enhanced.sql
+
+SECTOR COURSES (P13-P15):
+16. 20260204_013_p13_food_processing_enhanced.sql
+17. 20260204_014_p14_impact_csr_enhanced.sql
+18. 20260204_015_p15_carbon_credits_enhanced.sql
+
+CORE FUNCTIONS (P16-P19):
+19. 20260204_016_p16_hr_team_enhanced.sql
+20. 20260204_017_p17_product_dev_enhanced.sql
+21. 20260204_018_p18_operations_enhanced.sql
+22. 20260204_018b_p18_operations_enhanced_part2.sql
+23. 20260204_019_p19_technology_enhanced.sql
+
+HIGH-GROWTH SECTORS (P20-P24):
+24. 20260204_020_p20_fintech_enhanced.sql
+25. 20260204_021_p21_healthtech_enhanced.sql
+26. 20260204_021b_p21_healthtech_enhanced_part2.sql
+27. 20260204_021c_p21_healthtech_enhanced_part3.sql
+28. 20260204_022_p22_ecommerce_enhanced.sql
+29. 20260204_022b_p22_ecommerce_enhanced_part2.sql
+30. 20260204_023_p23_ev_mobility_enhanced.sql
+31. 20260204_024_p24_manufacturing_enhanced.sql
+32. 20260204_024_p24_manufacturing_enhanced_part2.sql
+33. 20260204_024_p24_manufacturing_enhanced_part3.sql
+
+EMERGING SECTORS (P25-P28):
+34. 20260204_025_p25_edtech_enhanced.sql
+35. 20260204_026_p25_edtech_enhanced_part2.sql
+36. 20260204_027_p25_edtech_enhanced_part3.sql
+37. 20260204_026_p26_agritech_enhanced.sql
+38. 20260204_027_p27_proptech_enhanced.sql
+39. 20260204_028_p28_biotech_enhanced.sql
+40. 20260204_028b_p28_biotech_enhanced_part2.sql
+
+ADVANCED (P29-P30):
+41. 20260204_029_p29_saas_enhanced.sql
+42. 20260204_029b_p29_saas_enhanced_part2.sql
+43. 20260204_030_p30_international_enhanced.sql
+
+VERIFICATION QUERY (run after all migrations):
+SELECT
+    p.code,
+    p.title,
+    COUNT(DISTINCT m.id) as modules,
+    COUNT(l.id) as lessons,
+    AVG(LENGTH(l."briefContent"))::int as avg_content_length
+FROM "Product" p
+LEFT JOIN "Module" m ON p.id = m."productId"
+LEFT JOIN "Lesson" l ON m.id = l."moduleId"
+WHERE p.code LIKE 'P%'
+GROUP BY p.code, p.title
+ORDER BY p.code;

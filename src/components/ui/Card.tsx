@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'outline' | 'filled';
+  /** Enable interactive hover/focus states */
+  interactive?: boolean;
 }
 
 interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -12,19 +14,25 @@ interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
 interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = 'default', ...props }, ref) => {
+  ({ className, variant = 'default', interactive = false, ...props }, ref) => {
     const variants = {
       default: 'bg-white border border-gray-200',
       outline: 'border border-gray-200',
       filled: 'bg-gray-50 border border-gray-100',
     };
-    
+
+    const interactiveClasses = interactive
+      ? 'transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 cursor-pointer'
+      : '';
+
     return (
       <div
         ref={ref}
+        tabIndex={interactive ? 0 : undefined}
         className={cn(
           'rounded-lg shadow-sm',
           variants[variant],
+          interactiveClasses,
           className
         )}
         {...props}

@@ -95,16 +95,27 @@ export default function WriteReviewPage() {
   const fetchListingInfo = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Mock data for demonstration
-      const mockListing: ListingBasicInfo = {
-        id: listingId,
-        name: 'T-Hub Hyderabad',
-        category: 'incubator',
-        logoUrl: '/logos/t-hub.png',
-      };
-      
-      setListing(mockListing);
+
+      // Fetch listing info from API
+      const response = await fetch(`/api/community/ecosystem/listings?listingId=${listingId}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch listing');
+      }
+
+      const data = await response.json();
+
+      if (data.listings && data.listings.length > 0) {
+        const fetchedListing = data.listings[0];
+        setListing({
+          id: fetchedListing.id,
+          name: fetchedListing.name,
+          category: fetchedListing.category,
+          logoUrl: fetchedListing.logoUrl,
+        });
+      } else {
+        setListing(null);
+      }
     } catch (error) {
       logger.error('Error fetching listing info:', error);
       setError('Failed to load listing information');

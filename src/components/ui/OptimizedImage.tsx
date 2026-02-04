@@ -140,8 +140,9 @@ export function OptimizedImage({
         <>
           {/* Show skeleton while loading */}
           {skeleton && !imageLoaded && !imageError && (
-            <Skeleton 
-              className={`absolute inset-0 ${width ? `w-[${width}px]` : 'w-full'} ${height ? `h-[${height}px]` : 'h-full'}`} 
+            <Skeleton
+              className="absolute inset-0"
+              style={{ width: width ? `${width}px` : '100%', height: height ? `${height}px` : '100%' }}
             />
           )}
           
@@ -169,9 +170,10 @@ export function OptimizedImage({
           
           {/* Error fallback */}
           {imageError && (
-            <div className={`bg-gray-100 flex items-center justify-center ${
-              fill ? 'absolute inset-0' : `w-[${width}px] h-[${height}px]`
-            }`}>
+            <div
+              className={`bg-gray-100 flex items-center justify-center ${fill ? 'absolute inset-0' : ''}`}
+              style={!fill ? { width: width ? `${width}px` : 'auto', height: height ? `${height}px` : 'auto' } : undefined}
+            >
               <div className="text-center text-gray-500 p-4">
                 <svg
                   className="w-8 h-8 mx-auto mb-2 text-gray-400"
@@ -194,8 +196,8 @@ export function OptimizedImage({
       ) : (
         // Placeholder while waiting for intersection
         skeleton && (
-          <Skeleton 
-            className={`${width ? `w-[${width}px]` : 'w-full'} ${height ? `h-[${height}px]` : 'h-full'}`} 
+          <Skeleton
+            style={{ width: width ? `${width}px` : '100%', height: height ? `${height}px` : '100%' }}
           />
         )
       )}

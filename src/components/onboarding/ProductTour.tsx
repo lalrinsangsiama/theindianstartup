@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { usePathname } from 'next/navigation';
+import { ACTIONS, EVENTS, STATUS, type CallBackProps } from 'react-joyride';
 import { logger } from '@/lib/logger';
 
 // Dynamically import Joyride to avoid SSR issues
-const Joyride = dynamic(() => import('react-joyride'), { ssr: false });
+const Joyride = dynamic(() => import('react-joyride').then(mod => mod.default), { ssr: false });
 
 export interface TourStep {
   target: string;
@@ -108,7 +108,6 @@ const TOUR_STORAGE_KEY = 'productTourCompleted';
 export function ProductTour({ tourType = 'dashboard', forceShow = false }: ProductTourProps) {
   const [run, setRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
-  const pathname = usePathname();
 
   const steps = tourType === 'lesson' ? lessonTourSteps : dashboardTourSteps;
 
@@ -121,8 +120,8 @@ export function ProductTour({ tourType = 'dashboard', forceShow = false }: Produ
 
     // Check localStorage for tour completion
     try {
-      const completed = localStorage.getItem(TOUR_STORAGE_KEY);
-      if (!completed) {
+      const completedTours = JSON.parse(localStorage.getItem(TOUR_STORAGE_KEY) || '{}');
+      if (!completedTours[tourType]) {
         // Small delay to ensure DOM is ready
         const timer = setTimeout(() => setRun(true), 1000);
         return () => clearTimeout(timer);
@@ -132,14 +131,25 @@ export function ProductTour({ tourType = 'dashboard', forceShow = false }: Produ
     }
   }, [forceShow, tourType]);
 
-  const handleJoyrideCallback = useCallback((data: any) => {
+  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
     const { action, index, status, type } = data;
 
-    if (type === 'step:after' || type === 'target:notFound') {
+    // Handle step progression on STEP_AFTER event
+    if (type === EVENTS.STEP_AFTER) {
+      if (action === ACTIONS.NEXT) {
+        setStepIndex(index + 1);
+      } else if (action === ACTIONS.PREV) {
+        setStepIndex(index - 1);
+      }
+    }
+
+    // Handle target not found - skip to next step
+    if (type === EVENTS.TARGET_NOT_FOUND) {
       setStepIndex(index + 1);
     }
 
-    if (status === 'finished' || status === 'skipped') {
+    // Handle tour completion (finished all steps or clicked skip)
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
       try {
         const completedTours = JSON.parse(localStorage.getItem(TOUR_STORAGE_KEY) || '{}');
@@ -148,6 +158,11 @@ export function ProductTour({ tourType = 'dashboard', forceShow = false }: Produ
       } catch (error) {
         logger.error('Error saving tour status:', error);
       }
+    }
+
+    // Handle close button click
+    if (action === ACTIONS.CLOSE) {
+      setRun(false);
     }
   }, [tourType]);
 

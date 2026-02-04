@@ -89,64 +89,34 @@ export default function FounderProfilePage() {
   const fetchProfileData = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // In real app, fetch from API
-      // For demo, using mock data
-      const mockProfile: FounderProfile = {
-        id: userId,
-        name: 'Priya Sharma',
-        email: 'priya@customerbot.ai',
-        avatar: '',
-        bio: 'Building AI-powered customer service solutions. Passionate about helping small businesses scale through technology. Always learning, always growing! 🚀',
-        joinedAt: '2023-12-01',
-        currentDay: 15,
-        totalXP: 1250,
-        currentStreak: 7,
-        longestStreak: 12,
-        badges: ['Starter', 'Researcher', 'MVP Master', 'Community Helper'],
-        linkedinUrl: 'https://linkedin.com/in/priyasharma',
-        twitterUrl: 'https://twitter.com/priya_builds',
-        websiteUrl: 'https://customerbot.ai',
-        startupName: 'CustomerBot AI',
-        tagline: 'AI-powered customer service for SMBs',
-        industry: 'SaaS',
-        postsCount: 8,
-        commentsCount: 42,
-        likesReceived: 156,
-        helpfulAnswers: 12,
-      };
 
-      const mockActivity: RecentActivity[] = [
-        {
-          id: '1',
-          type: 'post',
-          title: 'Shared: How I validated my SaaS idea in 2 weeks',
-          description: 'Posted in Success Stories about their validation process',
-          createdAt: '2024-01-15T10:30:00Z',
-          link: '/community/posts/1',
-        },
-        {
-          id: '2',
-          type: 'badge_earned',
-          title: 'Earned: Community Helper badge',
-          description: 'Helped 10 fellow founders with their questions',
-          createdAt: '2024-01-14T15:20:00Z',
-        },
-        {
-          id: '3',
-          type: 'comment',
-          title: 'Commented on: GST registration guidance',
-          description: 'Provided helpful advice about GST registration process',
-          createdAt: '2024-01-12T09:15:00Z',
-          link: '/community/posts/2',
-        },
-      ];
+      // Fetch real profile data from API
+      const [profileResponse, activityResponse] = await Promise.all([
+        fetch(`/api/community/profile/${userId}`),
+        fetch(`/api/community/profile/${userId}/activity`),
+      ]);
 
-      setProfile(mockProfile);
-      setRecentActivity(mockActivity);
-      setIsOwnProfile(userId === 'current-user-id'); // In real app, check against current user
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        setProfile(profileData.profile);
+        setIsOwnProfile(profileData.isOwnProfile || false);
+      } else if (profileResponse.status === 404) {
+        setProfile(null);
+      } else {
+        // API error - show not found
+        setProfile(null);
+      }
+
+      if (activityResponse.ok) {
+        const activityData = await activityResponse.json();
+        setRecentActivity(activityData.activity || []);
+      } else {
+        setRecentActivity([]);
+      }
     } catch (error) {
       logger.error('Error fetching profile:', error);
+      setProfile(null);
+      setRecentActivity([]);
     } finally {
       setLoading(false);
     }

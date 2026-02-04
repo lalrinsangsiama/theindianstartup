@@ -23,6 +23,8 @@ function AuthErrorContent() {
         <Alert variant="error" title="Verification failed">
           {error === 'No verification code found'
             ? 'The verification link is invalid or has expired. Please request a new verification email.'
+            : error.includes('PKCE') || error.includes('code verifier')
+            ? 'Your verification session expired. This can happen if you opened the link in a different browser or after some time. Please request a new verification email.'
             : error}
         </Alert>
         <div className="space-y-4">

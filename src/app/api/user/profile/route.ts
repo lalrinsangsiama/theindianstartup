@@ -6,6 +6,14 @@ import { PURCHASE_STATUS } from '@/lib/constants';
 import { userProfileUpdateSchema, validateRequest, validationErrorResponse } from '@/lib/validation-schemas';
 import { applyUserRateLimit } from '@/lib/rate-limit';
 
+interface PurchaseRecord {
+  id: string;
+  status: string;
+  expiresAt: string;
+  productCode: string;
+  amount: number;
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
@@ -28,22 +36,25 @@ export async function GET(request: NextRequest) {
 
     // Removed debug logging
 
-    // If user doesn't exist in our database yet, return minimal profile
+    // If user doesn't exist in our database yet, return 404
     if (!userProfile) {
       logger.info('User profile not found in database for user:', { userId: user.id });
-      return NextResponse.json({
-        user: null,
-        hasCompletedOnboarding: true, // Onboarding skipped - always true
-        needsOnboarding: false,
-      });
+      return NextResponse.json(
+        {
+          error: 'Profile not found',
+          code: 'PROFILE_NOT_FOUND',
+          needsProfileCreation: true,
+        },
+        { status: 404 }
+      );
     }
 
     // Onboarding is always considered complete (onboarding flow removed)
     const hasCompletedOnboarding = true;
 
     // Check for active purchases
-    const activePurchases = userProfile?.purchases?.filter((purchase: any) => 
-      purchase.status === 'completed' && 
+    const activePurchases = (userProfile?.purchases as PurchaseRecord[] | undefined)?.filter((purchase) =>
+      purchase.status === 'completed' &&
       new Date(purchase.expiresAt) > new Date()
     ) || [];
     
@@ -82,8 +93,8 @@ export async function PATCH(request: NextRequest) {
       return errorResponse('Unauthorized', 401);
     }
 
-    // Apply rate limiting: 10 profile updates per hour
-    const { allowed, headers } = await applyUserRateLimit(user.id, 'api');
+    // H2: Apply correct rate limiting: 10 profile updates per hour
+    const { allowed, headers } = await applyUserRateLimit(user.id, 'profileUpdate');
     if (!allowed) {
       return NextResponse.json(
         { error: 'Too many profile updates. Please try again later.' },

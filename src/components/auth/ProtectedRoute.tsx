@@ -10,17 +10,20 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
   allowedRoles?: string[];
+  unauthorizedRedirect?: string;
 }
 
 export function ProtectedRoute({
   children,
   redirectTo = '/login',
   allowedRoles = [],
+  unauthorizedRedirect = '/dashboard',
 }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, session, loading: authLoading, initialized } = useAuthContext();
   const [hasAccess, setHasAccess] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(false);
   const redirected = useRef(false);
 
   useEffect(() => {
@@ -45,19 +48,43 @@ export function ProtectedRoute({
       return;
     }
 
-    // User is authenticated
-    // For role-based access, we'd check roles here
-    // For now, just grant access if user has a session
+    // C5: Implement role-based access control
     if (allowedRoles.length > 0) {
-      // Role checking would go here
-      // For simplicity, grant access - real role check happens server-side
+      setCheckingRole(true);
+
+      // Get user role from user_metadata or app_metadata
+      const userRole = user.user_metadata?.role || user.app_metadata?.role || 'user';
+
+      // Check if user has one of the allowed roles
+      const hasRequiredRole = allowedRoles.some(role => {
+        // Support hierarchical roles: admin has access to all roles
+        if (userRole === 'admin') return true;
+        // Support moderator having access to user routes
+        if (userRole === 'moderator' && role === 'user') return true;
+        return userRole === role;
+      });
+
+      if (!hasRequiredRole) {
+        if (!redirected.current) {
+          redirected.current = true;
+          logger.warn('ProtectedRoute: User lacks required role', {
+            userRole,
+            requiredRoles: allowedRoles,
+            path: pathname
+          });
+          router.replace(unauthorizedRedirect);
+        }
+        setCheckingRole(false);
+        return;
+      }
+      setCheckingRole(false);
     }
 
     setHasAccess(true);
-  }, [initialized, authLoading, session, user, pathname, router, redirectTo, allowedRoles]);
+  }, [initialized, authLoading, session, user, pathname, router, redirectTo, allowedRoles, unauthorizedRedirect]);
 
-  // Still initializing auth
-  if (!initialized || authLoading) {
+  // Still initializing auth or checking roles
+  if (!initialized || authLoading || checkingRole) {
     return <AuthLoading message="Loading..." />;
   }
 
@@ -71,8 +98,8 @@ export function ProtectedRoute({
     return <>{children}</>;
   }
 
-  // Default loading state
-  return <AuthLoading message="Loading..." />;
+  // Default loading state (waiting for redirect)
+  return <AuthLoading message="Checking permissions..." />;
 }
 
 // HOC version for pages
@@ -81,6 +108,7 @@ export function withAuth<P extends object>(
   options?: {
     redirectTo?: string;
     allowedRoles?: string[];
+    unauthorizedRedirect?: string;
   }
 ) {
   return function ProtectedComponent(props: P) {

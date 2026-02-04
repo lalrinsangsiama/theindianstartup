@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { applyRateLimit } from '@/lib/rate-limit';
+import { ecosystemReviewSchema, validateRequest } from '@/lib/validation-schemas';
+import { sanitizeText, sanitizeHTML } from '@/lib/sanitize';
 
 export const dynamic = 'force-dynamic';
 
 // POST - Create a new review
 export async function POST(request: NextRequest) {
   try {
-    const {
-      listingId,
-      rating,
-      title,
-      content,
-      experienceType,
-      applicationDate,
-      responseTime,
-      isAnonymous,
-      anonymousName,
-    } = await request.json();
-
     // Get authenticated user
     const supabase = createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -30,27 +21,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate required fields
-    if (!listingId || !rating || !title || !content || !experienceType) {
+    // Apply rate limiting (10 reviews per day per user)
+    const rateLimit = await applyRateLimit(request, 'createReview');
+    if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Too many reviews. Please wait before submitting another.' },
+        { status: 429, headers: rateLimit.headers }
+      );
+    }
+
+    const body = await request.json();
+
+    // Validate input with Zod schema
+    const validation = validateRequest(ecosystemReviewSchema, body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.details },
         { status: 400 }
       );
     }
 
-    if (rating < 1 || rating > 5) {
-      return NextResponse.json(
-        { error: 'Rating must be between 1 and 5' },
-        { status: 400 }
-      );
-    }
+    const {
+      listingId,
+      rating,
+      title,
+      content,
+      experienceType,
+      applicationDate,
+      responseTime,
+      isAnonymous,
+      anonymousName,
+    } = validation.data;
 
-    if (isAnonymous && !anonymousName) {
-      return NextResponse.json(
-        { error: 'Anonymous name is required for anonymous reviews' },
-        { status: 400 }
-      );
-    }
+    // Sanitize text inputs
+    const sanitizedTitle = sanitizeText(title);
+    const sanitizedContent = sanitizeHTML(content, { allowLinks: true });
+    const sanitizedAnonName = anonymousName ? sanitizeText(anonymousName) : null;
 
     // Check if listing exists
     const { data: listing, error: listingError } = await supabase
@@ -88,13 +94,13 @@ export async function POST(request: NextRequest) {
         listing_id: listingId,
         author_id: isAnonymous ? null : user.id,
         rating,
-        title,
-        content,
+        title: sanitizedTitle,
+        content: sanitizedContent,
         experience_type: experienceType,
         application_date: applicationDate || null,
         response_time: responseTime || null,
         is_anonymous: isAnonymous,
-        anonymous_name: isAnonymous ? anonymousName : null,
+        anonymous_name: sanitizedAnonName,
         is_approved: true, // Auto-approve for now
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

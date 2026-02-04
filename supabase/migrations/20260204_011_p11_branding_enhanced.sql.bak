@@ -1,0 +1,832 @@
+-- P11: Branding & PR Mastery - Enhanced Migration
+-- Course: Brand Strategy to Industry Leadership
+-- Price: ₹7,999 | Duration: 54 days | 12 Modules
+
+DO $$
+DECLARE
+    v_product_id UUID;
+    v_module_id UUID;
+BEGIN
+    -- Upsert product
+    INSERT INTO products (code, title, description, price, currency, duration_days, is_active)
+    VALUES (
+        'P11',
+        'Branding & PR Mastery',
+        'Transform your startup into a recognized industry leader. Master brand strategy, media relations, crisis communication, and thought leadership for the Indian market.',
+        7999,
+        'INR',
+        54,
+        true
+    )
+    ON CONFLICT (code) DO UPDATE SET
+        title = EXCLUDED.title,
+        description = EXCLUDED.description,
+        price = EXCLUDED.price,
+        duration_days = EXCLUDED.duration_days,
+        is_active = EXCLUDED.is_active
+    RETURNING id INTO v_product_id;
+
+    -- Delete existing modules and lessons for clean re-insert
+    DELETE FROM lessons WHERE module_id IN (SELECT id FROM modules WHERE product_id = v_product_id);
+    DELETE FROM modules WHERE product_id = v_product_id;
+
+    -- MODULE 1: Brand Strategy Foundation
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Brand Strategy Foundation', 'Build a solid brand foundation that resonates with Indian audiences and sets you apart from competitors.', 1, 5)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Understanding Brand Architecture', 'Learn the fundamentals of brand architecture and positioning for Indian startups.',
+    'Complete guide to brand architecture fundamentals.', 1, 45,
+    'Brand architecture is the organizational structure of your brand portfolio, defining how your company, products, and services relate to each other. For Indian startups, getting this right from day one prevents costly rebranding later.
+
+The three primary brand architecture models are: Branded House (like Tata - where the master brand dominates), House of Brands (like HUL - where individual brands operate independently), and Endorsed Brands (like Mahindra - where the parent brand provides credibility backing).
+
+For early-stage startups, the Branded House model typically works best. It concentrates marketing spend, builds equity faster, and simplifies decision-making. As you scale to multiple distinct product lines, you can evolve to hybrid models.
+
+Your brand positioning statement should answer: Who is your target audience? What category do you compete in? What is your unique benefit? What is the reason to believe? Indian consumers particularly value trust signals, heritage (even for new brands, through founder story), and value-for-money positioning.
+
+The Indian market has unique considerations: regional diversity means your brand must translate across 22 official languages without losing meaning. Colors, symbols, and numbers carry different connotations across regions. For example, red signifies prosperity in many parts of India but should be used carefully in communications around financial losses.
+
+Brand positioning in India often succeeds when it connects to cultural values: family, aspiration, respect for expertise, and the journey of transformation. Brands like Amul have mastered this by becoming part of the cultural conversation.
+
+Start by documenting your brand foundation: mission, vision, values, and positioning statement. These become the filter through which all brand decisions flow. Review them quarterly as your startup evolves, but avoid frequent pivots that confuse your audience.',
+    '[{"task": "Document your brand mission, vision, and values in a single-page brand foundation document", "priority": "high"}, {"task": "Analyze 5 successful Indian startup brands and identify their architecture model", "priority": "medium"}, {"task": "Create your brand positioning statement using the standard framework", "priority": "high"}, {"task": "Test your brand name pronunciation and meaning across 5 major Indian languages", "priority": "medium"}]',
+    '[{"title": "Brand Architecture Guide by Interbrand", "url": "https://interbrand.com/thinking/", "type": "guide"}, {"title": "India Brand Equity Foundation Resources", "url": "https://www.ibef.org/", "type": "resource"}, {"title": "YourStory Brand Building Stories", "url": "https://yourstory.com/", "type": "publication"}, {"title": "Pitch.Link Brand Strategy Templates", "url": "https://pitch.link/", "type": "tool"}]'),
+
+    (v_module_id, 'Competitive Brand Analysis', 'Master techniques to analyze competitor brands and identify market opportunities.',
+    'Deep dive into competitive brand analysis methods.', 2, 40,
+    'Competitive brand analysis in India requires understanding both direct competitors and adjacent players who might enter your space. The Indian startup ecosystem has seen rapid commoditization in many sectors, making differentiation crucial.
+
+Start by mapping your competitive landscape across four dimensions: Direct competitors (same product, same audience), Indirect competitors (different product, same need), Potential disruptors (adjacent players who could pivot), and Aspirational benchmarks (brands you admire, even from different industries).
+
+For each competitor, analyze their brand presence: visual identity consistency, messaging themes, media coverage patterns, social media engagement, and customer sentiment. Tools like Social Blade, Similarweb, and Google Trends provide quantitative data; manual review of their communications provides qualitative insights.
+
+In India, also track regional competitors who might be dominant in specific states but absent nationally. Many successful Indian startups started by dominating one region before expanding. Understanding these regional dynamics helps identify white spaces.
+
+Create a brand perception map plotting competitors on axes relevant to your category (e.g., premium vs. value, traditional vs. modern, specialist vs. generalist). Identify where clusters form and where gaps exist. Your positioning should ideally occupy a defensible gap rather than competing head-on with established players.
+
+Analyze competitor PR and media strategy: Which publications feature them? Who are their spokespersons? What themes do they emphasize? This reveals opportunities to differentiate your narrative. If competitors focus heavily on technology, perhaps emphasizing customer outcomes creates distinction.
+
+Monitor competitor brand changes through trademark filings (search.ipindia.gov.in), company announcements, and job postings (PR or brand manager hires signal upcoming campaigns).
+
+Document findings in a competitive brand intelligence dashboard updated monthly. Include share of voice metrics, sentiment analysis, and emerging narrative themes.',
+    '[{"task": "Create a competitive landscape map with 10+ players including regional competitors", "priority": "high"}, {"task": "Set up Google Alerts and social listening for top 5 competitors", "priority": "high"}, {"task": "Build a brand perception positioning map for your category", "priority": "medium"}, {"task": "Analyze competitor media coverage from the past 6 months to identify themes", "priority": "medium"}]',
+    '[{"title": "Similarweb Competitive Analysis", "url": "https://www.similarweb.com/", "type": "tool"}, {"title": "Indian Trademark Search", "url": "https://search.ipindia.gov.in/", "type": "government"}, {"title": "Social Blade Analytics", "url": "https://socialblade.com/", "type": "tool"}, {"title": "Inc42 Startup Coverage", "url": "https://inc42.com/", "type": "publication"}]'),
+
+    (v_module_id, 'Brand Differentiation Strategy', 'Develop unique brand differentiation that creates lasting competitive advantage.',
+    'Strategies for meaningful brand differentiation.', 3, 45,
+    'Brand differentiation in the crowded Indian startup ecosystem requires more than clever taglines—it demands genuine strategic choices that permeate every customer touchpoint.
+
+The strongest differentiation comes from making trade-offs competitors are unwilling to make. Zerodha differentiated not through features but by eliminating brokerage on equity delivery trades—a trade-off traditional brokers avoided. This created a clear, defensible position.
+
+Seven paths to brand differentiation: 1) Category creation (define a new space you can own), 2) Customer segment focus (serve an underserved niche deeply), 3) Business model innovation (change how value is delivered), 4) Cultural connection (embed in Indian cultural moments), 5) Technology leadership (own a technical capability), 6) Experience design (create distinctive interactions), 7) Values and purpose (stand for something meaningful).
+
+For Indian markets, differentiation often succeeds through localization that global players cannot match. This includes vernacular-first experiences, hyperlocal understanding, India-specific feature development, and cultural nuance in communications.
+
+Test your differentiation using the "only" statement: "We are the only [category] that [differentiation] for [audience]." If multiple competitors can truthfully make the same claim, you need sharper differentiation.
+
+Sustainable differentiation typically requires operational embedding. If your differentiation is just messaging, competitors copy it within months. If it requires fundamental operational changes, it becomes more defensible.
+
+Document your differentiation strategy with specific proof points. Abstract claims ("best quality") mean nothing; specific, verifiable claims build credibility. Instead of "best customer service," say "90-second average response time with 97% first-contact resolution."
+
+Review differentiation quarterly. As competitors respond and markets evolve, what was differentiating becomes table stakes. Continuous innovation in differentiation prevents commoditization.',
+    '[{"task": "Complete the only statement exercise for your brand", "priority": "high"}, {"task": "Identify 3 trade-offs your brand makes that competitors avoid", "priority": "high"}, {"task": "Document 5 specific proof points supporting your differentiation claims", "priority": "medium"}, {"task": "Create a differentiation roadmap showing evolution over 24 months", "priority": "medium"}]',
+    '[{"title": "Differentiation Strategy - HBR", "url": "https://hbr.org/topic/subject/competitive-strategy", "type": "publication"}, {"title": "Blue Ocean Strategy Tools", "url": "https://www.blueoceanstrategy.com/tools/", "type": "framework"}, {"title": "Economic Times Brand Equity", "url": "https://brandequity.economictimes.indiatimes.com/", "type": "publication"}, {"title": "Positioning by Ries & Trout", "url": "https://www.goodreads.com/book/show/760025.Positioning", "type": "book"}]');
+
+    -- MODULE 2: Visual Identity System
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Visual Identity System', 'Create a cohesive visual identity that builds recognition and trust.', 2, 5)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Logo Design Principles', 'Master the principles of effective logo design for brand recognition.',
+    'Comprehensive guide to logo design for startups.', 1, 45,
+    'Your logo is the most visible element of your brand identity, appearing on everything from business cards to billboard advertisements. In India''s visually cluttered environment, a distinctive logo helps your brand cut through noise.
+
+Effective startup logos follow key principles: Simplicity (works at small sizes and in single color), Memorability (distinctive enough to recall), Timelessness (avoids trendy elements that date quickly), Versatility (works across media and applications), and Appropriateness (fits industry and audience expectations).
+
+The logo development process begins with strategic inputs: brand positioning, target audience, competitive landscape, and intended usage scenarios. Brief designers thoroughly—good logos emerge from good briefs, not just good designers.
+
+Logo types include: Wordmarks (text-based, like Google), Lettermarks (initials, like IBM), Pictorial marks (icons, like Apple), Abstract marks (geometric, like Airbnb), Mascots (characters, like Amul), and Combination marks (text plus symbol). For startups with limited brand awareness, combination marks typically work best as they build name recognition while the symbol builds memorability.
+
+In India, consider Devanagari or regional script versions of your logo for vernacular communications. This shows cultural respect and improves recognition in regional markets. Ensure your logo works in both scripts without forced translations.
+
+Color psychology matters: Blue conveys trust (banking, healthcare), Green signals growth and sustainability, Orange represents energy and enthusiasm, Yellow evokes optimism. However, avoid over-relying on color—your logo should work in pure black and white.
+
+Production requirements: Vector format master files (AI, EPS, SVG), multiple color versions (full color, single color, reversed), clear space specifications, minimum size requirements, and usage guidelines documenting incorrect applications.
+
+Budget realistically: Quality logo design from experienced designers costs ₹50,000-₹2,00,000. Investing in professional design pays dividends through years of consistent usage.',
+    '[{"task": "Create a comprehensive logo design brief documenting strategy and requirements", "priority": "high"}, {"task": "Research 20 competitor and aspirational logos analyzing what works", "priority": "medium"}, {"task": "Get quotes from 3-5 professional logo designers or agencies", "priority": "high"}, {"task": "Develop a logo evaluation rubric with scoring criteria", "priority": "medium"}]',
+    '[{"title": "LogoLounge Trends Report", "url": "https://www.logolounge.com/", "type": "resource"}, {"title": "Behance Logo Design Inspiration", "url": "https://www.behance.net/search/projects?search=logo%20design%20india", "type": "inspiration"}, {"title": "Brand New by UnderConsideration", "url": "https://www.underconsideration.com/brandnew/", "type": "publication"}, {"title": "Indian Graphic Design Resources", "url": "https://www.kyoorius.com/", "type": "community"}]'),
+
+    (v_module_id, 'Color and Typography Systems', 'Build cohesive color palettes and typography hierarchies for your brand.',
+    'Complete guide to brand color and typography.', 2, 40,
+    'Color and typography form the visual foundation of your brand system, creating instant recognition and emotional connection. In India''s diverse visual landscape, systematic approaches ensure consistency across touchpoints.
+
+Color system development starts with a primary brand color that embodies your positioning. This anchors your palette. Add secondary colors (2-3) for variety in communications, accent colors for calls-to-action and highlights, and neutral colors (grays, blacks, whites) for text and backgrounds.
+
+Define color specifications precisely: Pantone references for print, CMYK for offset printing, RGB and HEX for digital, and specific paint codes for physical applications. Indian printing varies in quality—providing exact specifications improves consistency.
+
+Cultural color considerations in India: White can signify mourning in some contexts; saffron has religious and political associations; green similarly carries religious meaning for some audiences. Test color perceptions with diverse audience samples before finalizing.
+
+Accessibility matters: Ensure sufficient contrast ratios (WCAG 2.1 guidelines require 4.5:1 for normal text). Color-blind users represent 8% of males—never rely on color alone to convey information.
+
+Typography selection: Choose primary and secondary typefaces that complement each other. Your primary typeface carries most communications; secondary provides contrast for headlines or accents. For Indian markets, ensure your type system includes Devanagari and regional script support.
+
+License typography appropriately: Google Fonts provides free options; premium typefaces require commercial licenses (often ₹10,000-₹50,000+ for comprehensive rights). Indian Type Foundry and Ek Type offer excellent Indic typography.
+
+Establish type hierarchy: Heading styles (H1-H6), body text, captions, labels. Define sizes, weights, line heights, and letter spacing for each. This systematization enables consistent application across teams and vendors.
+
+Document everything in a digital brand guidelines document with specific applications and examples.',
+    '[{"task": "Define your complete color palette with all technical specifications", "priority": "high"}, {"task": "Select and license primary and secondary typefaces including Indic scripts", "priority": "high"}, {"task": "Create type hierarchy specifications for digital and print applications", "priority": "medium"}, {"task": "Test color accessibility using WCAG contrast checkers", "priority": "medium"}]',
+    '[{"title": "Indian Type Foundry", "url": "https://www.indiantypefoundry.com/", "type": "resource"}, {"title": "Ek Type Foundry", "url": "https://ektype.in/", "type": "resource"}, {"title": "Coolors Palette Generator", "url": "https://coolors.co/", "type": "tool"}, {"title": "WebAIM Contrast Checker", "url": "https://webaim.org/resources/contrastchecker/", "type": "tool"}]'),
+
+    (v_module_id, 'Brand Guidelines Documentation', 'Create comprehensive brand guidelines that ensure consistent application.',
+    'Building brand guidelines that work.', 3, 45,
+    'Brand guidelines document your visual identity system, ensuring consistent application across teams, vendors, and touchpoints. In growing startups where multiple people create branded materials, guidelines prevent brand drift.
+
+Essential brand guidelines sections: Brand story and positioning (strategic foundation), Logo specifications (versions, clear space, minimum sizes, incorrect usage), Color system (primary, secondary, accent with specifications), Typography (typefaces, hierarchy, usage rules), Imagery style (photography, illustration, iconography direction), Voice and tone (how the brand communicates), and Applications (business cards, presentations, social media templates).
+
+Create guidelines at appropriate complexity for your stage. Early startups need functional guidelines (10-20 pages) covering essentials. Enterprise brand books spanning 100+ pages are overkill until you have complex, distributed teams.
+
+Digital-first guidelines using tools like Frontify, Brandpad, or Notion ensure guidelines remain accessible and updateable. PDF guidelines become outdated quickly as brands evolve.
+
+Practical application examples make guidelines useful. Instead of abstract rules, show real executions: "Here''s how to lay out a LinkedIn post," "Here''s the email signature format." Templates accelerate correct application.
+
+Include a section on common mistakes with examples. Showing incorrect usage (low-resolution logos, wrong colors, unauthorized modifications) helps teams avoid errors.
+
+Version control your guidelines with change logs. When updates occur, communicate them to all stakeholders with clear effective dates.
+
+Complement guidelines with template libraries: Presentation templates (Google Slides/PowerPoint), Social media templates (Canva/Figma), Email signatures, Business cards and letterhead, and Proposal templates.
+
+Make guidelines enforceable by assigning brand governance responsibility. Designate who reviews materials before publication and establish approval workflows.',
+    '[{"task": "Create a comprehensive brand guidelines document covering all essential sections", "priority": "high"}, {"task": "Build a template library for common brand applications", "priority": "high"}, {"task": "Set up a digital brand portal for guidelines access", "priority": "medium"}, {"task": "Define brand governance process with approval workflows", "priority": "medium"}]',
+    '[{"title": "Frontify Brand Management Platform", "url": "https://www.frontify.com/", "type": "tool"}, {"title": "Brand Guidelines Examples", "url": "https://brandingstyleguides.com/", "type": "inspiration"}, {"title": "Canva Brand Kit", "url": "https://www.canva.com/brand-management/", "type": "tool"}, {"title": "Figma Brand Templates", "url": "https://www.figma.com/community/tag/brand%20guidelines/files", "type": "resource"}]');
+
+    -- MODULE 3: Brand Voice and Messaging
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Brand Voice and Messaging', 'Develop a distinctive brand voice that resonates with your audience.', 3, 4)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Defining Brand Voice', 'Create a distinctive voice that sets your brand apart in communications.',
+    'Comprehensive guide to brand voice development.', 1, 45,
+    'Brand voice is the consistent expression of your brand through words. While visual identity creates recognition, voice builds personality and emotional connection. In India''s relationship-driven business culture, authentic voice matters particularly.
+
+Voice characteristics exist on spectrums: Formal to casual, Serious to playful, Respectful to irreverent, Enthusiastic to matter-of-fact. Position your brand on each spectrum based on audience expectations and brand personality.
+
+Develop voice through three components: Voice (consistent personality—who we are), Tone (contextual adaptation—varies by situation), and Language (specific vocabulary, phrases, and structures).
+
+For Indian audiences, voice considerations include: Formality levels vary by region and generation—younger urban audiences accept casual; older or traditional segments expect respect. Code-switching between English and Hindi (Hinglish) can feel authentic or forced depending on execution. Regional language communications require native speakers, not translations.
+
+Create voice guidelines with examples: "We say this, not that" comparisons clarify abstract principles. Show the same message in correct and incorrect versions. Include examples across contexts: website copy, customer service, social media, formal communications.
+
+Voice should extend to all touchpoints: Error messages, confirmation emails, hold music, chatbot responses, invoice descriptions. Every word is a brand experience.
+
+Test voice with real audience samples. What reads as "friendly" internally might feel "unprofessional" to customers. Qualitative research validates voice direction before broad implementation.
+
+Document voice in your brand guidelines with sufficient examples for writers to internalize patterns. Consider creating a word bank of preferred terminology and phrases to avoid.
+
+Train all customer-facing teams on voice. Customer service representatives, salespeople, and social media managers need voice education, not just guidelines documents.',
+    '[{"task": "Define your brand voice characteristics across 5 key spectrums", "priority": "high"}, {"task": "Create a voice guidelines document with 20+ this vs that examples", "priority": "high"}, {"task": "Develop a preferred terminology word bank for your brand", "priority": "medium"}, {"task": "Conduct voice testing with 10 representative customers", "priority": "medium"}]',
+    '[{"title": "Mailchimp Voice and Tone Guide", "url": "https://styleguide.mailchimp.com/voice-and-tone/", "type": "example"}, {"title": "Content Design London Resources", "url": "https://contentdesign.london/", "type": "resource"}, {"title": "Writer Style Guide Tool", "url": "https://writer.com/", "type": "tool"}, {"title": "Grammarly Business", "url": "https://www.grammarly.com/business", "type": "tool"}]'),
+
+    (v_module_id, 'Messaging Framework Development', 'Build a comprehensive messaging framework for consistent communication.',
+    'Creating scalable messaging architecture.', 2, 45,
+    'A messaging framework provides structured content that teams use to communicate consistently about your brand, products, and value proposition. It transforms brand strategy into usable communication tools.
+
+The messaging hierarchy flows from: Mission statement (why you exist), Vision statement (where you are going), Value proposition (what you offer and why it matters), Key messages (primary themes you communicate), Supporting messages (proof points and details), and Specific claims (feature-level communications).
+
+Your core messaging platform should include: Elevator pitch (30 seconds), Boilerplate (company description for press), Tagline (memorable phrase), Key differentiators (3-5 primary distinctions), and Audience-specific messaging (variations for different segments).
+
+In India, develop messaging variations for: Decision makers vs. users vs. influencers, Enterprise vs. SMB vs. consumer, Regional and language variations, Industry vertical customizations, and Funding stage communications (investor messaging).
+
+Message testing validates resonance. Use methods like: A/B testing headlines and value propositions, Qualitative interviews exploring message interpretation, Survey-based message ranking exercises, and Social media engagement analysis.
+
+Common messaging mistakes in Indian startups: Over-claiming without proof points, Using jargon audiences do not understand, Translating English messaging literally into regional languages, Ignoring cultural context in examples and references, and Generic messaging that could describe any competitor.
+
+Create a messaging matrix mapping messages to audiences, channels, and contexts. This tool helps teams select appropriate messaging for specific situations.
+
+Document messaging in accessible formats: One-page quick reference for sales calls, Detailed playbook for content creators, and FAQ responses for support teams. Update quarterly based on market feedback and competitive evolution.',
+    '[{"task": "Develop complete messaging hierarchy from mission through specific claims", "priority": "high"}, {"task": "Create audience-specific messaging variations for 5 key segments", "priority": "high"}, {"task": "Build a messaging matrix mapping content to audiences and channels", "priority": "medium"}, {"task": "Test core messages with representative customers through interviews", "priority": "medium"}]',
+    '[{"title": "Messaging Framework Templates", "url": "https://www.productmarketingalliance.com/", "type": "resource"}, {"title": "StoryBrand Framework", "url": "https://storybrand.com/", "type": "framework"}, {"title": "Wynter Message Testing", "url": "https://wynter.com/", "type": "tool"}, {"title": "Copy.ai for Messaging Ideas", "url": "https://www.copy.ai/", "type": "tool"}]'),
+
+    (v_module_id, 'Storytelling for Brands', 'Master the art of brand storytelling that creates emotional connections.',
+    'Building narrative-driven brand communications.', 3, 40,
+    'Brand storytelling transforms facts and features into narratives that create emotional connections. Indian culture has deep storytelling traditions—brands that tap into narrative structures resonate more deeply than those relying purely on rational arguments.
+
+Effective brand stories follow archetypal structures: The Hero''s Journey (customer overcomes challenges with your help), Origin Story (how and why you started), Transformation Story (before and after your impact), David vs. Goliath (disrupting established players), and Mission Story (the change you seek in the world).
+
+Your founder story often provides the most authentic narrative material. Why did you start this company? What personal experience revealed the problem? What obstacles did you overcome? Indian audiences particularly connect with founder journeys that mirror their own aspirations.
+
+Story elements to develop: Characters (founders, customers, team members), Setting (the world/industry as it exists), Conflict (the problem being solved), Journey (the path to solution), and Resolution (the transformed state).
+
+Customer stories demonstrate impact more powerfully than company claims. Collect and document customer transformation narratives. Get video testimonials showing real people sharing real results.
+
+Story formats for different channels: Long-form for website about pages and investor decks, Medium-form for blog posts and LinkedIn articles, Short-form for social media and advertisements, and Micro-stories for testimonials and case study snippets.
+
+Authenticity matters immensely. Indian audiences detect manufactured narratives quickly. Ground stories in verifiable truth—embellishment backfires when discovered.
+
+Create a story library documenting: Company origin narrative, Founder personal stories, Customer transformation stories, Team member stories, Product development stories, and Impact stories with specific outcomes.
+
+Train spokespersons to tell stories consistently. Provide story frameworks and key beats while allowing natural delivery variation.',
+    '[{"task": "Document your company origin story in long, medium, and short formats", "priority": "high"}, {"task": "Collect 5 detailed customer transformation stories with testimonials", "priority": "high"}, {"task": "Create a brand story library with categorized narratives", "priority": "medium"}, {"task": "Train 3 key spokespersons on delivering brand stories", "priority": "medium"}]',
+    '[{"title": "Building a StoryBrand Book", "url": "https://storybrand.com/building-a-storybrand/", "type": "book"}, {"title": "The Hero with a Thousand Faces", "url": "https://www.goodreads.com/book/show/588138.The_Hero_With_a_Thousand_Faces", "type": "book"}, {"title": "Harvard Business Review - Storytelling", "url": "https://hbr.org/topic/subject/storytelling", "type": "publication"}, {"title": "Lumen5 Video Storytelling", "url": "https://lumen5.com/", "type": "tool"}]');
+
+    -- MODULE 4: Media Relations Fundamentals
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Media Relations Fundamentals', 'Build relationships with journalists and secure meaningful media coverage.', 4, 5)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Understanding Indian Media Landscape', 'Navigate the complex Indian media ecosystem for effective PR.',
+    'Complete guide to Indian media landscape.', 1, 45,
+    'India''s media landscape is vast and fragmented, offering numerous opportunities for startup coverage but requiring strategic navigation. Understanding media tiers, publication focuses, and journalist interests enables effective PR.
+
+Media tiers in India: Tier 1 (national reach, high credibility): Economic Times, Mint, Business Standard, Financial Express, Hindustan Times, Times of India, Indian Express. Tier 2 (strong reach, specific audiences): YourStory, Inc42, Entrepreneur India, Business Today, Forbes India, Outlook Business. Tier 3 (niche or regional): TechCircle, MediaNama, VCCircle, regional business publications.
+
+Startup-focused publications to prioritize: YourStory (India''s largest startup media platform), Inc42 (startup news and analysis), Entrepreneur India (entrepreneurship focus), VCCircle (funding and deals), and TechCircle (technology deep dives).
+
+National business publications have different angles: Economic Times covers market impact and policy, Mint focuses on analysis and trends, Business Standard emphasizes numbers and governance, and Financial Express highlights policy and sector developments.
+
+Regional media matters enormously: Dainik Jagran, Amar Ujala, and Navbharat Times (Hindi), Ananda Bazar Patrika (Bengali), Eenadu (Telugu), Dinamalar (Tamil), Maharashtra Times (Marathi), Gujarat Samachar (Gujarati), and many more. Regional media often has higher trust and engagement than national English publications.
+
+Television coverage: CNBC-TV18, ET Now, Zee Business, and NDTV Profit cover startup stories, particularly funding announcements and founder interviews. TV provides reach but requires strong spokespeople comfortable on camera.
+
+Digital-first media: Many journalists maintain active social media presences, particularly on Twitter/X and LinkedIn. Following and engaging with journalists builds familiarity before pitching.
+
+Build a comprehensive media list categorized by: Publication tier, Beat (fintech, healthtech, funding, policy), Format (news, features, analysis, opinion), and Outlet type (print, digital, broadcast).',
+    '[{"task": "Build a targeted media list with 50+ relevant journalists and their beats", "priority": "high"}, {"task": "Subscribe to and regularly read top 10 publications covering your sector", "priority": "high"}, {"task": "Create Google Alerts for key journalists covering your industry", "priority": "medium"}, {"task": "Map regional media opportunities in your key geographic markets", "priority": "medium"}]',
+    '[{"title": "YourStory", "url": "https://yourstory.com/", "type": "publication"}, {"title": "Inc42", "url": "https://inc42.com/", "type": "publication"}, {"title": "Economic Times Tech", "url": "https://economictimes.indiatimes.com/tech", "type": "publication"}, {"title": "Mint Startup Coverage", "url": "https://www.livemint.com/companies/start-ups", "type": "publication"}]'),
+
+    (v_module_id, 'Building Journalist Relationships', 'Develop genuine relationships with journalists that lead to coverage.',
+    'Relationship-first approach to media relations.', 2, 40,
+    'Effective media relations in India are built on genuine relationships, not transactional pitching. Journalists receive hundreds of pitches daily—relationships determine whose emails get opened and read.
+
+Start by providing value before asking for coverage. Share industry insights, connect journalists with expert sources, provide data for stories they are researching, and offer off-the-record context on market developments. Become a valuable resource, not just another pitch in their inbox.
+
+Research journalists thoroughly before engaging: Read their recent articles to understand their interests and angle preferences, note which companies and founders they quote regularly, identify gaps in their coverage you could fill, follow their social media to understand their personality and views, and check their Twitter/X for real-time interests and discussions.
+
+Initial outreach should be brief and valuable: Introduce yourself and your relevance to their beat, offer a specific insight or resource (not a pitch), make it easy to say yes to a quick call, and avoid immediately asking for coverage.
+
+Build relationships through: LinkedIn connections with personalized notes, Twitter/X engagement on their posts, In-person meetings at industry events, Providing comments for their ongoing stories, and Sharing their articles with genuine appreciation.
+
+Respect journalist boundaries: They are not friends—maintain professional relationship, Understand their deadline pressures, Never pitch during breaking news in their beat, Accept rejection gracefully without arguments, and Never go over their head to editors.
+
+Maintain relationships between news cycles: Regular check-ins without pitches, Share relevant industry updates, Congratulate them on good stories, and Provide expert commentary when requested.
+
+Build relationships with multiple journalists per publication. Staff changes frequently—relationships with the publication should survive individual departures.',
+    '[{"task": "Identify 20 journalists who cover your sector and research each thoroughly", "priority": "high"}, {"task": "Engage meaningfully with 10 journalists on social media before any pitch", "priority": "high"}, {"task": "Offer to provide expert commentary or data for 3 journalists ongoing stories", "priority": "medium"}, {"task": "Schedule informational coffee meetings with 5 journalists with no pitch agenda", "priority": "medium"}]',
+    '[{"title": "Muck Rack Journalist Database", "url": "https://muckrack.com/", "type": "tool"}, {"title": "LinkedIn Sales Navigator", "url": "https://business.linkedin.com/sales-solutions", "type": "tool"}, {"title": "Twitter Lists for Journalists", "url": "https://twitter.com/", "type": "platform"}, {"title": "PR Daily for Media Relations Tips", "url": "https://www.prdaily.com/", "type": "publication"}]'),
+
+    (v_module_id, 'Press Kit Development', 'Create comprehensive press materials that make journalist jobs easier.',
+    'Building effective press resources.', 3, 45,
+    'A professional press kit provides journalists with everything they need to cover your company accurately. Making their job easier increases likelihood of coverage and ensures accurate representation.
+
+Essential press kit components: Company overview (one-pager with key facts), Founder bios and high-resolution headshots, Company logo files (various formats and versions), Product screenshots and demo videos, Company timeline and milestones, Key metrics (if shareable), Recent press coverage samples, and Contact information for media inquiries.
+
+Company overview should include: What you do (one paragraph), Problem you solve (market context), Solution and differentiation, Traction highlights (users, revenue, growth), Funding status, Founding date and team size, and Headquarters location.
+
+Founder bio formats: Long-form (200-300 words) for feature profiles, Short-form (50-100 words) for news articles, Twitter-style (one line) for quick references. Include relevant background, expertise, and human interest elements.
+
+Visual assets must be professional: High-resolution photographs (minimum 300 DPI for print), Multiple headshot options (formal, casual, action), Product imagery in various contexts, Infographics explaining your business, and B-roll video footage if available.
+
+Host your press kit on your website with clear navigation: /press, /media, or /newsroom URL. Include a way to download all assets in a ZIP file.
+
+Keep press kits updated: Refresh quarterly with new metrics, Update after major milestones or funding, Add recent coverage clips, and Archive outdated information.
+
+Create embargo-specific materials: When sharing news under embargo, provide complete coverage packages including quotes, images, and background that journalists need to file stories immediately when embargo lifts.
+
+Consider creating different press kit versions: Quick kit (one-pager for immediate needs), Standard kit (comprehensive company package), and Story-specific kits (for major announcements).',
+    '[{"task": "Create a complete press kit with all essential components", "priority": "high"}, {"task": "Set up a /press page on your website with downloadable assets", "priority": "high"}, {"task": "Arrange professional headshot photography for founding team", "priority": "medium"}, {"task": "Create product demo video suitable for media use", "priority": "medium"}]',
+    '[{"title": "Press Kit Examples - Notion Template", "url": "https://www.notion.so/templates/press-kit", "type": "template"}, {"title": "Dropbox Paper Press Kit Template", "url": "https://www.dropbox.com/paper", "type": "tool"}, {"title": "Canva Press Kit Templates", "url": "https://www.canva.com/templates/?query=press-kit", "type": "template"}, {"title": "High Resolution Stock for Press", "url": "https://unsplash.com/", "type": "resource"}]');
+
+    -- MODULE 5: Press Release Mastery
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Press Release Mastery', 'Write compelling press releases that generate media coverage.', 5, 4)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Press Release Writing Fundamentals', 'Master the structure and style of effective press releases.',
+    'Complete guide to press release writing.', 1, 45,
+    'Press releases remain a primary tool for communicating news to media, despite evolving media consumption patterns. A well-crafted press release gets picked up; a poorly written one gets deleted.
+
+The inverted pyramid structure places the most important information first: Lead paragraph answers who, what, when, where, why, and how. Supporting paragraphs provide context and details. Background information and boilerplate close the release.
+
+Essential press release components: Headline (attention-grabbing, factual), Subhead (adds context), Dateline (city and date), Lead paragraph (core news), Body paragraphs (details, quotes, context), Boilerplate (company description), and Contact information.
+
+Headlines must be specific and newsworthy. Compare: Bad: "Startup Launches New Product" versus Good: "Bengaluru Fintech Startup Raises ₹50 Cr to Expand UPI Payment Solutions to Tier-2 Cities." Include numbers, names, and specific outcomes when possible.
+
+Lead paragraphs should stand alone. If a journalist reads only the first paragraph, they should understand the complete news. Avoid throat-clearing or background—get to the news immediately.
+
+Quotes humanize releases. Include quotes from founders, executives, investors, or partners. Good quotes add perspective, not just restate facts. Avoid corporate jargon in quotes—make them sound like real human speech.
+
+Indian press release considerations: Include INR amounts with conversions where relevant, Provide context on market size and opportunity, Reference government policies or regulations if applicable, and Include regional language translations for local media.
+
+Length should be 400-600 words for most announcements. Complex stories (funding rounds, major partnerships) may extend to 800 words. Never exceed one page for standard news.
+
+Formatting matters: Use professional letterhead, Include clear FOR IMMEDIATE RELEASE or EMBARGOED headers, Provide clear contact details, and Use proper spacing and readable fonts.',
+    '[{"task": "Create a press release template following standard structure", "priority": "high"}, {"task": "Write practice releases for 3 hypothetical announcements", "priority": "medium"}, {"task": "Review 10 successful startup press releases to identify patterns", "priority": "medium"}, {"task": "Develop a quote library for various announcement types", "priority": "medium"}]',
+    '[{"title": "PR Newswire Style Guide", "url": "https://www.prnewswire.com/resources/", "type": "guide"}, {"title": "BusinessWire India", "url": "https://www.businesswire.com/portal/site/home/", "type": "service"}, {"title": "PRWeb Distribution", "url": "https://www.prweb.com/", "type": "service"}, {"title": "Hemingway Editor for Clarity", "url": "https://hemingwayapp.com/", "type": "tool"}]'),
+
+    (v_module_id, 'Distribution Strategies', 'Maximize press release reach through strategic distribution.',
+    'Getting your news to the right audiences.', 2, 40,
+    'Writing a great press release means nothing without effective distribution. Strategic distribution ensures your news reaches journalists likely to cover it and audiences who care about it.
+
+Distribution channels in India: Wire services (PR Newswire, BusinessWire, India PRWire) provide broad distribution but cost ₹15,000-₹50,000 per release. They reach news desks but do not guarantee coverage. Direct outreach to targeted journalists often yields better results for startups.
+
+Direct distribution best practices: Build a targeted media list by beat and outlet, Personalize the email subject line and introduction, Send during optimal times (Tuesday-Thursday, 9-11 AM IST), Follow up once after 48 hours if no response, and Track opens and responses to optimize future outreach.
+
+Email subject lines matter enormously. Include the news hook, not just "Press Release." Example: "[For Inc42] Bengaluru Startup X Raises ₹25 Cr Series A" is far more effective than "Press Release from Company X."
+
+Embargo strategies: Embargoes give journalists time to prepare stories for simultaneous publication. Offer 24-48 hour embargoes for major news. Only embargo truly significant announcements—journalists dislike unnecessary embargoes. Honor embargoes absolutely—breaking embargo destroys journalist trust permanently.
+
+Exclusive offers: Offering exclusives to top-tier publications increases coverage likelihood for major news. Tier your exclusives strategically—Economic Times exclusive, then second-tier publications, then wide distribution.
+
+Timing considerations for India: Avoid major festivals and holidays, Consider IPL and cricket match days, Avoid Budget week for non-policy news, Monday mornings and Friday afternoons get less attention, and Align with industry events where relevant.
+
+Track and measure distribution effectiveness: Open rates and click-through rates, Coverage generated per release, Share of voice changes, Journalist engagement patterns, and ROI per distribution channel.',
+    '[{"task": "Build a tiered media distribution list with 100+ contacts", "priority": "high"}, {"task": "Set up email tracking for press release distribution", "priority": "medium"}, {"task": "Create an editorial calendar aligning releases with news cycles", "priority": "high"}, {"task": "Evaluate wire service options and costs for major announcements", "priority": "medium"}]',
+    '[{"title": "PR Newswire India", "url": "https://www.prnewswire.co.in/", "type": "service"}, {"title": "BusinessWire India", "url": "https://www.businesswireindia.com/", "type": "service"}, {"title": "Mailtrack for Email Tracking", "url": "https://mailtrack.io/", "type": "tool"}, {"title": "Cision Media Database", "url": "https://www.cision.com/", "type": "database"}]'),
+
+    (v_module_id, 'News Angles and Story Hooks', 'Identify newsworthy angles that capture journalist interest.',
+    'Finding stories that journalists want to cover.', 3, 45,
+    'Not every company update warrants a press release. Understanding what makes news helps you identify genuinely newsworthy moments and craft compelling angles for your announcements.
+
+Newsworthy criteria journalists apply: Timeliness (is it happening now?), Significance (does it matter to many people?), Proximity (is it relevant to their audience?), Prominence (are notable people or companies involved?), Conflict (is there tension or debate?), Human interest (does it tell a compelling human story?), and Novelty (is it genuinely new or different?).
+
+Common startup news hooks: Funding announcements (with investor context), Product launches (with market impact), Milestone achievements (users, revenue, growth), Strategic partnerships or acquisitions, Executive hires (for senior roles), Industry data and research findings, Company expansions (new markets, offices), and Award recognitions.
+
+Strengthening weak news: Add data and numbers to provide scale, Connect to broader trends or policy changes, Include customer or market impact stories, Offer exclusive access or interviews, and Provide research or survey data.
+
+Creating news when there is none obvious: Commission industry research and release findings, Comment on relevant breaking news or policy changes, Publish thought leadership with unique perspectives, and Celebrate company or customer milestones creatively.
+
+Indian-specific angle opportunities: Policy and regulation changes affecting your sector, Government scheme participation and benefits, India market size and opportunity stories, Comparison with global markets and players, Regional expansion and Bharat opportunity, and Job creation and employment impact.
+
+Test angles before committing: Share potential angles with friendly journalists for feedback, Monitor what similar companies generate coverage with, Track which angles your competitors use successfully, and A/B test subject lines to see what resonates.
+
+Avoid false news hooks: Do not manufacture controversy, Do not exaggerate achievements, Do not bury bad news in good news releases, and Be truthful about funding amounts and metrics.',
+    '[{"task": "Create an angle development framework for evaluating news potential", "priority": "high"}, {"task": "Identify 10 potential news angles for your company over next 6 months", "priority": "high"}, {"task": "Develop data or research that could generate news coverage", "priority": "medium"}, {"task": "Build relationships with journalists to test potential angles", "priority": "medium"}]',
+    '[{"title": "News Values Theory", "url": "https://www.britannica.com/topic/news-media", "type": "education"}, {"title": "HARO (Help a Reporter Out)", "url": "https://www.helpareporter.com/", "type": "platform"}, {"title": "Qwoted Expert Sources", "url": "https://www.qwoted.com/", "type": "platform"}, {"title": "Google Trends for Angle Discovery", "url": "https://trends.google.com/", "type": "tool"}]');
+
+    -- MODULE 6: Crisis Communication
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Crisis Communication', 'Prepare for and manage brand crises effectively.', 6, 5)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Crisis Prevention and Preparedness', 'Build systems and plans to prevent and prepare for brand crises.',
+    'Proactive crisis management fundamentals.', 1, 45,
+    'Every startup will eventually face a crisis—the question is when, not if. Data breaches, product failures, executive misconduct, customer complaints going viral, regulatory issues—crises take many forms. Preparation determines whether crises become minor setbacks or existential threats.
+
+Crisis prevention starts with risk identification: Operational risks (product failures, outages, quality issues), Reputation risks (executive behavior, company culture issues), Financial risks (funding gaps, payment defaults), Legal risks (compliance violations, IP disputes), Security risks (data breaches, hacks), and External risks (economic downturns, regulatory changes).
+
+For each identified risk, develop: Early warning indicators to monitor, Preventive measures to reduce likelihood, Response playbooks for if they occur, and Communication templates ready for adaptation.
+
+Build a crisis communication team before crises hit: Executive sponsor (CEO or founder for serious crises), Communications lead (owns messaging and media), Legal counsel (reviews statements, advises on liability), Operations lead (fixes underlying issues), Customer success lead (frontline customer communication), and External advisors (PR agency, legal firm on retainer).
+
+Create a crisis communication plan documenting: Team roles and contact information, Decision-making authority and escalation paths, Stakeholder communication priorities, Holding statements for common crisis types, Media response protocols, and Social media monitoring and response procedures.
+
+Establish monitoring systems: Social media listening tools (Mention, Brandwatch), Google Alerts for company and executive names, Customer support ticket analysis, Employee feedback channels, and Regulatory announcement monitoring.
+
+Crisis simulation exercises: Run tabletop exercises quarterly, Simulate realistic crisis scenarios, Practice communication and decision-making, Identify gaps in preparedness, and Refine plans based on learnings.
+
+Document and maintain: Keep crisis plans updated as company grows, Ensure new team members know their roles, and Review and refresh contact lists regularly.',
+    '[{"task": "Complete a comprehensive risk assessment identifying top 10 crisis risks", "priority": "high"}, {"task": "Establish a crisis communication team with clear roles", "priority": "high"}, {"task": "Create holding statements for 5 most likely crisis scenarios", "priority": "medium"}, {"task": "Set up social media monitoring for brand mentions and sentiment", "priority": "medium"}]',
+    '[{"title": "Mention Social Listening", "url": "https://mention.com/", "type": "tool"}, {"title": "Crisis Communication Planning Guide", "url": "https://www.prsa.org/", "type": "resource"}, {"title": "Brandwatch Analytics", "url": "https://www.brandwatch.com/", "type": "tool"}, {"title": "PRCAI (PR Council of India)", "url": "https://www.prcai.org/", "type": "association"}]'),
+
+    (v_module_id, 'Crisis Response Execution', 'Execute effective communication during active crises.',
+    'Managing communication when crises occur.', 2, 45,
+    'When a crisis hits, the first 24 hours determine narrative control. Fast, transparent, empathetic communication limits damage; slow, defensive, or deceptive responses amplify it.
+
+The crisis response sequence: Acknowledge (confirm you are aware of the issue), Investigate (gather facts before detailed response), Communicate (share what you know and do not know), Act (take concrete remedial steps), and Follow up (provide updates and resolution).
+
+Initial response principles: Speed matters—acknowledge within hours, not days, Do not speculate—say "we are investigating" if facts are unclear, Express concern for affected stakeholders, Avoid blame-shifting or defensiveness, and Commit to transparency and updates.
+
+Stakeholder communication priorities: Immediately affected parties (customers, employees directly impacted), Regulatory authorities (if required), Internal team (employees need information), Investors and board (for significant crises), Media (reactive and proactive), and General public (social media, website updates).
+
+Message development during crisis: Lead with empathy (acknowledge impact on people), State the facts (what happened, what you know), Explain actions (what you are doing to fix it), Commit to prevention (how you will prevent recurrence), and Provide contact for questions.
+
+Media management during crisis: Designate a single spokesperson, Brief spokesperson thoroughly on facts and boundaries, Prepare for tough questions and hostile interviews, Do not say "no comment"—explain what you can share, Correct inaccuracies quickly but calmly, and Document all media interactions.
+
+Social media crisis response: Monitor constantly during active crisis, Respond to individual concerns with empathy, Do not delete negative comments (unless violating terms), Direct complex issues to private channels, and Post regular updates on resolution progress.
+
+Common crisis response mistakes: Delayed acknowledgment, Appearing to hide information, Legalistic language lacking empathy, Blaming others or making excuses, Over-promising on timelines, and Declaring crisis over prematurely.',
+    '[{"task": "Create crisis response playbooks for top 5 risk scenarios", "priority": "high"}, {"task": "Train primary and backup spokespersons on crisis communication", "priority": "high"}, {"task": "Develop stakeholder communication templates for crisis situations", "priority": "medium"}, {"task": "Establish rapid internal communication protocols for crisis activation", "priority": "medium"}]',
+    '[{"title": "Crisis Communication Templates", "url": "https://www.smartsheet.com/crisis-communication-plan-templates", "type": "template"}, {"title": "Media Training Resources", "url": "https://www.mediafirst.co.uk/", "type": "training"}, {"title": "Hootsuite Crisis Response", "url": "https://www.hootsuite.com/", "type": "tool"}, {"title": "Sprout Social Crisis Guide", "url": "https://sproutsocial.com/", "type": "guide"}]'),
+
+    (v_module_id, 'Reputation Recovery', 'Rebuild brand reputation after crisis events.',
+    'Long-term recovery from brand damage.', 3, 40,
+    'Crisis management does not end when immediate issues resolve. Reputation recovery is a long-term process requiring sustained effort to rebuild trust with stakeholders.
+
+Post-crisis assessment: Document what happened and why, Analyze communication effectiveness, Identify what worked and what failed, Gather stakeholder feedback, and Calculate business impact (churn, revenue, sentiment).
+
+Reputation recovery phases: Stabilization (immediate post-crisis, focus on resolution), Remediation (fixing underlying issues, demonstrating change), Rehabilitation (rebuilding trust through consistent action), and Renewal (returning to growth and forward-looking narrative).
+
+Rebuilding trust requires action, not just communication: Fix the underlying problems that caused the crisis, Implement preventive measures visibly, Hold accountable parties responsible, Compensate affected stakeholders fairly, and Over-deliver on commitments made during crisis.
+
+Communication during recovery: Share progress on promised actions, Highlight improvements and changes made, Earn third-party validation (awards, certifications, audits), Feature customer success stories and testimonials, and Gradually transition to forward-looking narratives.
+
+Stakeholder-specific recovery: Customers—exceptional service, loyalty programs, direct outreach, Employees—transparent internal communication, address concerns, Investors—detailed recovery plans, progress reporting, Media—provide exclusive access to recovery story, and Regulators—demonstrate compliance and cooperation.
+
+Monitoring recovery progress: Track sentiment trends over time, Monitor share of voice versus competitors, Survey stakeholder trust levels, Analyze customer retention and acquisition, and Watch for crisis recurrence signals.
+
+Learning from crisis: Conduct formal post-mortem review, Update crisis plans based on learnings, Share learnings (appropriately) to demonstrate accountability, and Build organizational resilience for future challenges.
+
+Recovery timeline expectations: Minor crises may recover in weeks, Major crises take months to years, Some reputation damage is permanent—focus on moving forward, and New positive associations must outweigh negative memories.',
+    '[{"task": "Develop a reputation recovery plan template for post-crisis use", "priority": "high"}, {"task": "Create a stakeholder feedback mechanism to assess trust levels", "priority": "medium"}, {"task": "Establish reputation monitoring dashboards tracking sentiment over time", "priority": "medium"}, {"task": "Document crisis learnings process for organizational improvement", "priority": "medium"}]',
+    '[{"title": "RepTrak Reputation Intelligence", "url": "https://www.reptrak.com/", "type": "tool"}, {"title": "Trust Barometer by Edelman", "url": "https://www.edelman.com/trust/", "type": "research"}, {"title": "Reputation Management Guide", "url": "https://www.reputationx.com/", "type": "guide"}, {"title": "Glassdoor Employer Brand", "url": "https://www.glassdoor.co.in/employers/", "type": "platform"}]');
+
+    -- MODULE 7: Thought Leadership
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Thought Leadership', 'Establish founders and company as industry authorities.', 7, 5)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Thought Leadership Strategy', 'Develop a strategic approach to building industry authority.',
+    'Strategic framework for thought leadership.', 1, 45,
+    'Thought leadership positions founders and companies as trusted authorities in their space. It attracts customers, investors, partners, and talent by demonstrating expertise and vision. For Indian startups competing for attention, thought leadership creates differentiation.
+
+Thought leadership requires genuine expertise: You cannot manufacture thought leadership—it emerges from real knowledge, unique perspectives, and valuable insights. Identify where your experience provides perspectives others lack.
+
+Defining your thought leadership territory: Industry trends and future predictions, Unique methodology or approach, Data and research from your business, Lessons from failures and successes, Policy perspectives and advocacy, and Technical deep dives in your domain.
+
+The thought leadership content pyramid: Top (books, major keynotes, research reports)—rare, high-impact, Middle (articles, podcasts, panel appearances)—regular, moderate effort, Base (social media posts, comments, discussions)—frequent, low effort. Each tier feeds the others.
+
+Identify your unique angle: What do you know that others do not? What contrarian views can you defend? What data do you have access to? What failures taught you valuable lessons? What predictions can you make about the future?
+
+Platform selection for thought leadership: LinkedIn (B2B, professional audiences—essential in India), Twitter/X (real-time conversations, tech and startup communities), Medium or personal blog (long-form content ownership), Industry publications (earned credibility), and Podcasts (growing rapidly in India).
+
+Thought leadership requires consistency: Publish regularly to build audience expectations, Maintain consistent themes while evolving perspectives, Balance promotion with genuine value delivery, and Engage with community, do not just broadcast.
+
+Measure thought leadership impact: Follower growth and engagement rates, Inbound media requests, Speaking invitation frequency, Customer and talent acquisition attribution, and Industry recognition and awards.',
+    '[{"task": "Define your thought leadership territory with 3-5 specific theme areas", "priority": "high"}, {"task": "Audit founder and company social presence identifying gaps", "priority": "high"}, {"task": "Create a 12-month thought leadership content calendar", "priority": "medium"}, {"task": "Identify 10 target platforms and publications for thought leadership", "priority": "medium"}]',
+    '[{"title": "LinkedIn Creator Mode", "url": "https://www.linkedin.com/help/linkedin/answer/a522537", "type": "platform"}, {"title": "Medium Partner Program", "url": "https://medium.com/creators", "type": "platform"}, {"title": "Substack Newsletter Platform", "url": "https://substack.com/", "type": "platform"}, {"title": "Thought Leadership Research by Edelman", "url": "https://www.edelman.com/expertise/thought-leadership", "type": "research"}]'),
+
+    (v_module_id, 'Content Creation for Authority', 'Create compelling content that establishes expertise.',
+    'Building authority through content.', 2, 45,
+    'Thought leadership content must provide genuine value—insights, frameworks, data, or perspectives audiences cannot easily find elsewhere. Quality trumps quantity; one exceptional piece outperforms dozens of mediocre posts.
+
+Content types for thought leadership: Opinion pieces (your perspective on industry issues), How-to guides (share your methodology and expertise), Data and research (original insights from your business), Case studies (real examples with lessons learned), Predictions (where you see the industry heading), Responses (thoughtful commentary on others work), and Interviews (conversations with other experts).
+
+Writing compelling thought leadership: Start with a strong, specific thesis, Support with evidence, examples, and data, Share personal experiences and failures, Acknowledge complexity and counterarguments, Conclude with actionable implications, and Write clearly—avoid jargon and corporate speak.
+
+LinkedIn article best practices for India: Optimal length 800-1500 words for articles, Use clear subheadings for scannability, Include relevant hashtags (3-5 maximum), Post during weekday business hours IST, Engage with comments within first hour, and Share to relevant groups for amplification.
+
+Building a content engine: Repurpose content across formats (article becomes video becomes podcast), Create content series building on themes, Collaborate with other thought leaders, Guest post on complementary platforms, and Use internal team expertise for content variety.
+
+Ghostwriting considerations: Many executives use ghostwriters—this is acceptable, Ensure ghost-written content reflects genuine expertise, Review and approve everything before publication, Add personal touches and stories, and Gradually build capability to create independently.
+
+Avoiding thought leadership pitfalls: Do not share competitors proprietary information, Avoid commenting on areas outside your expertise, Do not make predictions you cannot defend, Be careful with political and religious topics, and Maintain professional boundaries in content.',
+    '[{"task": "Write and publish 3 foundational thought leadership articles", "priority": "high"}, {"task": "Develop a content repurposing workflow for efficiency", "priority": "medium"}, {"task": "Create a personal content voice guide for consistency", "priority": "medium"}, {"task": "Build a bank of content ideas covering 6 months of publishing", "priority": "high"}]',
+    '[{"title": "Grammarly Writing Assistant", "url": "https://www.grammarly.com/", "type": "tool"}, {"title": "Canva for Social Graphics", "url": "https://www.canva.com/", "type": "tool"}, {"title": "YourStory Contributor Program", "url": "https://yourstory.com/about/contribute", "type": "publication"}, {"title": "Inc42 Guest Posts", "url": "https://inc42.com/write-for-us/", "type": "publication"}]'),
+
+    (v_module_id, 'Speaking and Panel Opportunities', 'Secure speaking engagements that build authority.',
+    'Public speaking for thought leadership.', 3, 40,
+    'Speaking engagements provide powerful platforms for thought leadership—reaching engaged audiences, building credibility, and creating networking opportunities. For Indian startup founders, conference presence establishes authority.
+
+Types of speaking opportunities: Keynote speeches (highest visibility, most competitive), Panel discussions (easier entry, shared spotlight), Fireside chats (conversational format, requires moderator skill), Workshop sessions (demonstrate expertise hands-on), Webinars (accessible, scalable reach), and Podcast interviews (growing importance, evergreen content).
+
+Indian conference and event landscape: Major tech events: TechSparks, Inc42 Moneyball, TiEcon, NASSCOM events, Sector-specific: FinTech Festival, HealthTech Summit, SaaS events, Regional events: Startup Karnataka, Kerala Startup Mission events, and Corporate events: TED talks, industry association conferences.
+
+Getting speaking invitations: Apply to open calls for speakers (watch event websites), Leverage existing relationships with organizers, Build reputation through smaller events first, Create compelling speaker profiles and topics, Offer unique angles organizers cannot get elsewhere, and Speakers bureaus for established thought leaders.
+
+Speaking topic development: Identify topics matching both your expertise and audience interests, Create signature talks you can deliver repeatedly, Develop multiple talk options for different contexts, Update talks regularly with fresh examples and data, and Test and refine based on audience feedback.
+
+Presentation skills for Indian audiences: Balance data with storytelling, Use relevant local examples and context, Respect time constraints precisely, Engage with Q&A thoughtfully, and Follow up with connections made.
+
+Maximizing speaking opportunity value: Share announcement on social media before and after, Create content from presentation (video, slides, blog), Connect with other speakers and organizers, Collect attendee feedback for improvement, and Request testimonials and recording rights.',
+    '[{"task": "Create a speaker profile with bio, headshot, and 3 talk topics", "priority": "high"}, {"task": "Identify and apply to 5 relevant speaking opportunities", "priority": "high"}, {"task": "Develop one signature talk with complete slides and script", "priority": "medium"}, {"task": "Practice presentation skills through internal presentations or Toastmasters", "priority": "medium"}]',
+    '[{"title": "TechSparks by YourStory", "url": "https://yourstory.com/techsparks", "type": "event"}, {"title": "Inc42 Events", "url": "https://inc42.com/events/", "type": "event"}, {"title": "SpeakerHub", "url": "https://speakerhub.com/", "type": "platform"}, {"title": "TEDx India Events", "url": "https://www.ted.com/tedx/events", "type": "event"}]');
+
+    -- MODULE 8: Social Media PR
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Social Media PR', 'Leverage social platforms for brand building and PR.', 8, 4)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Social Media Strategy for PR', 'Develop social media strategies that support PR objectives.',
+    'Integrating social media with PR strategy.', 1, 45,
+    'Social media has fundamentally changed PR—news breaks on Twitter before wire services, journalists source stories from LinkedIn posts, and brand crises erupt from viral customer complaints. Effective PR now requires social media mastery.
+
+Social media platform priorities for Indian startups: LinkedIn—essential for B2B, investor relations, thought leadership. Twitter/X—real-time news, journalist engagement, tech community. Instagram—consumer brands, visual storytelling, employer branding. YouTube—product demos, thought leadership videos, tutorials. WhatsApp—increasingly important for community and direct engagement.
+
+Social media PR objectives: Build journalist relationships and visibility, Amplify traditional media coverage, Drive owned media distribution, Monitor brand mentions and sentiment, Respond to emerging issues quickly, and Create shareable content for earned amplification.
+
+Content strategy for PR impact: News and announcements (share press releases with commentary), Behind-the-scenes content (humanize the company), Industry commentary (establish thought leadership), Customer success stories (proof of impact), Team and culture content (employer branding), and Engagement content (polls, questions, discussions).
+
+Platform-specific best practices: LinkedIn—professional tone, long-form content, engage in comments. Twitter/X—real-time, conversational, hashtag usage, retweet with commentary. Instagram—visual quality, Stories for immediacy, Reels for reach. YouTube—SEO optimization, consistent publishing, playlist organization.
+
+Social media voice should align with brand voice while adapting to platform norms. LinkedIn accepts formality; Twitter rewards wit and personality. Consistency in values, flexibility in expression.
+
+Scheduling and consistency: Post regularly to maintain visibility (daily on Twitter, 3-5x/week on LinkedIn), Use scheduling tools for efficiency (Buffer, Hootsuite, Sprout), Balance scheduled content with real-time engagement, and Monitor analytics to optimize posting times.',
+    '[{"task": "Audit current social media presence against PR objectives", "priority": "high"}, {"task": "Create platform-specific content strategies for top 3 channels", "priority": "high"}, {"task": "Develop a 4-week social media content calendar", "priority": "medium"}, {"task": "Set up social media scheduling and management tools", "priority": "medium"}]',
+    '[{"title": "Buffer Social Media Management", "url": "https://buffer.com/", "type": "tool"}, {"title": "Hootsuite", "url": "https://www.hootsuite.com/", "type": "tool"}, {"title": "LinkedIn Marketing Solutions", "url": "https://business.linkedin.com/marketing-solutions", "type": "platform"}, {"title": "Twitter Business Resources", "url": "https://business.twitter.com/", "type": "platform"}]'),
+
+    (v_module_id, 'Influencer and Community Engagement', 'Build relationships with influencers and online communities.',
+    'Leveraging influencer relationships for PR.', 2, 40,
+    'Influencers and online communities amplify brand messages to engaged audiences. In India, where digital communities are highly active, strategic influencer engagement extends PR reach significantly.
+
+Influencer categories for B2B/startup PR: Industry analysts and experts, Prominent founders and investors, Business journalists and editors, Podcast hosts and content creators, LinkedIn Top Voices in your sector, and Twitter/X opinion leaders.
+
+Identifying relevant influencers: Use tools like SparkToro, Followerwonk, or manual research, Look for engagement quality, not just follower counts, Prioritize relevance over reach, Check for authentic engagement versus bought followers, and Assess alignment with your brand values.
+
+Influencer engagement approaches: Organic relationship building (engage genuinely over time), Paid partnerships (sponsored content, clear disclosure), Expert collaborations (joint content, research), Event partnerships (influencers speaking at your events), and Advisory relationships (formal advisory board roles).
+
+Building genuine influencer relationships: Engage authentically with their content over time, Share their work with genuine appreciation, Offer value before asking for anything, Respect their time and expertise, and Maintain relationships beyond transactional needs.
+
+Community engagement for PR: Identify communities where your audience participates (Slack groups, Discord servers, Reddit, Facebook groups), Participate authentically without constant promotion, Provide value through expertise and help, Build reputation within community before promotional activity, and Partner with community leaders for amplified reach.
+
+Indian startup communities to consider: YourStory community, Inc42 Plus, Indian Startup Slack/Discord groups, Sector-specific WhatsApp groups, LinkedIn groups for your industry, and Alumni networks (IIM, IIT, etc.).
+
+Measuring influencer and community impact: Track referral traffic from influencer mentions, Monitor brand mentions in target communities, Measure sentiment changes after influencer activities, and Calculate cost per engagement versus traditional PR.',
+    '[{"task": "Identify 20 relevant influencers in your sector and research each", "priority": "high"}, {"task": "Begin genuine engagement with top 10 influencers", "priority": "high"}, {"task": "Map relevant online communities and join as active participant", "priority": "medium"}, {"task": "Develop an influencer relationship management tracker", "priority": "medium"}]',
+    '[{"title": "SparkToro Audience Intelligence", "url": "https://sparktoro.com/", "type": "tool"}, {"title": "Followerwonk Twitter Analytics", "url": "https://followerwonk.com/", "type": "tool"}, {"title": "GRIN Influencer Platform", "url": "https://grin.co/", "type": "platform"}, {"title": "Indian Startup Community Directory", "url": "https://yourstory.com/", "type": "community"}]'),
+
+    (v_module_id, 'Viral Content and Newsjacking', 'Create shareable content and leverage trending topics.',
+    'Strategies for social media virality.', 3, 40,
+    'Viral content and newsjacking can dramatically amplify brand visibility. While virality cannot be guaranteed, understanding what drives sharing and how to leverage news cycles improves PR impact.
+
+What makes content shareable: Emotional resonance (joy, surprise, anger, inspiration), Practical value (useful information people want to share), Identity expression (content that reflects how people see themselves), Social currency (makes sharer look informed/clever), and Storytelling (narratives people want to pass along).
+
+Viral content formats that work in India: Data visualizations with surprising findings, Relatable founder stories and failures, Industry predictions and hot takes, Behind-the-scenes and transparency content, Celebration of team and customer achievements, and Timely commentary on trending topics.
+
+Newsjacking explained: Newsjacking involves inserting your brand into breaking news conversations. When relevant news breaks, quickly create content connecting your expertise to the story. Done well, it positions you as an authority; done poorly, it appears opportunistic.
+
+Newsjacking best practices: Act quickly—relevance window is hours, not days, Ensure genuine connection to your expertise, Add value beyond obvious commentary, Be sensitive to crisis and tragedy contexts, and Have approval process that enables speed.
+
+Indian newsjacking opportunities: Budget announcements (if relevant to your sector), Regulatory changes affecting your industry, Major funding rounds and exits, Policy announcements (Startup India, etc.), IPOs and market milestones, and Viral startup stories and debates.
+
+Tools for trend monitoring: Google Trends India, Twitter Trending Topics, Reddit popular posts, LinkedIn trending articles, and Industry news aggregators.
+
+Balancing planned and reactive content: Maintain content calendar for consistent publishing, Reserve capacity for reactive opportunities, Create templates for common reactive scenarios, and Do not sacrifice quality for speed.',
+    '[{"task": "Create 3 pieces of content designed for shareability", "priority": "high"}, {"task": "Set up real-time monitoring for relevant news and trends", "priority": "high"}, {"task": "Develop newsjacking response templates for likely scenarios", "priority": "medium"}, {"task": "Establish rapid approval process for reactive content", "priority": "medium"}]',
+    '[{"title": "Google Trends India", "url": "https://trends.google.co.in/", "type": "tool"}, {"title": "BuzzSumo Content Research", "url": "https://buzzsumo.com/", "type": "tool"}, {"title": "Twitter Trending India", "url": "https://twitter.com/explore/tabs/trending", "type": "platform"}, {"title": "Newsjacking Book by David Meerman Scott", "url": "https://www.goodreads.com/book/show/13589182-newsjacking", "type": "book"}]');
+
+    -- MODULE 9: Awards and Recognition
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Awards and Recognition', 'Win awards that build credibility and visibility.', 9, 4)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Awards Strategy Development', 'Develop a strategic approach to pursuing relevant awards.',
+    'Building an awards strategy that delivers ROI.', 1, 45,
+    'Awards provide third-party validation that builds credibility with customers, investors, and partners. For Indian startups, strategic award pursuit accelerates brand building. However, awards require investment—be strategic about which to pursue.
+
+Award categories relevant to Indian startups: Startup awards (YourStory Tech30, Inc42 30 Under 30, TiE awards), Industry awards (sector-specific recognition), Business awards (ET Awards, Business World recognition), Innovation awards (CII Industrial Innovation, NASSCOM awards), Regional awards (state-level startup recognition), and Global awards (Deloitte Technology Fast 50, Forbes lists).
+
+Evaluating award opportunities: Credibility of awarding body, Relevance to your target audience, Past winner quality and reputation, Application effort versus recognition value, Cost (entry fees, event attendance), and Timeline alignment with your PR calendar.
+
+Application best practices: Start early—most applications take longer than expected, Follow instructions precisely and completely, Use specific metrics and evidence, Tell compelling stories, not just facts, Get applications reviewed by multiple people, and Keep records for reuse in future applications.
+
+Building an awards calendar: Map relevant awards throughout the year, Note application deadlines (typically 2-3 months before announcement), Plan submission timing to avoid last-minute rush, Track results and iterate approach, and Allocate budget for entry fees and events.
+
+Award categories to prioritize early: Emerging company and startup categories, Young entrepreneur and founder awards, Innovation and technology awards, and Regional and sector-specific recognition. As you grow, target broader business and leadership awards.
+
+Maximizing award win value: Issue press release announcing wins, Update website, email signatures, and materials, Share on social media with genuine appreciation, Display awards visibly in office and presentations, Reference awards in sales and investor conversations, and Thank nominators and selection committees publicly.
+
+Managing award losses: Not winning is normal—persistence matters, Seek feedback where available, Refine applications based on learnings, and Continue building relationships with award organizations.',
+    '[{"task": "Research and list 20 relevant awards for your company stage and sector", "priority": "high"}, {"task": "Create an awards calendar with deadlines for the next 12 months", "priority": "high"}, {"task": "Develop a master award application document with key metrics and stories", "priority": "medium"}, {"task": "Apply to 3 awards this quarter with strong applications", "priority": "medium"}]',
+    '[{"title": "YourStory Tech30", "url": "https://yourstory.com/tech30", "type": "award"}, {"title": "Inc42 30 Under 30", "url": "https://inc42.com/", "type": "award"}, {"title": "TiE Awards", "url": "https://tie.org/", "type": "award"}, {"title": "CII Industrial Innovation Awards", "url": "https://www.cii.in/", "type": "award"}]'),
+
+    (v_module_id, 'Application Excellence', 'Create winning award applications that stand out.',
+    'Crafting compelling award submissions.', 2, 40,
+    'Award applications are competitive—judges review dozens or hundreds of submissions. Winning requires applications that clearly communicate achievement, tell compelling stories, and meet evaluation criteria precisely.
+
+Understanding award criteria: Carefully read all evaluation criteria, Weight your application toward stated priorities, If criteria are unclear, ask organizers for guidance, and Study past winners for patterns.
+
+Application components typically include: Executive summary (compelling overview), Company background (context and positioning), Achievement description (what you accomplished), Impact evidence (metrics and outcomes), Supporting materials (documentation, testimonials), and Future vision (where you are heading).
+
+Writing compelling achievement narratives: Start with the problem you solved, Describe your unique approach, Quantify results with specific metrics, Include before/after comparisons, Feature customer voices and testimonials, and Explain why this matters beyond your company.
+
+Metrics that impress judges: Revenue growth (percentage and absolute), Customer acquisition and retention, Market share gains, Efficiency improvements, Social impact measures, and Innovation indicators (patents, firsts, breakthroughs).
+
+Common application mistakes: Missing deadlines (no exceptions typically), Exceeding word or page limits, Generic content not tailored to criteria, Unsubstantiated claims without evidence, Poor formatting and presentation, and Submitting incomplete applications.
+
+Application review process: Have multiple people review applications, Check for clarity, completeness, and persuasion, Verify all facts and figures, Test links and attachments, Review against evaluation criteria, and Allow time for revision before deadline.
+
+Building relationships with award organizations: Attend their events even before applying, Volunteer as judges for other categories, Connect with organizers on LinkedIn, Sponsor events where budget allows, and Provide testimonials if asked.',
+    '[{"task": "Analyze 5 winning applications from relevant awards", "priority": "high"}, {"task": "Create a template application with reusable company content", "priority": "high"}, {"task": "Compile a metrics and evidence library for applications", "priority": "medium"}, {"task": "Establish an internal review process for award submissions", "priority": "medium"}]',
+    '[{"title": "Economic Times Awards", "url": "https://economictimes.indiatimes.com/et-awards", "type": "award"}, {"title": "Deloitte Technology Fast 50 India", "url": "https://www2.deloitte.com/in/en/pages/technology-media-and-telecommunications/articles/technology-fast-50-india.html", "type": "award"}, {"title": "Forbes India Lists", "url": "https://www.forbesindia.com/lists/", "type": "award"}, {"title": "NASSCOM Awards", "url": "https://nasscom.in/", "type": "award"}]'),
+
+    (v_module_id, 'Leveraging Recognition', 'Maximize the value of awards and recognition.',
+    'Turning award wins into business impact.', 3, 40,
+    'Winning an award is just the beginning—maximum value comes from strategic amplification and integration into your brand narrative. Many companies under-leverage their wins.
+
+Immediate win amplification: Issue press release within 24-48 hours of announcement, Post across all social media platforms, Email announcement to customers and partners, Update website homepage and about page, Add to email signatures company-wide, and Notify investors with congratulations update.
+
+Press release for award wins: Headline featuring award name and your company, Quote from founder on what win means, Brief description of award credibility, Description of what you won for, Context on competitive field if impressive, and Boilerplate and contact information.
+
+Long-term integration: Add award logos to website footer and materials, Include in investor deck and sales presentations, Reference in company boilerplate, Feature in trade show displays and signage, Update LinkedIn company page, and Include in recruiting materials.
+
+Award event attendance: Attend ceremonies when possible for networking, Prepare acceptance remarks if speaking, Document with photos and video, Live-post during events, and Connect with fellow winners and judges.
+
+Creating content from wins: Write blog post sharing lessons behind the win, Create case study format content, Develop social media content series, Produce video thanking team and customers, and Pitch follow-up stories to media.
+
+Award logo usage guidelines: Follow award organization brand guidelines, Use current year version only (or clearly date), Do not modify award logos, Maintain minimum size requirements, and Retire logos after reasonable timeframe (typically 2-3 years).
+
+Building momentum from wins: Use credibility to pursue larger opportunities, Leverage for speaking engagement invitations, Reference in future award applications, and Build relationships with judges and organizers.',
+    '[{"task": "Create a standard amplification checklist for award wins", "priority": "high"}, {"task": "Develop templates for award announcement press releases and social posts", "priority": "high"}, {"task": "Update all company materials with recent award recognition", "priority": "medium"}, {"task": "Build a relationships tracker for award organizations and judges", "priority": "medium"}]',
+    '[{"title": "Award Logo Usage Guidelines", "url": "https://www.aiga.org/", "type": "guide"}, {"title": "Canva Award Badge Templates", "url": "https://www.canva.com/templates/?query=award+badge", "type": "template"}, {"title": "Press Release Templates", "url": "https://www.prnewswire.com/resources/", "type": "template"}, {"title": "LinkedIn Company Page Updates", "url": "https://business.linkedin.com/", "type": "platform"}]');
+
+    -- MODULE 10: Community Building
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Community Building', 'Build engaged communities around your brand.', 10, 5)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Community Strategy Fundamentals', 'Develop a strategic approach to community building.',
+    'Building community with purpose and strategy.', 1, 45,
+    'Brand communities create loyal advocates who amplify your message, provide feedback, and support each other. In India, where word-of-mouth drives significant purchase decisions, community building delivers outsized PR and brand value.
+
+Community value for brands: Organic amplification of brand messages, Customer feedback and product insights, Peer-to-peer support reducing service costs, User-generated content creation, Brand advocacy and referrals, and Crisis buffer through goodwill.
+
+Community types to consider: Customer communities (users helping users), Industry communities (professionals in your space), Geographic communities (regional user groups), Interest communities (around shared passions), and Partner communities (ecosystem participants).
+
+Platform options for community: Owned platforms (custom forums, community apps), Social platforms (LinkedIn Groups, Facebook Groups), Communication platforms (Slack, Discord, WhatsApp), Physical community (meetups, events, chapters), and Hybrid approaches combining multiple platforms.
+
+Community strategy elements: Purpose (why should members participate?), Target members (who do you want?), Value proposition (what do members get?), Engagement model (how will they participate?), Content strategy (what content fuels engagement?), Moderation approach (how will you maintain quality?), and Success metrics (how will you measure impact?).
+
+Building community versus audience: Audience consumes your content passively, Community members interact with each other, Community requires ongoing investment and nurturing, and Community value compounds over time.
+
+Community readiness assessment: Do you have enough users/followers to seed community? Do you have resources to manage and moderate? Is there natural interest in connection among your audience? Can you provide sufficient value to justify participation?
+
+Start small and focused: Begin with core enthusiasts, not broad reach, Create value before scaling, Learn what works before major investment, and Quality engagement matters more than member count.',
+    '[{"task": "Define community purpose and target member profile", "priority": "high"}, {"task": "Evaluate platform options against your needs and resources", "priority": "high"}, {"task": "Create community value proposition and engagement model", "priority": "medium"}, {"task": "Identify 20 potential founding members to seed community", "priority": "medium"}]',
+    '[{"title": "Circle Community Platform", "url": "https://circle.so/", "type": "platform"}, {"title": "Discord for Communities", "url": "https://discord.com/", "type": "platform"}, {"title": "Slack for Community", "url": "https://slack.com/", "type": "platform"}, {"title": "Community Building Guide by CMX", "url": "https://cmxhub.com/", "type": "resource"}]'),
+
+    (v_module_id, 'Community Engagement and Growth', 'Drive active engagement and sustainable growth.',
+    'Growing engaged community members.', 2, 45,
+    'Building a community is just the beginning—sustaining engagement and growing membership requires ongoing strategy and effort. Successful communities feel alive; inactive communities die.
+
+Launching community successfully: Seed with engaged founding members, Establish norms and expectations early, Create initial content and discussions, Be highly present in early days, Celebrate early wins and contributions, and Iterate based on member feedback.
+
+Driving ongoing engagement: Regular content and discussion prompts, Member spotlight features, Expert AMA (Ask Me Anything) sessions, Challenges and collaborative activities, Exclusive resources and content, and Recognition for active contributors.
+
+Community content strategy: Educational content members value, Discussion prompts generating conversation, Member-generated content encouragement, Behind-the-scenes and exclusive access, and User success story celebrations.
+
+Growing community membership: Referral programs rewarding member invitations, Integration with product onboarding, Promotion through owned channels, Partnership with complementary communities, Public showcase of community value, and Selective outreach to ideal members.
+
+Community engagement metrics: Daily/weekly active members, Posts and comments per member, Member retention rates, Time spent in community, Net Promoter Score, and Referral activity.
+
+Moderation and quality: Establish clear community guidelines, Train moderators on consistent enforcement, Balance open discussion with quality standards, Address conflicts promptly and fairly, and Remove bad actors quickly to protect culture.
+
+Community team roles: Community manager (day-to-day engagement), Moderators (quality and guideline enforcement), Content creators (fuel for engagement), and Executive sponsor (strategic direction).',
+    '[{"task": "Create community guidelines and moderation policies", "priority": "high"}, {"task": "Develop a 4-week engagement content calendar", "priority": "high"}, {"task": "Design a member recognition and spotlight program", "priority": "medium"}, {"task": "Build a community growth funnel from awareness to active membership", "priority": "medium"}]',
+    '[{"title": "Community Canvas Template", "url": "https://community-canvas.org/", "type": "template"}, {"title": "Orbit Community Analytics", "url": "https://orbit.love/", "type": "tool"}, {"title": "Common Room Community Intelligence", "url": "https://www.commonroom.io/", "type": "tool"}, {"title": "Community Led Growth Guide", "url": "https://www.commsor.com/", "type": "resource"}]'),
+
+    (v_module_id, 'Community Events and Programs', 'Create events and programs that strengthen community.',
+    'Events and programs for community engagement.', 3, 40,
+    'Events and structured programs create memorable community experiences, deepen relationships, and provide engagement peaks that sustain ongoing activity.
+
+Virtual event types: Webinars and educational sessions, Member networking sessions, Product workshops and training, Expert panels and discussions, Virtual social gatherings, and Online conferences and summits.
+
+Physical event opportunities: Meetups in key cities, Annual community conference, Pop-up events at industry conferences, Office visits and tours, Customer appreciation events, and Regional chapter gatherings.
+
+Event planning essentials: Clear purpose and value proposition, Target attendance and format, Budget and resource requirements, Promotion and registration strategy, Content and speaker preparation, and Follow-up and engagement capture.
+
+Indian event considerations: Consider time zones for virtual events (IST works broadly), Account for regional festival calendars, Hybrid formats reach broader audiences, Regional language options for broader inclusion, and Budget-conscious options for early-stage communities.
+
+Structured program ideas: Mentorship matching programs, Certification or learning programs, Ambassador or champion programs, Beta testing and feedback programs, Content contribution programs, and Referral incentive programs.
+
+Champion and ambassador programs: Identify most engaged members, Provide exclusive access and recognition, Equip with tools and resources, Set expectations for participation, Recognize and reward contribution, and Create community among champions.
+
+Measuring event and program success: Attendance and participation rates, Post-event satisfaction scores, Community engagement lift after events, Referrals generated through programs, Business outcomes (leads, referrals, retention), and Content generated from events.',
+    '[{"task": "Plan and execute your first community event", "priority": "high"}, {"task": "Design a community champion or ambassador program", "priority": "medium"}, {"task": "Create an annual community events calendar", "priority": "medium"}, {"task": "Develop event playbooks for repeatable execution", "priority": "medium"}]',
+    '[{"title": "Luma Event Platform", "url": "https://lu.ma/", "type": "tool"}, {"title": "Hopin Virtual Events", "url": "https://hopin.com/", "type": "platform"}, {"title": "Meetup.com", "url": "https://www.meetup.com/", "type": "platform"}, {"title": "Bevy Community Events", "url": "https://www.bevy.com/", "type": "platform"}]');
+
+    -- MODULE 11: Regional Media Strategies
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Regional Media Strategies', 'Master PR across India diverse regional markets.', 11, 4)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Regional Media Landscape', 'Understand India diverse regional media ecosystems.',
+    'Navigating regional media across India.', 1, 45,
+    'India is not one market—it is many markets with distinct languages, cultures, and media ecosystems. Regional media often has higher trust and engagement than national English publications. Effective PR requires regional strategy.
+
+Regional media importance: Regional language publications reach massive audiences, Trust levels often exceed English media, Local business coverage is more accessible, Regional success stories resonate powerfully, and Political and cultural nuances require local understanding.
+
+Major regional media markets: Hindi belt (UP, MP, Bihar, Rajasthan): Dainik Jagran, Amar Ujala, Hindustan, Navbharat Times. Maharashtra: Maharashtra Times, Loksatta, Lokmat. Tamil Nadu: Dinamalar, Dinakaran, Tamil Murasu. Karnataka: Vijaya Karnataka, Prajavani, Kannada Prabha. West Bengal: Ananda Bazar Patrika, Bartaman, Sangbad Pratidin. Andhra Pradesh/Telangana: Eenadu, Sakshi, Andhra Jyothy. Gujarat: Gujarat Samachar, Sandesh, Divya Bhaskar. Kerala: Malayala Manorama, Mathrubhumi, Madhyamam.
+
+Regional media approach: Invest in local language communication, Work with regional PR agencies or freelancers, Adapt messaging for cultural context, Build relationships with regional journalists, and Create region-specific content and angles.
+
+Regional business publications: Many regions have business-focused publications or supplements. Identify and build relationships with business desk editors and reporters covering entrepreneurship and business.
+
+Regional television and digital: Regional news channels cover local business stories, Digital platforms have regional editions, and YouTube and social media have massive regional audiences.
+
+Translation versus transcreation: Direct translation often fails—transcreation adapts meaning for cultural context. Work with native speakers, not just translators, and test messaging with regional audience samples.',
+    '[{"task": "Map regional media landscape for your key geographic markets", "priority": "high"}, {"task": "Build regional media lists with journalist contacts", "priority": "high"}, {"task": "Identify regional PR agencies or freelancers to partner with", "priority": "medium"}, {"task": "Create transcreated messaging for top 3 regional languages", "priority": "medium"}]',
+    '[{"title": "Dainik Jagran", "url": "https://www.jagran.com/", "type": "publication"}, {"title": "Malayala Manorama", "url": "https://www.manoramaonline.com/", "type": "publication"}, {"title": "Eenadu", "url": "https://www.eenadu.net/", "type": "publication"}, {"title": "Gujarat Samachar", "url": "https://www.gujaratsamachar.com/", "type": "publication"}]'),
+
+    (v_module_id, 'Regional PR Execution', 'Execute effective PR campaigns in regional markets.',
+    'Implementing regional PR strategies.', 2, 40,
+    'Regional PR execution requires different approaches than national English media. Understanding local news cycles, cultural sensitivities, and journalist preferences enables effective regional coverage.
+
+Regional press release adaptation: Translate and transcreate—do not just convert, Include region-specific context and relevance, Use local examples and reference points, Adapt quotes for cultural appropriateness, and Include local contact information.
+
+Regional journalist engagement: Build relationships through local events, Engage in regional language on social media, Provide exclusives to regional publications, Respect local customs and communication styles, and Consider regional festival and holiday timing.
+
+Regional story angles: Local job creation and economic impact, Regional customer success stories, State-specific policy and scheme alignment, Local partnerships and collaborations, Founder regional connection (if applicable), and Regional expansion announcements.
+
+Regional event PR: Tie PR to regional events and festivals, Launch products with regional customization, Participate in regional industry conferences, Host regional media roundtables, and Create region-specific content moments.
+
+Regional spokesperson preparation: Train spokespersons for regional media interviews, Prepare for regional language interviews if possible, Brief on regional cultural considerations, and Provide region-specific talking points.
+
+Regional media monitoring: Set up monitoring for regional publications, Track regional social media mentions, Monitor regional news cycles and trends, and Measure regional share of voice.
+
+Coordinating national and regional PR: Align messaging across markets, Sequence national and regional announcements, Avoid conflicting messages, and Create regional amplification of national news.',
+    '[{"task": "Adapt core press materials for 3 regional markets", "priority": "high"}, {"task": "Build regional journalist relationship plans", "priority": "high"}, {"task": "Create region-specific story angles and talking points", "priority": "medium"}, {"task": "Set up regional media monitoring coverage", "priority": "medium"}]',
+    '[{"title": "India PR Distribution Network", "url": "https://www.indiaprwire.com/", "type": "service"}, {"title": "Regional News Aggregators", "url": "https://www.dailyhunt.in/", "type": "platform"}, {"title": "ShareChat Regional Social", "url": "https://sharechat.com/", "type": "platform"}, {"title": "Koo Indian Microblogging", "url": "https://www.kooapp.com/", "type": "platform"}]'),
+
+    (v_module_id, 'Regional Influencer Partnerships', 'Partner with regional influencers for amplified reach.',
+    'Leveraging regional digital influencers.', 3, 40,
+    'Regional influencers often have more engaged audiences than national English influencers. Partnering with regional creators extends brand reach into markets national strategies miss.
+
+Regional influencer landscape: YouTube is massive in regional languages, Regional Instagram and Facebook creators, Moj and Josh for short video content, ShareChat for regional social engagement, and WhatsApp channels and groups.
+
+Identifying regional influencers: Use platform native search in regional languages, Work with regional agencies who know local creators, Analyze engagement rates, not just followers, Verify authentic audiences versus purchased followers, and Assess brand alignment and content quality.
+
+Regional influencer categories: Business and entrepreneurship influencers, Industry-specific experts, Lifestyle and aspirational creators, News and commentary creators, and Local celebrity and public figures.
+
+Partnership models: Sponsored content creation, Product reviews and demonstrations, Event participation and coverage, Long-term ambassador relationships, and Co-creation of regional content.
+
+Regional influencer negotiation: Rates vary significantly by region and language, Nano and micro influencers often deliver better engagement, Negotiate exclusivity carefully, Ensure clear deliverable specifications, and Build relationships for ongoing partnerships.
+
+Content localization with influencers: Brief influencers on brand guidelines while allowing local adaptation, Review content for cultural appropriateness, Ensure proper disclosures for sponsored content, and Leverage influencer local knowledge.
+
+Measuring regional influencer impact: Track regional traffic and engagement spikes, Monitor regional brand mention increases, Measure regional lead generation, Survey regional customers on discovery channels, and Calculate regional CAC from influencer channels.',
+    '[{"task": "Research and shortlist 30 regional influencers across key markets", "priority": "high"}, {"task": "Develop regional influencer partnership framework and rate guidelines", "priority": "medium"}, {"task": "Execute 3 regional influencer partnerships as pilots", "priority": "medium"}, {"task": "Create measurement framework for regional influencer ROI", "priority": "medium"}]',
+    '[{"title": "Moj Short Video Platform", "url": "https://mojapp.in/", "type": "platform"}, {"title": "Josh Short Videos", "url": "https://share.myjosh.in/", "type": "platform"}, {"title": "Winkl Influencer Platform", "url": "https://winkl.co/", "type": "platform"}, {"title": "Plixxo Influencer Marketing", "url": "https://www.plixxo.com/", "type": "platform"}]');
+
+    -- MODULE 12: Brand Measurement
+    INSERT INTO modules (product_id, title, description, order_index, duration_days)
+    VALUES (v_product_id, 'Brand Measurement', 'Measure and optimize brand and PR performance.', 12, 4)
+    RETURNING id INTO v_module_id;
+
+    INSERT INTO lessons (module_id, title, description, content, order_index, duration_minutes, brief_content, action_items, resources) VALUES
+    (v_module_id, 'Brand Health Metrics', 'Track key metrics that indicate brand health and growth.',
+    'Measuring what matters for brand building.', 1, 45,
+    'Brand building is a long-term investment—measuring its impact requires tracking the right metrics over time. Without measurement, you cannot optimize or prove ROI.
+
+Brand awareness metrics: Unaided awareness (brand recalled without prompts), Aided awareness (brand recognized when mentioned), Share of voice (your mentions versus competitors), Search volume trends (brand name searches), and Direct traffic (people coming directly to your site).
+
+Brand perception metrics: Brand attributes association (what qualities people associate), Net Promoter Score (likelihood to recommend), Brand favorability (positive versus negative sentiment), and Trust and credibility measures.
+
+PR-specific metrics: Media coverage volume and quality, Share of voice in media, Message pull-through (key messages appearing in coverage), Spokesperson quote inclusion, Tier 1 media placement rate, and Coverage sentiment analysis.
+
+Social media metrics: Follower growth and engagement rates, Share of voice on social platforms, Sentiment in social mentions, Influencer engagement and amplification, and Virality and share rates.
+
+Business impact metrics: Brand-driven website traffic, Branded search to conversion rates, Customer acquisition cost by channel, Customer lifetime value by source, and Referral and word-of-mouth rates.
+
+Setting up measurement: Establish baseline metrics before campaigns, Define target metrics and timeframes, Use consistent measurement methodology, Track trends over time, not just snapshots, and Benchmark against competitors where possible.
+
+Measurement frequency: Real-time: social mentions, sentiment. Weekly: coverage volume, engagement. Monthly: share of voice, traffic trends. Quarterly: brand tracking surveys. Annually: comprehensive brand health assessment.',
+    '[{"task": "Define your core brand health metrics and measurement approach", "priority": "high"}, {"task": "Establish baseline measurements for key metrics", "priority": "high"}, {"task": "Set up dashboards for ongoing brand metric tracking", "priority": "medium"}, {"task": "Create competitive benchmarking for share of voice", "priority": "medium"}]',
+    '[{"title": "Google Analytics for Brand Traffic", "url": "https://analytics.google.com/", "type": "tool"}, {"title": "Brandwatch Social Listening", "url": "https://www.brandwatch.com/", "type": "tool"}, {"title": "SimilarWeb Competitive Analysis", "url": "https://www.similarweb.com/", "type": "tool"}, {"title": "YouGov Brand Index", "url": "https://business.yougov.com/product/brandindex", "type": "research"}]'),
+
+    (v_module_id, 'PR ROI Measurement', 'Calculate and demonstrate PR return on investment.',
+    'Proving PR value to stakeholders.', 2, 40,
+    'Demonstrating PR ROI is essential for securing continued investment. While brand building has long-term effects that are hard to attribute directly, rigorous measurement approaches provide evidence of value.
+
+PR ROI framework components: Investment (agency fees, tools, team time, distribution costs), Outputs (coverage volume, placements, mentions), Outtakes (message delivery, audience reached, engagement), Outcomes (awareness, perception, behavior change), and Business impact (leads, sales, customer value).
+
+Coverage valuation approaches: AVE (Advertising Value Equivalents)—widely used but criticized, Media impressions and reach calculations, Share of voice and competitive comparison, Quality-weighted coverage scoring, and Business outcome attribution.
+
+Moving beyond AVE: AVE treats all coverage as equivalent to ad space, Better approaches track actual impact, Focus on quality metrics alongside quantity, and Link coverage to business outcomes.
+
+Attribution models for PR: Direct attribution (tracking codes, unique URLs), Survey-based attribution (how did you hear about us?), Time-series analysis (correlating coverage with outcomes), Marketing mix modeling (statistical attribution), and Controlled experiments (where feasible).
+
+Building a PR measurement dashboard: Coverage volume and quality trends, Share of voice and competitive position, Key message penetration, Social amplification of coverage, Website traffic from PR activities, and Lead and conversion attribution.
+
+Reporting PR value: Create monthly PR reports with key metrics, Quarterly deeper analysis with trends, Annual comprehensive ROI analysis, and Executive summaries for leadership.
+
+Common PR measurement mistakes: Focusing only on vanity metrics, Inconsistent measurement methodology, Not tracking competitors, Ignoring negative coverage, and Failing to link to business outcomes.',
+    '[{"task": "Develop a PR ROI framework appropriate for your stage", "priority": "high"}, {"task": "Create tracking mechanisms for PR-driven outcomes", "priority": "high"}, {"task": "Build a monthly PR reporting template", "priority": "medium"}, {"task": "Establish attribution methods for PR activities", "priority": "medium"}]',
+    '[{"title": "Meltwater PR Analytics", "url": "https://www.meltwater.com/", "type": "tool"}, {"title": "Cision Impact Measurement", "url": "https://www.cision.com/", "type": "tool"}, {"title": "AMEC Measurement Framework", "url": "https://amecorg.com/", "type": "framework"}, {"title": "Prowly PR Reporting", "url": "https://prowly.com/", "type": "tool"}]'),
+
+    (v_module_id, 'Continuous Optimization', 'Use data to continuously improve brand and PR efforts.',
+    'Data-driven brand optimization.', 3, 45,
+    'Measurement is only valuable if it drives action. Continuous optimization uses data to improve brand and PR performance over time, maximizing return on investment.
+
+Optimization cycle: Measure current performance, Analyze for insights, Develop hypotheses for improvement, Test changes, Evaluate results, and Scale what works.
+
+Media relations optimization: Analyze which journalists convert pitches, Identify timing patterns for successful outreach, Test subject lines and pitch formats, Track angle effectiveness by publication, and Refine media list based on results.
+
+Content optimization: Analyze engagement by content type and topic, Test headlines and formats, Optimize posting times and frequency, A/B test calls-to-action, and Retire underperforming content approaches.
+
+Channel optimization: Compare performance across PR channels, Shift investment toward highest-performing channels, Test new channels with measured experiments, and Balance reach and engagement objectives.
+
+Message optimization: Track which messages appear in coverage, Survey audience message recall and association, Test message variations in communications, and Refine messaging based on resonance data.
+
+Spokesperson optimization: Analyze spokesperson effectiveness by outlet and format, Identify training needs from interview analysis, Match spokespersons to appropriate opportunities, and Develop spokesperson depth across topics.
+
+Campaign optimization: Conduct post-campaign analysis after major initiatives, Identify what worked and what did not, Document learnings for future campaigns, and Adjust strategies based on evidence.
+
+Creating a learning culture: Share measurement insights across team, Celebrate experiments even when they fail, Build optimization into regular workflows, and Document and institutionalize learnings.',
+    '[{"task": "Establish regular optimization review cadence", "priority": "high"}, {"task": "Create A/B testing protocols for PR activities", "priority": "medium"}, {"task": "Build a learnings database documenting what works", "priority": "medium"}, {"task": "Develop quarterly brand review process with optimization recommendations", "priority": "medium"}]',
+    '[{"title": "Google Optimize for Testing", "url": "https://optimize.google.com/", "type": "tool"}, {"title": "Sprout Social Analytics", "url": "https://sproutsocial.com/", "type": "tool"}, {"title": "HubSpot Marketing Analytics", "url": "https://www.hubspot.com/", "type": "tool"}, {"title": "Databox Dashboard", "url": "https://databox.com/", "type": "tool"}]');
+
+    RAISE NOTICE 'P11 Branding and PR Mastery - All 12 modules created successfully';
+END $$;

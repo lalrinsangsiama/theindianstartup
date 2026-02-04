@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -217,7 +218,7 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error seeding P1 content:', error);
+    logger.error('Error seeding P1 content:', error);
     return NextResponse.json(
       { error: 'Failed to seed P1 content' },
       { status: 500 }

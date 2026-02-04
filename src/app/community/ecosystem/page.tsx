@@ -66,13 +66,13 @@ interface EcosystemListing {
 }
 
 const categories = [
-  { id: 'all', name: 'All', icon: Building, count: 450 },
-  { id: 'scheme', name: 'Govt Schemes', icon: Award, count: 85 },
-  { id: 'incubator', name: 'Incubators', icon: TrendingUp, count: 120 },
-  { id: 'bank', name: 'Banks', icon: Banknote, count: 45 },
-  { id: 'accelerator', name: 'Accelerators', icon: Users, count: 65 },
-  { id: 'legal', name: 'Legal Services', icon: Shield, count: 78 },
-  { id: 'accounting', name: 'CA/Accounting', icon: Building, count: 57 },
+  { id: 'all', name: 'All', icon: Building },
+  { id: 'scheme', name: 'Govt Schemes', icon: Award },
+  { id: 'incubator', name: 'Incubators', icon: TrendingUp },
+  { id: 'bank', name: 'Banks', icon: Banknote },
+  { id: 'accelerator', name: 'Accelerators', icon: Users },
+  { id: 'legal', name: 'Legal Services', icon: Shield },
+  { id: 'accounting', name: 'CA/Accounting', icon: Building },
 ];
 
 const states = [
@@ -137,121 +137,32 @@ export default function EcosystemDirectoryPage() {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      
-      // Mock data for demonstration
-      const mockListings: EcosystemListing[] = [
-        {
-          id: '1',
-          name: 'Startup India Seed Fund Scheme (SISFS)',
-          description: 'Government scheme providing financial assistance to startups for proof of concept, prototype development, product trials, market entry and commercialization.',
-          category: 'scheme',
-          subCategory: 'government_scheme',
-          logoUrl: '/logos/startup-india.png',
-          website: 'https://startupindia.gov.in',
-          city: 'New Delhi',
-          state: 'Delhi',
-          tags: ['seed-funding', 'government', 'prototype', 'early-stage'],
-          averageRating: 4.2,
-          totalReviews: 48,
-          totalViews: 2340,
-          isVerified: true,
-          fundingAmount: '₹20L - ₹50L',
-          eligibilityInfo: 'Startup incorporated less than 2 years ago, DPIIT recognized',
-        },
-        {
-          id: '2',
-          name: 'T-Hub Hyderabad',
-          description: 'India\'s largest startup incubator and innovation hub, supporting tech startups with mentoring, funding, and market access.',
-          category: 'incubator',
-          subCategory: 'government_incubator',
-          logoUrl: '/logos/t-hub.png',
-          website: 'https://t-hub.co',
-          city: 'Hyderabad',
-          state: 'Telangana',
-          tags: ['tech', 'ai', 'fintech', 'healthcare'],
-          averageRating: 4.6,
-          totalReviews: 89,
-          totalViews: 5670,
-          isVerified: true,
-          fundingAmount: '₹25L - ₹2Cr',
-          equityTaken: '8-15%',
-          programDuration: '6-12 months',
-        },
-        {
-          id: '3',
-          name: 'HDFC Bank SmartUp',
-          description: 'Comprehensive banking solutions for startups including current accounts, credit facilities, payment gateways, and business loans.',
-          category: 'bank',
-          subCategory: 'private_bank',
-          logoUrl: '/logos/hdfc.png',
-          website: 'https://hdfcbank.com/smartup',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          tags: ['banking', 'loans', 'payment-gateway', 'credit'],
-          averageRating: 4.1,
-          totalReviews: 156,
-          totalViews: 8920,
-          isVerified: true,
-          loanTypes: ['Working Capital', 'Term Loan', 'ECLGS'],
-          interestRates: '9.5% - 14%',
-        },
-        {
-          id: '4',
-          name: 'Sequoia Capital India',
-          description: 'Leading venture capital firm investing in early to growth stage startups across consumer, enterprise, and healthcare sectors.',
-          category: 'accelerator',
-          subCategory: 'vc_firm',
-          logoUrl: '/logos/sequoia.png',
-          website: 'https://sequoiacap.com/india',
-          city: 'Bangalore',
-          state: 'Karnataka',
-          tags: ['venture-capital', 'series-a', 'growth', 'scaling'],
-          averageRating: 4.8,
-          totalReviews: 67,
-          totalViews: 12450,
-          isVerified: true,
-          fundingAmount: '₹5Cr - ₹100Cr',
-          equityTaken: '15-25%',
-        },
-        {
-          id: '5',
-          name: 'Khaitan & Co',
-          description: 'Full-service law firm specializing in startup legal services, incorporation, compliance, fundraising, and intellectual property.',
-          category: 'legal',
-          subCategory: 'law_firm',
-          logoUrl: '/logos/khaitan.png',
-          website: 'https://khaitanco.com',
-          city: 'Delhi',
-          state: 'Delhi',
-          tags: ['legal', 'incorporation', 'compliance', 'ip', 'contracts'],
-          averageRating: 4.4,
-          totalReviews: 92,
-          totalViews: 3560,
-          isVerified: true,
-        },
-        {
-          id: '6',
-          name: 'MUDRA Loan Scheme',
-          description: 'Government scheme providing loans up to ₹10 lakhs to micro and small enterprises for business development and expansion.',
-          category: 'scheme',
-          subCategory: 'government_scheme',
-          logoUrl: '/logos/mudra.png',
-          website: 'https://mudra.org.in',
-          city: 'New Delhi',
-          state: 'Delhi',
-          tags: ['micro-finance', 'government', 'small-business', 'collateral-free'],
-          averageRating: 3.8,
-          totalReviews: 234,
-          totalViews: 15680,
-          isVerified: true,
-          fundingAmount: '₹50K - ₹10L',
-          eligibilityInfo: 'Micro and small enterprises, no collateral required',
-        }
-      ];
 
-      setListings(mockListings);
+      // Build query params for API
+      const params = new URLSearchParams();
+      if (selectedCategory !== 'all') {
+        params.set('category', selectedCategory);
+      }
+      if (selectedState !== 'All India') {
+        params.set('location', selectedState);
+      }
+      if (searchQuery) {
+        params.set('search', searchQuery);
+      }
+
+      // Fetch real data from API
+      const response = await fetch(`/api/community/ecosystem?${params}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setListings(data.listings || []);
+      } else {
+        // API not available yet, show empty state
+        setListings([]);
+      }
     } catch (error) {
       logger.error('Error fetching listings:', error);
+      setListings([]);
     } finally {
       setLoading(false);
     }
@@ -377,9 +288,6 @@ export default function EcosystemDirectoryPage() {
                         >
                           <IconComponent className="w-4 h-4" />
                           {category.name}
-                          <Badge variant="outline" size="sm">
-                            {category.count}
-                          </Badge>
                         </Button>
                       );
                     })}

@@ -31,6 +31,7 @@
     --background: var(--color-white);
     --foreground: var(--color-black);
     --muted: var(--color-gray-100);
+    /* Using gray-600 for muted text ensures WCAG AA contrast ratio (4.5:1) */
     --muted-foreground: var(--color-gray-600);
     --border: var(--color-gray-200);
     

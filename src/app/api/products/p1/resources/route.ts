@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
       ).data?.id);
 
     if (modulesError || !modules) {
-      console.error('Error fetching P1 modules:', modulesError);
+      logger.error('Error fetching P1 modules:', modulesError);
       return NextResponse.json(
         { error: 'Failed to fetch P1 modules' },
         { status: 500 }
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Resources error:', error);
+    logger.error('Resources error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch resources' },
       { status: 500 }

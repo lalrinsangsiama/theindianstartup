@@ -10,10 +10,13 @@ export function createClient() {
         autoRefreshToken: true,
         // Detect session from URL (for OAuth and magic links)
         detectSessionInUrl: true,
-        // Default storage is localStorage which persists across browser sessions
-        // Session will be cleared based on the persistSession option during login
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-      }
+        // Persist session across browser sessions
+        persistSession: true,
+        // Use PKCE flow for better security
+        flowType: 'pkce',
+      },
+      // Let @supabase/ssr handle cookie storage automatically
+      // This ensures PKCE code verifier is stored in cookies, not localStorage
     }
   )
 }

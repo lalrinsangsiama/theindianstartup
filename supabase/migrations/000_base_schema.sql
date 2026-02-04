@@ -436,4 +436,6 @@ ON CONFLICT (code) DO UPDATE SET
     modules = EXCLUDED.modules,
     "updatedAt" = NOW();
 
-RAISE NOTICE 'Base schema created successfully!';
+DO $$ BEGIN
+    RAISE NOTICE 'Base schema created successfully!';
+END $$;

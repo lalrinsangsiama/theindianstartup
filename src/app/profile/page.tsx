@@ -393,9 +393,9 @@ function ProfileContent() {
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <Calendar className="w-8 h-8 text-blue-500 mx-auto mb-2" />
                 <Text className="font-heading text-2xl font-bold">
-                  Day {userProfile?.currentDay || 1}
+                  {userProfile?.lessonsCompleted || userProfile?.currentDay || 0}
                 </Text>
-                <Text size="sm" color="muted">Current Progress</Text>
+                <Text size="sm" color="muted">Lessons Completed</Text>
               </div>
               
               <div className="text-center p-4 bg-gray-50 rounded-lg">

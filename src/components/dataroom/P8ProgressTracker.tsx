@@ -115,10 +115,6 @@ export default function P8ProgressTracker() {
 
       if (response.ok) {
         await fetchProgress(); // Refresh progress
-        if (action === 'complete') {
-          // Show success message or animation
-          console.log('Lesson completed!');
-        }
       }
     } catch (error) {
       console.error('Error updating progress:', error);

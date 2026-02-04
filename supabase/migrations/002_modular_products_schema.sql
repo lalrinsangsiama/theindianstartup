@@ -122,36 +122,45 @@ ALTER TABLE "LessonProgress" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ModuleProgress" ENABLE ROW LEVEL SECURITY;
 
 -- Product table: Everyone can read
+DROP POLICY IF EXISTS "Products are viewable by everyone" ON "Product";
 CREATE POLICY "Products are viewable by everyone" ON "Product"
     FOR SELECT USING (true);
 
 -- Module table: Everyone can read
+DROP POLICY IF EXISTS "Modules are viewable by everyone" ON "Module";
 CREATE POLICY "Modules are viewable by everyone" ON "Module"
     FOR SELECT USING (true);
 
 -- Lesson table: Everyone can read basic info
+DROP POLICY IF EXISTS "Lessons are viewable by everyone" ON "Lesson";
 CREATE POLICY "Lessons are viewable by everyone" ON "Lesson"
     FOR SELECT USING (true);
 
 -- LessonProgress: Users can only see and update their own progress
+DROP POLICY IF EXISTS "Users can view own lesson progress" ON "LessonProgress";
 CREATE POLICY "Users can view own lesson progress" ON "LessonProgress"
-    FOR SELECT USING (auth.uid() = "userId");
+    FOR SELECT USING (auth.uid()::text = "userId");
 
+DROP POLICY IF EXISTS "Users can insert own lesson progress" ON "LessonProgress";
 CREATE POLICY "Users can insert own lesson progress" ON "LessonProgress"
-    FOR INSERT WITH CHECK (auth.uid() = "userId");
+    FOR INSERT WITH CHECK (auth.uid()::text = "userId");
 
+DROP POLICY IF EXISTS "Users can update own lesson progress" ON "LessonProgress";
 CREATE POLICY "Users can update own lesson progress" ON "LessonProgress"
-    FOR UPDATE USING (auth.uid() = "userId");
+    FOR UPDATE USING (auth.uid()::text = "userId");
 
 -- ModuleProgress: Users can only see and update their own progress
+DROP POLICY IF EXISTS "Users can view own module progress" ON "ModuleProgress";
 CREATE POLICY "Users can view own module progress" ON "ModuleProgress"
-    FOR SELECT USING (auth.uid() = "userId");
+    FOR SELECT USING (auth.uid()::text = "userId");
 
+DROP POLICY IF EXISTS "Users can insert own module progress" ON "ModuleProgress";
 CREATE POLICY "Users can insert own module progress" ON "ModuleProgress"
-    FOR INSERT WITH CHECK (auth.uid() = "userId");
+    FOR INSERT WITH CHECK (auth.uid()::text = "userId");
 
+DROP POLICY IF EXISTS "Users can update own module progress" ON "ModuleProgress";
 CREATE POLICY "Users can update own module progress" ON "ModuleProgress"
-    FOR UPDATE USING (auth.uid() = "userId");
+    FOR UPDATE USING (auth.uid()::text = "userId");
 
 -- 10. Create function to check product access
 CREATE OR REPLACE FUNCTION check_product_access(

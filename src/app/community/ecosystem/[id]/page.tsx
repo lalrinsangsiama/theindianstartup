@@ -104,94 +104,32 @@ export default function ListingDetailsPage() {
   const fetchListingDetails = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Mock data for demonstration
-      const mockListing: EcosystemListing = {
-        id: listingId,
-        name: 'T-Hub Hyderabad',
-        description: "T-Hub is India's largest startup incubator and innovation hub, supporting tech startups with mentoring, funding, and market access. Founded by the Government of Telangana, T-Hub has supported over 1,800+ startups and facilitated funding worth $300M+.",
-        category: 'incubator',
-        subCategory: 'government_incubator',
-        logoUrl: '/logos/t-hub.png',
-        website: 'https://t-hub.co',
-        email: 'hello@t-hub.co',
-        phone: '+91 40 4033 7000',
-        address: 'Raidurg, Cyberabad, Hyderabad, Telangana 500081',
-        city: 'Hyderabad',
-        state: 'Telangana',
-        foundedYear: 2015,
-        tags: ['tech', 'ai', 'fintech', 'healthcare', 'saas', 'b2b'],
-        averageRating: 4.6,
-        totalReviews: 89,
-        totalViews: 5670,
-        isVerified: true,
-        fundingAmount: '₹25L - ₹2Cr',
-        equityTaken: '8-15%',
-        programDuration: '6-12 months',
-        batchSize: 15,
-        eligibilityInfo: 'Early-stage tech startups with working prototype, founded less than 3 years ago',
-        applicationProcess: 'Online application → Pitch presentation → Due diligence → Selection committee review → Final decision',
-        documentsRequired: ['Business plan', 'Financial projections', 'Founder profiles', 'Product demo', 'Market research'],
-      };
 
-      const mockReviews: Review[] = [
-        {
-          id: '1',
-          rating: 5,
-          title: 'Excellent mentorship and network access',
-          content: 'T-Hub provided incredible value to our startup. The mentorship from industry experts helped us refine our product-market fit, and the network access led to our Series A funding. The infrastructure and support ecosystem is world-class.',
-          experienceType: 'completed',
-          applicationDate: '2023-01-15',
-          responseTime: '3 weeks',
-          isAnonymous: false,
-          author: {
-            name: 'Rahul Kumar',
-            avatar: '',
-          },
-          helpfulCount: 23,
-          isHelpful: false,
-          createdAt: '2023-12-15',
-          isVerified: true,
-        },
-        {
-          id: '2',
-          rating: 4,
-          title: 'Great program but very competitive selection',
-          content: 'Applied twice before getting selected. The program is excellent - great mentors, good funding opportunities, and amazing peer network. However, the selection process is quite rigorous and they only select the best startups.',
-          experienceType: 'completed',
-          applicationDate: '2023-03-10',
-          responseTime: '4 weeks',
-          isAnonymous: true,
-          anonymousName: 'SaaS Founder',
-          helpfulCount: 18,
-          isHelpful: true,
-          createdAt: '2023-11-20',
-          isVerified: false,
-        },
-        {
-          id: '3',
-          rating: 3,
-          title: 'Good resources but limited individual attention',
-          content: 'T-Hub has great resources and facilities, but with so many startups in each batch, individual attention is limited. The mentorship sessions are valuable but not frequent enough for early-stage startups that need more hands-on guidance.',
-          experienceType: 'completed',
-          applicationDate: '2023-02-20',
-          responseTime: '2 weeks',
-          isAnonymous: true,
-          anonymousName: 'FinTech Entrepreneur',
-          helpfulCount: 12,
-          isHelpful: false,
-          createdAt: '2023-10-25',
-          isVerified: false,
-        },
-      ];
+      // Fetch real data from API
+      const [listingResponse, reviewsResponse] = await Promise.all([
+        fetch(`/api/community/ecosystem/${listingId}`),
+        fetch(`/api/community/ecosystem/${listingId}/reviews`),
+      ]);
 
-      setListing(mockListing);
-      setReviews(mockReviews);
-      
-      // Increment view count (in real app)
-      
+      if (listingResponse.ok) {
+        const listingData = await listingResponse.json();
+        setListing(listingData.listing);
+      } else if (listingResponse.status === 404) {
+        setListing(null);
+      } else {
+        setListing(null);
+      }
+
+      if (reviewsResponse.ok) {
+        const reviewsData = await reviewsResponse.json();
+        setReviews(reviewsData.reviews || []);
+      } else {
+        setReviews([]);
+      }
     } catch (error) {
       logger.error('Error fetching listing details:', error);
+      setListing(null);
+      setReviews([]);
     } finally {
       setLoading(false);
     }
@@ -204,12 +142,38 @@ export default function ListingDetailsPage() {
   }, [listingId, fetchListingDetails]);
 
   const handleHelpfulVote = async (reviewId: string) => {
-    // In real app, call API to vote
-    setReviews(reviews.map(review =>
-      review.id === reviewId
-        ? { ...review, helpfulCount: review.helpfulCount + (review.isHelpful ? -1 : 1), isHelpful: !review.isHelpful }
-        : review
-    ));
+    try {
+      // Optimistic UI update
+      setReviews(reviews.map(review =>
+        review.id === reviewId
+          ? { ...review, helpfulCount: review.helpfulCount + (review.isHelpful ? -1 : 1), isHelpful: !review.isHelpful }
+          : review
+      ));
+
+      // Call API to persist vote
+      const response = await fetch(`/api/community/ecosystem/reviews/${reviewId}/helpful`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        // Revert on failure
+        setReviews(reviews.map(review =>
+          review.id === reviewId
+            ? { ...review, helpfulCount: review.helpfulCount + (review.isHelpful ? 1 : -1), isHelpful: !review.isHelpful }
+            : review
+        ));
+        const data = await response.json();
+        logger.error('Failed to vote:', data.error);
+      }
+    } catch (error) {
+      // Revert on error
+      logger.error('Error voting on review:', error);
+      setReviews(reviews.map(review =>
+        review.id === reviewId
+          ? { ...review, helpfulCount: review.helpfulCount + (review.isHelpful ? 1 : -1), isHelpful: !review.isHelpful }
+          : review
+      ));
+    }
   };
 
   const renderStars = (rating: number, size = 'w-4 h-4') => {

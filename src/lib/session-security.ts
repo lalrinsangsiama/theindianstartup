@@ -261,8 +261,8 @@ class SessionSecurityManager {
     this.timeoutCallbacks.forEach(callback => {
       try {
         callback();
-      } catch (error) {
-        console.error('Session timeout callback error:', error);
+      } catch {
+        // Silently ignore callback errors in client-side code
       }
     });
 

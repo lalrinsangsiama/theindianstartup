@@ -91,6 +91,19 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Check if user has completed onboarding (has startedAt timestamp or portfolio)
+    const hasPortfolio = userProfile.StartupPortfolio && userProfile.StartupPortfolio?.length > 0;
+    const hasStartedAt = !!userProfile.startedAt;
+    const hasCompletedOnboarding = hasStartedAt || hasPortfolio;
+
+    if (!hasCompletedOnboarding) {
+      return successResponse({
+        user: null,
+        hasCompletedOnboarding: false,
+        needsOnboarding: true,
+      });
+    }
+
     if (productsError) {
       return errorResponse('Failed to fetch products', 500, productsError);
     }
@@ -301,8 +314,22 @@ export async function GET(request: NextRequest) {
     };
 
     // Build dashboard data
+    // Build user display name with proper fallbacks
+    const getUserName = () => {
+      if (userProfile.name && userProfile.name.trim()) {
+        return userProfile.name.trim();
+      }
+      if (user.email) {
+        const emailName = user.email.split('@')[0];
+        if (emailName && emailName.trim()) {
+          return emailName.trim();
+        }
+      }
+      return 'Founder';
+    };
+
     const dashboardData = {
-      userName: userProfile.name || user.email?.split('@')[0] || 'Founder',
+      userName: getUserName(),
       totalXP: userProfile.totalXP || 0,
       currentStreak: userProfile.currentStreak || 0,
       longestStreak: userProfile.longestStreak || 0,

@@ -33,6 +33,36 @@ interface PaymentError {
 
 const COMMON_ERRORS: PaymentError[] = [
   {
+    code: 'EMAIL_NOT_VERIFIED',
+    description: 'Your email address is not verified',
+    solution: 'Please check your email and click the verification link before making a purchase'
+  },
+  {
+    code: 'RATE_LIMITED',
+    description: 'Too many payment attempts',
+    solution: 'Please wait a few minutes before trying again'
+  },
+  {
+    code: 'VALIDATION_ERROR',
+    description: 'Invalid payment details',
+    solution: 'Please check your payment information and try again. If the issue persists, contact support'
+  },
+  {
+    code: 'ORDER_FAILED',
+    description: 'Could not create your order',
+    solution: 'Please try again. If the issue persists, contact support for assistance'
+  },
+  {
+    code: 'GATEWAY_LOAD_FAILED',
+    description: 'Payment gateway could not load',
+    solution: 'Please check your internet connection and disable any ad blockers, then try again'
+  },
+  {
+    code: 'VERIFICATION_FAILED',
+    description: 'Payment verification failed',
+    solution: 'Your payment may have been processed but verification failed. Please check your bank statement and contact support'
+  },
+  {
     code: 'INSUFFICIENT_FUNDS',
     description: 'Your card has insufficient funds',
     solution: 'Please ensure your card has sufficient balance or try a different payment method'

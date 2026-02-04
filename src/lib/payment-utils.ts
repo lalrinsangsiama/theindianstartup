@@ -58,7 +58,9 @@ export const quickCheckout = async (config: PaymentConfig) => {
     // Load Razorpay if not loaded
     const loaded = await loadRazorpayScript();
     if (!loaded) {
-      throw new Error('Failed to load payment gateway');
+      const error = new Error('Failed to load payment gateway') as Error & { code?: string };
+      error.code = 'GATEWAY_LOAD_FAILED';
+      throw error;
     }
 
     // Create order
@@ -73,8 +75,20 @@ export const quickCheckout = async (config: PaymentConfig) => {
     });
 
     if (!orderResponse.ok) {
-      const error = await orderResponse.json();
-      throw new Error(error.message || 'Failed to create order');
+      const errorData = await orderResponse.json();
+      const errorMessage = errorData.error || errorData.message || 'Failed to create order';
+      const error = new Error(errorMessage) as Error & { code?: string };
+      // Map HTTP status codes to error codes
+      if (orderResponse.status === 403) {
+        error.code = 'EMAIL_NOT_VERIFIED';
+      } else if (orderResponse.status === 429) {
+        error.code = 'RATE_LIMITED';
+      } else if (orderResponse.status === 400) {
+        error.code = 'VALIDATION_ERROR';
+      } else {
+        error.code = 'ORDER_FAILED';
+      }
+      throw error;
     }
 
     const orderData = await orderResponse.json();
@@ -114,7 +128,9 @@ export const quickCheckout = async (config: PaymentConfig) => {
           });
 
           if (!verifyResponse.ok) {
-            throw new Error('Payment verification failed');
+            const error = new Error('Payment verification failed') as Error & { code?: string };
+            error.code = 'VERIFICATION_FAILED';
+            throw error;
           }
 
           const verifyData = await verifyResponse.json();

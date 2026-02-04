@@ -1,13 +1,14 @@
 import type { Config } from "tailwindcss"
-import { 
-  colors, 
-  typography, 
-  spacing, 
-  borderRadius, 
-  shadows, 
+import defaultColors from 'tailwindcss/colors'
+import {
+  colors,
+  typography,
+  spacing,
+  borderRadius,
+  shadows,
   breakpoints,
   transitions,
-  zIndex 
+  zIndex
 } from './src/styles/design-tokens'
 
 const config = {
@@ -20,8 +21,10 @@ const config = {
   ],
   prefix: "",
   theme: {
-    // Use our design tokens
+    // Use our design tokens merged with Tailwind default colors
     colors: {
+      // Include all Tailwind default colors for gradients and other uses
+      ...defaultColors,
       // Base colors
       black: colors.black,
       white: colors.white,

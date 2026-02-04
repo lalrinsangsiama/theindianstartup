@@ -82,7 +82,7 @@ interface CartItem {
 }
 
 export default function PricingPage() {
-  const { user } = useAuthContext();
+  const { user, refreshSession } = useAuthContext();
   const { hasProduct } = useUserProducts();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -93,9 +93,30 @@ export default function PricingPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isResendingEmail, setIsResendingEmail] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [isCheckingVerification, setIsCheckingVerification] = useState(false);
 
   // Check if email is verified
   const isEmailVerified = user?.email_confirmed_at != null;
+
+  // Handle checking verification status (refresh session)
+  const handleCheckVerification = async () => {
+    setIsCheckingVerification(true);
+    try {
+      await refreshSession();
+      // Small delay to let the state update
+      await new Promise(resolve => setTimeout(resolve, 500));
+      // Check if now verified
+      if (user?.email_confirmed_at) {
+        toast.success('Email verified! You can now make purchases.');
+      } else {
+        toast.info('Email not yet verified. Please check your inbox and click the verification link.');
+      }
+    } catch (error) {
+      toast.error('Failed to check verification status. Please try again.');
+    } finally {
+      setIsCheckingVerification(false);
+    }
+  };
 
   // Handle resend verification email
   const handleResendVerification = async () => {
@@ -1333,30 +1354,51 @@ export default function PricingPage() {
                   </Text>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleResendVerification}
-                disabled={isResendingEmail || resendSuccess}
-                className="border-amber-400 text-amber-800 hover:bg-amber-100 whitespace-nowrap"
-              >
-                {isResendingEmail ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : resendSuccess ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Email Sent!
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Resend Verification Email
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCheckVerification}
+                  disabled={isCheckingVerification}
+                  className="border-green-500 text-green-700 hover:bg-green-50 whitespace-nowrap"
+                >
+                  {isCheckingVerification ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Checking...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      I&apos;ve Verified My Email
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResendVerification}
+                  disabled={isResendingEmail || resendSuccess}
+                  className="border-amber-400 text-amber-800 hover:bg-amber-100 whitespace-nowrap"
+                >
+                  {isResendingEmail ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : resendSuccess ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Email Sent!
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Resend Email
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

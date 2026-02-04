@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { logger } from '@/lib/logger';
+import { distributedRateLimit, createRateLimitResponse, getClientIP } from '@/lib/rate-limit';
 
 /**
  * POST /api/auth/check-password
@@ -9,6 +10,18 @@ import { logger } from '@/lib/logger';
  */
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Rate limit to prevent abuse of HIBP API and user enumeration
+    const clientIP = getClientIP(request);
+    const rateLimitResult = await distributedRateLimit(`password-check:${clientIP}`, {
+      maxRequests: 10,
+      windowMs: 60 * 60 * 1000, // 1 hour
+      prefix: 'password-check',
+    });
+
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(rateLimitResult, 'passwordCheck');
+    }
+
     const { password } = await request.json();
 
     if (!password || typeof password !== 'string') {

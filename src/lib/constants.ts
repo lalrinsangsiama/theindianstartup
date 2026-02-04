@@ -100,6 +100,14 @@ export const USER_ROLES = {
   MODERATOR: 'moderator',
 } as const;
 
+// SECURITY: Admin email allowlist - ONLY used as a secondary check when DB role is already 'admin'
+// This is NOT a fallback to grant admin access. It's a safeguard to prevent rogue DB entries.
+// If a user has role='admin' in DB but their email is NOT in this list, access is DENIED.
+// Shared between auth.ts and middleware.ts to avoid duplicating parsing logic.
+export const ADMIN_EMAIL_ALLOWLIST = process.env.ADMIN_EMAILS
+  ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim().toLowerCase())
+  : [];
+
 // Time constants
 export const TIME = {
   SECOND: 1000,

@@ -317,6 +317,20 @@ export const RATE_LIMIT_CONFIGS = {
     prefix: 'auth',
   },
 
+  // 2FA verification attempts (prevent brute forcing 6-digit codes)
+  '2fa': {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 5, // 5 attempts per 15 minutes
+    prefix: '2fa',
+  },
+
+  // Password breach check (prevent abuse of HIBP API)
+  passwordCheck: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 10, // 10 requests per hour per IP
+    prefix: 'password-check',
+  },
+
   // Email sending
   email: {
     windowMs: 60 * 60 * 1000, // 1 hour
@@ -579,6 +593,8 @@ function getRateLimitMessage(configKey: keyof typeof RATE_LIMIT_CONFIGS): string
   const messages: Record<keyof typeof RATE_LIMIT_CONFIGS, string> = {
     api: 'Too many requests',
     auth: 'Too many login attempts',
+    '2fa': 'Too many verification attempts',
+    passwordCheck: 'Too many password check requests',
     email: 'Too many email requests',
     payment: 'Too many payment attempts',
     communityPost: 'Too many posts',
@@ -629,6 +645,8 @@ export function createRateLimitResponse(
   // Add specific guidance based on type
   const guidance: Partial<Record<keyof typeof RATE_LIMIT_CONFIGS, string>> = {
     auth: 'If you forgot your password, try the password reset option.',
+    '2fa': 'If you are having trouble with 2FA, use a backup code or contact support.',
+    passwordCheck: 'Password strength checks are rate limited for security.',
     payment: 'If you are having payment issues, please contact support.',
     email: 'Check your inbox and spam folder for previous emails.',
     supportTicket: 'Our support team typically responds within 24 hours.',

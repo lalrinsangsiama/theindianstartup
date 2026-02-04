@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { SECURITY_HEADERS, logSecurityEvent } from '@/lib/security'
 import { apiRateLimit, authRateLimit, paymentRateLimit } from '@/lib/rate-limit'
+import { ADMIN_EMAIL_ALLOWLIST } from '@/lib/constants'
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -242,9 +243,6 @@ export async function middleware(request: NextRequest) {
     // ========================================================================
 
     const userEmail = getUnverifiedEmailFromCookie(request)
-    const adminEmails = process.env.ADMIN_EMAILS
-      ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim().toLowerCase())
-      : []
 
     // FAIL CLOSED: If we can't extract email, deny access at middleware level
     // User will see /unauthorized page, but even if bypassed, requireAdmin() blocks them
@@ -259,7 +257,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // FAIL CLOSED: If email not in allowlist, deny access
-    if (!adminEmails.includes(userEmail)) {
+    // Uses shared ADMIN_EMAIL_ALLOWLIST from constants.ts (same as auth.ts)
+    if (!ADMIN_EMAIL_ALLOWLIST.includes(userEmail)) {
       logSecurityEvent({
         type: 'admin_access_denied',
         ip: clientIP,

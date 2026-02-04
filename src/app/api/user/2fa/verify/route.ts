@@ -10,6 +10,7 @@ import {
 import { createAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
+import { distributedRateLimit, createRateLimitResponse } from '@/lib/rate-limit';
 
 const verifySchema = z.object({
   userId: z.string().min(1),
@@ -37,6 +38,30 @@ export async function POST(request: NextRequest) {
     }
 
     const { userId, code, rememberDevice } = validation.data;
+
+    // SECURITY: Rate limit 2FA verification attempts per userId to prevent brute forcing
+    // 6-digit TOTP has only 1M combinations - without rate limiting, can be exhausted in ~10-20 min
+    const rateLimitKey = `2fa-verify:${userId}`;
+    const rateLimitResult = await distributedRateLimit(rateLimitKey, {
+      maxRequests: 5,
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      prefix: '2fa',
+    });
+
+    if (!rateLimitResult.success) {
+      await createAuditLog({
+        eventType: 'security_event',
+        userId,
+        action: '2fa_rate_limited',
+        details: {
+          reason: 'too_many_attempts',
+          violationCount: rateLimitResult.violationCount,
+        },
+        ipAddress: clientIP,
+      });
+      return createRateLimitResponse(rateLimitResult, '2fa');
+    }
+
     const supabase = createClient();
 
     // Get user's 2FA settings

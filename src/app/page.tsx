@@ -333,13 +333,13 @@ export default function HomePage() {
                 if (typeof window !== 'undefined' && window.gtag) {
                   window.gtag('event', 'click_guarantee_cta', {
                     event_category: 'engagement',
-                    event_label: 'guarantee_get_started'
+                    event_label: 'guarantee_signup'
                   });
                 }
-                router.push('/pricing');
+                router.push('/signup');
               }}
             >
-              Get Started Now <ArrowRight className="ml-2 h-5 w-5" />
+              Sign Up <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>

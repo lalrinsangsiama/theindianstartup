@@ -79,10 +79,10 @@ export default function HomePage() {
                   if (typeof window !== 'undefined' && window.gtag) {
                     window.gtag('event', 'click_hero_cta', {
                       event_category: 'engagement',
-                      event_label: 'hero_get_started'
+                      event_label: 'hero_explore_courses'
                     });
                   }
-                  router.push('/signup');
+                  router.push('/pricing');
                 }}
                 className="relative inline-flex items-center justify-center group cursor-pointer"
               >
@@ -288,7 +288,7 @@ export default function HomePage() {
                 <Button
                   variant="primary"
                   size="lg"
-                  onClick={() => router.push('/signup')}
+                  onClick={() => router.push('/pricing')}
                   className="w-full"
                 >
                   Get All-Access
@@ -336,7 +336,7 @@ export default function HomePage() {
                     event_label: 'guarantee_get_started'
                   });
                 }
-                router.push('/signup');
+                router.push('/pricing');
               }}
             >
               Get Started Now <ArrowRight className="ml-2 h-5 w-5" />

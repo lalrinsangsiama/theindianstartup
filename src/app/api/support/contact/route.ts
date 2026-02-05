@@ -3,6 +3,7 @@ import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email';
 import { escapeHTML } from '@/lib/sanitize';
+import { checkRequestBodySize } from '@/lib/rate-limit';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -15,11 +16,17 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
     const supabase = createClient();
-    
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -28,8 +35,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
+
     const validation = contactSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(

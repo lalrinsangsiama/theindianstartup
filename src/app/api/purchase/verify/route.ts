@@ -3,8 +3,9 @@ import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
-import { createFirstPurchaseCoupon, markCouponAsUsed } from '@/lib/coupon-utils';
+import { createFirstPurchaseCoupon, markCouponAsUsed, CouponMarkingError } from '@/lib/coupon-utils';
 import { logPurchaseEvent } from '@/lib/audit-log';
+import { checkRequestBodySize, checkRateLimit } from '@/lib/rate-limit';
 import crypto from 'crypto';
 
 // Zod schema for verify payment request validation
@@ -25,6 +26,18 @@ const verifyPaymentSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
+    // Rate limit to prevent payment verification abuse and replay attacks
+    const rateLimitError = await checkRateLimit(request, 'payment');
+    if (rateLimitError) {
+      return rateLimitError;
+    }
+
     const user = await requireAuth();
 
     // Parse and validate request body
@@ -82,10 +95,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (findError || !existingPurchase) {
-      logger.error('Purchase not found:', findError);
+      // Use generic error message to prevent user enumeration
+      logger.error('Purchase verification failed:', findError);
       return NextResponse.json(
-        { error: 'Purchase not found' },
-        { status: 404 }
+        { error: 'Unable to verify purchase' },
+        { status: 400 }
       );
     }
 
@@ -183,19 +197,46 @@ export async function POST(request: NextRequest) {
       try {
         await markCouponAsUsed(purchase.couponId, purchase.id);
       } catch (couponError) {
-        logger.error('Failed to mark coupon as used:', couponError);
-        // Don't fail the purchase verification
+        // If coupon marking fails due to race condition or already used
+        // IMPORTANT: Payment has already been captured, so we can't simply "fail" the purchase
+        // Instead, mark it for manual review/refund processing
+        if (couponError instanceof CouponMarkingError) {
+          logger.error('Coupon marking failed after payment capture:', couponError);
+
+          // Mark as refund_pending for manual review - payment was already captured
+          await supabase
+            .from('Purchase')
+            .update({
+              status: 'refund_pending',
+              metadata: {
+                couponError: couponError.message,
+                requiresManualReview: true,
+                failedAt: new Date().toISOString()
+              }
+            })
+            .eq('id', purchase.id);
+
+          return NextResponse.json(
+            { error: 'There was an issue with your coupon. Our team will review and contact you.' },
+            { status: 400 }
+          );
+        }
+        // Other errors - log but don't fail purchase
+        logger.error('Unexpected error marking coupon as used:', couponError);
       }
     }
 
     // Award XP for purchase - but check if already awarded for this purchase (idempotency)
     // This prevents duplicate XP if both client verify and webhook process the same payment
     try {
+      // Query XP events using a filter that handles NULL metadata safely
+      // We look for XP events for this user and purchase
       const { data: existingXpEvent } = await supabase
         .from('XPEvent')
         .select('id')
         .eq('userId', user.id)
         .eq('type', 'product_purchase')
+        .not('metadata', 'is', null)
         .contains('metadata', { purchaseId: purchase.id })
         .maybeSingle();
 
@@ -213,21 +254,28 @@ export async function POST(request: NextRequest) {
             }
           });
 
-        // Get current user XP
-        const { data: currentUser } = await supabase
-          .from('User')
-          .select('totalXP')
-          .eq('id', user.id)
-          .single();
+        // Update user's total XP using atomic increment RPC to prevent race conditions
+        const { error: xpUpdateError } = await supabase.rpc('increment_user_xp', {
+          user_id: user.id,
+          points: 100
+        });
 
-        // Update user's total XP
-        await supabase
-          .from('User')
-          .update({
-            totalXP: (currentUser?.totalXP || 0) + 100,
-            updatedAt: new Date().toISOString()
-          })
-          .eq('id', user.id);
+        if (xpUpdateError) {
+          // Fallback to non-atomic update if RPC doesn't exist
+          const { data: currentUser } = await supabase
+            .from('User')
+            .select('totalXP')
+            .eq('id', user.id)
+            .single();
+
+          await supabase
+            .from('User')
+            .update({
+              totalXP: (currentUser?.totalXP || 0) + 100,
+              updatedAt: new Date().toISOString()
+            })
+            .eq('id', user.id);
+        }
       } else {
         logger.info('XP already awarded for this purchase, skipping', {
           purchaseId: purchase.id,

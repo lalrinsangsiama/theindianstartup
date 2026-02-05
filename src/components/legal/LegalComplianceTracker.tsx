@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -170,11 +170,7 @@ const LegalComplianceTracker: React.FC = () => {
   const categories = ['All', 'Corporate', 'Employment', 'Tax', 'Regulatory', 'IP', 'Data Protection'];
   const priorities = ['All', 'Critical', 'High', 'Medium', 'Low'];
 
-  useEffect(() => {
-    calculateStats();
-  }, [complianceItems]);
-
-  const calculateStats = () => {
+  const calculateStats = useCallback(() => {
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
@@ -188,7 +184,11 @@ const LegalComplianceTracker: React.FC = () => {
     };
 
     setStats(newStats);
-  };
+  }, [complianceItems]);
+
+  useEffect(() => {
+    calculateStats();
+  }, [calculateStats]);
 
   const updateItemStatus = (itemId: string, newStatus: ComplianceItem['status']) => {
     setComplianceItems(prev => 

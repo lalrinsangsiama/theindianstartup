@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -129,14 +130,14 @@ export default function StateSchemeDatabase({
   const [totalPages, setTotalPages] = useState(1);
   const [selectedScheme, setSelectedScheme] = useState<StateScheme | null>(null);
 
-  const fetchSchemes = async () => {
+  const fetchSchemes = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString()
       });
-      
+
       if (selectedState) params.append('state', selectedState);
       if (selectedSector) params.append('sector', selectedSector);
       if (selectedType) params.append('type', selectedType);
@@ -145,22 +146,22 @@ export default function StateSchemeDatabase({
 
       const response = await fetch(`/api/schemes/state-schemes?${params}`);
       const data = await response.json();
-      
+
       if (data.schemes) {
         setSchemes(data.schemes);
         setStats(data.stats);
         setTotalPages(data.pagination.pages);
       }
     } catch (error) {
-      console.error('Failed to fetch schemes:', error);
+      logger.error('Failed to fetch schemes:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit, page, selectedState, selectedSector, selectedType, minAmount, maxAmount]);
 
   useEffect(() => {
     fetchSchemes();
-  }, [page, selectedState, selectedSector, selectedType, minAmount, maxAmount]);
+  }, [fetchSchemes]);
 
   const filteredSchemes = schemes.filter(scheme =>
     scheme.scheme_name.toLowerCase().includes(searchTerm.toLowerCase()) ||

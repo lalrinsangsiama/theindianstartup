@@ -157,24 +157,41 @@ export async function validateCoupon(
 }
 
 /**
+ * Error thrown when coupon marking fails
+ */
+export class CouponMarkingError extends Error {
+  constructor(message: string, public readonly couponId: string) {
+    super(message);
+    this.name = 'CouponMarkingError';
+  }
+}
+
+/**
  * Mark a coupon as used with atomic increment
  * Uses RPC for atomic operation, falls back to select+update pattern
+ * @throws {CouponMarkingError} if coupon cannot be marked as used
  */
-export async function markCouponAsUsed(couponId: string, purchaseId: string) {
-  try {
-    const supabase = createClient();
+export async function markCouponAsUsed(couponId: string, purchaseId: string): Promise<void> {
+  const supabase = createClient();
 
-    // Try atomic increment via RPC first (preferred)
-    const { error: rpcError } = await supabase.rpc('increment_coupon_usage', {
-      coupon_id: couponId,
-      purchase_id: purchaseId
-    });
+  // Try atomic increment via RPC first (preferred)
+  const { data: rpcResult, error: rpcError } = await supabase.rpc('increment_coupon_usage', {
+    coupon_id: couponId,
+    purchase_id: purchaseId
+  });
 
-    if (!rpcError) {
-      return true;
-    }
+  // RPC succeeded and returned true
+  if (!rpcError && rpcResult === true) {
+    return;
+  }
 
-    // Fallback: If RPC doesn't exist, use conditional update pattern
+  // RPC returned false (coupon at max uses or not found)
+  if (!rpcError && rpcResult === false) {
+    throw new CouponMarkingError('Coupon has already been fully used', couponId);
+  }
+
+  // RPC doesn't exist yet, fall back to select+update pattern
+  if (rpcError?.code === 'PGRST202') {
     // Get current count first
     const { data: coupon, error: fetchError } = await supabase
       .from('Coupon')
@@ -184,13 +201,12 @@ export async function markCouponAsUsed(couponId: string, purchaseId: string) {
 
     if (fetchError || !coupon) {
       logger.error('Failed to fetch coupon for update:', fetchError);
-      return false;
+      throw new CouponMarkingError('Coupon not found', couponId);
     }
 
     // Check if coupon can still be used
     if (coupon.usedCount >= coupon.maxUses) {
-      logger.warn('Coupon already at max uses', { couponId, usedCount: coupon.usedCount });
-      return false;
+      throw new CouponMarkingError('Coupon has already been fully used', couponId);
     }
 
     // Atomic conditional update: only update if usedCount hasn't changed
@@ -211,12 +227,13 @@ export async function markCouponAsUsed(couponId: string, purchaseId: string) {
     if (updateError || !updated) {
       // Race condition: another request updated the coupon
       logger.warn('Coupon update race condition', { couponId, error: updateError });
-      return false;
+      throw new CouponMarkingError('Coupon usage conflict - please try again', couponId);
     }
 
-    return true;
-  } catch (error) {
-    logger.error('Error marking coupon as used:', error);
-    return false;
+    return;
   }
+
+  // Other RPC error
+  logger.error('Error marking coupon as used:', rpcError);
+  throw new CouponMarkingError('Failed to mark coupon as used', couponId);
 }

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { createAuditLog, logPurchaseEvent } from '@/lib/audit-log';
-import { applyUserRateLimit } from '@/lib/rate-limit';
+import { applyUserRateLimit, checkRequestBodySize } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
+import { sendRefundRequestConfirmationEmail, sendRefundRequestAdminNotification } from '@/lib/email';
 
 const REFUND_WINDOW_DAYS = 3;
 
@@ -22,6 +23,12 @@ const refundRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
     // Authenticate user
     const user = await requireAuth();
     const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
@@ -50,10 +57,10 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Fetch the purchase
+    // Fetch the purchase with product details
     const { data: purchase, error: purchaseError } = await supabase
       .from('Purchase')
-      .select('*')
+      .select('*, product:Product(id, code, title)')
       .eq('id', purchaseId)
       .eq('userId', user.id)
       .single();
@@ -163,8 +170,42 @@ export async function POST(request: NextRequest) {
       ipAddress: clientIP,
     });
 
-    // TODO: Send confirmation email to user
-    // TODO: Send notification to admin
+    // Get user details for email
+    const { data: userData } = await supabase
+      .from('User')
+      .select('name, email')
+      .eq('id', user.id)
+      .single();
+
+    const userName = userData?.name || user.email?.split('@')[0] || 'Customer';
+    const userEmail = userData?.email || user.email || '';
+    const productName = purchase.product?.title || 'Product';
+
+    // Send confirmation email to user (fire and forget)
+    sendRefundRequestConfirmationEmail({
+      userName,
+      userEmail,
+      productName,
+      amount: purchase.amount / 100, // Convert paise to rupees
+      refundRequestId: refundRequest.id,
+      reason,
+      purchaseDate: purchase.purchasedAt,
+    }).catch((err) => {
+      logger.error('Failed to send refund request confirmation email:', err);
+    });
+
+    // Send notification to admin (fire and forget)
+    sendRefundRequestAdminNotification({
+      userName,
+      userEmail,
+      productName,
+      amount: purchase.amount / 100, // Convert paise to rupees
+      refundRequestId: refundRequest.id,
+      reason,
+      purchaseDate: purchase.purchasedAt,
+    }).catch((err) => {
+      logger.error('Failed to send refund request admin notification:', err);
+    });
 
     return NextResponse.json({
       success: true,

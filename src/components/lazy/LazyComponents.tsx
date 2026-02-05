@@ -152,10 +152,6 @@ export const LazyMobileDashboard = withLazyLoading(
   () => import('@/components/dashboard/MobileDashboard')
 );
 
-export const LazyMobileNavigation = withLazyLoading(
-  () => import('@/components/mobile/MobileNavigation')
-);
-
 // Feature-specific components that are conditionally loaded
 export const LazyReferralProgram = withLazyLoading(
   () => import('@/components/referral/ReferralProgram')

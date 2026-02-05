@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -55,13 +55,7 @@ const ROICalculator: React.FC = () => {
   const [monthlyProjections, setMonthlyProjections] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (investmentData.initialInvestment > 0) {
-      calculateROI();
-    }
-  }, [investmentData]);
-
-  const calculateROI = () => {
+  const calculateROI = useCallback(() => {
     setLoading(true);
     
     // Generate monthly projections
@@ -151,7 +145,13 @@ const ROICalculator: React.FC = () => {
     
     setROIMetrics(metrics);
     setLoading(false);
-  };
+  }, [investmentData]);
+
+  useEffect(() => {
+    if (investmentData.initialInvestment > 0) {
+      calculateROI();
+    }
+  }, [investmentData, calculateROI]);
 
   const updateInvestmentData = (field: keyof InvestmentData, value: any) => {
     setInvestmentData(prev => ({

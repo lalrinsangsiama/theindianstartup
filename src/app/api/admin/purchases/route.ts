@@ -7,6 +7,11 @@ export async function GET() {
   try {
     await requireAdmin();
   } catch (error) {
+    // Distinguish between authentication failure and authorization failure
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('Admin access required')) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+    }
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -17,17 +22,19 @@ export async function GET() {
       .from('Purchase')
       .select(`
         id,
-        productCode,
-        productName,
         amount,
         currency,
         status,
-        isActive,
-        purchaseDate,
+        purchasedAt,
         expiresAt,
         razorpayOrderId,
         razorpayPaymentId,
         createdAt,
+        product:Product(
+          id,
+          code,
+          title
+        ),
         user:User!inner(
           id,
           name,

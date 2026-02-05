@@ -70,6 +70,7 @@ export default function SuccessStoriesPage() {
       // TODO: Fetch real success stories from database when available
       // For now, stories array remains empty per NO FAKE DATA policy
       // Real stories should be fetched from: /api/community/success-stories
+      // When implemented, use filter state to filter by: all, featured, recent
 
       setStories([]);
     } catch (error) {
@@ -77,7 +78,8 @@ export default function SuccessStoriesPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetchSuccessStories();

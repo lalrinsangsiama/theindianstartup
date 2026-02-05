@@ -3,6 +3,7 @@ import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { portfolioUpdateSchema, ALLOWED_PORTFOLIO_FIELDS, validateRequest, validationErrorResponse } from '@/lib/validation-schemas';
 import { createAuditLog } from '@/lib/audit-log';
+import { applyUserRateLimit, createRateLimitResponse, checkRequestBodySize } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -207,6 +208,12 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
     // Get user from session
     const supabase = createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -216,6 +223,12 @@ export async function PATCH(request: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Apply rate limiting for portfolio updates
+    const { allowed, result } = await applyUserRateLimit(user.id, 'portfolioUpdate');
+    if (!allowed) {
+      return createRateLimitResponse(result, 'portfolioUpdate');
     }
 
     let rawData;

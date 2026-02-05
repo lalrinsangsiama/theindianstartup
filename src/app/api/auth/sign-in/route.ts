@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { checkRateLimit, getClientIP } from '@/lib/rate-limit';
+import { checkRateLimit, checkRequestBodySize, getClientIP } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { logSecurityEvent } from '@/lib/security';
 
@@ -10,6 +10,12 @@ import { logSecurityEvent } from '@/lib/security';
  * This provides an additional layer of security on top of client-side rate limiting
  */
 export async function POST(request: NextRequest) {
+  // Check request body size before parsing
+  const bodySizeError = checkRequestBodySize(request);
+  if (bodySizeError) {
+    return bodySizeError;
+  }
+
   // Apply server-side rate limiting
   const rateLimitResponse = await checkRateLimit(request, 'auth');
   if (rateLimitResponse) {
@@ -67,11 +73,10 @@ export async function POST(request: NextRequest) {
         type: 'auth_failure',
         ip: clientIP,
         userAgent: request.headers.get('user-agent') || undefined,
-        details: `Failed sign-in attempt for email: ${email.substring(0, 3)}***`,
+        details: 'Failed sign-in attempt',
       });
 
       logger.warn('Sign-in failed', {
-        email: email.substring(0, 3) + '***',
         errorCode: error.code,
         ip: clientIP,
       });
@@ -90,10 +95,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Success - log the event
+    // Success - log the event (only user ID, not email)
     logger.info('Sign-in successful', {
       userId: data.user?.id,
-      email: email.substring(0, 3) + '***',
     });
 
     return NextResponse.json({

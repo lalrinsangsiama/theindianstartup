@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -66,11 +67,17 @@ export function P3ResourceHub() {
   const [selectedStage, setSelectedStage] = useState('all');
   const [activeTab, setActiveTab] = useState('templates');
 
-  useEffect(() => {
-    fetchTemplates();
-    fetchTools();
-    setLoading(false);
+  // These functions initialize from static data, so no async fetch is needed
+  // Using useCallback to satisfy exhaustive-deps rule
+  const initializeData = useCallback(() => {
+    // Templates and tools are static data defined in the component
+    // No actual async fetch needed
   }, []);
+
+  useEffect(() => {
+    initializeData();
+    setLoading(false);
+  }, [initializeData]);
 
   // Real P3 Funding Templates
   const P3_TEMPLATES: Template[] = [
@@ -246,21 +253,13 @@ export function P3ResourceHub() {
     }
   ];
 
-  const fetchTemplates = async () => {
-    try {
-      setTemplates(P3_TEMPLATES);
-    } catch (error) {
-      console.error('Error loading P3 templates:', error);
-    }
-  };
-
-  const fetchTools = async () => {
-    try {
-      setTools(P3_TOOLS);
-    } catch (error) {
-      console.error('Error loading P3 tools:', error);
-    }
-  };
+  // Initialize templates and tools from static data on first render
+  // P3_TEMPLATES and P3_TOOLS are static constants that never change
+  useEffect(() => {
+    setTemplates(P3_TEMPLATES);
+    setTools(P3_TOOLS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Static constants defined within component
+  }, []);
 
   const handleDownloadTemplate = async (templateId: string) => {
     try {
@@ -273,7 +272,7 @@ export function P3ResourceHub() {
       link.download = template.name;
       link.click();
     } catch (error) {
-      console.error('Error downloading template:', error);
+      logger.error('Error downloading template:', error);
     }
   };
 

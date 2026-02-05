@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, MessageCircle, Phone } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Button } from './Button';
 import { Text } from './Typography';
 
@@ -47,7 +47,7 @@ export function ContactSupport({
       <Text weight="medium">Need Help?</Text>
       
       <div className="space-y-3">
-        <a 
+        <a
           href={mailtoLink}
           className="flex items-center gap-3 p-3 border border-gray-200 hover:border-black transition-colors"
         >
@@ -57,27 +57,6 @@ export function ContactSupport({
             <Text size="sm" color="muted">{email}</Text>
           </div>
         </a>
-
-        <a 
-          href="https://wa.me/919876543210?text=Hi,%20I%20need%20help%20with%20The%20Indian%20Startup"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 p-3 border border-gray-200 hover:border-black transition-colors"
-        >
-          <MessageCircle className="w-5 h-5" />
-          <div>
-            <Text weight="medium">WhatsApp</Text>
-            <Text size="sm" color="muted">Chat with us</Text>
-          </div>
-        </a>
-
-        <div className="flex items-center gap-3 p-3 border border-gray-200 opacity-50">
-          <Phone className="w-5 h-5" />
-          <div>
-            <Text weight="medium">Phone Support</Text>
-            <Text size="sm" color="muted">Coming soon</Text>
-          </div>
-        </div>
       </div>
 
       <Text size="xs" color="muted">

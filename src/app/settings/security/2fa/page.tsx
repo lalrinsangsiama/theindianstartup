@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
@@ -396,11 +397,14 @@ function TwoFactorContent() {
                 </Text>
 
                 <div className="bg-white p-4 inline-block rounded-lg border">
-                  {/* QR Code - using a simple img with QR code API */}
-                  <img
+                  {/* QR Code - using next/image with unoptimized for external dynamic URL */}
+                  <Image
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setupData.qrCodeUri)}`}
-                    alt="2FA QR Code"
+                    alt="2FA QR Code - Scan with your authenticator app"
+                    width={192}
+                    height={192}
                     className="w-48 h-48"
+                    unoptimized
                   />
                 </div>
 

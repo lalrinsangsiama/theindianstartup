@@ -7,11 +7,11 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/Badge';
-import { 
-  Palette, 
-  Type, 
-  Image, 
-  Download, 
+import {
+  Palette,
+  Type,
+  Image as ImageIcon,
+  Download,
   Copy,
   Eye,
   Zap,
@@ -577,7 +577,7 @@ const BrandAssetGenerator: React.FC = () => {
                           ))}
                         </div>
                       ) : (
-                        <Image className="w-12 h-12 text-gray-400" />
+                        <ImageIcon className="w-12 h-12 text-gray-400" />
                       )}
                     </div>
                     <h3 className="font-medium mb-2">{asset.name}</h3>

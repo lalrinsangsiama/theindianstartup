@@ -409,7 +409,7 @@ export async function POST(request: NextRequest) {
         productType,
       });
       return NextResponse.json(
-        { error: `Failed to create purchase record: ${dbError.message || 'Unknown error'}` },
+        { error: 'Failed to create purchase record. Please try again.' },
         { status: 500 }
       );
     }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -131,14 +132,14 @@ export default function ComprehensiveSchemeDatabase({
   const [totalPages, setTotalPages] = useState(1);
   const [selectedScheme, setSelectedScheme] = useState<GovernmentScheme | null>(null);
 
-  const fetchSchemes = async () => {
+  const fetchSchemes = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         limit: limit.toString(),
         offset: ((page - 1) * limit).toString()
       });
-      
+
       if (selectedCategory) params.append('category', selectedCategory);
       if (selectedState) params.append('state', selectedState);
       if (selectedFundingRange) params.append('fundingRange', selectedFundingRange);
@@ -152,27 +153,27 @@ export default function ComprehensiveSchemeDatabase({
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.schemes) {
         setSchemes(data.schemes);
         setStats(data.statistics);
         setTotalPages(data.pagination.pages || 1);
       }
     } catch (error) {
-      console.error('Failed to fetch schemes:', error);
+      logger.error('Failed to fetch schemes:', error);
       // Show fallback message or redirect to upgrade
       setSchemes([]);
       setStats(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit, page, selectedCategory, selectedState, selectedFundingRange, searchTerm]);
 
   useEffect(() => {
     fetchSchemes();
-  }, [page, selectedCategory, selectedState, selectedFundingRange, searchTerm]);
+  }, [fetchSchemes]);
 
   const formatAmount = (amount?: number) => {
     if (!amount) return 'N/A';

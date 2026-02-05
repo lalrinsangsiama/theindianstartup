@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import P10CourseInterface from '@/components/P10CourseInterface';
@@ -39,11 +39,7 @@ export default function P10PatentMasteryPage() {
     hasAccess: false
   });
 
-  useEffect(() => {
-    checkAccessAndLoadData();
-  }, []);
-
-  const checkAccessAndLoadData = async () => {
+  const checkAccessAndLoadData = useCallback(async () => {
     try {
       setLoadingState(prev => ({ ...prev, isLoading: true, error: null }));
 
@@ -69,7 +65,7 @@ export default function P10PatentMasteryPage() {
       }
 
       const accessData = await response.json();
-      
+
       if (accessData.hasAccess) {
         setLoadingState({
           isLoading: false,
@@ -92,7 +88,11 @@ export default function P10PatentMasteryPage() {
         hasAccess: false
       });
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    checkAccessAndLoadData();
+  }, [checkAccessAndLoadData]);
 
   // Loading state
   if (loadingState.isLoading) {

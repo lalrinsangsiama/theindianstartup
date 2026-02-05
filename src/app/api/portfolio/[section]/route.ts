@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
+import { checkRequestBodySize, checkRateLimit } from '@/lib/rate-limit';
 
 const VALID_SECTIONS = [
   'idea-vision',
@@ -19,6 +20,18 @@ export async function PATCH(
   { params }: { params: { section: string } }
 ) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
+    // Rate limit to prevent rapid update abuse
+    const rateLimitError = await checkRateLimit(request, 'portfolioUpdate');
+    if (rateLimitError) {
+      return rateLimitError;
+    }
+
     const section = params.section;
     const updates = await request.json();
 

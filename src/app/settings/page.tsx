@@ -54,6 +54,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('billing');
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [exportLoading, setExportLoading] = useState(false);
   const [billingData, setBillingData] = useState<any>(null);
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
@@ -110,6 +111,7 @@ export default function SettingsPage() {
 
   const handleSaveProfile = async () => {
     setProfileSaving(true);
+    setSaveError(null);
     try {
       const response = await fetch('/api/user/settings', {
         method: 'POST',
@@ -126,9 +128,11 @@ export default function SettingsPage() {
         setTimeout(() => setSaved(false), 3000);
       } else {
         logger.error('Failed to save profile');
+        setSaveError('Failed to save profile. Please try again.');
       }
     } catch (error) {
       logger.error('Failed to save profile:', error);
+      setSaveError('Failed to save profile. Please check your connection and try again.');
     } finally {
       setProfileSaving(false);
     }
@@ -164,6 +168,7 @@ export default function SettingsPage() {
 
   const handleSaveNotifications = async () => {
     setLoading(true);
+    setSaveError(null);
     try {
       const response = await fetch('/api/user/settings', {
         method: 'POST',
@@ -179,9 +184,11 @@ export default function SettingsPage() {
         setTimeout(() => setSaved(false), 3000);
       } else {
         logger.error('Failed to save notifications');
+        setSaveError('Failed to save notification preferences. Please try again.');
       }
     } catch (error) {
       logger.error('Failed to save notifications:', error);
+      setSaveError('Failed to save notification preferences. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -189,6 +196,7 @@ export default function SettingsPage() {
 
   const handleSavePrivacy = async () => {
     setLoading(true);
+    setSaveError(null);
     try {
       const response = await fetch('/api/user/settings', {
         method: 'POST',
@@ -204,9 +212,11 @@ export default function SettingsPage() {
         setTimeout(() => setSaved(false), 3000);
       } else {
         logger.error('Failed to save privacy settings');
+        setSaveError('Failed to save privacy settings. Please try again.');
       }
     } catch (error) {
       logger.error('Failed to save privacy settings:', error);
+      setSaveError('Failed to save privacy settings. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -214,19 +224,24 @@ export default function SettingsPage() {
 
   const handleSaveEmailPrefs = async () => {
     setLoading(true);
+    setSaveError(null);
     try {
       const response = await fetch('/api/user/email-preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(emailPrefs)
       });
-      
+
       if (response.ok) {
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
+      } else {
+        logger.error('Failed to save email preferences');
+        setSaveError('Failed to save email preferences. Please try again.');
       }
     } catch (error) {
       logger.error('Failed to save email preferences:', error);
+      setSaveError('Failed to save email preferences. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -234,12 +249,13 @@ export default function SettingsPage() {
 
   const handleExportData = async () => {
     setExportLoading(true);
+    setSaveError(null);
     try {
       // Fetch user's complete data
       const response = await fetch('/api/user/export-data');
-      
+
       if (!response.ok) throw new Error('Failed to export data');
-      
+
       // The API should return a PDF blob
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -251,7 +267,11 @@ export default function SettingsPage() {
     } catch (error) {
       logger.error('Failed to export data:', error);
       // Fallback to HTML export if PDF generation fails
-      handleExportAsHTML();
+      try {
+        handleExportAsHTML();
+      } catch {
+        setSaveError('Failed to export your data. Please try again later.');
+      }
     } finally {
       setExportLoading(false);
     }
@@ -376,6 +396,13 @@ export default function SettingsPage() {
             <Alert variant="success" className="mb-6">
               <CheckCircle className="w-4 h-4" />
               Settings saved successfully!
+            </Alert>
+          )}
+
+          {saveError && (
+            <Alert variant="error" className="mb-6">
+              <AlertCircle className="w-4 h-4" />
+              {saveError}
             </Alert>
           )}
 

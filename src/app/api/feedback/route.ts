@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { applyRateLimit, getClientIP } from '@/lib/rate-limit';
+import { applyRateLimit, getClientIP, checkRequestBodySize } from '@/lib/rate-limit';
+import { sendFeedbackNotificationEmail } from '@/lib/email';
 
 const feedbackSchema = z.object({
   type: z.enum(['bug', 'feature', 'improvement', 'compliment', 'issue', 'other']),
@@ -15,6 +16,12 @@ const feedbackSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
     // Apply rate limiting (5 requests per minute per IP)
     const rateLimit = await applyRateLimit(request, 'feedback');
     if (!rateLimit.allowed) {
@@ -72,27 +79,30 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (dbError) {
-      // If Feedback table doesn't exist, log and return success anyway
-      // This allows the feature to work even before migration is run
-      logger.warn('Failed to store feedback in database:', dbError);
-      logger.info('Feedback received (not stored):', {
-        type,
-        title,
-        description: description.substring(0, 100),
-        userId: user?.id,
-        email: email || user?.email,
-      });
-
-      return NextResponse.json({
-        success: true,
-        message: 'Feedback received. Thank you for your input!',
-      });
+      logger.error('Failed to store feedback in database:', dbError);
+      return NextResponse.json(
+        { error: 'Failed to save feedback. Please try again.' },
+        { status: 500 }
+      );
     }
 
     logger.info('Feedback stored successfully:', {
       feedbackId: feedback.id,
       type,
       userId: user?.id,
+    });
+
+    // Send email notification to support (fire and forget - don't block response)
+    sendFeedbackNotificationEmail({
+      type,
+      title,
+      description,
+      userEmail: email || user?.email || null,
+      userId: user?.id || null,
+      page: page || request.headers.get('referer') || null,
+      feedbackId: feedback.id,
+    }).catch((err) => {
+      logger.error('Failed to send feedback notification email:', err);
     });
 
     return NextResponse.json({

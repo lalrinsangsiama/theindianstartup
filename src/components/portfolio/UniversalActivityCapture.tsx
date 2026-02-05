@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Save, 
@@ -70,14 +71,7 @@ const UniversalActivityCapture: React.FC<ActivityCaptureProps> = ({
   const [isCompleted, setIsCompleted] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (user && activityTypeId) {
-      fetchActivityType();
-      fetchExistingData();
-    }
-  }, [user, activityTypeId]);
-
-  const fetchActivityType = async () => {
+  const fetchActivityType = useCallback(async () => {
     try {
       const response = await fetch(`/api/portfolio/activities/${activityTypeId}`);
       if (!response.ok) {
@@ -88,9 +82,9 @@ const UniversalActivityCapture: React.FC<ActivityCaptureProps> = ({
     } catch (err: any) {
       setError(err.message);
     }
-  };
+  }, [activityTypeId]);
 
-  const fetchExistingData = async () => {
+  const fetchExistingData = useCallback(async () => {
     try {
       const response = await fetch(`/api/portfolio/activities?activityTypeId=${activityTypeId}`);
       if (response.ok) {
@@ -103,11 +97,18 @@ const UniversalActivityCapture: React.FC<ActivityCaptureProps> = ({
         }
       }
     } catch (err: any) {
-      console.error('Error fetching existing data:', err);
+      logger.error('Error fetching existing data:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [activityTypeId]);
+
+  useEffect(() => {
+    if (user && activityTypeId) {
+      fetchActivityType();
+      fetchExistingData();
+    }
+  }, [user, activityTypeId, fetchActivityType, fetchExistingData]);
 
   const validateData = (data: any, schema: any): string[] => {
     const errors: string[] = [];

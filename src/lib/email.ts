@@ -128,6 +128,17 @@ export async function sendSponsorshipConfirmationToUser(data: SponsorshipNotific
   }
 }
 
+// Refund request notification data interface
+interface RefundRequestNotificationData {
+  userName: string;
+  userEmail: string;
+  productName: string;
+  amount: number;
+  refundRequestId: string;
+  reason: string;
+  purchaseDate: string;
+}
+
 // Refund notification data interface
 interface RefundNotificationData {
   userName: string;
@@ -144,6 +155,110 @@ interface RefundDenialData {
   productName: string;
   denialReason: string;
   refundId: string;
+}
+
+/**
+ * Send confirmation email to user when refund request is submitted
+ */
+export async function sendRefundRequestConfirmationEmail(data: RefundRequestNotificationData): Promise<boolean> {
+  const safeData = {
+    userName: escapeHTML(data.userName),
+    productName: escapeHTML(data.productName),
+    refundRequestId: escapeHTML(data.refundRequestId),
+    reason: escapeHTML(data.reason),
+    amount: data.amount,
+    purchaseDate: data.purchaseDate,
+  };
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #000 0%, #333 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #fff; margin: 0; font-size: 28px;">Refund Request Received</h1>
+      </div>
+      <div style="padding: 30px; background: #fff; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px; color: #374151;">Dear ${safeData.userName},</p>
+        <p style="font-size: 16px; color: #374151;">We have received your refund request. Our team will review it and get back to you within 2-3 business days.</p>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin: 0 0 15px; color: #111;">Request Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr><td style="padding: 8px 0; color: #4b5563;">Product:</td><td style="padding: 8px 0; color: #111; font-weight: 600;">${safeData.productName}</td></tr>
+            <tr><td style="padding: 8px 0; color: #4b5563;">Amount:</td><td style="padding: 8px 0; color: #111; font-weight: 600;">₹${safeData.amount.toLocaleString()}</td></tr>
+            <tr><td style="padding: 8px 0; color: #4b5563;">Reason:</td><td style="padding: 8px 0; color: #111;">${safeData.reason.replace(/_/g, ' ')}</td></tr>
+            <tr><td style="padding: 8px 0; color: #4b5563;">Request ID:</td><td style="padding: 8px 0; color: #111;">${safeData.refundRequestId}</td></tr>
+          </table>
+        </div>
+        <p style="font-size: 14px; color: #6b7280;">If you have any questions, please contact us at <a href="mailto:support@theindianstartup.in" style="color: #000;">support@theindianstartup.in</a>.</p>
+        <p style="margin-top: 30px; color: #374151;">Best regards,<br><strong>The Indian Startup Team</strong></p>
+      </div>
+    </div>
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: data.userEmail,
+      subject: `Refund Request Received - ${safeData.productName}`,
+      html,
+      text: `Dear ${safeData.userName}, we have received your refund request for ${safeData.productName} (₹${safeData.amount.toLocaleString()}). Request ID: ${safeData.refundRequestId}. We will review and respond within 2-3 business days.`
+    });
+    return result.success;
+  } catch (error) {
+    logger.error('Failed to send refund request confirmation email', error);
+    return false;
+  }
+}
+
+/**
+ * Send notification email to admin when refund request is submitted
+ */
+export async function sendRefundRequestAdminNotification(data: RefundRequestNotificationData): Promise<boolean> {
+  const safeData = {
+    userName: escapeHTML(data.userName),
+    userEmail: escapeHTML(data.userEmail),
+    productName: escapeHTML(data.productName),
+    refundRequestId: escapeHTML(data.refundRequestId),
+    reason: escapeHTML(data.reason),
+    amount: data.amount,
+    purchaseDate: data.purchaseDate,
+  };
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">New Refund Request</h1>
+      </div>
+      <div style="padding: 30px; background: #fff; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px; color: #374151;">A new refund request has been submitted and requires review:</p>
+
+        <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr><td style="padding: 8px 0; color: #7f1d1d; font-weight: 600;">Request ID:</td><td style="padding: 8px 0; color: #111;">${safeData.refundRequestId}</td></tr>
+            <tr><td style="padding: 8px 0; color: #7f1d1d; font-weight: 600;">User:</td><td style="padding: 8px 0; color: #111;">${safeData.userName} (${safeData.userEmail})</td></tr>
+            <tr><td style="padding: 8px 0; color: #7f1d1d; font-weight: 600;">Product:</td><td style="padding: 8px 0; color: #111;">${safeData.productName}</td></tr>
+            <tr><td style="padding: 8px 0; color: #7f1d1d; font-weight: 600;">Amount:</td><td style="padding: 8px 0; color: #111; font-weight: 600;">₹${safeData.amount.toLocaleString()}</td></tr>
+            <tr><td style="padding: 8px 0; color: #7f1d1d; font-weight: 600;">Reason:</td><td style="padding: 8px 0; color: #111;">${safeData.reason.replace(/_/g, ' ')}</td></tr>
+            <tr><td style="padding: 8px 0; color: #7f1d1d; font-weight: 600;">Purchase Date:</td><td style="padding: 8px 0; color: #111;">${new Date(safeData.purchaseDate).toLocaleDateString('en-IN')}</td></tr>
+          </table>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+          <a href="https://theindianstartup.in/admin/refunds" style="display: inline-block; background: #dc2626; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600;">Review in Admin Panel</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: process.env.ADMIN_EMAIL || 'support@theindianstartup.in',
+      subject: `[ACTION REQUIRED] Refund Request - ₹${safeData.amount.toLocaleString()} - ${safeData.userName}`,
+      html,
+      text: `New refund request from ${safeData.userName} (${safeData.userEmail}) for ${safeData.productName}. Amount: ₹${safeData.amount.toLocaleString()}. Reason: ${safeData.reason}. Request ID: ${safeData.refundRequestId}`
+    });
+    return result.success;
+  } catch (error) {
+    logger.error('Failed to send refund request admin notification', error);
+    return false;
+  }
 }
 
 /**
@@ -450,6 +565,101 @@ export async function sendPasswordResetEmail(data: PasswordResetData): Promise<b
     return result.success;
   } catch (error) {
     logger.error('Failed to send password reset email', error);
+    return false;
+  }
+}
+
+// ============================================================================
+// Feedback Notification Email
+// ============================================================================
+
+interface FeedbackNotificationData {
+  type: string;
+  title: string;
+  description: string;
+  userEmail: string | null;
+  userId: string | null;
+  page: string | null;
+  feedbackId: string;
+}
+
+/**
+ * Send email notification to support when feedback is submitted
+ */
+export async function sendFeedbackNotificationEmail(data: FeedbackNotificationData): Promise<boolean> {
+  const safeData = {
+    type: escapeHTML(data.type),
+    title: escapeHTML(data.title),
+    description: escapeHTML(data.description),
+    userEmail: data.userEmail ? escapeHTML(data.userEmail) : 'Anonymous',
+    userId: data.userId ? escapeHTML(data.userId) : 'Not logged in',
+    page: data.page ? escapeHTML(data.page) : 'Unknown',
+    feedbackId: escapeHTML(data.feedbackId),
+  };
+
+  const typeColors: Record<string, { bg: string; text: string }> = {
+    bug: { bg: '#fef2f2', text: '#dc2626' },
+    feature: { bg: '#f0fdf4', text: '#16a34a' },
+    improvement: { bg: '#eff6ff', text: '#2563eb' },
+    compliment: { bg: '#fefce8', text: '#ca8a04' },
+    issue: { bg: '#fef2f2', text: '#dc2626' },
+    other: { bg: '#f5f5f5', text: '#737373' },
+  };
+
+  const typeColor = typeColors[data.type] || typeColors.other;
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #000 0%, #333 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">New Feedback Received</h1>
+      </div>
+      <div style="padding: 30px; background: #fff; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+        <div style="display: inline-block; background: ${typeColor.bg}; color: ${typeColor.text}; padding: 6px 12px; border-radius: 4px; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px;">
+          ${safeData.type}
+        </div>
+
+        <h2 style="margin: 0 0 15px; color: #111; font-size: 20px;">${safeData.title}</h2>
+
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0; color: #374151; white-space: pre-wrap;">${safeData.description}</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Feedback ID:</td>
+            <td style="padding: 8px 0; color: #111; font-size: 14px;">${safeData.feedbackId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">User Email:</td>
+            <td style="padding: 8px 0; color: #111; font-size: 14px;">${safeData.userEmail}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">User ID:</td>
+            <td style="padding: 8px 0; color: #111; font-size: 14px;">${safeData.userId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Page:</td>
+            <td style="padding: 8px 0; color: #111; font-size: 14px;">${safeData.page}</td>
+          </tr>
+        </table>
+
+        <div style="margin-top: 30px; text-align: center;">
+          <a href="https://theindianstartup.in/admin" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600;">View in Admin Panel</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: 'support@theindianstartup.in',
+      subject: `[${safeData.type.toUpperCase()}] ${safeData.title}`,
+      html,
+      text: `New ${safeData.type} feedback: ${safeData.title}\n\n${safeData.description}\n\nFrom: ${safeData.userEmail}\nPage: ${safeData.page}\nFeedback ID: ${safeData.feedbackId}`
+    });
+    return result.success;
+  } catch (error) {
+    logger.error('Failed to send feedback notification email', error);
     return false;
   }
 }

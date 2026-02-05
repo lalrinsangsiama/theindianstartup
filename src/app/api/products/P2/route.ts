@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
+import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
   try {
@@ -106,24 +107,45 @@ export async function GET(request: NextRequest) {
   }
 }
 
+const postBodySchema = z.object({
+  action: z.enum(['update_preferences', 'track_engagement']),
+  data: z.record(z.unknown()),
+});
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient();
-    
+
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { action, data } = body;
+    // Parse JSON with error handling
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
+    // Validate request body
+    const validation = postBodySchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: validation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { action, data } = validation.data;
 
     switch (action) {
       case 'update_preferences':
         // Update user learning preferences for P2
-        const { data: updated, error } = await supabase
+        const { error } = await supabase
           .from('UserPreference')
           .upsert({
             userId: user.id,
@@ -137,20 +159,21 @@ export async function POST(request: NextRequest) {
 
       case 'track_engagement':
         // Track user engagement with P2 content
-        const { data: engagement, error: engagementError } = await supabase
+        const { error: engagementError } = await supabase
           .from('XPEvent')
           .insert({
             userId: user.id,
-            type: data.eventType,
-            points: data.xpEarned || 0,
-            description: `P2 engagement: ${data.eventType}`,
-            metadata: { eventId: data.eventId, productCode: 'P2' }
+            type: (data as { eventType?: string }).eventType,
+            points: (data as { xpEarned?: number }).xpEarned || 0,
+            description: `P2 engagement: ${(data as { eventType?: string }).eventType}`,
+            metadata: { eventId: (data as { eventId?: string }).eventId, productCode: 'P2' }
           });
 
         if (engagementError) throw engagementError;
         return NextResponse.json({ success: true });
 
       default:
+        // This should never happen due to Zod validation, but TypeScript needs it
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 

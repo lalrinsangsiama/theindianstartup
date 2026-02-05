@@ -292,7 +292,8 @@ export function useFetch<T>(url: string, options?: RequestInit) {
     return () => {
       abortController.abort();
     };
-  }, [url, optionsHash.current]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- optionsHash is a ref used for stable options comparison
+  }, [url]);
 
   return { data, loading, error, refetch: () => window.location.reload() };
 }

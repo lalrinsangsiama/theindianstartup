@@ -60,9 +60,11 @@ function verifyWebhookSignature(
     .update(body)
     .digest('hex');
 
+  // Both signature (from Razorpay) and expectedSignature are hex strings
+  // Use hex encoding for consistent buffer comparison
   return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
+    Buffer.from(signature, 'hex'),
+    Buffer.from(expectedSignature, 'hex')
   );
 }
 
@@ -219,6 +221,12 @@ async function handleFailedPayment(
 
 export async function POST(request: NextRequest) {
   try {
+    // Check payload size before processing (1MB limit for webhooks)
+    const contentLength = request.headers.get('content-length');
+    if (contentLength && parseInt(contentLength, 10) > 1024 * 1024) {
+      return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+    }
+
     // Get raw body for signature verification
     const body = await request.text();
     const signature = request.headers.get('x-razorpay-signature');

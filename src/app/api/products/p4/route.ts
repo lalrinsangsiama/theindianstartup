@@ -24,13 +24,13 @@ export async function GET(request: NextRequest) {
       .eq('code', 'P4')
       .single();
 
-    if (productError) {
+    if (productError || !product) {
       logger.error('Error fetching P4 product:', productError);
       return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
     }
 
     // Sort modules and lessons by order
-    if (product?.modules) {
+    if (product.modules) {
       product.modules.sort((a: any, b: any) => (a.orderIndex || a.order || 0) - (b.orderIndex || b.order || 0));
       product.modules.forEach((module: any) => {
         if (module.lessons) {

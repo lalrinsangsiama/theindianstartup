@@ -356,22 +356,22 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4 md:gap-6">
-              <a href="/about" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+              <a href="/about" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
                 About
               </a>
-              <a href="/terms" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+              <a href="/terms" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
                 Terms
               </a>
-              <a href="/privacy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+              <a href="/privacy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
                 Privacy
               </a>
-              <a href="/refund-policy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+              <a href="/refund-policy" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
                 Refunds
               </a>
-              <a href="/shipping-delivery" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+              <a href="/shipping-delivery" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
                 Shipping
               </a>
-              <a href="/contact" className="text-sm text-gray-600 hover:text-gray-900 hover:underline" target="_blank" rel="noopener noreferrer">
+              <a href="/contact" className="text-sm text-gray-600 hover:text-gray-900 hover:underline">
                 Contact
               </a>
             </div>

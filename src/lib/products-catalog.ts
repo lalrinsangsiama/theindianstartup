@@ -316,9 +316,9 @@ export const PRODUCTS: Record<string, Product> = {
   SECTOR_MASTERY: {
     code: 'SECTOR_MASTERY',
     title: 'Sector Mastery Bundle',
-    description: 'Master specialized sectors with all three sector-specific courses - Food Processing, Impact/CSR, and Carbon Credits. Save ₹5,997 with the bundle!',
+    description: 'Master specialized sectors with all three sector-specific courses and toolkits - Food Processing, Impact/CSR, and Carbon Credits. Save ₹5,997 with the bundle!',
     price: 20999,
     isBundle: true,
-    bundleProducts: ['P13', 'P14', 'P15']
+    bundleProducts: ['P13', 'P14', 'P15', 'T13', 'T14', 'T15']
   }
 };

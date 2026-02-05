@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -53,11 +54,7 @@ export default function SchemeRecommendations({
   const [loading, setLoading] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
 
-  useEffect(() => {
-    fetchRecommendations();
-  }, []);
-
-  const fetchRecommendations = async () => {
+  const fetchRecommendations = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/government-schemes', {
@@ -84,12 +81,16 @@ export default function SchemeRecommendations({
         }
       }
     } catch (error) {
-      console.error('Failed to fetch recommendations:', error);
+      logger.error('Failed to fetch recommendations:', error);
       setHasAccess(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userProfile, maxRecommendations]);
+
+  useEffect(() => {
+    fetchRecommendations();
+  }, [fetchRecommendations]);
 
   const getMatchColor = (score: number) => {
     if (score >= 90) return 'text-green-600 bg-green-100';

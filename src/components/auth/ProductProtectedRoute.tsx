@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -37,7 +37,7 @@ export function ProductProtectedRoute({
   const [loading, setLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
 
-  const checkAccess = async () => {
+  const checkAccess = useCallback(async () => {
     if (!user) {
       router.push('/login');
       return;
@@ -70,13 +70,13 @@ export function ProductProtectedRoute({
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, productCode, router]);
 
   useEffect(() => {
     if (!authLoading) {
       checkAccess();
     }
-  }, [user, authLoading, productCode, retryCount]);
+  }, [authLoading, checkAccess, retryCount]);
 
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);

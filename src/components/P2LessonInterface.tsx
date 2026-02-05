@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -72,11 +72,7 @@ export default function P2LessonInterface({
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [currentSection, setCurrentSection] = useState('content');
 
-  useEffect(() => {
-    fetchLessonData();
-  }, [lessonId]);
-
-  const fetchLessonData = async () => {
+  const fetchLessonData = useCallback(async () => {
     try {
       // Mock data for now - in production this would fetch from API
       setLessonData({
@@ -94,7 +90,11 @@ export default function P2LessonInterface({
     } finally {
       setLoading(false);
     }
-  };
+  }, [lessonId, day]);
+
+  useEffect(() => {
+    fetchLessonData();
+  }, [fetchLessonData]);
 
   const getModuleTitle = (day: number) => {
     if (day <= 5) return 'Incorporation Foundations';

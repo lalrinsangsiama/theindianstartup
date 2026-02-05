@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { z } from 'zod';
+
+// Valid status values for refund requests
+const VALID_STATUSES = ['pending', 'approved', 'processing', 'completed', 'denied', 'failed', 'all'] as const;
+
+// Zod schema for query parameters validation
+const refundsQuerySchema = z.object({
+  status: z.enum(VALID_STATUSES).optional().default('all'),
+  page: z.coerce.number().int().min(1).max(1000).optional().default(1),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20)
+});
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,9 +22,21 @@ export async function GET(request: NextRequest) {
     const supabase = createClient();
     const { searchParams } = new URL(request.url);
 
-    const status = searchParams.get('status');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    // Validate query parameters with Zod BEFORE using them
+    const queryValidation = refundsQuerySchema.safeParse({
+      status: searchParams.get('status') || undefined,
+      page: searchParams.get('page') || undefined,
+      limit: searchParams.get('limit') || undefined
+    });
+
+    if (!queryValidation.success) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', details: queryValidation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { status, page, limit } = queryValidation.data;
     const offset = (page - 1) * limit;
 
     let query = supabase

@@ -23,12 +23,22 @@ interface CartItem {
   quantity: number;
 }
 
+// Valid product codes for cart validation - defined outside component to avoid recreation
+const VALID_PRODUCT_CODES: readonly string[] = [
+  'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10',
+  'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P20',
+  'P21', 'P22', 'P23', 'P24', 'P25', 'P26', 'P27', 'P28', 'P29', 'P30',
+  'T13', 'T14', 'T15', 'T16', 'T17', 'T18', 'T19', 'T20',
+  'T21', 'T22', 'T23', 'T24', 'T25', 'T26', 'T27', 'T28', 'T29', 'T30',
+  'ALL_ACCESS', 'SECTOR_MASTERY'
+];
+
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [hasEarlyBird, setHasEarlyBird] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -36,20 +46,10 @@ export default function SignupPage() {
     confirmPassword: '',
     acceptTerms: false,
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState('');
-
-  // Valid product codes for cart validation
-  const VALID_PRODUCT_CODES = [
-    'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10',
-    'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P20',
-    'P21', 'P22', 'P23', 'P24', 'P25', 'P26', 'P27', 'P28', 'P29', 'P30',
-    'T13', 'T14', 'T15', 'T16', 'T17', 'T18', 'T19', 'T20',
-    'T21', 'T22', 'T23', 'T24', 'T25', 'T26', 'T27', 'T28', 'T29', 'T30',
-    'ALL_ACCESS', 'SECTOR_MASTERY'
-  ];
 
   // Load and validate cart from localStorage
   useEffect(() => {

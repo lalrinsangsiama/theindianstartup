@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -217,11 +217,7 @@ const LegalTemplatesPage: React.FC = () => {
 
   const categories = ['All', ...Array.from(new Set(LEGAL_TEMPLATES.map(t => t.category)))];
 
-  useEffect(() => {
-    filterTemplates();
-  }, [searchTerm, selectedCategory]);
-
-  const filterTemplates = () => {
+  const filterTemplates = useCallback(() => {
     let filtered = LEGAL_TEMPLATES;
 
     // Filter by category
@@ -239,7 +235,11 @@ const LegalTemplatesPage: React.FC = () => {
     }
 
     setFilteredTemplates(filtered);
-  };
+  }, [searchTerm, selectedCategory]);
+
+  useEffect(() => {
+    filterTemplates();
+  }, [filterTemplates]);
 
   const handleDownload = (template: Template) => {
     if (template.isPremium && !hasP5Access) {

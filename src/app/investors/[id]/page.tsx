@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -56,7 +56,7 @@ export default function InvestorDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchInvestorDetails = async () => {
+  const fetchInvestorDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -92,13 +92,13 @@ export default function InvestorDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id, router]);
 
   useEffect(() => {
     if (params.id) {
       fetchInvestorDetails();
     }
-  }, [params.id]);
+  }, [params.id, fetchInvestorDetails]);
 
   const formatAmount = (amount: number | null) => {
     if (!amount) return 'Not specified';

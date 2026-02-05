@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -126,15 +126,10 @@ export default function EcosystemDirectoryPage() {
     setFilteredListings(filtered);
   }, [listings, searchQuery, selectedCategory, selectedState, minRating]);
 
-  useEffect(() => {
-    fetchListings();
-  }, []);
+  // Use ref to track if initial fetch has been done
+  const hasFetchedRef = useRef(false);
 
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
-
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -166,8 +161,20 @@ export default function EcosystemDirectoryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, selectedState, searchQuery]);
 
+  // Initial fetch on mount
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      fetchListings();
+    }
+  }, [fetchListings]);
+
+  // Apply filters when filter state changes
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const getCategoryIcon = (category: string) => {
     const iconMap = {

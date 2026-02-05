@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import P2LessonInterface from '@/components/P2LessonInterface';
 import { ProductProtectedRoute } from '@/components/auth/ProductProtectedRoute';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Lock } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface LessonData {
   id: string;
@@ -22,21 +23,21 @@ export default function P2LessonPage() {
   const [lesson, setLesson] = useState<LessonData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchLessonData();
-  }, [params.lessonId]);
-
-  const fetchLessonData = async () => {
+  const fetchLessonData = useCallback(async () => {
     try {
       const response = await fetch(`/api/products/P2/lessons/${params.lessonId}`);
       const data = await response.json();
       setLesson(data);
     } catch (error) {
-      console.error('Error fetching lesson:', error);
+      logger.error('Error fetching lesson:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.lessonId]);
+
+  useEffect(() => {
+    fetchLessonData();
+  }, [fetchLessonData]);
 
   const handleLessonComplete = async (lessonId: string) => {
     try {
@@ -52,7 +53,7 @@ export default function P2LessonPage() {
       // Navigate back to course overview
       router.push('/incorporation-compliance');
     } catch (error) {
-      console.error('Error marking lesson complete:', error);
+      logger.error('Error marking lesson complete:', error);
     }
   };
 

@@ -123,6 +123,8 @@ function PricingPageContent() {
         localStorage.removeItem('checkoutCart');
       }
     }
+    // allProducts is a static array defined below - runs once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch personalized upgrade price when user is logged in

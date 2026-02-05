@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
-import { applyRateLimit } from '@/lib/rate-limit';
+import { applyRateLimit, checkRequestBodySize } from '@/lib/rate-limit';
 import { communityPostSchema, validateRequest } from '@/lib/validation-schemas';
 import { escapeLikePattern, sanitizeText, sanitizeHTML } from '@/lib/sanitize';
+import { z } from 'zod';
+
+// UUID validation schema for cursor (prevents SQL injection in cursor-based pagination)
+const cursorSchema = z.string().uuid('Invalid cursor format');
 
 // Maximum items per page (prevents abuse)
 const MAX_LIMIT = 50;
@@ -71,18 +75,31 @@ export async function GET(request: NextRequest) {
       const offset = (pageNum - 1) * limit;
       query = query.range(offset, offset + limit - 1);
     } else if (cursor) {
+      // Validate cursor is a valid UUID to prevent SQL injection
+      const cursorValidation = cursorSchema.safeParse(cursor);
+      if (!cursorValidation.success) {
+        return NextResponse.json(
+          { error: 'Invalid cursor format' },
+          { status: 400 }
+        );
+      }
+      const validatedCursor = cursorValidation.data;
+
       // Cursor-based pagination (O(log n) with proper index)
       // Fetch the cursor post to get its created_at timestamp
       const { data: cursorPost } = await supabase
         .from('posts')
         .select('created_at, id')
-        .eq('id', cursor)
+        .eq('id', validatedCursor)
         .single();
 
       if (cursorPost) {
         // Get posts older than cursor OR same time but lower ID
+        // Using validated UUID and ISO date string which are safe from injection
+        const cursorDate = new Date(cursorPost.created_at).toISOString();
+        const cursorId = cursorPost.id;
         query = query.or(
-          `created_at.lt.${cursorPost.created_at},and(created_at.eq.${cursorPost.created_at},id.lt.${cursorPost.id})`
+          `created_at.lt.${cursorDate},and(created_at.eq.${cursorDate},id.lt.${cursorId})`
         );
       }
       query = query.limit(limit);
@@ -157,6 +174,12 @@ export async function GET(request: NextRequest) {
 // POST - Create a new post
 export async function POST(request: NextRequest) {
   try {
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
     // Get authenticated user first
     const supabase = createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -224,13 +247,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Award XP for posting
-    await supabase.rpc('award_xp', {
-      user_id: user.id,
-      points: 15,
-      event_type: 'community_post',
-      description: 'Created a community post'
-    });
+    // Award XP for posting with proper error handling
+    try {
+      const { error: xpError } = await supabase.rpc('award_xp', {
+        user_id: user.id,
+        points: 15,
+        event_type: 'community_post',
+        description: 'Created a community post'
+      });
+
+      if (xpError) {
+        logger.error('Failed to award XP for community post:', {
+          error: xpError,
+          userId: user.id,
+          postId: post.id
+        });
+        // Don't fail the post creation, just log the XP error
+      }
+    } catch (xpError) {
+      logger.error('XP award RPC failed:', {
+        error: xpError,
+        userId: user.id,
+        postId: post.id
+      });
+      // Don't fail the post creation, just log the error
+    }
 
     return NextResponse.json({
       success: true,

@@ -5,6 +5,10 @@ import { createAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
 import { sendRefundApprovedEmail } from '@/lib/email';
+import { checkRequestBodySize } from '@/lib/rate-limit';
+
+// UUID validation for refund ID
+const refundIdSchema = z.string().uuid('Invalid refund ID format');
 
 const approveSchema = z.object({
   approvedAmount: z.number().positive().optional(),
@@ -41,7 +45,24 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: refundId } = await params;
+    // Check request body size before parsing
+    const bodySizeError = checkRequestBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+
+    const { id } = await params;
+
+    // Validate refund ID format
+    const refundIdValidation = refundIdSchema.safeParse(id);
+    if (!refundIdValidation.success) {
+      return NextResponse.json(
+        { error: 'Invalid refund ID format' },
+        { status: 400 }
+      );
+    }
+    const refundId = refundIdValidation.data;
+
     const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
     const admin = await requireAdmin({ ipAddress: clientIP });
 

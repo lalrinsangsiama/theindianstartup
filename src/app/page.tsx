@@ -288,7 +288,7 @@ export default function HomePage() {
                 <Button
                   variant="primary"
                   size="lg"
-                  onClick={() => router.push('/pricing')}
+                  onClick={() => router.push('/pricing?purchase=ALL_ACCESS')}
                   className="w-full"
                 >
                   Get All-Access

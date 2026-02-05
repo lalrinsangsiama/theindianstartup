@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useUserProducts } from '@/hooks/useUserProducts';
 import { Button } from '@/components/ui/Button';
@@ -92,10 +92,11 @@ interface UpgradePriceResult {
   hasAllAccess: boolean;
 }
 
-export default function PricingPage() {
+function PricingPageContent() {
   const { user } = useAuthContext();
   const { hasProduct } = useUserProducts();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState<string | null>(null);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
@@ -104,6 +105,7 @@ export default function PricingPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [upgradePrice, setUpgradePrice] = useState<UpgradePriceResult | null>(null);
   const [upgradePriceLoading, setUpgradePriceLoading] = useState(false);
+  const [autoPurchaseTriggered, setAutoPurchaseTriggered] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -382,6 +384,38 @@ export default function PricingPage() {
       setLoadingProduct(null);
     }
   }, [user, router, razorpayLoaded]);
+
+  // Auto-trigger purchase when ?purchase=ALL_ACCESS is in URL
+  useEffect(() => {
+    const purchaseParam = searchParams.get('purchase');
+    if (
+      purchaseParam === 'ALL_ACCESS' &&
+      razorpayLoaded &&
+      !autoPurchaseTriggered &&
+      !isLoading &&
+      !upgradePriceLoading
+    ) {
+      // Mark as triggered to prevent re-triggering
+      setAutoPurchaseTriggered(true);
+
+      // Clear the query param from URL without reload
+      const url = new URL(window.location.href);
+      url.searchParams.delete('purchase');
+      window.history.replaceState({}, '', url.pathname);
+
+      // Use upgrade price if available, otherwise full price
+      const price = upgradePrice?.upgradePrice ?? 149999;
+
+      // Check if already has access
+      if (upgradePrice?.hasAllAccess || upgradePrice?.ownsAllCourses) {
+        toast.info('You already have access to all courses!');
+        router.push('/dashboard');
+        return;
+      }
+
+      handlePurchase('ALL_ACCESS', price);
+    }
+  }, [searchParams, razorpayLoaded, autoPurchaseTriggered, isLoading, upgradePriceLoading, upgradePrice, handlePurchase, router]);
 
   const toggleCourse = (code: string) => {
     setExpandedCourse(expandedCourse === code ? null : code);
@@ -2119,5 +2153,20 @@ export default function PricingPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading pricing...</p>
+        </div>
+      </div>
+    }>
+      <PricingPageContent />
+    </Suspense>
   );
 }

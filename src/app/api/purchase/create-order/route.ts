@@ -10,7 +10,7 @@ import { logPurchaseEvent } from '@/lib/audit-log';
 import { applyRateLimit, getClientIP, checkRequestBodySize, MAX_BODY_SIZES } from '@/lib/rate-limit';
 import { capturePaymentError } from '@/lib/sentry';
 import Razorpay from 'razorpay';
-import { PRODUCTS } from '@/lib/product-access';
+import { PRODUCTS, calculateBundleUpgradePrice } from '@/lib/product-access';
 
 // Zod schema for create order request validation
 const createOrderSchema = z.object({
@@ -174,6 +174,37 @@ export async function POST(request: NextRequest) {
     let couponData = null;
     let discountAmount = 0;
 
+    // Special handling for ALL_ACCESS bundle upgrade pricing
+    if (productType === 'ALL_ACCESS') {
+      const upgradeResult = await calculateBundleUpgradePrice(user.id);
+
+      if (upgradeResult.hasAllAccess) {
+        return NextResponse.json(
+          { error: 'You already have All-Access' },
+          { status: 400 }
+        );
+      }
+
+      if (upgradeResult.ownsAllCourses) {
+        return NextResponse.json(
+          { error: 'You already own all courses in this bundle' },
+          { status: 400 }
+        );
+      }
+
+      // Use the calculated upgrade price (credits for owned courses)
+      if (upgradeResult.creditedAmount > 0) {
+        serverCalculatedAmount = upgradeResult.upgradePrice * 100; // Convert to paise
+        logger.info('ALL_ACCESS upgrade pricing applied', {
+          userId: user.id,
+          originalPrice: upgradeResult.originalPrice,
+          creditedAmount: upgradeResult.creditedAmount,
+          upgradePrice: upgradeResult.upgradePrice,
+          creditedCourses: upgradeResult.creditedCourses.length,
+        });
+      }
+    }
+
     // Validate coupon FIRST before accepting any amount (security fix for coupon bypass)
     if (couponCode) {
       const couponResult = await validateCoupon(
@@ -216,15 +247,17 @@ export async function POST(request: NextRequest) {
     const finalAmount = serverCalculatedAmount;
 
     // Validate that final amount is reasonable
-    const minAllowedAmount = Math.floor(catalogPriceInPaise * 0.5); // Allow up to 50% discount
+    // For ALL_ACCESS upgrades, allow any price down to 0 (user may own most courses)
+    const isAllAccessUpgrade = productType === 'ALL_ACCESS';
+    const minAllowedAmount = isAllAccessUpgrade ? 0 : Math.floor(catalogPriceInPaise * 0.5); // Allow up to 50% discount for non-upgrades
     if (finalAmount > catalogPriceInPaise) {
       return NextResponse.json(
         { error: 'Amount exceeds product price' },
         { status: 400 }
       );
     }
-    if (finalAmount < minAllowedAmount && !couponData) {
-      // Only block if no valid coupon (coupon can give > 50% discount if configured)
+    if (finalAmount < minAllowedAmount && !couponData && !isAllAccessUpgrade) {
+      // Only block if no valid coupon and not an ALL_ACCESS upgrade
       return NextResponse.json(
         { error: 'Amount below minimum allowed' },
         { status: 400 }

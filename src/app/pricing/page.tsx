@@ -79,6 +79,19 @@ interface CartItem {
   quantity: number;
 }
 
+interface UpgradePriceResult {
+  originalPrice: number;
+  creditedAmount: number;
+  upgradePrice: number;
+  creditedCourses: Array<{
+    code: string;
+    title: string;
+    price: number;
+  }>;
+  ownsAllCourses: boolean;
+  hasAllAccess: boolean;
+}
+
 export default function PricingPage() {
   const { user } = useAuthContext();
   const { hasProduct } = useUserProducts();
@@ -89,6 +102,8 @@ export default function PricingPage() {
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [upgradePrice, setUpgradePrice] = useState<UpgradePriceResult | null>(null);
+  const [upgradePriceLoading, setUpgradePriceLoading] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -107,6 +122,26 @@ export default function PricingPage() {
       }
     }
   }, []);
+
+  // Fetch personalized upgrade price when user is logged in
+  useEffect(() => {
+    if (user) {
+      setUpgradePriceLoading(true);
+      fetch('/api/purchase/upgrade-price')
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) {
+            setUpgradePrice(data);
+          }
+        })
+        .catch(err => {
+          logger.error('Failed to fetch upgrade price:', err);
+        })
+        .finally(() => setUpgradePriceLoading(false));
+    } else {
+      setUpgradePrice(null);
+    }
+  }, [user]);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
@@ -1572,29 +1607,121 @@ export default function PricingPage() {
 
                 {/* CTA */}
                 <div className="text-center">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full max-w-md text-lg py-4"
-                    onClick={() => handlePurchase('ALL_ACCESS', 149999)}
-                    disabled={isLoading}
-                  >
-                    {loadingProduct === 'ALL_ACCESS' ? (
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                    ) : null}
-                    Get All-Access Bundle - ₹1,49,999
-                  </Button>
+                  {/* Show loading state while fetching upgrade price */}
+                  {user && upgradePriceLoading && (
+                    <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-center gap-2 text-gray-600">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Calculating your personalized price...</span>
+                      </div>
+                    </div>
+                  )}
 
-                  <div className="mt-4 flex items-center justify-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Shield className="w-4 h-4" />
-                      <span>3-day money-back guarantee</span>
+                  {/* Already has ALL_ACCESS */}
+                  {upgradePrice?.hasAllAccess && (
+                    <div className="mb-6">
+                      <div className="p-4 bg-green-50 rounded-lg border border-green-200 mb-4">
+                        <div className="flex items-center justify-center gap-2 text-green-700 mb-2">
+                          <CheckCircle className="w-5 h-5" />
+                          <Text weight="semibold">You already have All-Access!</Text>
+                        </div>
+                        <Text size="sm" color="muted">
+                          You have full access to all 30 courses.
+                        </Text>
+                      </div>
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="w-full max-w-md"
+                        onClick={() => router.push('/dashboard')}
+                      >
+                        Go to Dashboard
+                      </Button>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Zap className="w-4 h-4" />
-                      <span>Instant access</span>
+                  )}
+
+                  {/* Owns all courses individually */}
+                  {upgradePrice?.ownsAllCourses && !upgradePrice.hasAllAccess && (
+                    <div className="mb-6">
+                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+                        <div className="flex items-center justify-center gap-2 text-blue-700 mb-2">
+                          <CheckCircle className="w-5 h-5" />
+                          <Text weight="semibold">You already own all 30 courses!</Text>
+                        </div>
+                        <Text size="sm" color="muted">
+                          You have purchased all courses individually.
+                        </Text>
+                      </div>
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="w-full max-w-md"
+                        onClick={() => router.push('/dashboard')}
+                      >
+                        Go to Dashboard
+                      </Button>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Show upgrade pricing for users with some courses */}
+                  {upgradePrice && upgradePrice.creditedAmount > 0 && !upgradePrice.hasAllAccess && !upgradePrice.ownsAllCourses && (
+                    <div className="mb-6">
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 mb-4">
+                        <Text weight="semibold" className="text-green-800 mb-3">
+                          Your Personalized Upgrade Price
+                        </Text>
+                        <div className="grid grid-cols-3 gap-4 text-center mb-3">
+                          <div>
+                            <Text size="xs" color="muted">Original</Text>
+                            <Text className="line-through text-gray-500">₹{upgradePrice.originalPrice.toLocaleString('en-IN')}</Text>
+                          </div>
+                          <div>
+                            <Text size="xs" color="muted">Your Credit</Text>
+                            <Text className="text-green-600 font-semibold">-₹{upgradePrice.creditedAmount.toLocaleString('en-IN')}</Text>
+                          </div>
+                          <div>
+                            <Text size="xs" color="muted">You Pay</Text>
+                            <Text className="text-2xl font-bold text-green-700">₹{upgradePrice.upgradePrice.toLocaleString('en-IN')}</Text>
+                          </div>
+                        </div>
+                        <Text size="xs" color="muted" className="text-center">
+                          Credit for {upgradePrice.creditedCourses.length} course{upgradePrice.creditedCourses.length > 1 ? 's' : ''} you already own
+                        </Text>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show standard purchase button when applicable */}
+                  {!upgradePrice?.hasAllAccess && !upgradePrice?.ownsAllCourses && (
+                    <>
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="w-full max-w-md text-lg py-4"
+                        onClick={() => handlePurchase('ALL_ACCESS', upgradePrice?.upgradePrice || 149999)}
+                        disabled={isLoading || upgradePriceLoading}
+                      >
+                        {loadingProduct === 'ALL_ACCESS' ? (
+                          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                        ) : null}
+                        {upgradePrice && upgradePrice.creditedAmount > 0
+                          ? `Upgrade to All-Access - ₹${upgradePrice.upgradePrice.toLocaleString('en-IN')}`
+                          : 'Get All-Access Bundle - ₹1,49,999'
+                        }
+                      </Button>
+
+                      <div className="mt-4 flex items-center justify-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Shield className="w-4 h-4" />
+                          <span>3-day money-back guarantee</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Zap className="w-4 h-4" />
+                          <span>Instant access</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -1950,7 +2077,7 @@ export default function PricingPage() {
                   Can I upgrade later?
                 </Heading>
                 <Text color="muted">
-                  Yes. Contact support and we will help you upgrade to the All-Access Bundle, adjusting the price based on courses you already own.
+                  Yes. When you are logged in, the All-Access Bundle price automatically adjusts based on courses you already own. You will see your personalized upgrade price with full credit for your previous purchases.
                 </Text>
               </div>
 
